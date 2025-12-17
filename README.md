@@ -21,6 +21,7 @@ Features will be added step-by-step.
 * [x] OTP email verification
 * [x] Login / Logout
 * [x] Forgot password
+* [x] Oauth - Socail account login (google)
 
 ---
 
@@ -178,6 +179,9 @@ ALLOWED_HOSTS=127.0.0.1,localhost
 DATABASE_URL=postgres://<db-username>:<password>@localhost:5432/<db-name>
 CLOUDINARY_URL=cloudinary://<your_api_key>:<your_api_secret>@<your-id>
 EMAIL_URL=smtp+tls://<your-email>:<app-password>@smtp.gmail.com:587
+
+GOOGLE_CLIENT_ID=<Client_id>
+GOOGLE_SECRET_KEY=<Secret_key>
 ```
 
 ### 4️⃣ Apply migrations

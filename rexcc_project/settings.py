@@ -62,6 +62,8 @@ INSTALLED_APPS = [
     # third party apps
     'allauth',
     'allauth.account',
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.google",
     "cloudinary_storage",
     "cloudinary",
     "phonenumber_field",
@@ -187,3 +189,21 @@ LOGIN_REDIRECT_URL = "home"
 LOGOUT_REDIRECT_URL = "home"
 ACCOUNT_LOGOUT_REDIRECT_URL = "home"
 ACCOUNT_LOGOUT_ON_GET = True
+
+# ---------------------------------------------------------------
+# SOCIAL ACCOUNT PROVIDERS
+# ---------------------------------------------------------------
+
+SOCIALACCOUNT_LOGIN_ON_GET = True
+
+SOCIALACCOUNT_PROVIDERS = {
+    "google": {
+        "SCOPE": ["profile", "email"],
+        "AUTH_PARAMS": {"access_type": "online"},
+        "APP": {
+            "client_id": env("GOOGLE_CLIENT_ID"),
+            "secret": env("GOOGLE_SECRET_KEY"),
+            "key": "",
+        },
+    }
+}
