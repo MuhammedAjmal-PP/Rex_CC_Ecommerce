@@ -16,7 +16,7 @@ Features will be added step-by-step.
 
 ### 🔐 Authentication
 
-* [ ] Custom User model
+* [x] Custom User model
 * [ ] Signup with email
 * [ ] OTP email verification
 * [ ] Login / Logout
@@ -167,6 +167,7 @@ SECRET_KEY=your_secret_key
 DATABASE_URL=postgres://rex_cc_user:password@localhost:5432/rex_cc_db
 TIME_ZONE=Asia/Kolkata
 ALLOWED_HOSTS=127.0.0.1,localhost
+CLOUDINARY_URL=cloudinary://<your_api_key>:<your_api_secret>@<your-id>
 ```
 
 ### 4️⃣ Apply migrations
