@@ -1,0 +1,32 @@
+{% extends "account/base.html" %}
+{% load i18n %}
+
+{% block head_title %}{% trans "Verify Your Email" %} | REX CC{% endblock %}
+
+{% block content %}
+<div class="auth-icon">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+        <polyline points="22,6 12,13 2,6"></polyline>
+    </svg>
+</div>
+
+<h1 class="auth-title">Verify Your Email</h1>
+<p class="auth-subtitle">
+    Thank you for joining REX CC! We've sent a verification email to your inbox.
+    Please click the link in the email to activate your account.
+</p>
+
+<div class="auth-info-box">
+    <p><strong>Didn't receive the email?</strong></p>
+    <ul>
+        <li>Check your spam or junk folder</li>
+        <li>Make sure you entered the correct email</li>
+        <li>The email might take a few minutes to arrive</li>
+    </ul>
+</div>
+
+<div class="auth-links">
+    <a href="{% url 'account_login' %}">{% trans "Back to Sign In" %}</a>
+</div>
+{% endblock %}

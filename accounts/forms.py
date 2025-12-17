@@ -1,0 +1,54 @@
+from django import forms
+from allauth.account.forms import SignupForm
+from phonenumber_field.formfields import PhoneNumberField
+
+
+class CustomSignupForm(SignupForm):
+    """Custom signup form for django-allauth with additional fields."""
+
+    first_name = forms.CharField(
+        max_length=100,
+        required=True,
+        widget=forms.TextInput(
+            attrs={
+                "placeholder": "First Name",
+                "class": "form-input",
+                "autocomplete": "given-name",
+            }
+        ),
+        label="First Name",
+    )
+
+    last_name = forms.CharField(
+        max_length=100,
+        required=False,
+        widget=forms.TextInput(
+            attrs={
+                "placeholder": "Last Name",
+                "class": "form-input",
+                "autocomplete": "family-name",
+            }
+        ),
+        label="Last Name (Optional)",
+    )
+
+    phone_number = PhoneNumberField(
+        required=False,
+        widget=forms.TextInput(
+            attrs={
+                "placeholder": "+91 98765 43210",
+                "class": "form-input",
+                "type": "tel",
+                "autocomplete": "tel",
+            }
+        ),
+        label="Phone Number (Optional)",
+    )
+
+    def save(self, request):
+        user = super(CustomSignupForm, self).save(request)
+        user.first_name = self.cleaned_data["first_name"]
+        user.last_name = self.cleaned_data["last_name"]
+        user.phone = self.cleaned_data.get("phone", "")
+        user.save()
+        return user

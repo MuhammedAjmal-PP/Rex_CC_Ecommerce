@@ -59,6 +59,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.sites",
+    # auth app 
+    "accounts", # to override the alluth templates
     # third party apps
     'allauth',
     'allauth.account',
@@ -68,7 +70,6 @@ INSTALLED_APPS = [
     "cloudinary",
     "phonenumber_field",
     # localapps
-    "accounts",
     "pages",
 ]
 
@@ -172,6 +173,11 @@ ACCOUNT_SIGNUP_FIELDS = ["email*", "password1", "password2"]
 # Login using only email (password still required)
 ACCOUNT_LOGIN_METHODS = {"email"}
 ACCOUNT_SESSION_REMEMBER = False # This hides the "Remember Me" checkbox and defaults to "False" (unchecked behavior)
+
+# Use custom signup form
+ACCOUNT_FORMS = {
+    "signup": "accounts.forms.CustomSignupForm",
+}
 
 # Require email verification
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
