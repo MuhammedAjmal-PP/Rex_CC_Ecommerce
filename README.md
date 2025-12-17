@@ -14,15 +14,22 @@ Features will be added step-by-step.
 
 ---
 
-### 🔐 Authentication
+### 🔐 User Authentication
 
 * [x] Custom User model
+* [x] Signup with email
+* [x] OTP email verification
+* [x] Login / Logout
+* [x] Forgot password
+
+---
+
+### 🔐 Custom Admin Authentication
+
 * [ ] Signup with email
-* [ ] OTP email verification
+* [ ] OTP email verification for Forgot password
 * [ ] Login / Logout
 * [ ] Forgot password
-* [ ] Block / Unblock user
-* [ ] User avatar support
 
 ---
 
@@ -164,10 +171,13 @@ pip install -r requirements.txt
 ```
 DEBUG=True
 SECRET_KEY=your_secret_key
-DATABASE_URL=postgres://rex_cc_user:password@localhost:5432/rex_cc_db
 TIME_ZONE=Asia/Kolkata
+SITE_ID=1
 ALLOWED_HOSTS=127.0.0.1,localhost
+
+DATABASE_URL=postgres://<db-username>:<password>@localhost:5432/<db-name>
 CLOUDINARY_URL=cloudinary://<your_api_key>:<your_api_secret>@<your-id>
+EMAIL_URL=smtp+tls://<your-email>:<app-password>@smtp.gmail.com:587
 ```
 
 ### 4️⃣ Apply migrations

@@ -38,6 +38,16 @@ DEBUG = env("DEBUG")
 
 ALLOWED_HOSTS = env("ALLOWED_HOSTS").split(",")
 
+SITE_ID = env.int("SITE_ID", default=1)
+
+AUTHENTICATION_BACKENDS = [
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+
+    # `allauth` specific authentication methods, such as login by email
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
 
 # Application definition
 
@@ -48,12 +58,16 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.sites",
     # third party apps
+    'allauth',
+    'allauth.account',
     "cloudinary_storage",
     "cloudinary",
     "phonenumber_field",
     # localapps
-    "account",
+    "accounts",
+    "pages",
 ]
 
 MIDDLEWARE = [
@@ -62,6 +76,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
@@ -110,8 +125,8 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-#Custom User Model
-AUTH_USER_MODEL = 'account.CustomUser'
+# Custom User Model
+AUTH_USER_MODEL = "accounts.CustomUser"
 
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
@@ -138,3 +153,37 @@ DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 # Phonenumber config
 PHONENUMBER_DB_FORMAT = "NATIONAL"
 PHONENUMBER_DEFAULT_REGION = "IN"
+
+# Email config
+vars().update(env.email_url('EMAIL_URL', default='consolemail://'))
+
+# ---------------------------------------------------------------
+# DJANGO-ALLAUTH CONFIGURATION
+# ---------------------------------------------------------------
+
+# Your user model has NO username field
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+
+# New Allauth API: fields required during signup
+ACCOUNT_SIGNUP_FIELDS = ["email*", "password1", "password2"]
+
+# Login using only email (password still required)
+ACCOUNT_LOGIN_METHODS = {"email"}
+ACCOUNT_SESSION_REMEMBER = False # This hides the "Remember Me" checkbox and defaults to "False" (unchecked behavior)
+
+# Require email verification
+ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+ACCOUNT_CONFIRM_EMAIL_ON_GET = True
+ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 1
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
+ACCOUNT_EMAIL_UNKNOWN_ACCOUNTS = False
+ACCOUNT_EMAIL_NOTIFICATIONS = False  # password_reset_message.html
+ACCOUNT_EMAIL_VERIFICATION_SUPPORTS_RESEND = True
+
+
+# Redirects
+LOGIN_REDIRECT_URL = "home"
+LOGOUT_REDIRECT_URL = "home"
+ACCOUNT_LOGOUT_REDIRECT_URL = "home"
+ACCOUNT_LOGOUT_ON_GET = True
