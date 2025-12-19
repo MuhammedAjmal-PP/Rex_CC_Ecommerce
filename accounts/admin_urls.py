@@ -1,5 +1,5 @@
 from django.urls import path
-from .admin_views import (
+from .admin_views.admin_auth import (
     admin_login,
     admin_logout,
     forgot_password,

@@ -4,11 +4,11 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
-from .decorators import superuser_only_redirect
+from accounts.decorators import superuser_only_redirect
 from django.contrib.auth import get_user_model
-from .models import PasswordReset
+from accounts.models import PasswordReset
 from django.utils import timezone
-from .service import send_admin_password_reset_email
+from accounts.service import send_admin_password_reset_email
 from django.contrib.auth.forms import SetPasswordForm
 
 
@@ -125,7 +125,7 @@ def reset_password(request, reset_id):
                 return redirect("admin_login")
         else:
             form = SetPasswordForm(user)
-            
+
         return render(request, "accounts/admin_reset_password.html", {"form": form})
 
     except PasswordReset.DoesNotExist:
