@@ -1,0 +1,159 @@
+{% extends 'pages/admin/base_admin.html' %}
+{% load static %}
+
+{% block header_title %}
+Dashboard Overview
+{% endblock header_title %}
+
+{% block header_subtitle %}
+Welcome back, Admin
+{% endblock header_subtitle %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'pages/admin/css/dashboard.css' %}">
+{% endblock extra_css %}
+
+{% block content %}
+<!-- Stats Cards -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon revenue">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="1" x2="12" y2="23"></line>
+                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+            </svg>
+        </div>
+        <div class="stat-content">
+            <p class="stat-label">Total Revenue</p>
+            <h3 class="stat-value">$45,231</h3>
+            <span class="stat-change positive">+20.1% from last month</span>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon orders">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="9" cy="21" r="1"></circle>
+                <circle cx="20" cy="21" r="1"></circle>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+            </svg>
+        </div>
+        <div class="stat-content">
+            <p class="stat-label">Total Orders</p>
+            <h3 class="stat-value">2,350</h3>
+            <span class="stat-change positive">+15.3% from last month</span>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon users">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+        </div>
+        <div class="stat-content">
+            <p class="stat-label">Total Customers</p>
+            <h3 class="stat-value">1,234</h3>
+            <span class="stat-change positive">+8.2% from last month</span>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon products">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path
+                    d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
+                </path>
+                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+            </svg>
+        </div>
+        <div class="stat-content">
+            <p class="stat-label">Total Products</p>
+            <h3 class="stat-value">567</h3>
+            <span class="stat-change negative">-2.4% from last month</span>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Orders -->
+<div class="content-section">
+    <div class="section-header">
+        <h2>Recent Orders</h2>
+        <a href="#" class="view-all">View All</a>
+    </div>
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Product</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>#ORD-001</td>
+                    <td>John Doe</td>
+                    <td>Premium Card</td>
+                    <td>$299.00</td>
+                    <td>
+                        <span class="status-badge completed">Completed</span>
+                    </td>
+                    <td>Dec 1, 2025</td>
+                </tr>
+                <tr>
+                    <td>#ORD-002</td>
+                    <td>Jane Smith</td>
+                    <td>Gold Card</td>
+                    <td>$499.00</td>
+                    <td>
+                        <span class="status-badge pending">Pending</span>
+                    </td>
+                    <td>Dec 1, 2025</td>
+                </tr>
+                <tr>
+                    <td>#ORD-003</td>
+                    <td>Mike Johnson</td>
+                    <td>Platinum Card</td>
+                    <td>$799.00</td>
+                    <td>
+                        <span class="status-badge completed">Completed</span>
+                    </td>
+                    <td>Nov 30, 2025</td>
+                </tr>
+                <tr>
+                    <td>#ORD-004</td>
+                    <td>Sarah Williams</td>
+                    <td>Basic Card</td>
+                    <td>$99.00</td>
+                    <td>
+                        <span class="status-badge processing">Processing</span>
+                    </td>
+                    <td>Nov 30, 2025</td>
+                </tr>
+                <tr>
+                    <td>#ORD-005</td>
+                    <td>David Brown</td>
+                    <td>Premium Card</td>
+                    <td>$299.00</td>
+                    <td>
+                        <span class="status-badge completed">Completed</span>
+                    </td>
+                    <td>Nov 29, 2025</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock content %}

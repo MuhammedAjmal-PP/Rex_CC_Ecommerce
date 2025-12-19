@@ -11,13 +11,113 @@
 <form class="auth-form" method="POST" action="{% url 'account_signup' %}">
     {% csrf_token %}
 
-    {{ form }}
+    {% if form.non_field_errors %}
+    <div class="errorlist">
+        {% for error in form.non_field_errors %}
+        <li>{{ error }}</li>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="mb-3">
+        <label for="id_email" class="form-label">EMAIL</label>
+        <input type="email" name="email" class="form-control" placeholder="Email address" id="id_email" 
+        {% if form.email.value %}value="{{ form.email.value }}" {% endif %} required>
+        {% if form.email.errors %}
+        <div class="errorlist">
+            {% for error in form.email.errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+
+    {% if form.first_name %}
+    <div class="mb-3">
+        <label for="id_first_name" class="form-label">FIRST NAME</label>
+        <input type="text" name="first_name" class="form-control" placeholder="First Name" id="id_first_name" 
+        {% if form.first_name.value %}value="{{ form.first_name.value }}" {% endif %}>
+        {% if form.first_name.errors %}
+        <div class="errorlist">
+            {% for error in form.first_name.errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% if form.last_name %}
+    <div class="mb-3">
+        <label for="id_last_name" class="form-label">LAST NAME (OPTIONAL)</label>
+        <input type="text" name="last_name" class="form-control" placeholder="Last Name" id="id_last_name" 
+        {% if form.last_name.value %}value="{{ form.last_name.value }}" {% endif %}>
+        {% if form.last_name.errors %}
+        <div class="errorlist">
+            {% for error in form.last_name.errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% if form.phone_number %}
+    <div class="mb-3">
+        <label for="id_phone_number" class="form-label">PHONE NUMBER (OPTIONAL)</label>
+        <input type="tel" name="phone_number" class="form-control" placeholder="+91 98765 43210" id="id_phone_number" 
+        {% if form.phone_number.value %}value="{{ form.phone_number.value }}" {% endif %}>
+        {% if form.phone_number.errors %}
+        <div class="errorlist">
+            {% for error in form.phone_number.errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <div class="mb-3">
+        <label for="id_password1" class="form-label">PASSWORD</label>
+        <div class="password-input-wrapper">
+            <input type="password" name="password1" class="form-control" placeholder="Password" id="id_password1"
+                required>
+            <button type="button" class="password-toggle" onclick="togglePassword(this)">
+                <i class="bi bi-eye eye-icon"></i>
+            </button>
+        </div>
+        {% if form.password1.errors %}
+        <div class="errorlist">
+            {% for error in form.password1.errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="mb-3">
+        <label for="id_password2" class="form-label">PASSWORD (AGAIN)</label>
+        <div class="password-input-wrapper">
+            <input type="password" name="password2" class="form-control" placeholder="Confirm Password"
+                id="id_password2" required>
+            <button type="button" class="password-toggle" onclick="togglePassword(this)">
+                <i class="bi bi-eye eye-icon"></i>
+            </button>
+        </div>
+        {% if form.password2.errors %}
+        <div class="errorlist">
+            {% for error in form.password2.errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
 
     {% if redirect_field_value %}
     <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
     {% endif %}
 
-    <button class="btn-primary" type="submit">{% trans "Create Account" %}</button>
+    <button class="btn btn-primary" type="submit">{% trans "Create Account" %}</button>
 </form>
 
 {% get_providers as socialaccount_providers %}
@@ -51,4 +151,22 @@
     <span class="auth-prompt">Already have an account?</span>
     <a href="{% url 'account_login' %}" class="auth-link-accent">{% trans "Sign In" %}</a>
 </div>
+
+<script>
+    function togglePassword(button) {
+        const wrapper = button.closest('.password-input-wrapper');
+        const input = wrapper.querySelector('input');
+        const icon = button.querySelector('i');
+
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove('bi-eye');
+            icon.classList.add('bi-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.remove('bi-eye-slash');
+            icon.classList.add('bi-eye');
+        }
+    }
+</script>
 {% endblock %}

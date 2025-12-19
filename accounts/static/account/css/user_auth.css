@@ -1,7 +1,8 @@
 /* -----------------------------------------------------------
-   REX CC LIGHT LUXURY AUTH THEME
+   REX CC LIGHT LUXURY AUTH THEME - Bootstrap Enhanced
    File: accounts/static/account/css/user_auth.css
    Premium Luxury Watch E-Commerce
+   Bootstrap 5.3.3 as primary framework
    ----------------------------------------------------------- */
 
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:wght@400;600;700&display=swap');
@@ -35,7 +36,10 @@ body {
     flex-direction: column;
 }
 
-/* Brand Header */
+/* ========================================
+   BRAND HEADER
+   ======================================== */
+
 .auth-brand {
     text-align: center;
     padding: 30px 20px 0;
@@ -67,7 +71,10 @@ body {
     margin-top: 5px;
 }
 
-/* Auth Layout Container */
+/* ========================================
+   AUTH LAYOUT CONTAINER
+   ======================================== */
+
 .auth-container {
     flex: 1;
     display: flex;
@@ -88,7 +95,10 @@ body {
     animation: fadeIn 0.4s ease;
 }
 
-/* Typography */
+/* ========================================
+   TYPOGRAPHY
+   ======================================== */
+
 .auth-title {
     font-family: var(--font-head);
     font-size: 2.2rem;
@@ -106,7 +116,10 @@ body {
     line-height: 1.5;
 }
 
-/* Auth Icons */
+/* ========================================
+   AUTH ICONS
+   ======================================== */
+
 .auth-icon {
     margin-bottom: 25px;
     color: var(--text-muted);
@@ -117,23 +130,19 @@ body {
 }
 
 .auth-icon-success svg {
-    stroke: var(--success-green);
+    stroke: var(--btn-bronze);
 }
 
 /* ========================================
-   FORM STYLING - Clean Labels Above Inputs
+   FORM STYLING - Bootstrap Enhanced
    ======================================== */
 
 .auth-form {
     text-align: left;
 }
 
-.auth-form p {
-    margin-bottom: 18px;
-    text-align: left;
-}
-
-/* Label styling - left aligned, subtle */
+/* Override Bootstrap form-label styling */
+.auth-form .form-label,
 .auth-form label {
     display: block;
     color: var(--text-pri);
@@ -151,18 +160,12 @@ body {
     display: none !important;
 }
 
-/* Password input wrapper for toggle button */
-.password-input-wrapper {
-    position: relative;
-    display: block;
-}
-
-/* Input styling */
+/* Override Bootstrap form-control styling */
+.auth-form .form-control,
 .auth-form input[type="text"],
 .auth-form input[type="email"],
 .auth-form input[type="password"],
 .auth-form input[type="tel"] {
-    width: 100%;
     background-color: #FAFAFA;
     border: 1px solid var(--border-light);
     border-radius: 3px;
@@ -173,13 +176,19 @@ body {
     transition: all 0.25s ease;
 }
 
-/* Add padding for password toggle button */
+/* Password input wrapper for toggle button */
+.password-input-wrapper {
+    position: relative;
+    display: block;
+}
+
+.password-input-wrapper .form-control,
 .password-input-wrapper input[type="password"],
 .password-input-wrapper input[type="text"] {
     padding-right: 45px;
 }
 
-/* Password toggle button - subtle and elegant */
+/* Password toggle button */
 .password-toggle {
     position: absolute;
     right: 10px;
@@ -196,6 +205,7 @@ body {
     transition: all 0.25s ease;
     border-radius: 3px;
     opacity: 0.6;
+    z-index: 10;
 }
 
 .password-toggle:hover {
@@ -219,13 +229,15 @@ body {
     transition: transform 0.2s ease;
 }
 
-/* Hide default placeholder - we use labels */
+/* Placeholder styling */
+.auth-form .form-control::placeholder,
 .auth-form input::placeholder {
     color: #bbb;
     font-weight: 300;
 }
 
-/* Focus state */
+/* Focus state - override Bootstrap */
+.auth-form .form-control:focus,
 .auth-form input:focus {
     outline: none;
     background-color: #fff;
@@ -233,7 +245,7 @@ body {
     box-shadow: 0 0 0 3px rgba(205, 127, 50, 0.08);
 }
 
-/* Help text - hidden by default, show on focus */
+/* Help text */
 .helptext {
     display: none;
 }
@@ -260,10 +272,11 @@ body {
 }
 
 /* ========================================
-   BUTTONS
+   BUTTONS - Bootstrap Enhanced
    ======================================== */
 
-.btn-primary {
+.btn-primary,
+.auth-form .btn-primary {
     width: 100%;
     padding: 15px;
     background: linear-gradient(135deg, var(--btn-bronze) 0%, #b06825 100%);
@@ -281,13 +294,16 @@ body {
     overflow: hidden;
 }
 
-.btn-primary:hover {
+.btn-primary:hover,
+.auth-form .btn-primary:hover {
     background: linear-gradient(135deg, #b06825 0%, #9a5a1f 100%);
     box-shadow: 0 8px 20px rgba(205, 127, 50, 0.35);
     transform: translateY(-1px);
+    color: #fff;
 }
 
-.btn-primary:active {
+.btn-primary:active,
+.auth-form .btn-primary:active {
     transform: translateY(0);
 }
 
@@ -453,8 +469,9 @@ body {
     font-weight: normal;
 }
 
-/* Form Errors */
-.errorlist {
+/* Form Errors - Bootstrap override */
+.errorlist,
+.invalid-feedback {
     list-style: none;
     padding: 11px 14px;
     background-color: #FDECEA;
@@ -464,6 +481,7 @@ body {
     text-align: left;
     margin-bottom: 14px;
     border-radius: 0 3px 3px 0;
+    display: block;
 }
 
 .errorlist li {
@@ -472,6 +490,19 @@ body {
 
 .errorlist li:last-child {
     margin-bottom: 0;
+}
+
+/* Bootstrap form validation override */
+.was-validated .form-control:invalid,
+.form-control.is-invalid {
+    border-color: var(--error-red);
+    background-image: none;
+}
+
+.was-validated .form-control:valid,
+.form-control.is-valid {
+    border-color: var(--success-green);
+    background-image: none;
 }
 
 /* ========================================
@@ -568,10 +599,29 @@ body {
 }
 
 /* ========================================
-   RESPONSIVE
+   RESPONSIVE - Mobile First
    ======================================== */
 
-@media (max-width: 540px) {
+/* Small devices (landscape phones, 576px and up) */
+@media (min-width: 576px) {
+    .auth-card {
+        padding: 50px 45px;
+    }
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) {
+    .auth-title {
+        font-size: 2.2rem;
+    }
+
+    .brand-logo {
+        font-size: 1.8rem;
+    }
+}
+
+/* Extra small devices (phones, less than 576px) */
+@media (max-width: 575.98px) {
     .auth-card {
         padding: 40px 28px;
         margin: 0 10px;
@@ -583,5 +633,28 @@ body {
 
     .brand-logo {
         font-size: 1.5rem;
+    }
+
+    .auth-brand {
+        padding: 20px 15px 0;
+    }
+
+    .auth-container {
+        padding: 30px 15px;
+    }
+}
+
+/* Very small devices (phones in portrait, less than 375px) */
+@media (max-width: 374.98px) {
+    .auth-card {
+        padding: 30px 20px;
+    }
+
+    .auth-title {
+        font-size: 1.6rem;
+    }
+
+    .brand-logo {
+        font-size: 1.3rem;
     }
 }

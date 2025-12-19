@@ -11,13 +11,60 @@
 <form class="auth-form" method="POST" action="{% url 'account_login' %}">
     {% csrf_token %}
 
-    {{ form }}
+    {% if form.non_field_errors %}
+    <div class="errorlist">
+        {% for error in form.non_field_errors %}
+        <li>{{ error }}</li>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="mb-3">
+        <label for="id_login" class="form-label">EMAIL</label>
+        <input type="text" name="login" class="form-control" placeholder="Email address" id="id_login" 
+        {% if form.login.value %} value="{{ form.login.value }}" {% endif %} required>
+        {% if form.login.errors %}
+        <div class="errorlist">
+            {% for error in form.login.errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="mb-3">
+        <label for="id_password" class="form-label">PASSWORD</label>
+        <div class="password-input-wrapper">
+            <input type="password" name="password" class="form-control" placeholder="Password" id="id_password"
+                required>
+            <button type="button" class="password-toggle" onclick="togglePassword(this)">
+                <i class="bi bi-eye eye-icon"></i>
+            </button>
+        </div>
+        {% if form.password.errors %}
+        <div class="errorlist">
+            {% for error in form.password.errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+
+    {% if form.remember %}
+    <div class="form-check mb-3">
+        <input type="checkbox" name="remember" class="form-check-input" id="id_remember">
+        <label class="form-check-label" for="id_remember"
+            style="text-transform: none; font-size: 0.9rem; font-weight: 400;">
+            Remember Me
+        </label>
+    </div>
+    {% endif %}
 
     {% if redirect_field_value %}
     <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
     {% endif %}
 
-    <button class="btn-primary" type="submit">{% trans "Sign In" %}</button>
+    <button class="btn btn-primary" type="submit">{% trans "Sign In" %}</button>
 </form>
 
 <div class="auth-links">
@@ -55,4 +102,22 @@
     <span class="auth-prompt">New to REX CC?</span>
     <a href="{% url 'account_signup' %}" class="auth-link-accent">{% trans "Create an Account" %}</a>
 </div>
+
+<script>
+    function togglePassword(button) {
+        const wrapper = button.closest('.password-input-wrapper');
+        const input = wrapper.querySelector('input');
+        const icon = button.querySelector('i');
+
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove('bi-eye');
+            icon.classList.add('bi-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.remove('bi-eye-slash');
+            icon.classList.add('bi-eye');
+        }
+    }
+</script>
 {% endblock %}

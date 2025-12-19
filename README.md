@@ -27,10 +27,10 @@ Features will be added step-by-step.
 
 ### 🔐 Custom Admin Authentication
 
-* [ ] Signup with email
-* [ ] OTP email verification for Forgot password
-* [ ] Login / Logout
-* [ ] Forgot password
+* [x] Signup with email
+* [x] OTP email verification for Forgot password
+* [x] Login / Logout
+* [x] Forgot password
 
 ---
 
@@ -182,6 +182,8 @@ EMAIL_URL=smtp+tls://<your-email>:<app-password>@smtp.gmail.com:587
 
 GOOGLE_CLIENT_ID=<Client_id>
 GOOGLE_SECRET_KEY=<Secret_key>
+CSRF_TRUSTED_ORIGINS=<CSRF_TRUSTED_ORIGINS>
+
 ```
 
 ### 4️⃣ Apply migrations
