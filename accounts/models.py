@@ -6,7 +6,7 @@ from django.contrib.auth.models import (
 )
 from phonenumber_field.modelfields import PhoneNumberField
 from cloudinary.models import CloudinaryField
-from django.utils import timezone
+import uuid
 
 
 # Create your models here.
@@ -62,7 +62,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
 
-    created_at = models.DateTimeField(default=timezone.now)
+    created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     USERNAME_FIELD = "email"
@@ -83,3 +83,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+
+class PasswordReset(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    reset_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    created_at = models.DateTimeField(auto_now_add=True, editable=False)
+
+    def __str__(self):
+        return f"Password reset for {self.user.email} at {self.created_at}"

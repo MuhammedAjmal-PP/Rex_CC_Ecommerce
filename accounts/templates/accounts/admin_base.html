@@ -1,0 +1,50 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block head_title %}Admin | REX CC{% endblock %}</title>
+
+    <link rel="stylesheet" href="{% static 'account/css/admin_auth.css' %}">
+
+    {% block extra_head %}{% endblock %}
+</head>
+
+<body>
+
+    <!-- Brand Header -->
+    <div class="auth-brand">
+        <a href="#" class="brand-logo">REX <span class="brand-accent">CC</span></a>
+        <p class="admin-badge">ADMIN</p>
+    </div>
+
+    {% if messages %}
+    <div class="message-container">
+        {% for message in messages %}
+        <div class="message message-{{ message.tags }}">
+            <span class="message-icon">
+                {% if message.tags == 'success' %}✓{% elif message.tags == 'error' %}✕{% else %}ℹ{% endif %}
+            </span>
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="auth-container">
+        <div class="auth-card">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </div>
+
+    <footer class="auth-footer">
+        <p>&copy; {% now "Y" %} REX CC. All rights reserved.</p>
+    </footer>
+
+    <script src="{% static 'account/js/admin_auth.js' %}"></script>
+</body>
+
+</html>

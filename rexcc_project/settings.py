@@ -172,6 +172,7 @@ ACCOUNT_SIGNUP_FIELDS = ["email*", "password1", "password2"]
 
 # Login using only email (password still required)
 ACCOUNT_LOGIN_METHODS = {"email"}
+
 ACCOUNT_SESSION_REMEMBER = False # This hides the "Remember Me" checkbox and defaults to "False" (unchecked behavior)
 
 # Use custom signup form
