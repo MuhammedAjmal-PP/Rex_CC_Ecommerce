@@ -36,17 +36,17 @@ def admin_login(request):
                     request,
                     "You are not authorized to access the admin dashboard.",
                 )
-                return render(request, "accounts/admin_login.html", {"form": form})
+                return redirect("admin_login")
         else:
             messages.error(
                 request,
                 "Invalid email or password",
             )
-            return render(request, "accounts/admin_login.html", {"form": form})
+            return redirect("admin_login")
     else:
         form = AuthenticationForm()
 
-    return render(request, "accounts/admin_login.html", {"form": form})
+    return render(request, "accounts/admin_auth/admin_login.html", {"form": form})
 
 
 # Admin logout view
@@ -63,6 +63,7 @@ def admin_logout(request):
 def forgot_password(request):
     if request.method == "POST":
         email = request.POST.get("email")
+        request.session['reset_email'] = email
 
         try:
             user = User.objects.get(email=email, is_staff=True)
@@ -91,20 +92,44 @@ def forgot_password(request):
             messages.error(request, "This email is not registered as an admin.")
             return redirect("admin_forgot_password")
 
-    return render(request, "accounts/admin_forgot_password.html")
+    return render(request, "accounts/admin_auth/admin_forgot_password.html")
 
 
 @never_cache
 @superuser_only_redirect
 def password_reset_sent(request):
-    return render(request, "accounts/admin_password_reset_sent.html")
+
+    email = request.session.get('reset_email')
+
+    if not email:
+        messages.error(request, "Access denied. Please submit the form first.")
+        return redirect("admin_forgot_password")
+    
+    request_exists=PasswordReset.objects.filter(user__email=email).exists()
+
+    if request_exists:
+        return render(request, "accounts/admin_auth/admin_password_reset_sent.html")
+    else:
+        messages.error(request,"You have not sent a request yet.")
+        return redirect("admin_forgot_password")
 
 
 @never_cache
 @superuser_only_redirect
 def reset_password(request, reset_id):
+
+    session_email = request.session.get('reset_email')
+
+    if not session_email:
+        messages.error(request, "Security check failed. You must open the link on the same browser you requested it from.")
+        return redirect("admin_forgot_password")
+
     try:
         password_reset_id = PasswordReset.objects.get(reset_id=reset_id)
+
+        if password_reset_id.user.email != session_email:
+            messages.error(request, "Unauthorized request.")
+            return redirect("admin_forgot_password")
 
         expiry_time = password_reset_id.created_at + timezone.timedelta(minutes=10)
 
@@ -121,12 +146,13 @@ def reset_password(request, reset_id):
             if form.is_valid():
                 form.save()
                 password_reset_id.delete()
+                request.session.pop('reset_email', None)
                 messages.success(request, "Password reset successful.")
                 return redirect("admin_login")
         else:
             form = SetPasswordForm(user)
 
-        return render(request, "accounts/admin_reset_password.html", {"form": form})
+        return render(request, "accounts/admin_auth/admin_reset_password.html", {"form": form})
 
     except PasswordReset.DoesNotExist:
         messages.error(request, "Invalid link.")

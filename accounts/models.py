@@ -84,6 +84,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.email
 
+
 class PasswordReset(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     reset_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)

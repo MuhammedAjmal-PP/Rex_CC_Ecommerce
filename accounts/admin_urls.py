@@ -6,6 +6,10 @@ from .admin_views.admin_auth import (
     password_reset_sent,
     reset_password,
 )
+from .admin_views.user_management import (
+    user_list,
+)
+
 
 urlpatterns = [
     path("login/", admin_login, name="admin_login"),
@@ -18,4 +22,6 @@ urlpatterns = [
         name="admin_password_reset_sent",
     ),
     path("reset-password/<str:reset_id>/", reset_password, name="admin_reset_password"),
+    # User Management
+    path("users/", user_list, name="admin_users_list"),
 ]
