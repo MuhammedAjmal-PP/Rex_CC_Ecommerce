@@ -202,7 +202,7 @@ def user_status_toggle(request, id):
         user.save()
 
         status_msg = "activatied" if user.is_active else "deactivated"
-        messages.error(request, f"User {status_msg} successfully.")
+        messages.success(request, f"User {status_msg} successfully.")
 
     except User.DoesNotExist:
         messages.error(request, "User Not founded")

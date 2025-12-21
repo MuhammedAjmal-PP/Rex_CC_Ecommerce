@@ -307,3 +307,140 @@ body {
 .sidebar::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.3);
 }
+
+/* ========================================
+   MESSAGE NOTIFICATIONS
+   ======================================== */
+
+.messages-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 450px;
+    pointer-events: none;
+}
+
+.alert-message {
+    background-color: var(--admin-white);
+    border-radius: 0;
+    padding: 16px 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    border-left: 4px solid;
+    pointer-events: auto;
+    animation: slideIn 0.3s ease-out;
+    transition: all 0.3s ease;
+}
+
+.alert-message.fade-out {
+    animation: slideOut 0.3s ease-in forwards;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(120%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(120%);
+        opacity: 0;
+    }
+}
+
+.alert-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+}
+
+.alert-icon {
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.alert-text {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--admin-text-primary);
+    line-height: 1.4;
+}
+
+.alert-close {
+    background: none;
+    border: none;
+    color: var(--admin-text-secondary);
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0px;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.alert-close:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    color: var(--admin-text-primary);
+}
+
+.alert-close i {
+    font-size: 1.1rem;
+}
+
+/* Success Alert */
+.alert-success {
+    border-left-color: #10b981;
+}
+
+.alert-success .alert-icon {
+    color: #10b981;
+}
+
+/* Error Alert */
+.alert-error,
+.alert-danger {
+    border-left-color: #ef4444;
+}
+
+.alert-error .alert-icon,
+.alert-danger .alert-icon {
+    color: #ef4444;
+}
+
+/* Warning Alert */
+.alert-warning {
+    border-left-color: #f59e0b;
+}
+
+.alert-warning .alert-icon {
+    color: #f59e0b;
+}
+
+/* Info Alert */
+.alert-info {
+    border-left-color: #3b82f6;
+}
+
+.alert-info .alert-icon {
+    color: #3b82f6;
+}
