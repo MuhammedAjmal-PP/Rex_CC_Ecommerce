@@ -1,0 +1,282 @@
+{% extends 'pages/admin/base_admin.html' %}
+{% load static %}
+{% load cloudinary %}
+{% load humanize %}
+{% block header_title %}
+    User Profile
+{% endblock header_title %}
+{% block header_subtitle %}
+    Manage user accounts and profiles
+{% endblock header_subtitle %}
+{% block extra_css %}
+    <link rel="stylesheet"
+          href="{% static 'account/css/user_management/user_profile.css' %}">
+{% endblock extra_css %}
+{% block content %}
+    <!-- Back Button and Actions -->
+    <div class="header-actions">
+        <a href="{% url 'admin_users_list' %}" class="back-btn">
+            <i class="bi bi-arrow-left-short"></i>
+        Back</a>
+        <div class="action-buttons">
+            {% if user.is_active %}
+                <a href="{% url 'admin_user_stats_toggle' user.id %}"
+                   class="btn-deactivate"
+                   onclick="return confirm('Are you sure you want to deactivate this user?');">
+                    <i class="bi bi-person-x fs-5"></i>
+                    Deactivate User
+                </a>
+            {% else %}
+                <a href="{% url 'admin_user_stats_toggle' user.id %}"
+                   class="btn-deactivate"
+                   onclick="return confirm('Are you sure you want to activate this user?');">
+                    <i class="bi bi-person-check fs-5"></i>
+                    Activate User
+                </a>
+            {% endif %}
+        </div>
+    </div>
+    <!-- User Profile Section -->
+    <div class="profile-container">
+        <div class="profile-header">
+            <div class="profile-avatar">
+                {% if user.avatar %}
+                    <img src="{{ user.avatar.url }}"
+                         alt="{{ user.avatar.name }}"
+                         class="user-avatar"
+                         loading="lazy">
+                {% else %}
+                    <div class="avatar-placeholder">
+                        {% if user.first_name %}
+                            {{ user.first_name|first|upper }}
+                        {% elif user.last_name %}
+                            {{ user.last_name|first|upper }}
+                        {% else %}
+                            {{ user.email|first|upper }}
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+            <div class="profile-info">
+                <div class="profile-name-row">
+                    <h2 class="profile-name">
+                        {% if user.get_full_name %}
+                            {{ user.get_full_name }}
+                        {% else %}
+                            {{ user_detail.email|truncatechars:30 }}
+                        {% endif %}
+                    </h2>
+                    <div class="profile-badges">
+                        {% if user.is_active %}
+                            <span class="badge badge-active">Active</span>
+                        {% else %}
+                            <span class="badge badge-inactive">Inactive</span>
+                        {% endif %}
+                        <span class="badge badge-verified">
+                            <i class="bi bi-patch-check"></i>
+                            Verified
+                        </span>
+                    </div>
+                </div>
+                <div class="profile-details">
+                    <div class="detail-item">
+                        <i class="bi bi-envelope-at"></i>
+                        <span>{{ user.email }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="bi bi-telephone"></i>
+                        <span>{{ user.phone_number|default:"Not provided" }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Main Content -->
+    <!-- Addresses Section - Full Width at Top -->
+    <div class="section-card">
+        <div class="section-header">
+            <div class="section-title">
+                <i class="bi bi-geo-alt"></i>
+                <h3>Addresses</h3>
+            </div>
+            <a href="#" class="view-more-btn">
+                View More
+                <i class="bi bi-chevron-compact-right"></i>
+            </a>
+        </div>
+        <div class="addresses-container">
+            <!-- Home Address -->
+            <div class="address-card">
+                <div class="address-header">
+                    <span class="address-type">Home</span>
+                    <span class="address-badge default">Default</span>
+                </div>
+                <div class="address-details">
+                    <p class="address-name">{{ addresses.home.name }}</p>
+                    <p class="address-line">{{ addresses.home.street }}</p>
+                    <p class="address-line">{{ addresses.home.apartment }}</p>
+                    <p class="address-line">{{ addresses.home.city }}, {{ addresses.home.state }} {{ addresses.home.postal_code }}</p>
+                    <p class="address-phone">{{ addresses.home.phone }}</p>
+                </div>
+            </div>
+            <!-- Office Address -->
+            <div class="address-card">
+                <div class="address-header">
+                    <span class="address-type">Office</span>
+                </div>
+                <div class="address-details">
+                    <p class="address-name">{{ addresses.office.name }}</p>
+                    <p class="address-line">{{ addresses.office.street }}</p>
+                    <p class="address-line">{{ addresses.office.apartment }}</p>
+                    <p class="address-line">
+                        {{ addresses.office.city }}, {{ addresses.office.state }} {{ addresses.office.postal_code }}
+                    </p>
+                    <p class="address-phone">{{ addresses.office.phone }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Two Column Grid for Orders and Wallet -->
+    <div class="content-grid-two-col">
+        <!-- Recent Orders Section -->
+        <div class="section-card">
+            <div class="section-header">
+                <div class="section-title">
+                    <i class="bi bi-bag"></i>
+                    <h3>Recent Orders</h3>
+                </div>
+                <a href="#" class="view-more-btn">
+                    View More
+                    <i class="bi bi-chevron-compact-right"></i>
+                </a>
+            </div>
+            <div class="orders-list">
+                {% for order in recent_orders %}
+                    <div class="order-item">
+                        <div class="order-info">
+                            <span class="order-number">Order {{ order.order_number }}</span>
+                            <span class="order-date">{{ order.date }}</span>
+                        </div>
+                        <div class="order-details">
+                            <span class="order-amount">${{ order.amount|floatformat:0|intcomma }}</span>
+                            <span class="order-status status-{{ order.status }}">{{ order.status }}</span>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <!-- Wallet Section with Transactions -->
+        <div class="section-card wallet-card">
+            <div class="section-header">
+                <div class="section-title">
+                    <i class="bi bi-wallet"></i>
+                    <h3>Wallet</h3>
+                </div>
+                <a href="#" class="view-more-btn">
+                    View More
+                    <i class="bi bi-chevron-compact-right"></i>
+                </a>
+            </div>
+            <div class="wallet-balance">
+                <p class="balance-label">Current Balance</p>
+                <h2 class="balance-amount">${{ wallet_balance|floatformat:0|intcomma }}</h2>
+            </div>
+            <!-- Wallet Transactions inside wallet card -->
+            <div class="wallet-transactions-list">
+                {% for transaction in wallet_transactions %}
+                    <div class="wallet-transaction-item">
+                        <div class="transaction-info">
+                            <div class="transaction-icon {% if transaction.type == 'credit' %}credit{% else %}debit{% endif %}">
+                                {% if transaction.type == 'credit' %}
+                                    <i class="bi bi-chevron-up"></i>
+                                {% else %}
+                                    <i class="bi bi-chevron-down"></i>
+                                {% endif %}
+                            </div>
+                            <div class="transaction-details">
+                                <span class="transaction-description">{{ transaction.description }}</span>
+                                <span class="transaction-date">{{ transaction.date }}</span>
+                            </div>
+                        </div>
+                        <span class="transaction-amount {% if transaction.type == 'credit' %}credit{% else %}debit{% endif %}">
+                            {% if transaction.amount > 0 %}+{% endif %}
+                            ${{ transaction.amount|floatformat:0|intcomma }}
+                        </span>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <!-- Transactions Section - Full Width -->
+    <div class="section-card">
+        <div class="section-header">
+            <div class="section-title">
+                <i class="bi bi-currency-dollar"></i>
+                <h3>Transactions</h3>
+            </div>
+            <a href="#" class="view-more-btn">
+                View More
+                <i class="bi bi-chevron-compact-right"></i>
+            </a>
+        </div>
+        <div class="transactions-list">
+            {% for transaction in transactions %}
+                <div class="transaction-item">
+                    <div class="transaction-info">
+                        <div class="transaction-icon {% if transaction.type == 'refund' %}credit{% else %}payment{% endif %}">
+                            {% if transaction.type == 'refund' %}
+                                <i class="bi bi-chevron-up"></i>
+                            {% else %}
+                                <i class="bi bi-chevron-down"></i>
+                            {% endif %}
+                        </div>
+                        <div class="transaction-details">
+                            <span class="transaction-description">{{ transaction.description }}</span>
+                            <div class="transaction-meta">
+                                <span class="transaction-date">{{ transaction.date }}</span>
+                                <span class="transaction-method">{{ transaction.method }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <span class="transaction-amount {% if transaction.type == 'refund' %}credit{% else %}payment{% endif %}">
+                        {% if transaction.type == 'refund' %}+{% endif %}
+                        ${{ transaction.amount|floatformat:0|intcomma }}
+                    </span>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <!-- Referral Rewards Section - Full Width -->
+    <div class="section-card">
+        <div class="section-header">
+            <div class="section-title">
+                <i class="bi bi-currency-dollar"></i>
+                <h3>Referral Rewards</h3>
+            </div>
+            <a href="#" class="view-more-btn">
+                View More
+                <i class="bi bi-chevron-compact-right"></i>
+            </a>
+        </div>
+        <div class="rewards-list">
+            <table class="rewards-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Referred User</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for reward in referral_rewards %}
+                        <tr>
+                            <td>{{ reward.date }}</td>
+                            <td>{{ reward.referred_user }}</td>
+                            <td class="reward-amount">+${{ reward.amount }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock content %}

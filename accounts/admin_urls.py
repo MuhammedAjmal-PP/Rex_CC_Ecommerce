@@ -8,6 +8,8 @@ from .admin_views.admin_auth import (
 )
 from .admin_views.user_management import (
     user_list,
+    user_profile,
+    user_status_toggle,
 )
 
 
@@ -24,4 +26,10 @@ urlpatterns = [
     path("reset-password/<str:reset_id>/", reset_password, name="admin_reset_password"),
     # User Management
     path("users/", user_list, name="admin_users_list"),
+    path("user/<int:id>/profile/", user_profile, name="admin_user_profile"),
+    path(
+        "user/<int:id>/toggle-status/",
+        user_status_toggle,
+        name="admin_user_stats_toggle",
+    ),
 ]

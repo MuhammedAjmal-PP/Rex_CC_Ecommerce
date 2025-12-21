@@ -43,10 +43,9 @@ SITE_ID = env.int("SITE_ID", default=1)
 
 AUTHENTICATION_BACKENDS = [
     # Needed to login by username in Django admin, regardless of `allauth`
-    'django.contrib.auth.backends.ModelBackend',
-
+    "django.contrib.auth.backends.ModelBackend",
     # `allauth` specific authentication methods, such as login by email
-    'allauth.account.auth_backends.AuthenticationBackend',
+    "allauth.account.auth_backends.AuthenticationBackend",
 ]
 
 
@@ -60,11 +59,12 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.sites",
-    # auth app 
-    "accounts", # to override the alluth templates
+    "django.contrib.humanize",
+    # auth app
+    "accounts",  # to override the alluth templates
     # third party apps
-    'allauth',
-    'allauth.account',
+    "allauth",
+    "allauth.account",
     "allauth.socialaccount",
     "allauth.socialaccount.providers.google",
     "cloudinary_storage",
@@ -159,7 +159,7 @@ PHONENUMBER_DB_FORMAT = "NATIONAL"
 PHONENUMBER_DEFAULT_REGION = "IN"
 
 # Email config
-vars().update(env.email_url('EMAIL_URL', default='consolemail://'))
+vars().update(env.email_url("EMAIL_URL", default="consolemail://"))
 
 # ---------------------------------------------------------------
 # DJANGO-ALLAUTH CONFIGURATION
@@ -174,7 +174,7 @@ ACCOUNT_SIGNUP_FIELDS = ["email*", "password1", "password2"]
 # Login using only email (password still required)
 ACCOUNT_LOGIN_METHODS = {"email"}
 
-ACCOUNT_SESSION_REMEMBER = False # This hides the "Remember Me" checkbox and defaults to "False" (unchecked behavior)
+ACCOUNT_SESSION_REMEMBER = False  # This hides the "Remember Me" checkbox and defaults to "False" (unchecked behavior)
 
 # Use custom signup form
 ACCOUNT_FORMS = {
@@ -216,4 +216,4 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
-CSRF_TRUSTED_ORIGINS=env("CSRF_TRUSTED_ORIGINS").split(",")
+CSRF_TRUSTED_ORIGINS = env("CSRF_TRUSTED_ORIGINS").split(",")
