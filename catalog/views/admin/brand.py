@@ -46,16 +46,11 @@ def brand_add(request):
     if request.method == "POST":
         form = BrandForm(request.POST, request.FILES)
         if form.is_valid():
-            try:
-                form.save()
-                messages.success(request, "Brand added successfully.")
-                return redirect("admin_brands")
-            except form.IntegrityError:
-                return render(
-                    request, "catalog/admin/brand/brand_add.html", {"form": form}
-                )
+            form.save()
+            messages.success(request, "Brand added successfully.")
+            return redirect("admin_brands")
         else:
-            messages.error(request, "Failed to add brand.")
+            messages.error(request, "Please correct the errors below.")
     else:
         form = BrandForm()
     return render(request, "catalog/admin/brand/brand_add.html", {"form": form})
