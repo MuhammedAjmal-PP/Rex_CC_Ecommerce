@@ -4,11 +4,12 @@ from phonenumber_field.formfields import PhoneNumberField
 from django.core.validators import RegexValidator
 
 
-alphabet_only=RegexValidator(
-    regex=r'^[a-zA-Z]+$',
-    message="This field should only contain letters",
-    code='invalid_alphabet'
+alphabet_only = RegexValidator(
+    regex=r"^[A-Za-z]+(?: [A-Za-z]+)*$",
+    message="Only letters and spaces are allowed.",
+    code="invalid_alphabet",
 )
+
 
 class CustomSignupForm(SignupForm):
     """Custom signup form for django-allauth with additional fields."""
@@ -61,4 +62,3 @@ class CustomSignupForm(SignupForm):
         user.phone_number = self.cleaned_data["phone_number"]
         user.save()
         return user
-    

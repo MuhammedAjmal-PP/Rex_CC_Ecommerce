@@ -1,16 +1,23 @@
 {% extends 'pages/admin/base_admin.html' %}
 {% load static %}
 {% load cloudinary %}
+{% block title %}
+    Users
+{% endblock title %}
+{% block extra_css %}
+    <link rel="stylesheet"
+          href="{% static 'pages/admin/css/shared/admin_search_filter.css' %}">
+    <link rel="stylesheet"
+          href="{% static 'pages/admin/css/shared/admin_table_listing.css' %}">
+    <link rel="stylesheet"
+          href="{% static 'account/css/user_management/user_list.css' %}">
+{% endblock extra_css %}
 {% block header_title %}
     Users
 {% endblock header_title %}
 {% block header_subtitle %}
     Manage user accounts and profiles
 {% endblock header_subtitle %}
-{% block extra_css %}
-    <link rel="stylesheet"
-          href="{% static 'account/css/user_management/user_list.css' %}">
-{% endblock extra_css %}
 {% block content %}
     {% csrf_token %}
     <!-- Statistics Cards -->
@@ -79,7 +86,7 @@
     <!-- Users Table -->
     <div class="table-container">
         {% if users %}
-            <table class="users-table">
+            <table class="admin-table">
                 <thead>
                     <tr>
                         <th>User</th>
@@ -94,15 +101,15 @@
                     {% for user in users %}
                         <tr>
                             <td>
-                                <a href="{% url 'admin_user_profile' user.id %}" class="user-info-link">
-                                    <div class="user-info">
+                                <a href="{% url 'admin_user_profile' user.id %}" class="item-info-link">
+                                    <div class="item-info">
                                         {% if user.avatar %}
                                             <img src="{{ user.avatar.url }}"
                                                  alt="{{ user.avatar.name }}"
-                                                 class="user-avatar"
+                                                 class="item-avatar"
                                                  loading="lazy">
                                         {% else %}
-                                            <div class="user-avatar-placeholder">
+                                            <div class="item-avatar-placeholder">
                                                 {% if user.first_name %}
                                                     {{ user.first_name|first|upper }}
                                                 {% else %}
@@ -110,8 +117,8 @@
                                                 {% endif %}
                                             </div>
                                         {% endif %}
-                                        <div class="user-details">
-                                            <div class="user-name">
+                                        <div class="item-details">
+                                            <div class="item-name">
                                                 {% if user.first_name or user.last_name %}
                                                     {{ user.first_name }} {{ user.last_name }}
                                                 {% else %}
@@ -145,25 +152,27 @@
                                 </div>
                             </td>
                             <td>
-                            <a href="{% url 'admin_user_profile' user.id %}"
-                               class="action-btn"
-                               title="View Details"><i class="bi bi-eye fs-6"></i>
-                        </a>
-                        {% if user.is_active %}
-                            <a href="{% url 'admin_user_stats_toggle' user.id %}"
-                               class="action-btn"
-                               title="Deactivate"
-                               onclick="return confirm('Are you sure you want to deactivate this user?');">
-                                <i class="bi bi-x-circle fs-6"></i>
+                                <div class="action d-flex justify-content-between">
+                                <a href="{% url 'admin_user_profile' user.id %}"
+                                   class="action-btn"
+                                   title="View Details"><i class="bi bi-eye fs-6"></i>
                             </a>
-                        {% else %}
-                            <a href="{% url 'admin_user_stats_toggle' user.id %}"
-                               class="action-btn"
-                               title="Activate"
-                               onclick="return confirm('Are you sure you want to activate this user?');">
-                                <i class="bi bi-check2-circle fs-6"></i>
-                            </a>
-                        {% endif %}
+                            {% if user.is_active %}
+                                <a href="{% url 'admin_user_stats_toggle' user.id %}"
+                                   class="action-btn"
+                                   title="Deactivate"
+                                   onclick="return confirm('Are you sure you want to deactivate this user?');">
+                                    <i class="bi bi-x-circle fs-6"></i>
+                                </a>
+                            {% else %}
+                                <a href="{% url 'admin_user_stats_toggle' user.id %}"
+                                   class="action-btn"
+                                   title="Activate"
+                                   onclick="return confirm('Are you sure you want to activate this user?');">
+                                    <i class="bi bi-check2-circle fs-6"></i>
+                                </a>
+                            {% endif %}
+                        </div>
                     </td>
                 </tr>
             {% endfor %}

@@ -2,16 +2,19 @@
 {% load static %}
 {% load cloudinary %}
 {% load humanize %}
+{% block title %}
+    {{ user.name }}
+{% endblock title %}
+{% block extra_css %}
+    <link rel="stylesheet"
+          href="{% static 'account/css/user_management/user_profile.css' %}">
+{% endblock extra_css %}
 {% block header_title %}
     User Profile
 {% endblock header_title %}
 {% block header_subtitle %}
     Manage user accounts and profiles
 {% endblock header_subtitle %}
-{% block extra_css %}
-    <link rel="stylesheet"
-          href="{% static 'account/css/user_management/user_profile.css' %}">
-{% endblock extra_css %}
 {% block content %}
     <!-- Back Button and Actions -->
     <div class="header-actions">

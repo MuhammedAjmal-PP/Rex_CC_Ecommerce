@@ -1,0 +1,251 @@
+/* ============================================================
+   REX CC ADMIN - SHARED TABLE LISTING STYLES
+   Reusable table and pagination components for admin pages
+   ============================================================ */
+
+:root {
+    /* Black & White Color Palette */
+    --color-black: #000000;
+    --color-dark: #1a1a1a;
+    --color-gray-dark: #333333;
+    --color-gray: #666666;
+    --color-gray-light: #999999;
+    --color-light: #f5f5f5;
+    --color-white: #ffffff;
+
+    /* Status Colors (Keep Colorful) */
+    --color-success: #56ab2f;
+    --color-success-light: #a8e063;
+    --color-inactive: #95a5a6;
+    --color-inactive-light: #bdc3c7;
+
+    /* Shadows */
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.16);
+}
+
+/* ========================================
+   TABLE CONTAINER
+   ======================================== */
+
+.table-container {
+    background: var(--color-white);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    border: 1px solid #e0e0e0;
+    margin: 0 40px 20px 40px;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.admin-table thead {
+    background: var(--color-black);
+}
+
+.admin-table thead th {
+    padding: 18px 24px;
+    text-align: left;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-white);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.admin-table tbody tr {
+    border-bottom: 1px solid #f1f5f9;
+    transition: all 0.3s ease;
+}
+
+.admin-table tbody tr:hover {
+    background: var(--color-light);
+}
+
+.admin-table tbody td {
+    padding: 20px 24px;
+    font-size: 0.9rem;
+    color: var(--color-dark);
+}
+
+/* ========================================
+   ITEM INFO (Generic)
+   ======================================== */
+
+.item-info-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.item-info {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.item-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 2px solid var(--color-black);
+    transition: all 0.3s ease;
+}
+
+.item-info-link:hover .item-avatar {
+    transform: scale(1.05);
+    box-shadow: var(--shadow-md);
+}
+
+.item-avatar-placeholder {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-black);
+    color: var(--color-white);
+    font-weight: 700;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+}
+
+.item-info-link:hover .item-avatar-placeholder {
+    transform: scale(1.05);
+    box-shadow: var(--shadow-md);
+}
+
+.item-details {
+    flex: 1;
+}
+
+.item-name {
+    font-weight: 600;
+    color: var(--color-black);
+    font-size: 0.95rem;
+}
+
+/* ========================================
+   STATUS BADGES (Keep Colorful)
+   ======================================== */
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+}
+
+.status-badge.active {
+    background: linear-gradient(135deg,
+            var(--color-success) 0%,
+            var(--color-success-light) 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(86, 171, 47, 0.3);
+}
+
+.status-badge.inactive {
+    background: linear-gradient(135deg,
+            var(--color-inactive-light) 0%,
+            var(--color-inactive) 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(149, 165, 166, 0.3);
+}
+
+.status-badge:hover {
+    transform: scale(1.05);
+}
+
+/* ========================================
+   ACTION BUTTON
+   ======================================== */
+
+.action-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    border: none;
+    color: var(--color-black);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    background: var(--color-black);
+    color: var(--color-white);
+}
+
+.action-btn:active {
+    transform: translateY(0);
+}
+
+/* ========================================
+   PAGINATION
+   ======================================== */
+
+.pagination-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 32px;
+    background: var(--color-light);
+    border-top: 1px solid #e0e0e0;
+}
+
+.pagination-info {
+    color: var(--color-gray);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.pagination {
+    display: flex;
+    gap: 8px;
+}
+
+.page-btn {
+    padding: 10px 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    background: var(--color-white);
+    color: var(--color-dark);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.page-btn:hover:not(:disabled) {
+    background: var(--color-black);
+    color: var(--color-white);
+    border-color: var(--color-black);
+}
+
+.page-btn.active {
+    background: var(--color-black);
+    color: var(--color-white);
+    border-color: var(--color-black);
+}
+
+.page-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: var(--color-light);
+    color: var(--color-gray-light);
+}

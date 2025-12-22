@@ -8,6 +8,7 @@ class Brand(models.Model):
 
     name = models.CharField(max_length=255, unique=True)
     slug = models.SlugField(unique=True, null=True, blank=True)
+    tagline = models.TextField(null=True, blank=True)
     logo = CloudinaryField(
         "logo",
         null=True,
