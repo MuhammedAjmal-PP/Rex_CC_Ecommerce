@@ -72,6 +72,7 @@ INSTALLED_APPS = [
     "phonenumber_field",
     # localapps
     "pages",
+    "catalog",
 ]
 
 MIDDLEWARE = [
