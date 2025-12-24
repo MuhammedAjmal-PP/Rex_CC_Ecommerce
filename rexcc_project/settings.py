@@ -159,8 +159,13 @@ DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 PHONENUMBER_DB_FORMAT = "NATIONAL"
 PHONENUMBER_DEFAULT_REGION = "IN"
 
-# Email config
-vars().update(env.email_url("EMAIL_URL", default="consolemail://"))
+# Email Configuration
+EMAIL_BACKEND = env("EMAIL_BACKEND")
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = env("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
 
 # ---------------------------------------------------------------
 # DJANGO-ALLAUTH CONFIGURATION

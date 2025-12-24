@@ -1,4 +1,5 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
 from catalog.forms import BrandForm
 from catalog.models import Brand
 from django.core.paginator import Paginator
@@ -53,4 +54,36 @@ def brand_add(request):
             messages.error(request, "Please correct the errors below.")
     else:
         form = BrandForm()
-    return render(request, "catalog/admin/brand/brand_add.html", {"form": form})
+    return render(request, "catalog/admin/brand/brand_form.html", {"form": form})
+
+
+def brand_edit(request, id):
+    """
+    Edit a brand
+    """
+    brand = get_object_or_404(Brand, id=id)
+
+    if request.method == "POST":
+        form = BrandForm(request.POST, request.FILES, instance=brand)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Brand updated successfully.")
+            return redirect("admin_brands")
+        else:
+            messages.error(request, "Please correct the errors below.")
+    else:
+
+        form = BrandForm(instance=brand)
+    return render(request, "catalog/admin/brand/brand_form.html", {"form": form})
+
+
+def brand_status_toggle(request, id):
+
+    brand = get_object_or_404(Brand, id=id)
+    brand.is_active = not brand.is_active
+    brand.save()
+
+    status_msg = "activatied" if brand.is_active else "deactivated"
+    messages.success(request, f"Brand {status_msg} successfully.")
+
+    return redirect(request.META.get("HTTP_REFERER", reverse("admin_brands")))
