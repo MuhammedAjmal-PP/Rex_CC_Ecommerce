@@ -1,5 +1,5 @@
 from django import forms
-from catalog.models import Brand
+from catalog.models import Brand, Category
 from accounts.forms import alphabet_only
 
 
@@ -20,5 +20,27 @@ class BrandForm(forms.ModelForm):
 
         if brand.exists():
             raise forms.ValidationError("A brand with this name already exists.")
+
+        return name.title()
+
+
+class CategoryForm(forms.ModelForm):
+
+    name = forms.CharField(validators=[alphabet_only])
+
+    class Meta:
+        model = Category
+        fields = ["name", "is_active"]
+
+    def clean_name(self):
+        name = self.cleaned_data["name"].strip()
+
+        Category = Category.objects.filter(name__iexact=name)
+
+        if self.instance.pk:
+            Category = Category.exclude(pk=self.instance.pk)
+
+        if Category.exists():
+            raise forms.ValidationError("A Category with this name already exists.")
 
         return name.title()
