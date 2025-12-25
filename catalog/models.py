@@ -4,6 +4,8 @@ from django.utils.text import slugify
 
 
 # Create your models here.
+
+
 class Brand(models.Model):
 
     name = models.CharField(max_length=255, unique=True)
@@ -24,8 +26,14 @@ class Brand(models.Model):
         ordering = ["name"]
 
     def save(self, *args, **kwargs):
-        if not self.slug:
+
+        if self.pk:
+            old_name = Brand.objects.values_list("name", flat=True).get(pk=self.pk)
+            if old_name != self.name:
+                self.slug = slugify(self.name)
+        else:
             self.slug = slugify(self.name)
+
         super().save(*args, **kwargs)
 
     def __str__(self):

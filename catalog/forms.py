@@ -14,7 +14,11 @@ class BrandForm(forms.ModelForm):
     def clean_name(self):
         name = self.cleaned_data["name"].strip()
 
-        if Brand.objects.filter(name__iexact=name).exists():
+        brand = Brand.objects.filter(name__iexact=name)
+        if self.instance.pk:
+            brand = brand.exclude(pk=self.instance.pk)
+
+        if brand.exists():
             raise forms.ValidationError("A brand with this name already exists.")
 
         return name.title()
