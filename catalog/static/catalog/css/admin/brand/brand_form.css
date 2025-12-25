@@ -1,0 +1,647 @@
+/* ============================================================
+   REX CC ADMIN - BRAND FORM STYLES
+   File: catalog/static/catalog/css/admin/brand/brand_form.css
+   Two-Column Layout | Black & White Theme
+   ============================================================ */
+
+:root {
+    --color-black: #000000;
+    --color-dark: #1a1a1a;
+    --color-gray: #666666;
+    --color-gray-light: #999999;
+    --color-border: #e0e0e0;
+    --color-bg: #f5f5f5;
+    --color-white: #ffffff;
+    --color-error: #ef4444;
+    --color-success: #10b981;
+}
+
+/* ========================================
+   FORM CONTAINER
+   ======================================== */
+
+.form-container {
+    padding: 40px;
+}
+
+.brand-form {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+/* ========================================
+   TWO COLUMN LAYOUT
+   ======================================== */
+
+.form-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    align-items: start;
+}
+
+.form-column {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* ========================================
+   FORM SECTIONS
+   ======================================== */
+
+.form-section {
+    background: var(--color-white);
+    border: 1px solid var(--color-border);
+    overflow: hidden;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 20px 24px;
+    background: var(--color-dark);
+    color: var(--color-white);
+}
+
+.section-header i {
+    font-size: 1.2rem;
+}
+
+.section-header h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+.section-content {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* ========================================
+   FORM GROUP
+   ======================================== */
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group.has-error .form-label {
+    color: var(--color-error);
+}
+
+.form-group.has-error input,
+.form-group.has-error textarea,
+.form-group.has-error select {
+    border-color: var(--color-error);
+}
+
+/* ========================================
+   FORM LABELS
+   ======================================== */
+
+.form-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-dark);
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+}
+
+.required-mark {
+    color: var(--color-error);
+    margin-left: 3px;
+}
+
+/* ========================================
+   FORM INPUTS
+   ======================================== */
+
+.brand-form input[type="text"],
+.brand-form input[type="email"],
+.brand-form input[type="url"],
+.brand-form input[type="number"],
+.brand-form select {
+    width: 100%;
+    padding: 14px 16px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    border: 2px solid var(--color-border);
+    border-radius: 0;
+    background: var(--color-white);
+    color: var(--color-dark);
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.brand-form input[type="text"]:hover,
+.brand-form input[type="email"]:hover,
+.brand-form input[type="url"]:hover,
+.brand-form input[type="number"]:hover,
+.brand-form select:hover {
+    border-color: var(--color-gray);
+}
+
+.brand-form input[type="text"]:focus,
+.brand-form input[type="email"]:focus,
+.brand-form input[type="url"]:focus,
+.brand-form input[type="number"]:focus,
+.brand-form select:focus {
+    border-color: var(--color-black);
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.08);
+}
+
+.brand-form input::placeholder {
+    color: var(--color-gray-light);
+}
+
+/* ========================================
+   TEXTAREA
+   ======================================== */
+
+.brand-form textarea {
+    width: 100%;
+    min-height: 120px;
+    padding: 14px 16px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    border: 2px solid var(--color-border);
+    border-radius: 0;
+    background: var(--color-white);
+    color: var(--color-dark);
+    transition: all 0.3s ease;
+    outline: none;
+    resize: vertical;
+    line-height: 1.6;
+}
+
+.brand-form textarea:hover {
+    border-color: var(--color-gray);
+}
+
+.brand-form textarea:focus {
+    border-color: var(--color-black);
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.08);
+}
+
+.brand-form textarea::placeholder {
+    color: var(--color-gray-light);
+}
+
+/* Tagline - smaller textarea for short content */
+.brand-form textarea#id_tagline {
+    min-height: 70px;
+    max-height: 70px;
+    resize: none;
+}
+
+/* ========================================
+   CHECKBOX STYLING
+   ======================================== */
+
+.checkbox-group {
+    padding: 0;
+}
+
+.checkbox-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    padding: 16px;
+    background: var(--color-bg);
+    border: 2px solid var(--color-border);
+    transition: all 0.3s ease;
+}
+
+.checkbox-wrapper:hover {
+    border-color: var(--color-gray);
+}
+
+.checkbox-wrapper input[type="checkbox"] {
+    width: 22px;
+    height: 22px;
+    accent-color: var(--color-black);
+    cursor: pointer;
+    margin: 0;
+}
+
+.checkbox-label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--color-dark);
+}
+
+.checkbox-hint {
+    width: 100%;
+    font-size: 0.8rem;
+    color: var(--color-gray);
+    margin-left: 34px;
+}
+
+/* ========================================
+   FILE UPLOAD
+   ======================================== */
+
+.file-upload-wrapper {
+    position: relative;
+    border: 2px dashed var(--color-border);
+    border-radius: 0;
+    padding: 40px 30px;
+    text-align: center;
+    transition: all 0.3s ease;
+    background: var(--color-bg);
+    cursor: pointer;
+}
+
+.file-upload-wrapper:hover {
+    border-color: var(--color-gray);
+    background: var(--color-white);
+}
+
+.file-upload-wrapper.dragover {
+    border-color: var(--color-black);
+    background: var(--color-white);
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.08);
+}
+
+.file-upload-wrapper input[type="file"] {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 10;
+}
+
+/* Hide Django's default ClearableFileInput elements */
+.file-upload-wrapper a,
+.file-upload-wrapper br,
+.file-upload-wrapper input[type="checkbox"],
+.file-upload-wrapper label[for*="clear"] {
+    display: none !important;
+}
+
+.file-upload-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    color: var(--color-gray);
+    pointer-events: none;
+}
+
+.file-upload-info i {
+    font-size: 3rem;
+    color: var(--color-gray-light);
+    transition: all 0.3s ease;
+}
+
+.file-upload-wrapper:hover .file-upload-info i {
+    color: var(--color-dark);
+    transform: translateY(-4px);
+}
+
+.file-name {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--color-dark);
+}
+
+.file-name.has-file {
+    color: var(--color-success);
+}
+
+.file-hint {
+    font-size: 0.8rem;
+    color: var(--color-gray-light);
+}
+
+/* ========================================
+   HELP TEXT
+   ======================================== */
+
+.form-help {
+    font-size: 0.8rem;
+    color: var(--color-gray);
+    line-height: 1.4;
+}
+
+/* ========================================
+   ERROR MESSAGES
+   ======================================== */
+
+.field-errors {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.error-message {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    color: var(--color-error);
+    font-weight: 500;
+}
+
+.error-message i {
+    font-size: 0.85rem;
+}
+
+/* ========================================
+   FORM ACTIONS
+   ======================================== */
+
+.form-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 16px;
+    padding: 24px 0 0;
+}
+
+.btn-cancel {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 28px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    font-family: inherit;
+    text-decoration: none;
+    border: 2px solid var(--color-border);
+    border-radius: 0;
+    background: var(--color-white);
+    color: var(--color-gray);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-cancel:hover {
+    border-color: var(--color-dark);
+    color: var(--color-dark);
+    background: var(--color-bg);
+}
+
+.btn-cancel i {
+    font-size: 1rem;
+}
+
+.btn-submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 32px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    font-family: inherit;
+    text-decoration: none;
+    border: 2px solid var(--color-black);
+    border-radius: 0;
+    background: var(--color-black);
+    color: var(--color-white);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-submit:hover {
+    background: var(--color-white);
+    color: var(--color-black);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-submit i {
+    font-size: 1.1rem;
+    transition: transform 0.3s ease;
+}
+
+.btn-submit:hover i {
+    transform: scale(1.1);
+}
+
+/* ========================================
+   RESPONSIVE ADJUSTMENTS
+   ======================================== */
+
+@media (max-width: 1024px) {
+    .form-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .form-container {
+        padding: 20px;
+    }
+
+    .section-content {
+        padding: 20px;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .btn-cancel,
+    .btn-submit {
+        width: 100%;
+    }
+}
+
+/* ========================================
+   CROPPER MODAL STYLES
+   ======================================== */
+
+#cropModal .modal-content {
+    border-radius: 0;
+    border: none;
+}
+
+#cropModal .modal-header {
+    background: var(--color-dark);
+    color: var(--color-white);
+    border-radius: 0;
+    padding: 16px 24px;
+}
+
+#cropModal .modal-title {
+    font-weight: 600;
+    font-size: 1rem;
+    letter-spacing: 0.3px;
+}
+
+#cropModal .btn-close {
+    filter: invert(1);
+}
+
+#cropModal .modal-body {
+    padding: 0;
+    background: #1a1a1a;
+    max-height: 60vh;
+    overflow: hidden;
+}
+
+#cropModal .modal-footer {
+    background: var(--color-white);
+    border-top: 1px solid var(--color-border);
+    padding: 16px 24px;
+    gap: 12px;
+}
+
+#cropModal .btn-secondary {
+    background: var(--color-white);
+    border: 2px solid var(--color-border);
+    color: var(--color-gray);
+    border-radius: 0;
+    padding: 10px 24px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+#cropModal .btn-secondary:hover {
+    border-color: var(--color-dark);
+    color: var(--color-dark);
+}
+
+#cropModal .btn-primary {
+    background: var(--color-black);
+    border: 2px solid var(--color-black);
+    color: var(--color-white);
+    border-radius: 0;
+    padding: 10px 24px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+#cropModal .btn-primary:hover {
+    background: var(--color-white);
+    color: var(--color-black);
+}
+
+/* Cropper.js v1 Container */
+#cropImage,
+.crop-source-image {
+    max-width: 100%;
+    max-height: 60vh;
+    display: block;
+    margin: 0 auto;
+}
+
+/* Cropper.js UI customization */
+.cropper-container {
+    background: #1a1a1a !important;
+}
+
+.cropper-view-box {
+    outline: 2px solid var(--color-white);
+    outline-color: rgba(255, 255, 255, 0.8);
+}
+
+.cropper-line {
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+.cropper-point {
+    background-color: var(--color-white);
+    width: 10px;
+    height: 10px;
+}
+
+.cropper-modal {
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+/* ========================================
+   UPLOAD PREVIEW (Inside Upload Wrapper)
+   ======================================== */
+
+.upload-preview {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background: var(--color-white);
+    cursor: pointer;
+}
+
+.upload-preview img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    transition: all 0.3s ease;
+}
+
+/* Hover overlay for changing image */
+.preview-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: rgba(0, 0, 0, 0.75);
+    color: var(--color-white);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.preview-overlay i {
+    font-size: 1.8rem;
+}
+
+.preview-overlay span {
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.upload-preview:hover .preview-overlay {
+    opacity: 1;
+}
+
+.upload-preview:hover img {
+    transform: scale(0.95);
+}
+
+/* When wrapper has preview */
+.file-upload-wrapper.has-preview {
+    border-style: solid;
+    background: var(--color-white);
+    min-height: 180px;
+}
+
+.file-upload-wrapper.has-preview:hover {
+    border-color: var(--color-gray);
+}
+
+/* Hide file input when preview is shown so hover works */
+.file-upload-wrapper.has-preview input[type="file"] {
+    pointer-events: none;
+}

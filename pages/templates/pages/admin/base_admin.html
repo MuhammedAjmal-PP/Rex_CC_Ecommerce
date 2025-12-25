@@ -133,37 +133,37 @@
         <script src="https://cdn.jsdelivr.net/npm/axios@1.6.2/dist/axios.min.js"></script>
         <!-- Message Auto-Dismiss Script -->
         <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const messages = document.querySelectorAll('.alert-message');
+            document.addEventListener('DOMContentLoaded', function () {
+                const messages = document.querySelectorAll('.alert-message');
 
-            messages.forEach(function (message) {
+                messages.forEach(function (message) {
                 // Auto-dismiss after 3 seconds
-                setTimeout(function () {
-                    dismissMessage(message);
-                }, 3000);
+                    setTimeout(function () {
+                        dismissMessage(message);
+                    }, 3000);
 
                 // Manual close button
-                const closeBtn = message.querySelector('.alert-close');
-                if (closeBtn) {
-                    closeBtn.addEventListener('click', function () {
-                        dismissMessage(message);
-                    });
-                }
-            });
+                    const closeBtn = message.querySelector('.alert-close');
+                    if (closeBtn) {
+                        closeBtn.addEventListener('click', function () {
+                            dismissMessage(message);
+                        });
+                    }
+                });
 
-            function dismissMessage(message) {
-                message.classList.add('fade-out');
-                setTimeout(function () {
-                    message.remove();
+                function dismissMessage(message) {
+                    message.classList.add('fade-out');
+                    setTimeout(function () {
+                        message.remove();
 
                     // Remove container if no messages left
-                    const container = document.querySelector('.messages-container');
-                    if (container && container.children.length === 0) {
-                        container.remove();
-                    }
-                }, 300); // Match animation duration
-            }
-        });
+                        const container = document.querySelector('.messages-container');
+                        if (container && container.children.length === 0) {
+                            container.remove();
+                        }
+                    }, 300); // Match animation duration
+                }
+            });
         </script>
         {% block extra_js %}
         {% endblock extra_js %}

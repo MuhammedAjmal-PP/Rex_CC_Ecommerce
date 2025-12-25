@@ -4,12 +4,14 @@ from catalog.views.admin.brand import (
     brand_add,
     brand_edit,
     brand_status_toggle,
+    brand_view,
 )
 
 
 urlpatterns = [
     path("brands/", brand_list, name="admin_brands"),
     path("brand/add/", brand_add, name="admin_brand_add"),
+    path("brand/<int:id>/view", brand_view, name="admin_brand_view"),
     path("brand/<int:id>/edit/", brand_edit, name="admin_brand_edit"),
     path(
         "brand/<int:id>/stats-toggle/",

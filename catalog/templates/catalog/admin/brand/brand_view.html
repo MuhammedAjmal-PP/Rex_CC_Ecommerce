@@ -1,0 +1,131 @@
+{% extends 'pages/admin/base_admin.html' %}
+{% load static %}
+{% load cloudinary %}
+{% block title %}
+    {{ brand.name }} - Brand Details
+{% endblock title %}
+{% block extra_css %}
+    <link rel="stylesheet"
+          href="{% static 'catalog/css/admin/brand/brand_view.css' %}">
+{% endblock extra_css %}
+{% block header_title %}
+    {{ brand.name }}
+{% endblock header_title %}
+{% block header_subtitle %}
+    Brand Details
+{% endblock header_subtitle %}
+{% block content %}
+    <div class="view-container">
+        <!-- Brand Details Section -->
+        <div class="details-layout">
+            <!-- Left: Brand Info -->
+            <div class="details-column">
+                <div class="details-card">
+                    <div class="card-header">
+                        <i class="bi bi-info-circle"></i>
+                        <h3>Brand Information</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="info-row">
+                            <span class="info-label">Name</span>
+                            <span class="info-value">{{ brand.name }}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Slug</span>
+                            <span class="info-value slug">{{ brand.slug }}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Tagline</span>
+                            <span class="info-value">{{ brand.tagline|default:"—" }}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Status</span>
+                            <span class="info-value">
+                                {% if brand.is_active %}
+                                    <span class="status-badge active">
+                                        <i class="bi bi-check-circle"></i> Active
+                                    </span>
+                                {% else %}
+                                    <span class="status-badge inactive">
+                                        <i class="bi bi-x-circle"></i> Inactive
+                                    </span>
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Created</span>
+                            <span class="info-value">{{ brand.created_at|date:"M d, Y" }}</span>
+                        </div>
+                        {% if brand.description %}
+                            <div class="info-row full-width">
+                                <span class="info-label">Description</span>
+                                <p class="info-description">{{ brand.description }}</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <!-- Right: Brand Logo -->
+            <div class="details-column">
+                <div class="details-card">
+                    <div class="card-header">
+                        <i class="bi bi-image"></i>
+                        <h3>Brand Logo</h3>
+                    </div>
+                    <div class="card-body logo-container">
+                        {% if brand.logo %}
+                            {% cloudinary brand.logo width=200 height=200 crop="fit" %}
+                        {% else %}
+                            <div class="no-logo">
+                                <i class="bi bi-image"></i>
+                                <span>No logo uploaded</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <!-- Quick Actions -->
+                <div class="details-card">
+                    <div class="card-header">
+                        <i class="bi bi-lightning"></i>
+                        <h3>Quick Actions</h3>
+                    </div>
+                    <div class="card-body actions-container">
+                        <a href="{% url 'admin_brand_edit' brand.id %}" class="action-btn edit">
+                            <i class="bi bi-pencil"></i>
+                            <span>Edit Brand</span>
+                        </a>
+                        <a href="{% url 'admin_brand_status_toggle' brand.id %}"
+                           class="action-btn toggle">
+                            {% if brand.is_active %}
+                                <i class="bi bi-pause-circle"></i>
+                                <span>Deactivate</span>
+                            {% else %}
+                                <i class="bi bi-play-circle"></i>
+                                <span>Activate</span>
+                            {% endif %}
+                        </a>
+                        <a href="{% url 'admin_brands' %}" class="action-btn back">
+                            <i class="bi bi-arrow-left"></i>
+                            <span>Back to List</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Products Section (Placeholder for future) -->
+        <div class="products-section">
+            <div class="details-card">
+                <div class="card-header">
+                    <i class="bi bi-box-seam"></i>
+                    <h3>Products</h3>
+                    <span class="product-count">0 products</span>
+                </div>
+                <div class="card-body empty-products">
+                    <i class="bi bi-inbox"></i>
+                    <p>No products found for this brand</p>
+                    <span class="hint">Products will appear here once added</span>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

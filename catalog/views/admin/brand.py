@@ -4,11 +4,15 @@ from catalog.forms import BrandForm
 from catalog.models import Brand
 from django.core.paginator import Paginator
 from django.contrib import messages
+from django.views.decorators.cache import never_cache
+from django.contrib.auth.decorators import user_passes_test
 
 
 # Create your views here.
 
 
+@never_cache
+@user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
 def brand_list(request):
     """List all brands."""
 
@@ -42,6 +46,8 @@ def brand_list(request):
     return render(request, "catalog/admin/brand/brand.html", context)
 
 
+@never_cache
+@user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
 def brand_add(request):
     """Add a new brand."""
     if request.method == "POST":
@@ -57,6 +63,8 @@ def brand_add(request):
     return render(request, "catalog/admin/brand/brand_form.html", {"form": form})
 
 
+@never_cache
+@user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
 def brand_edit(request, id):
     """
     Edit a brand
@@ -77,7 +85,13 @@ def brand_edit(request, id):
     return render(request, "catalog/admin/brand/brand_form.html", {"form": form})
 
 
+@never_cache
+@user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
 def brand_status_toggle(request, id):
+    """
+    brand active & deactive
+
+    """
 
     brand = get_object_or_404(Brand, id=id)
     brand.is_active = not brand.is_active
@@ -87,3 +101,16 @@ def brand_status_toggle(request, id):
     messages.success(request, f"Brand {status_msg} successfully.")
 
     return redirect(request.META.get("HTTP_REFERER", reverse("admin_brands")))
+
+
+@never_cache
+@user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
+def brand_view(request, id):
+    """
+    view details of brand
+    """
+    brand = get_object_or_404(Brand, id=id)
+
+    context = {"brand": brand}
+
+    return render(request, "catalog/admin/brand/brand_view.html", context)

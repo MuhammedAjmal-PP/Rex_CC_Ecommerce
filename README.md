@@ -98,6 +98,35 @@ The project is in active development with core authentication and user managemen
 - Secure password hashing
 - Session-based authentication
 
+### 📦 **Catalog Management**
+
+#### **Brand Management**
+- ✅ **Brand CRUD Operations**
+  - Create new brands with logo upload
+  - Edit existing brand details
+  - View brand details page
+  - Toggle brand active/inactive status
+  
+- ✅ **Brand Form Features**
+  - Two-column responsive layout
+  - Image cropping with Cropper.js
+  - Drag-and-drop file upload
+  - Preview of cropped image
+  - Hover overlay for changing logo
+  - Dynamic form for add/edit modes
+  
+- ✅ **Brand List Page**
+  - Paginated brand display
+  - Search by brand name
+  - Status filtering (all/active/inactive)
+  - Quick actions (view/edit/toggle)
+  
+- ✅ **Brand View Page**
+  - Two-column layout with info cards
+  - Logo display with Cloudinary
+  - Quick action buttons
+  - Products placeholder section
+
 ---
 
 ## 📁 **Project Structure**
@@ -140,12 +169,22 @@ Rex_CC_Ecommerce/
 │   │   ├── admin_urls.py
 │   │   └── user_urls.py
 │   └── templates/
-│
-├── rexcc_project/                 # Project configuration
-│   ├── settings.py               # Django settings
-│   ├── urls.py                   # URL routing
-│   ├── wsgi.py
-│   └── asgi.py
+├── catalog/                       # Catalog & Product Management
+│   ├── forms.py                  # BrandForm
+│   ├── models.py                 # Brand model
+│   ├── static/catalog/
+│   │   ├── css/admin/brand/
+│   │   │   ├── brand.css
+│   │   │   ├── brand_form.css
+│   │   │   └── brand_view.css
+│   │   └── js/admin/brand/
+│   │       └── brand_form.js     # Cropper.js integration
+│   ├── templates/catalog/admin/brand/
+│   │   ├── brand.html            # Brand list
+│   │   ├── brand_form.html       # Add/Edit form
+│   │   └── brand_view.html       # Brand details
+│   ├── urls/admin_urls.py
+│   └── views/admin/brand.py
 │
 ├── manage.py
 ├── requirements.txt
@@ -166,9 +205,13 @@ Rex_CC_Ecommerce/
 - [x] Admin authentication system
 - [x] User management (list, profile, status toggle)
 
-### 🚧 **Phase 2: Catalog Management (Planned)**
-- [ ] Brand model and management
-- [ ] Category hierarchy
+### ✅ **Phase 2: Catalog Management (In Progress)**
+- [x] Brand model with Cloudinary logo storage
+- [x] Brand CRUD operations (create, read, update)
+- [x] Brand list with search, filter, pagination
+- [x] Brand form with image cropping (Cropper.js)
+- [x] Brand view page with details display
+- [ ] Category model and hierarchy
 - [ ] Product model with variants
 - [ ] Product image gallery
 - [ ] Product listing and detail pages
@@ -351,6 +394,15 @@ python manage.py runserver
 - `GET /adminpanel/accounts/user/<id>/profile/` - User profile
 - `POST /adminpanel/accounts/user/<id>/toggle-status/` - Toggle user status
 
+### **Brand Management**
+- `GET /adminpanel/catalog/brands/` - Brand list
+- `GET /adminpanel/catalog/brand/add/` - Add brand form
+- `POST /adminpanel/catalog/brand/add/` - Create brand
+- `GET /adminpanel/catalog/brand/<id>/` - View brand details
+- `GET /adminpanel/catalog/brand/<id>/edit/` - Edit brand form
+- `POST /adminpanel/catalog/brand/<id>/edit/` - Update brand
+- `POST /adminpanel/catalog/brand/<id>/toggle-status/` - Toggle brand status
+
 ---
 
 ## 🎨 **Design System**
@@ -367,6 +419,7 @@ python manage.py runserver
 ### **UI Components**
 - Bootstrap 5 framework
 - Bootstrap Icons
+- Cropper.js for image cropping
 - Custom CSS for luxury aesthetics
 - Glassmorphism effects
 

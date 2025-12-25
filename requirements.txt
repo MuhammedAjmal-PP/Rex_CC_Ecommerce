@@ -13,6 +13,7 @@ django-allauth==65.13.1
 django-cloudinary-storage==0.3.0
 django-environ==0.12.0
 django-phonenumber-field==8.4.0
+djhtml==3.0.10
 djlint==1.36.4
 EditorConfig==0.17.1
 idna==3.11

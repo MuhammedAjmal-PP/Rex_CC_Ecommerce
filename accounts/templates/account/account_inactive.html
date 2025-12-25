@@ -4,34 +4,34 @@
 {% block head_title %}{% trans "Account Inactive" %} | REX CC{% endblock %}
 
 {% block content %}
-<div class="auth-icon">
-    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10"></circle>
-        <line x1="12" y1="8" x2="12" y2="12"></line>
-        <line x1="12" y1="16" x2="12.01" y2="16"></line>
-    </svg>
-</div>
+    <div class="auth-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+    </div>
 
-<h1 class="auth-title">Account Inactive</h1>
-<p class="auth-subtitle">Your account is currently inactive. Please contact support for assistance.</p>
+    <h1 class="auth-title">Account Inactive</h1>
+    <p class="auth-subtitle">Your account is currently inactive. Please contact support for assistance.</p>
 
-<div class="auth-info-box">
-    <p><strong>What does this mean?</strong></p>
-    <p>Your account has been temporarily deactivated. This could be due to:</p>
-    <ul>
-        <li>Pending email verification</li>
-        <li>Administrative review</li>
-        <li>Security concerns</li>
-    </ul>
-</div>
+    <div class="auth-info-box">
+        <p><strong>What does this mean?</strong></p>
+        <p>Your account has been temporarily deactivated. This could be due to:</p>
+        <ul>
+            <li>Pending email verification</li>
+            <li>Administrative review</li>
+            <li>Security concerns</li>
+        </ul>
+    </div>
 
-<div class="auth-links auth-links-bottom">
-    <span class="auth-prompt">Need help?</span>
-    <a href="mailto:rexcc.in@gmail.com" class="auth-link-accent">Contact Support</a>
-</div>
+    <div class="auth-links auth-links-bottom">
+        <span class="auth-prompt">Need help?</span>
+        <a href="mailto:rexcc.in@gmail.com" class="auth-link-accent">Contact Support</a>
+    </div>
 
-<div class="auth-links">
-    <a href="{% url 'account_login' %}">{% trans "Back to Sign In" %}</a>
-</div>
+    <div class="auth-links">
+        <a href="{% url 'account_login' %}">{% trans "Back to Sign In" %}</a>
+    </div>
 {% endblock %}
