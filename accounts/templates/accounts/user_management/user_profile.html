@@ -19,21 +19,21 @@
     <!-- Back Button and Actions -->
     <div class="header-actions">
         <a href="{% url 'admin_users_list' %}" class="back-btn">
-            <i class="bi bi-arrow-left-short"></i>
-            Back</a>
+            <span class="material-icons">arrow_back</span>
+        Back</a>
         <div class="action-buttons">
             {% if user.is_active %}
                 <a href="{% url 'admin_user_stats_toggle' user.id %}"
                    class="btn-deactivate"
                    onclick="return confirm('Are you sure you want to deactivate this user?');">
-                    <i class="bi bi-person-x fs-5"></i>
+                    <span class="material-icons fs-5">person_off</span>
                     Deactivate User
                 </a>
             {% else %}
                 <a href="{% url 'admin_user_stats_toggle' user.id %}"
                    class="btn-deactivate"
                    onclick="return confirm('Are you sure you want to activate this user?');">
-                    <i class="bi bi-person-check fs-5"></i>
+                    <span class="material-icons fs-5">how_to_reg</span>
                     Activate User
                 </a>
             {% endif %}
@@ -76,18 +76,18 @@
                             <span class="badge badge-inactive">Inactive</span>
                         {% endif %}
                         <span class="badge badge-verified">
-                            <i class="bi bi-patch-check"></i>
+                            <span class="material-icons">verified</span>
                             Verified
                         </span>
                     </div>
                 </div>
                 <div class="profile-details">
                     <div class="detail-item">
-                        <i class="bi bi-envelope-at"></i>
+                        <span class="material-icons">email</span>
                         <span>{{ user.email }}</span>
                     </div>
                     <div class="detail-item">
-                        <i class="bi bi-telephone"></i>
+                        <span class="material-icons">phone</span>
                         <span>{{ user.phone_number|default:"Not provided" }}</span>
                     </div>
                 </div>
@@ -99,12 +99,12 @@
     <div class="section-card">
         <div class="section-header">
             <div class="section-title">
-                <i class="bi bi-geo-alt"></i>
+                <span class="material-icons">location_on</span>
                 <h3>Addresses</h3>
             </div>
             <a href="#" class="view-more-btn">
                 View More
-                <i class="bi bi-chevron-compact-right"></i>
+                <span class="material-icons">chevron_right</span>
             </a>
         </div>
         <div class="addresses-container">
@@ -145,12 +145,12 @@
         <div class="section-card">
             <div class="section-header">
                 <div class="section-title">
-                    <i class="bi bi-bag"></i>
+                    <span class="material-icons">shopping_bag</span>
                     <h3>Recent Orders</h3>
                 </div>
                 <a href="#" class="view-more-btn">
                     View More
-                    <i class="bi bi-chevron-compact-right"></i>
+                    <span class="material-icons">chevron_right</span>
                 </a>
             </div>
             <div class="orders-list">
@@ -172,12 +172,12 @@
         <div class="section-card wallet-card">
             <div class="section-header">
                 <div class="section-title">
-                    <i class="bi bi-wallet"></i>
+                    <span class="material-icons">wallet</span>
                     <h3>Wallet</h3>
                 </div>
                 <a href="#" class="view-more-btn">
                     View More
-                    <i class="bi bi-chevron-compact-right"></i>
+                    <span class="material-icons">chevron_right</span>
                 </a>
             </div>
             <div class="wallet-balance">
@@ -191,9 +191,9 @@
                         <div class="transaction-info">
                             <div class="transaction-icon {% if transaction.type == 'credit' %}credit{% else %}debit{% endif %}">
                                 {% if transaction.type == 'credit' %}
-                                    <i class="bi bi-chevron-up"></i>
+                                    <span class="material-icons">expand_less</span>
                                 {% else %}
-                                    <i class="bi bi-chevron-down"></i>
+                                    <span class="material-icons">expand_more</span>
                                 {% endif %}
                             </div>
                             <div class="transaction-details">
@@ -214,12 +214,12 @@
     <div class="section-card">
         <div class="section-header">
             <div class="section-title">
-                <i class="bi bi-clock-history"></i>
+                <span class="material-icons">history</span>
                 <h3>Transactions</h3>
             </div>
             <a href="#" class="view-more-btn">
                 View More
-                <i class="bi bi-chevron-compact-right"></i>
+                <span class="material-icons">chevron_right</span>
             </a>
         </div>
         <div class="transactions-list">
@@ -228,9 +228,9 @@
                     <div class="transaction-info">
                         <div class="transaction-icon {% if transaction.type == 'refund' %}credit{% else %}payment{% endif %}">
                             {% if transaction.type == 'refund' %}
-                                <i class="bi bi-chevron-up"></i>
+                                <span class="material-icons">expand_less</span>
                             {% else %}
-                                <i class="bi bi-chevron-down"></i>
+                                <span class="material-icons">expand_more</span>
                             {% endif %}
                         </div>
                         <div class="transaction-details">
@@ -253,12 +253,12 @@
     <div class="section-card">
         <div class="section-header">
             <div class="section-title">
-                <i class="bi bi-cash-coin"></i>
+                <span class="material-icons">payments</span>
                 <h3>Referral Rewards</h3>
             </div>
             <a href="#" class="view-more-btn">
                 View More
-                <i class="bi bi-chevron-compact-right"></i>
+                <span class="material-icons">chevron_right</span>
             </a>
         </div>
         <div class="rewards-list">
