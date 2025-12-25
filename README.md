@@ -11,7 +11,7 @@ Rex CC is a sophisticated, modular Django-based e-commerce platform designed spe
 Rex CC is a full-featured e-commerce solution that combines elegant user-facing interfaces with powerful administrative tools. The platform is designed to handle the unique requirements of luxury watch retail, including detailed product information, secure transactions, and comprehensive user management.
 
 ### **Current Status**
-The project is in active development with core authentication and user management features fully implemented. The foundation is solid and ready for expansion into catalog, inventory, and order management modules.
+The project is in active development with core authentication, user management, and catalog management features fully implemented. Brand and Category management modules are complete with AJAX-based CRUD operations. The foundation is solid and ready for expansion into product, inventory, and order management modules.
 
 ---
 
@@ -89,7 +89,7 @@ The project is in active development with core authentication and user managemen
   - Wallet balance and transaction history
   - Payment transaction records
   - Referral rewards tracking
-  - Premium UI with Bootstrap Icons
+  - Premium UI with Google Material Icons
 
 #### **Security Features**
 - `@never_cache` decorators on sensitive views
@@ -126,6 +126,20 @@ The project is in active development with core authentication and user managemen
   - Logo display with Cloudinary
   - Quick action buttons
   - Products placeholder section
+
+#### **Category Management**
+- ✅ **Category CRUD Operations**
+  - Create new categories via AJAX modal
+  - Edit existing categories via AJAX modal
+  - Toggle category active/inactive status
+  - Inline category listing with real-time updates
+  
+- ✅ **Category List Page**
+  - Paginated category display (10 per page)
+  - Search by category name
+  - Status filtering (all/active/inactive)
+  - Quick actions (edit/toggle status)
+  - Bootstrap modal for add/edit operations
 
 ---
 
@@ -170,21 +184,22 @@ Rex_CC_Ecommerce/
 │   │   └── user_urls.py
 │   └── templates/
 ├── catalog/                       # Catalog & Product Management
-│   ├── forms.py                  # BrandForm
-│   ├── models.py                 # Brand model
+│   ├── forms.py                  # BrandForm, CategoryForm
+│   ├── models.py                 # Brand, Category models
 │   ├── static/catalog/
-│   │   ├── css/admin/brand/
-│   │   │   ├── brand.css
-│   │   │   ├── brand_form.css
-│   │   │   └── brand_view.css
-│   │   └── js/admin/brand/
-│   │       └── brand_form.js     # Cropper.js integration
-│   ├── templates/catalog/admin/brand/
-│   │   ├── brand.html            # Brand list
-│   │   ├── brand_form.html       # Add/Edit form
-│   │   └── brand_view.html       # Brand details
+│   │   ├── css/admin/
+│   │   │   ├── brand/            # Brand-specific styles
+│   │   │   └── category/         # Category-specific styles
+│   │   └── js/admin/
+│   │       ├── brand/            # Brand form JS (Cropper.js)
+│   │       └── category/         # Category modal JS
+│   ├── templates/catalog/admin/
+│   │   ├── brand/                # Brand templates
+│   │   └── category/             # Category templates
 │   ├── urls/admin_urls.py
-│   └── views/admin/brand.py
+│   └── views/admin/
+│       ├── brand.py          # Brand management views
+│       └── category.py       # Category management views
 │
 ├── manage.py
 ├── requirements.txt
@@ -205,39 +220,44 @@ Rex_CC_Ecommerce/
 - [x] Admin authentication system
 - [x] User management (list, profile, status toggle)
 
-### ✅ **Phase 2: Catalog Management (In Progress)**
+### ✅ **Phase 2: Catalog Management (Completed)**
 - [x] Brand model with Cloudinary logo storage
 - [x] Brand CRUD operations (create, read, update)
 - [x] Brand list with search, filter, pagination
 - [x] Brand form with image cropping (Cropper.js)
 - [x] Brand view page with details display
-- [ ] Category model and hierarchy
+- [x] Category model with AJAX CRUD operations
+- [x] Category modal-based add/edit via AJAX
+- [x] Category list with search, filter, pagination
+- [x] Category status toggle functionality
+
+### 🚧 **Phase 3: Product Management (In Progress)**
 - [ ] Product model with variants
 - [ ] Product image gallery
 - [ ] Product listing and detail pages
 - [ ] Search and filtering
 
-### 🚧 **Phase 3: Shopping Experience (Planned)**
+### 🚧 **Phase 4: Shopping Experience (Planned)**
 - [ ] Shopping cart functionality
 - [ ] Wishlist management
 - [ ] User profile completion
 - [ ] Multiple delivery addresses
 - [ ] Checkout process
 
-### 🚧 **Phase 4: Orders & Payments (Planned)**
+### 🚧 **Phase 5: Orders & Payments (Planned)**
 - [ ] Order creation and tracking
 - [ ] Razorpay/Stripe integration
 - [ ] Payment verification
 - [ ] Order management dashboard
 - [ ] Return request handling
 
-### 🚧 **Phase 5: Promotions & Loyalty (Planned)**
+### 🚧 **Phase 6: Promotions & Loyalty (Planned)**
 - [ ] Coupon system
 - [ ] Reward points
 - [ ] Referral program
 - [ ] Wallet functionality
 
-### 🚧 **Phase 6: Advanced Features (Planned)**
+### 🚧 **Phase 7: Advanced Features (Planned)**
 - [ ] Product reviews and ratings
 - [ ] Inventory management
 - [ ] Notification system
@@ -294,7 +314,11 @@ DATABASE_URL=postgres://username:password@localhost:5432/rexcc_db
 CLOUDINARY_URL=cloudinary://api_key:api_secret@cloud_name
 
 # Email Configuration
-EMAIL_URL=smtp+tls://your-email@gmail.com:app-password@smtp.gmail.com:587
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_USE_TLS=True
+EMAIL_HOST_USER=your-email@gmail.com
+EMAIL_HOST_PASSWORD=your-app-password
 
 # Google OAuth (Optional)
 GOOGLE_CLIENT_ID=your-google-client-id
@@ -403,6 +427,12 @@ python manage.py runserver
 - `POST /adminpanel/catalog/brand/<id>/edit/` - Update brand
 - `POST /adminpanel/catalog/brand/<id>/toggle-status/` - Toggle brand status
 
+### **Category Management**
+- `GET /adminpanel/catalog/categories/` - Category list
+- `POST /adminpanel/catalog/category/add/` - Create category (AJAX)
+- `POST /adminpanel/catalog/category/<id>/edit/` - Update category (AJAX)
+- `POST /adminpanel/catalog/category/<id>/stats-toggle/` - Toggle category status
+
 ---
 
 ## 🎨 **Design System**
@@ -418,7 +448,7 @@ python manage.py runserver
 
 ### **UI Components**
 - Bootstrap 5 framework
-- Bootstrap Icons
+- Google Material Icons
 - Cropper.js for image cropping
 - Custom CSS for luxury aesthetics
 - Glassmorphism effects

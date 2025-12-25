@@ -8,6 +8,9 @@ from catalog.views.admin.brand import (
 )
 from catalog.views.admin.category import (
     categories,
+    category_add,
+    category_edit,
+    category_status_toggle,
 )
 
 urlpatterns = [
@@ -21,6 +24,13 @@ urlpatterns = [
         brand_status_toggle,
         name="admin_brand_status_toggle",
     ),
-    # Categories
+    # categories
     path("categories/", categories, name="admin_categories"),
+    path("category/add/", category_add, name="admin_category_add"),
+    path("category/<int:id>/edit/", category_edit, name="admin_category_edit"),
+    path(
+        "category/<int:id>/stats-toggle/",
+        category_status_toggle,
+        name="admin_category_status_toggle",
+    ),
 ]

@@ -35,12 +35,12 @@ class CategoryForm(forms.ModelForm):
     def clean_name(self):
         name = self.cleaned_data["name"].strip()
 
-        Category = Category.objects.filter(name__iexact=name)
+        category = Category.objects.filter(name__iexact=name)
 
         if self.instance.pk:
-            Category = Category.exclude(pk=self.instance.pk)
+            category = category.exclude(pk=self.instance.pk)
 
-        if Category.exists():
+        if category.exists():
             raise forms.ValidationError("A Category with this name already exists.")
 
         return name.title()

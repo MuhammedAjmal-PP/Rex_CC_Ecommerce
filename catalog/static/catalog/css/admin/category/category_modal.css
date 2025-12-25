@@ -1,0 +1,358 @@
+/* ============================================================
+   REX CC ADMIN - CATEGORY MODAL STYLES
+   File: catalog/static/catalog/css/admin/category/category_modal.css
+   Black & White Theme | Premium Design
+   Applies to: #addCategoryModal, #editCategoryModal
+   ============================================================ */
+
+/* ========================================
+   MODAL OVERLAY
+   ======================================== */
+
+#addCategoryModal .modal-content,
+#editCategoryModal .modal-content {
+    border-radius: 0;
+    border: none;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+}
+
+/* ========================================
+   MODAL HEADER
+   ======================================== */
+
+#addCategoryModal .modal-header,
+#editCategoryModal .modal-header {
+    background: linear-gradient(135deg, #1a1a1a 0%, #000000 100%);
+    color: #fff;
+    border: none;
+    padding: 20px 24px;
+    position: relative;
+}
+
+#addCategoryModal .modal-header::after,
+#editCategoryModal .modal-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #56ab2f 0%, #a8e063 100%);
+}
+
+#addCategoryModal .modal-title,
+#editCategoryModal .modal-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    letter-spacing: 0.5px;
+}
+
+#addCategoryModal .modal-title .material-icons,
+#editCategoryModal .modal-title .material-icons {
+    font-size: 24px;
+    opacity: 0.9;
+}
+
+#addCategoryModal .btn-close,
+#editCategoryModal .btn-close {
+    filter: invert(1);
+    opacity: 0.7;
+    transition: all 0.3s ease;
+}
+
+#addCategoryModal .btn-close:hover,
+#editCategoryModal .btn-close:hover {
+    opacity: 1;
+    transform: rotate(90deg);
+}
+
+/* ========================================
+   MODAL BODY
+   ======================================== */
+
+#addCategoryModal .modal-body,
+#editCategoryModal .modal-body {
+    padding: 32px;
+    background: #fff;
+}
+
+/* ========================================
+   FORM GROUP
+   ======================================== */
+
+#addCategoryModal .form-group,
+#editCategoryModal .form-group {
+    margin-bottom: 24px;
+}
+
+#addCategoryModal .form-group:last-child,
+#editCategoryModal .form-group:last-child {
+    margin-bottom: 0;
+}
+
+#addCategoryModal .form-label,
+#editCategoryModal .form-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+}
+
+#addCategoryModal .form-label .required,
+#editCategoryModal .form-label .required {
+    color: #ef4444;
+    margin-left: 2px;
+}
+
+/* ========================================
+   TEXT INPUT
+   ======================================== */
+
+#addCategoryModal .form-control,
+#editCategoryModal .form-control {
+    width: 100%;
+    padding: 16px 18px;
+    font-size: 1rem;
+    font-family: inherit;
+    border: 2px solid #e0e0e0;
+    border-radius: 0;
+    background: #fff;
+    color: #1a1a1a;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+#addCategoryModal .form-control:hover,
+#editCategoryModal .form-control:hover {
+    border-color: #999;
+}
+
+#addCategoryModal .form-control:focus,
+#editCategoryModal .form-control:focus {
+    border-color: #000;
+    box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.08);
+}
+
+#addCategoryModal .form-control::placeholder,
+#editCategoryModal .form-control::placeholder {
+    color: #999;
+}
+
+#addCategoryModal .form-control.is-invalid,
+#editCategoryModal .form-control.is-invalid {
+    border-color: #ef4444;
+    animation: shake 0.4s ease;
+}
+
+@keyframes shake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-5px);
+    }
+
+    75% {
+        transform: translateX(5px);
+    }
+}
+
+/* ========================================
+   ERROR MESSAGE
+   ======================================== */
+
+#addCategoryModal .error-message,
+#editCategoryModal .error-message {
+    display: none;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    font-size: 0.85rem;
+    color: #ef4444;
+    font-weight: 500;
+}
+
+#addCategoryModal .error-message .material-icons,
+#editCategoryModal .error-message .material-icons {
+    font-size: 16px;
+}
+
+/* ========================================
+   CHECKBOX WRAPPER
+   ======================================== */
+
+#addCategoryModal .checkbox-wrapper,
+#editCategoryModal .checkbox-wrapper {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 20px;
+    background: linear-gradient(135deg, #f8f8f8 0%, #f0f0f0 100%);
+    border: 2px solid #e0e0e0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#addCategoryModal .checkbox-wrapper:hover,
+#editCategoryModal .checkbox-wrapper:hover {
+    border-color: #999;
+    background: linear-gradient(135deg, #fff 0%, #f8f8f8 100%);
+}
+
+#addCategoryModal .checkbox-wrapper input[type="checkbox"],
+#editCategoryModal .checkbox-wrapper input[type="checkbox"] {
+    width: 24px;
+    height: 24px;
+    accent-color: #000;
+    cursor: pointer;
+    margin: 0;
+    flex-shrink: 0;
+}
+
+#addCategoryModal .checkbox-content,
+#editCategoryModal .checkbox-content {
+    flex: 1;
+}
+
+#addCategoryModal .checkbox-label,
+#editCategoryModal .checkbox-label {
+    display: block;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 4px;
+}
+
+#addCategoryModal .checkbox-hint,
+#editCategoryModal .checkbox-hint {
+    font-size: 0.8rem;
+    color: #666;
+    line-height: 1.4;
+}
+
+/* ========================================
+   MODAL FOOTER
+   ======================================== */
+
+#addCategoryModal .modal-footer,
+#editCategoryModal .modal-footer {
+    background: #f8f8f8;
+    border-top: 1px solid #e0e0e0;
+    padding: 20px 32px;
+    gap: 12px;
+}
+
+/* ========================================
+   BUTTONS
+   ======================================== */
+
+#addCategoryModal .btn-cancel,
+#editCategoryModal .btn-cancel {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 28px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    font-family: inherit;
+    text-decoration: none;
+    border: 2px solid #e0e0e0;
+    border-radius: 0;
+    background: #fff;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#addCategoryModal .btn-cancel:hover,
+#editCategoryModal .btn-cancel:hover {
+    border-color: #1a1a1a;
+    color: #1a1a1a;
+    background: #f5f5f5;
+}
+
+#addCategoryModal .btn-submit,
+#editCategoryModal .btn-submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 32px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    font-family: inherit;
+    text-decoration: none;
+    border: 2px solid #000;
+    border-radius: 0;
+    background: #000;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#addCategoryModal .btn-submit:hover,
+#editCategoryModal .btn-submit:hover {
+    background: #fff;
+    color: #000;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+#addCategoryModal .btn-submit:disabled,
+#editCategoryModal .btn-submit:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+#addCategoryModal .btn-submit .material-icons,
+#editCategoryModal .btn-submit .material-icons {
+    font-size: 20px;
+}
+
+/* ========================================
+   LOADING SPINNER
+   ======================================== */
+
+#addCategoryModal .spinner,
+#editCategoryModal .spinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid transparent;
+    border-top-color: currentColor;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    display: inline-block;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ========================================
+   MODAL ANIMATION
+   ======================================== */
+
+#addCategoryModal.modal.fade .modal-dialog,
+#editCategoryModal.modal.fade .modal-dialog {
+    transform: scale(0.95) translateY(-20px);
+    transition: transform 0.3s ease;
+}
+
+#addCategoryModal.modal.show .modal-dialog,
+#editCategoryModal.modal.show .modal-dialog {
+    transform: scale(1) translateY(0);
+}
