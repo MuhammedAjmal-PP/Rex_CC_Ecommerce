@@ -209,3 +209,39 @@
     margin: 0;
     line-height: 1.6;
 }
+
+/* ========================================
+   CREATE/ADD BUTTON
+   ======================================== */
+
+.create-btn a {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: var(--color-black);
+    color: var(--color-white);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    border-radius: 0;
+    border: 2px solid var(--color-black);
+    transition: all 0.3s ease;
+    height: 50px;
+    box-sizing: border-box;
+}
+
+.create-btn a:hover {
+    background: var(--color-dark);
+    border-color: var(--color-dark);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.create-btn a:active {
+    transform: translateY(0);
+}
+
+.create-btn a .material-icons {
+    font-size: 20px;
+}

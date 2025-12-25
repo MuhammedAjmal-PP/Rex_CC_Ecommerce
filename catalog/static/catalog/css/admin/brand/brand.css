@@ -25,39 +25,3 @@
     border-radius: 4px;
     display: inline-block;
 }
-
-/* ========================================
-   CREATE BUTTON
-   ======================================== */
-
-.create-btn a {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 0 24px;
-    background: var(--color-black);
-    color: var(--color-white);
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 0.95rem;
-    border-radius: 0;
-    transition: all 0.3s ease;
-    border: 2px solid var(--color-black);
-    height: 50px;
-}
-
-.create-btn a:hover {
-    background: var(--color-white);
-    color: var(--color-black);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.create-btn a i {
-    font-size: 1.2rem;
-    transition: transform 0.3s ease;
-}
-
-.create-btn a:hover i {
-    transform: rotate(90deg);
-}
