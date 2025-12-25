@@ -153,95 +153,95 @@
                             </td>
                             <td>
                                 <div class="action d-flex justify-content-between">
-                                    <a href="{% url 'admin_user_profile' user.id %}"
-                                       class="action-btn"
-                                       title="View Details"><span class="material-icons fs-6">visibility</span>
-                                    </a>
-                                    {% if user.is_active %}
-                                        <a href="{% url 'admin_user_stats_toggle' user.id %}"
-                                           class="action-btn"
-                                           title="Deactivate"
-                                           onclick="return confirm('Are you sure you want to deactivate this user?');">
-                                            <span class="material-icons fs-6">cancel</span>
-                                        </a>
-                                    {% else %}
-                                        <a href="{% url 'admin_user_stats_toggle' user.id %}"
-                                           class="action-btn"
-                                           title="Activate"
-                                           onclick="return confirm('Are you sure you want to activate this user?');">
-                                            <span class="material-icons fs-6">check_circle</span>
-                                        </a>
-                                    {% endif %}
-                                </div>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-    <!-- Pagination -->
-            {% if paginator.num_pages > 1 %}
-                <div class="pagination-container">
-                    <div class="pagination-info">
-                        Showing {{ users.start_index }} to {{ users.end_index }} of {{ users.paginator.count }} users
-                    </div>
-                    <div class="pagination">
-                        {% if users.has_previous %}
-                            <a href="?page={{ users.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}"
-                               class="page-btn-nav"
-                               aria-label="Previous page"><span class="material-icons">chevron_left</span></a>
-                        {% else %}
-                            <button class="page-btn-nav" disabled aria-label="Previous page (disabled)">
-                                <span class="material-icons">chevron_left</span>
-                            </button>
-                        {% endif %}
-                        {% for num in users.paginator.page_range %}
-                            {% if users.number == num %}
-                                <span class="page-btn active" aria-current="page">{{ num }}</span>
-                            {% elif num > users.number|add:'-3' and num < users.number|add:'3' %}
-                                <a href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}"
-                                   class="page-btn"
-                                   aria-label="Page {{ num }}">{{ num }}</a>
+                                <a href="{% url 'admin_user_profile' user.id %}"
+                                   class="action-btn"
+                                   title="View Details"><span class="material-icons fs-6">visibility</span>
+                            </a>
+                            {% if user.is_active %}
+                                <a href="{% url 'admin_user_stats_toggle' user.id %}"
+                                   class="action-btn"
+                                   title="Deactivate"
+                                   onclick="return confirm('Are you sure you want to deactivate this user?');">
+                                    <span class="material-icons fs-6">cancel</span>
+                                </a>
+                            {% else %}
+                                <a href="{% url 'admin_user_stats_toggle' user.id %}"
+                                   class="action-btn"
+                                   title="Activate"
+                                   onclick="return confirm('Are you sure you want to activate this user?');">
+                                    <span class="material-icons fs-6">check_circle</span>
+                                </a>
                             {% endif %}
-                        {% endfor %}
-                        {% if users.has_next %}
-                            <a href="?page={{ users.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}"
-                               class="page-btn-nav"
-                               aria-label="Next page"><span class="material-icons">chevron_right</span></a>
-                        {% else %}
-                            <button class="page-btn-nav" disabled aria-label="Next page (disabled)">
-                                <span class="material-icons">chevron_right</span>
-                            </button>
-                        {% endif %}
-                    </div>
-                </div>
-            {% endif %}
-        {% else %}
-    <!-- Empty State -->
-            <div class="empty-state">
-                <svg xmlns="http://www.w3.org/2000/svg"
-                     width="64"
-                     height="64"
-                     viewBox="0 0 24 24"
-                     fill="none"
-                     stroke="currentColor"
-                     stroke-width="1.5"
-                     stroke-linecap="round"
-                     stroke-linejoin="round">
-                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="9" cy="7" r="4"></circle>
-                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                </svg>
-                <h3>No users found</h3>
-                <p>
-                    {% if search_query or status_filter %}
-                        Try adjusting your search terms or clear the filter.
-                    {% else %}
-                        No users have registered
-                        yet.
-                    {% endif %}
-                </p>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <!-- Pagination -->
+    {% if users.paginator.count > 1 %}
+        <div class="pagination-container">
+            <div class="pagination-info">
+                Showing {{ users.start_index }} to {{ users.end_index }} of {{ users.paginator.count }} users
             </div>
-        {% endif %}
+            <div class="pagination">
+                {% if users.has_previous %}
+                    <a href="?page={{ users.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}"
+                       class="page-btn-nav"
+                       aria-label="Previous page"><span class="material-icons">chevron_left</span></a>
+                {% else %}
+                    <button class="page-btn-nav" disabled aria-label="Previous page (disabled)">
+                        <span class="material-icons">chevron_left</span>
+                    </button>
+                {% endif %}
+                {% for num in users.paginator.page_range %}
+                    {% if users.number == num %}
+                        <span class="page-btn active" aria-current="page">{{ num }}</span>
+                    {% elif num > users.number|add:'-3' and num < users.number|add:'3' %}
+                        <a href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}"
+                           class="page-btn"
+                           aria-label="Page {{ num }}">{{ num }}</a>
+                    {% endif %}
+                {% endfor %}
+                {% if users.has_next %}
+                    <a href="?page={{ users.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}"
+                       class="page-btn-nav"
+                       aria-label="Next page"><span class="material-icons">chevron_right</span></a>
+                {% else %}
+                    <button class="page-btn-nav" disabled aria-label="Next page (disabled)">
+                        <span class="material-icons">chevron_right</span>
+                    </button>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+{% else %}
+    <!-- Empty State -->
+    <div class="empty-state">
+        <svg xmlns="http://www.w3.org/2000/svg"
+             width="64"
+             height="64"
+             viewBox="0 0 24 24"
+             fill="none"
+             stroke="currentColor"
+             stroke-width="1.5"
+             stroke-linecap="round"
+             stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+        </svg>
+        <h3>No users found</h3>
+        <p>
+            {% if search_query or status_filter %}
+                Try adjusting your search terms or clear the filter.
+            {% else %}
+                No users have registered
+                yet.
+            {% endif %}
+        </p>
     </div>
+{% endif %}
+</div>
 {% endblock content %}

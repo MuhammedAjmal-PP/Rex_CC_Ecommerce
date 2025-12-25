@@ -133,7 +133,7 @@
                 </tbody>
             </table>
             <!-- Pagination -->
-            {% if paginator.num_pages > 1 %}
+            {% if categories.paginator.count > 1 %}
                 <div class="pagination-container">
                     <div class="pagination-info">
                         Showing {{ categories.start_index }} to {{ categories.end_index }} of {{ categories.paginator.count }} categories

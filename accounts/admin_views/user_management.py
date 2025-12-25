@@ -45,7 +45,7 @@ def user_list(request):
     inactive_users = base_users.filter(is_active=False).count()
 
     # Paginate results (10 users per page)
-    paginator = Paginator(users, 5)
+    paginator = Paginator(users, 10)
     page_obj = paginator.get_page(page_number)
 
     # Prepare context for template rendering

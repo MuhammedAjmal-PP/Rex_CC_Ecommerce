@@ -104,85 +104,85 @@
                             </td>
                             <td>
                                 <div class="action d-flex gap-3">
-                                    <a href="{% url 'admin_brand_view' brand.id %}"
-                                       class="action-btn"
-                                       title="View"><span class="material-icons fs-6">visibility</span>
-                                    </a>
-                                    <a href="{% url 'admin_brand_edit' brand.id %}"
-                                       class="action-btn"
-                                       title="Edit"><span class="material-icons">edit</span>
-                                    </a>
-                                    {% if brand.is_active %}
-                                        <a href="{% url 'admin_brand_status_toggle' brand.id %}"
-                                           class="action-btn"
-                                           title="Deactivate"
-                                           onclick="return confirm('Are you sure you want to deactivate this brand?');">
-                                            <span class="material-icons fs-6">cancel</span>
-                                        </a>
-                                    {% else %}
-                                        <a href="{% url 'admin_brand_status_toggle' brand.id %}"
-                                           class="action-btn"
-                                           title="Activate"
-                                           onclick="return confirm('Are you sure you want to activate this brand?');">
-                                            <span class="material-icons fs-6">check_circle</span>
-                                        </a>
-                                    {% endif %}
-                                </div>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-<!-- Pagination -->
-            {% if paginator.num_pages > 1 %}
-                <div class="pagination-container">
-                    <div class="pagination-info">
-                        Showing {{ brands.start_index }} to {{ brands.end_index }} of {{ brands.paginator.count }} brands
-                    </div>
-                    <div class="pagination">
-                        {% if brands.has_previous %}
-                            <a href="?page={{ brands.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}"
-                               class="page-btn-nav"
-                               aria-label="Previous page"><span class="material-icons">chevron_left</span></a>
-                        {% else %}
-                            <button class="page-btn-nav" disabled aria-label="Previous page (disabled)">
-                                <span class="material-icons">chevron_left</span>
-                            </button>
-                        {% endif %}
-                        {% for num in brands.paginator.page_range %}
-                            {% if brands.number == num %}
-                                <span class="page-btn active" aria-current="page">{{ num }}</span>
-                            {% elif num > brands.number|add:'-3' and num < brands.number|add:'3' %}
-                                <a href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}"
-                                   class="page-btn"
-                                   aria-label="Page {{ num }}">{{ num }}</a>
-                            {% endif %}
-                        {% endfor %}
-                        {% if brands.has_next %}
-                            <a href="?page={{ brands.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}"
-                               class="page-btn-nav"
-                               aria-label="Next page"><span class="material-icons">chevron_right</span></a>
-                        {% else %}
-                            <button class="page-btn-nav" disabled aria-label="Next page (disabled)">
-                                <span class="material-icons">chevron_right</span>
-                            </button>
-                        {% endif %}
-                    </div>
-                </div>
-            {% endif %}
-        {% else %}
-<!-- Empty State -->
-            <div class="empty-state">
-                <span class="material-icons fs-2">sell</span>
-                <h3>No brands found</h3>
-                <p>
-                    {% if search_query or status_filter %}
-                        Try adjusting your search terms or clear the filter.
+                                <a href="{% url 'admin_brand_view' brand.id %}"
+                                   class="action-btn"
+                                   title="View"><span class="material-icons fs-6">visibility</span>
+                            </a>
+                        <a href="{% url 'admin_brand_edit' brand.id %}"
+                           class="action-btn"
+                           title="Edit"><span class="material-icons">edit</span>
+                    </a>
+                    {% if brand.is_active %}
+                        <a href="{% url 'admin_brand_status_toggle' brand.id %}"
+                           class="action-btn"
+                           title="Deactivate"
+                           onclick="return confirm('Are you sure you want to deactivate this brand?');">
+                            <span class="material-icons fs-6">cancel</span>
+                        </a>
                     {% else %}
-                        No brands have been added yet.
+                        <a href="{% url 'admin_brand_status_toggle' brand.id %}"
+                           class="action-btn"
+                           title="Activate"
+                           onclick="return confirm('Are you sure you want to activate this brand?');">
+                            <span class="material-icons fs-6">check_circle</span>
+                        </a>
                     {% endif %}
-                </p>
-            </div>
-        {% endif %}
+                </div>
+            </td>
+        </tr>
+    {% endfor %}
+</tbody>
+</table>
+<!-- Pagination -->
+{% if brands.paginator.count > 1 %}
+    <div class="pagination-container">
+        <div class="pagination-info">
+            Showing {{ brands.start_index }} to {{ brands.end_index }} of {{ brands.paginator.count }} brands
+        </div>
+        <div class="pagination">
+            {% if brands.has_previous %}
+                <a href="?page={{ brands.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}"
+                   class="page-btn-nav"
+                   aria-label="Previous page"><span class="material-icons">chevron_left</span></a>
+            {% else %}
+                <button class="page-btn-nav" disabled aria-label="Previous page (disabled)">
+                    <span class="material-icons">chevron_left</span>
+                </button>
+            {% endif %}
+            {% for num in brands.paginator.page_range %}
+                {% if brands.number == num %}
+                    <span class="page-btn active" aria-current="page">{{ num }}</span>
+                {% elif num > brands.number|add:'-3' and num < brands.number|add:'3' %}
+                    <a href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}"
+                       class="page-btn"
+                       aria-label="Page {{ num }}">{{ num }}</a>
+                {% endif %}
+            {% endfor %}
+            {% if brands.has_next %}
+                <a href="?page={{ brands.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}"
+                   class="page-btn-nav"
+                   aria-label="Next page"><span class="material-icons">chevron_right</span></a>
+            {% else %}
+                <button class="page-btn-nav" disabled aria-label="Next page (disabled)">
+                    <span class="material-icons">chevron_right</span>
+                </button>
+            {% endif %}
+        </div>
     </div>
+{% endif %}
+{% else %}
+<!-- Empty State -->
+<div class="empty-state">
+    <span class="material-icons fs-2">sell</span>
+    <h3>No brands found</h3>
+    <p>
+        {% if search_query or status_filter %}
+            Try adjusting your search terms or clear the filter.
+        {% else %}
+            No brands have been added yet.
+        {% endif %}
+    </p>
+</div>
+{% endif %}
+</div>
 {% endblock content %}
