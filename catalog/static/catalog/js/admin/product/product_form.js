@@ -1,6 +1,6 @@
 /* ============================================================
-   REX CC ADMIN - BRAND FORM JAVASCRIPT
-   File: catalog/static/catalog/js/admin/brand/brand_form.js
+   REX CC ADMIN - PRODUCT FORM JAVASCRIPT
+   File: catalog/static/catalog/js/admin/product/product_form.js
    Cropper.js v1.6.2 Compatible
    ============================================================ */
 
@@ -83,7 +83,7 @@ function initFileUpload() {
 
     /* ========= REMOVE IMAGE BUTTON ========= */
     const removeImageBtn = document.getElementById('removeImageBtn');
-    const removeLogoInput = document.getElementById('removeLogo');
+    const removeThumbnailInput = document.getElementById('removeThumbnail');
     if (removeImageBtn) {
         removeImageBtn.addEventListener('click', function (e) {
             e.preventDefault();
@@ -93,8 +93,8 @@ function initFileUpload() {
             fileInput.value = '';
 
             // Set the hidden input to indicate removal
-            if (removeLogoInput) {
-                removeLogoInput.value = 'true';
+            if (removeThumbnailInput) {
+                removeThumbnailInput.value = 'true';
             }
 
             // Hide preview and show upload placeholder
@@ -130,7 +130,7 @@ function initFileUpload() {
         cropper = new Cropper(cropImage, {
             viewMode: 2,
             dragMode: 'crop',
-            aspectRatio: NaN, // Free ratio
+            aspectRatio: 1, // Square ratio for product thumbnails
             autoCropArea: 0.8,
             autoCrop: true,
             restore: true,
@@ -180,7 +180,7 @@ function initFileUpload() {
             }
 
             // Create file from blob
-            const originalName = selectedFile?.name || 'brand_logo.jpg';
+            const originalName = selectedFile?.name || 'product_thumbnail.jpg';
             const croppedFile = new File([blob], originalName, {
                 type: 'image/jpeg',
                 lastModified: Date.now()

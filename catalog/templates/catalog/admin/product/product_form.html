@@ -2,35 +2,35 @@
 {% load static %}
 {% load cloudinary %}
 {% block title %}
-    {% if form.instance.id %}
-        Edit Brand
+    {% if form.instance.pk %}
+        Edit Product
     {% else %}
-        Add Brand
+        Add Product
     {% endif %}
 {% endblock title %}
 {% block extra_css %}
     <link rel="stylesheet"
-          href="{% static 'catalog/css/admin/brand/brand_form.css' %}">
+          href="{% static 'catalog/css/admin/product/product_form.css' %}">
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
 {% endblock extra_css %}
 {% block header_title %}
-    {% if form.instance.id %}
-        Edit Brand
+    {% if form.instance.pk %}
+        Edit Product
     {% else %}
-        Add Brand
+        Add Product
     {% endif %}
 {% endblock header_title %}
 {% block header_subtitle %}
-    {% if form.instance.id %}
-        Update brand details
+    {% if form.instance.pk %}
+        Update product details
     {% else %}
-        Add a new brand to your catalog
+        Add a new product to your catalog
     {% endif %}
 {% endblock header_subtitle %}
 {% block content %}
     <div class="form-container">
-        <form method="post" enctype="multipart/form-data" class="brand-form">
+        <form method="post" enctype="multipart/form-data" class="product-form">
             {% csrf_token %}
             <div class="form-card">
                 <div class="form-layout">
@@ -49,9 +49,12 @@
                                     {% if form.name.errors %}<span class="error-text">{{ form.name.errors.0 }}</span>{% endif %}
                                 </div>
                                 <div class="form-group">
-                                    <label class="form-label">Tagline</label>
-                                    {{ form.tagline }}
-                                    {% if form.tagline.errors %}<span class="error-text">{{ form.tagline.errors.0 }}</span>{% endif %}
+                                    <label class="form-label">Brand</label>
+                                    <div class="select-wrapper">
+                                        {{ form.brand }}
+                                        <span class="material-icons">expand_more</span>
+                                    </div>
+                                    {% if form.brand.errors %}<span class="error-text">{{ form.brand.errors.0 }}</span>{% endif %}
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Description</label>
@@ -60,33 +63,56 @@
                                 </div>
                             </div>
                         </div>
+                        <!-- Categories -->
+                        <div class="form-section">
+                            <div class="section-title">
+                                <span class="material-icons">category</span>
+                                <span>Categories</span>
+                            </div>
+                            <div class="section-body">
+                                <div class="category-tags">
+                                    {% for choice in form.category %}
+                                        <label class="category-tag" for="category_{{ forloop.counter }}">
+                                            <input type="checkbox"
+                                                   name="category"
+                                                   value="{{ choice.data.value }}"
+                                                   id="category_{{ forloop.counter }}"
+                                                   {% if choice.data.selected %}checked{% endif %}>
+                                            <span class="tag-text">{{ choice.data.label }}</span>
+                                            <span class="tag-check material-icons">check</span>
+                                        </label>
+                                    {% endfor %}
+                                </div>
+                                {% if form.category.errors %}<span class="error-text">{{ form.category.errors.0 }}</span>{% endif %}
+                            </div>
+                        </div>
                     </div>
                     <!-- Right Column -->
                     <div class="form-column form-column-right">
-                        <!-- Brand Logo -->
+                        <!-- Product Thumbnail -->
                         <div class="form-section">
                             <div class="section-title">
                                 <span class="material-icons">image</span>
-                                <span>Brand Logo</span>
+                                <span>Product Thumbnail</span>
                             </div>
                             <div class="section-body">
-                                <input type="hidden" name="remove_logo" id="removeLogo" value="">
-                                <div class="upload-area {% if form.instance.logo %}has-image{% endif %}"
+                                <input type="hidden" name="remove_thumbnail" id="removeThumbnail" value="">
+                                <div class="upload-area {% if form.instance.thumbnail %}has-image{% endif %}"
                                      id="uploadWrapper">
-                                    {{ form.logo }}
+                                    {{ form.thumbnail }}
                                     <div class="upload-placeholder"
                                          id="uploadInfo"
-                                         {% if form.instance.logo %}hidden{% endif %}>
+                                         {% if form.instance.thumbnail %}hidden{% endif %}>
                                         <span class="material-icons upload-icon">cloud_upload</span>
                                         <span class="upload-text">Drop image here</span>
                                         <span class="upload-hint">or click to upload</span>
                                     </div>
                                     <div class="upload-preview"
                                          id="uploadPreview"
-                                         {% if not form.instance.logo %}hidden{% endif %}>
-                                        {% if form.instance.logo %}
+                                         {% if not form.instance.thumbnail %}hidden{% endif %}>
+                                        {% if form.instance.thumbnail %}
                                             <img id="previewImg"
-                                                 src="{{ form.instance.logo.url }}"
+                                                 src="{{ form.instance.thumbnail.url }}"
                                                  alt="Preview"
                                                  width="200"
                                                  height="200">
@@ -105,7 +131,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                {% if form.logo.errors %}<span class="error-text">{{ form.logo.errors.0 }}</span>{% endif %}
+                                {% if form.thumbnail.errors %}<span class="error-text">{{ form.thumbnail.errors.0 }}</span>{% endif %}
                             </div>
                         </div>
                         <!-- Publishing -->
@@ -117,11 +143,11 @@
                             <div class="section-body">
                                 <div class="toggle-row">
                                     <div class="toggle-info">
-                                        <span class="toggle-label">Active</span>
-                                        <span class="toggle-desc">Show this brand on the storefront</span>
+                                        <span class="toggle-label">Save as Draft</span>
+                                        <span class="toggle-desc">Hidden from catalog</span>
                                     </div>
                                     <label class="toggle-switch">
-                                        {{ form.is_active }}
+                                        {{ form.is_drafted }}
                                         <span class="toggle-slider"></span>
                                     </label>
                                 </div>
@@ -140,22 +166,16 @@
             </div>
             <!-- Form Actions -->
             <div class="form-actions">
-                <a href="{% url 'admin_brands' %}" class="btn-cancel">
+                <a href="{% url 'admin_products' %}" class="btn-cancel">
                     <span class="material-icons">arrow_back</span>
                     Cancel
                 </a>
                 <button type="submit" class="btn-submit">
-                    <span class="material-icons">
-                        {% if form.instance.id %}
-                            save
-                        {% else %}
-                            add
-                        {% endif %}
-                    </span>
-                    {% if form.instance.id %}
+                    <span class="material-icons">add</span>
+                    {% if form.instance.pk %}
                         Save Changes
                     {% else %}
-                        Create Brand
+                        Create Product
                     {% endif %}
                 </button>
             </div>
@@ -166,7 +186,7 @@
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Crop Logo</h5>
+                    <h5 class="modal-title">Crop Image</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
@@ -182,5 +202,5 @@
 {% endblock content %}
 {% block extra_js %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
-    <script src="{% static 'catalog/js/admin/brand/brand_form.js' %}"></script>
+    <script src="{% static 'catalog/js/admin/product/product_form.js' %}"></script>
 {% endblock extra_js %}

@@ -13,6 +13,14 @@ from catalog.views.admin.category import (
     category_status_toggle,
 )
 
+from catalog.views.admin.product import (
+    products,
+    product_add,
+    product_edit,
+    product_delete_toggle,
+    product_draft_toggle,
+)
+
 urlpatterns = [
     # brands
     path("brands/", brands, name="admin_brands"),
@@ -32,5 +40,19 @@ urlpatterns = [
         "category/<int:id>/stats-toggle/",
         category_status_toggle,
         name="admin_category_status_toggle",
+    ),
+    # products
+    path("products/", products, name="admin_products"),
+    path("product/add/", product_add, name="admin_product_add"),
+    path("product/<int:id>/edit/", product_edit, name="admin_product_edit"),
+    path(
+        "product/<int:id>/delete-toggle/",
+        product_delete_toggle,
+        name="admin_product_delete_toggle",
+    ),
+    path(
+        "product/<int:id>/draft-toggle/",
+        product_draft_toggle,
+        name="admin_product_draft_toggle",
     ),
 ]

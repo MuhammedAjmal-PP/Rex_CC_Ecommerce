@@ -1,7 +1,18 @@
 /* ============================================================
-   REX CC ADMIN - BRAND FORM STYLES
-   Clean Minimal Design
+   REX CC ADMIN - PRODUCT FORM STYLES
+   Clean Minimal Design matching reference
    ============================================================ */
+
+:root {
+    --black: #000000;
+    --dark: #1a1a1a;
+    --gray: #666666;
+    --gray-light: #999999;
+    --border: #e5e5e5;
+    --bg: #f8f8f8;
+    --white: #ffffff;
+    --error: #dc2626;
+}
 
 /* ========================================
    FORM CONTAINER
@@ -13,7 +24,7 @@
     margin: 0 auto;
 }
 
-.brand-form {
+.product-form {
     display: flex;
     flex-direction: column;
     gap: 24px;
@@ -24,12 +35,12 @@
    ======================================== */
 
 .form-card {
-    background: #fff;
-    border: 1px solid #e5e5e5;
+    background: var(--white);
+    border: 1px solid var(--border);
 }
 
 /* ========================================
-   FORM LAYOUT - TWO COLUMNS
+   FORM LAYOUT
    ======================================== */
 
 .form-layout {
@@ -42,7 +53,7 @@
 }
 
 .form-column-left {
-    border-right: 1px solid #e5e5e5;
+    border-right: 1px solid var(--border);
 }
 
 /* ========================================
@@ -50,7 +61,7 @@
    ======================================== */
 
 .form-section {
-    border-bottom: 1px solid #e5e5e5;
+    border-bottom: 1px solid var(--border);
 }
 
 .form-section:last-child {
@@ -66,8 +77,8 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1px;
-    color: #000;
-    border-bottom: 1px solid #e5e5e5;
+    color: var(--black);
+    border-bottom: 1px solid var(--border);
 }
 
 .section-title .material-icons {
@@ -96,50 +107,132 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    color: #000;
+    color: var(--black);
     margin-bottom: 10px;
 }
 
 /* ========================================
-   TEXT INPUTS
+   INPUTS
    ======================================== */
 
-.brand-form input[type="text"],
-.brand-form select,
-.brand-form textarea {
+.product-form input[type="text"],
+.product-form select,
+.product-form textarea {
     width: 100%;
     padding: 14px 16px;
     font-size: 0.9rem;
     font-family: inherit;
-    border: 1px solid #e5e5e5;
-    background: #fff;
-    color: #1a1a1a;
+    border: 1px solid var(--border);
+    background: var(--white);
+    color: var(--dark);
     outline: none;
     transition: border-color 0.2s;
 }
 
-.brand-form input[type="text"]::placeholder,
-.brand-form textarea::placeholder {
-    color: #999;
+.product-form input[type="text"]::placeholder,
+.product-form textarea::placeholder {
+    color: var(--gray-light);
     text-transform: uppercase;
     font-size: 0.8rem;
     letter-spacing: 0.5px;
 }
 
-.brand-form input[type="text"]:focus,
-.brand-form select:focus,
-.brand-form textarea:focus {
-    border-color: #000;
+.product-form input[type="text"]:focus,
+.product-form select:focus,
+.product-form textarea:focus {
+    border-color: var(--black);
 }
 
-.brand-form textarea {
+.product-form textarea {
     min-height: 140px;
     resize: vertical;
     line-height: 1.6;
 }
 
-.brand-form textarea#id_tagline {
-    min-height: 70px;
+/* Select Wrapper */
+.select-wrapper {
+    position: relative;
+}
+
+.select-wrapper select {
+    appearance: none;
+    padding-right: 44px;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.3px;
+}
+
+.select-wrapper .material-icons {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gray);
+    pointer-events: none;
+}
+
+/* ========================================
+   CATEGORY TAGS
+   ======================================== */
+
+.category-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.category-tag {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 16px;
+    border: 1px solid var(--border);
+    background: var(--white);
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.category-tag:hover {
+    border-color: var(--black);
+}
+
+.category-tag input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.tag-text {
+    color: var(--dark);
+    transition: color 0.2s;
+}
+
+.tag-check {
+    font-size: 14px;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+/* Selected state */
+.category-tag:has(input:checked) {
+    background: var(--black);
+    border-color: var(--black);
+}
+
+.category-tag:has(input:checked) .tag-text {
+    color: var(--white);
+}
+
+.category-tag:has(input:checked) .tag-check {
+    color: var(--white);
+    opacity: 1;
 }
 
 /* ========================================
@@ -148,7 +241,7 @@
 
 .upload-area {
     position: relative;
-    border: 2px dashed #e5e5e5;
+    border: 2px dashed var(--border);
     min-height: 200px;
     display: flex;
     align-items: center;
@@ -158,10 +251,9 @@
 }
 
 .upload-area:hover {
-    border-color: #999;
+    border-color: var(--gray);
 }
 
-/* Important: Hide ALL default file input elements */
 .upload-area input[type="file"] {
     position: absolute;
     top: 0;
@@ -173,11 +265,11 @@
     z-index: 10;
 }
 
-/* Hide Django ClearableFileInput text and checkbox */
+/* Hide Django file input extras - ALL TEXT */
 .upload-area a,
 .upload-area br,
 .upload-area input[type="checkbox"],
-.upload-area label,
+.upload-area label[for*="clear"],
 .upload-area>p,
 .upload-area>span:not(.material-icons):not(.upload-text):not(.upload-hint):not(.upload-icon) {
     display: none !important;
@@ -192,20 +284,24 @@
     font-size: 1rem;
 }
 
+.upload-placeholder,
+.upload-preview {
+    font-size: 1rem;
+}
+
 .upload-placeholder {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 8px;
-    color: #666;
+    color: var(--gray);
     pointer-events: none;
-    font-size: 1rem;
 }
 
 .upload-icon {
     font-size: 40px;
     padding: 12px;
-    background: #f8f8f8;
+    background: var(--bg);
 }
 
 .upload-text {
@@ -213,16 +309,17 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1px;
-    color: #1a1a1a;
+    color: var(--dark);
 }
 
 .upload-hint {
     font-size: 0.75rem;
-    color: #999;
+    color: var(--gray-light);
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
+/* Upload Preview */
 .upload-preview {
     position: absolute;
     top: 0;
@@ -232,12 +329,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #fff;
-    font-size: 1rem;
-}
-
-.upload-preview[hidden] {
-    display: none;
+    background: var(--white);
 }
 
 .upload-preview img {
@@ -286,17 +378,17 @@
 }
 
 .preview-change {
-    background: #fff;
-    color: #1a1a1a;
+    background: var(--white);
+    color: var(--dark);
 }
 
 .preview-change:hover {
-    background: #f8f8f8;
+    background: var(--bg);
 }
 
 .preview-remove {
     background: #dc2626;
-    color: #fff;
+    color: var(--white);
 }
 
 .preview-remove:hover {
@@ -307,8 +399,12 @@
     font-size: 18px;
 }
 
+.upload-area.has-image input[type="file"] {
+    pointer-events: none;
+}
+
 /* ========================================
-   TOGGLE ROW (Publishing Section)
+   TOGGLE ROW
    ======================================== */
 
 .toggle-row {
@@ -316,7 +412,7 @@
     align-items: center;
     justify-content: space-between;
     padding-bottom: 20px;
-    border-bottom: 1px solid #e5e5e5;
+    border-bottom: 1px solid var(--border);
     margin-bottom: 20px;
 }
 
@@ -331,23 +427,19 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    color: #1a1a1a;
+    color: var(--dark);
 }
 
 .toggle-desc {
     font-size: 0.75rem;
-    color: #666;
+    color: var(--gray);
     text-transform: uppercase;
     letter-spacing: 0.3px;
 }
 
-/* ========================================
-   TOGGLE SWITCH
-   ======================================== */
-
+/* Toggle Switch */
 .toggle-switch {
     position: relative;
-    display: inline-block;
     width: 50px;
     height: 26px;
 }
@@ -356,7 +448,6 @@
     opacity: 0;
     width: 0;
     height: 0;
-    position: absolute;
 }
 
 .toggle-slider {
@@ -366,7 +457,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: #e5e5e5;
+    background-color: var(--border);
     transition: 0.3s;
 }
 
@@ -377,13 +468,13 @@
     width: 20px;
     left: 3px;
     bottom: 3px;
-    background-color: #fff;
+    background-color: var(--white);
     transition: 0.3s;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .toggle-switch input:checked+.toggle-slider {
-    background-color: #000;
+    background-color: var(--black);
 }
 
 .toggle-switch input:checked+.toggle-slider:before {
@@ -399,7 +490,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 12px 0;
-    border-bottom: 1px solid #e5e5e5;
+    border-bottom: 1px solid var(--border);
 }
 
 .meta-row:last-child {
@@ -412,7 +503,7 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    color: #666;
+    color: var(--gray);
 }
 
 .meta-value {
@@ -420,7 +511,7 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.3px;
-    color: #1a1a1a;
+    color: var(--dark);
 }
 
 /* ========================================
@@ -430,7 +521,7 @@
 .error-text {
     display: block;
     font-size: 0.75rem;
-    color: #dc2626;
+    color: var(--error);
     margin-top: 6px;
 }
 
@@ -462,24 +553,24 @@
 }
 
 .btn-cancel {
-    background: #fff;
-    border: 1px solid #e5e5e5;
-    color: #1a1a1a;
+    background: var(--white);
+    border: 1px solid var(--border);
+    color: var(--dark);
 }
 
 .btn-cancel:hover {
-    border-color: #000;
-    color: #000;
+    border-color: var(--black);
+    color: var(--black);
 }
 
 .btn-submit {
-    background: #000;
-    border: 1px solid #000;
-    color: #fff;
+    background: var(--black);
+    border: 1px solid var(--black);
+    color: var(--white);
 }
 
 .btn-submit:hover {
-    background: #1a1a1a;
+    background: var(--dark);
 }
 
 .btn-cancel .material-icons,
@@ -497,8 +588,8 @@
 }
 
 #cropModal .modal-header {
-    background: #1a1a1a;
-    color: #fff;
+    background: var(--dark);
+    color: var(--white);
     padding: 16px 20px;
 }
 
@@ -531,15 +622,15 @@
 }
 
 #cropModal .btn-secondary {
-    background: #fff;
-    border: 1px solid #e5e5e5;
-    color: #666;
+    background: var(--white);
+    border: 1px solid var(--border);
+    color: var(--gray);
 }
 
 #cropModal .btn-primary {
-    background: #000;
-    border: 1px solid #000;
-    color: #fff;
+    background: var(--black);
+    border: 1px solid var(--black);
+    color: var(--white);
 }
 
 #cropImage {
@@ -558,7 +649,7 @@
 
     .form-column-left {
         border-right: none;
-        border-bottom: 1px solid #e5e5e5;
+        border-bottom: 1px solid var(--border);
     }
 
     .form-actions {

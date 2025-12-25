@@ -6,7 +6,7 @@ from django.core.paginator import Paginator
 from django.contrib import messages
 from django.views.decorators.cache import never_cache
 from django.contrib.auth.decorators import user_passes_test
-
+import cloudinary.uploader
 
 # Create your views here.
 
@@ -66,21 +66,45 @@ def brand_add(request):
 @never_cache
 @user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
 def brand_edit(request, id):
-    """
-    Edit a brand
-    """
+    """Edit a brand."""
     brand = get_object_or_404(Brand, id=id)
+
+    # Store old logo public_id before form processing
+    old_logo = brand.logo
+    old_logo_public_id = None
+    if old_logo and hasattr(old_logo, "public_id") and old_logo.public_id:
+        old_logo_public_id = old_logo.public_id
 
     if request.method == "POST":
         form = BrandForm(request.POST, request.FILES, instance=brand)
         if form.is_valid():
-            form.save()
+            # Check if a new logo was uploaded
+            new_logo = request.FILES.get("logo")
+            # Check if logo removal was requested
+            remove_logo = request.POST.get("remove_logo") == "true"
+
+            # Save the form
+            saved_brand = form.save(commit=False)
+
+            # Handle logo removal - set to empty string for CloudinaryField
+            if remove_logo and not new_logo:
+                saved_brand.logo = ""
+
+            saved_brand.save()
+
+            # Delete old logo from Cloudinary if new uploaded or removed
+            if old_logo_public_id and (new_logo or remove_logo):
+                try:
+
+                    cloudinary.uploader.destroy(old_logo_public_id)
+                except Exception as e:
+                    print(f"Failed to delete old logo from Cloudinary: {e}")
+
             messages.success(request, "Brand updated successfully.")
             return redirect("admin_brands")
         else:
             messages.error(request, "Please correct the errors below.")
     else:
-
         form = BrandForm(instance=brand)
     return render(request, "catalog/admin/brand/brand_form.html", {"form": form})
 

@@ -188,52 +188,45 @@
     <div class="modal fade"
          id="addCategoryModal"
          tabindex="-1"
-         aria-labelledby="addCategoryModalLabel"
          aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
+            <div class="modal-content category-modal">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="addCategoryModalLabel">
-                        <span class="material-icons">category</span>
-                        Add New Category
+                    <h5 class="modal-title">
+                        <span class="material-icons">add</span>
+                        Add Category
                     </h5>
-                    <button type="button"
-                            class="btn-close"
-                            data-bs-dismiss="modal"
-                            aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <form id="addCategoryForm"
                       method="post"
                       data-action-url="{% url 'admin_category_add' %}">
                     {% csrf_token %}
                     <div class="modal-body">
-                        <!-- Name Field -->
                         <div class="form-group">
-                            <label for="{{ form.name.id_for_label }}" class="form-label">
-                                {{ form.name.label }} <span class="required">*</span>
-                            </label>
+                            <label class="form-label">Name</label>
                             {{ form.name }}
-                            <div id="nameError" class="error-message"></div>
+                            <div id="nameError" class="error-text"></div>
                         </div>
-                        <!-- Is Active Field -->
-                        <div class="form-group">
-                            <label class="checkbox-wrapper">
+                        <div class="toggle-row">
+                            <div class="toggle-info">
+                                <span class="toggle-label">Active</span>
+                                <span class="toggle-desc">Show on storefront</span>
+                            </div>
+                            <label class="toggle-switch">
                                 {{ form.is_active }}
-                                <div class="checkbox-content">
-                                    <span class="checkbox-label">{{ form.is_active.label }}</span>
-                                    <span class="checkbox-hint">Enable this category on the storefront</span>
-                                </div>
+                                <span class="toggle-slider"></span>
                             </label>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn-cancel" data-bs-dismiss="modal">
-                            <span class="material-icons">close</span>
+                            <span class="material-icons">arrow_back</span>
                             Cancel
                         </button>
                         <button type="submit" class="btn-submit" id="submitCategoryBtn">
                             <span class="material-icons">add</span>
-                            Add Category
+                            Create
                         </button>
                     </div>
                 </form>
@@ -244,55 +237,48 @@
     <div class="modal fade"
          id="editCategoryModal"
          tabindex="-1"
-         aria-labelledby="editCategoryModalLabel"
          aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
+            <div class="modal-content category-modal">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="editCategoryModalLabel">
+                    <h5 class="modal-title">
                         <span class="material-icons">edit</span>
                         Edit Category
                     </h5>
-                    <button type="button"
-                            class="btn-close"
-                            data-bs-dismiss="modal"
-                            aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <form id="editCategoryForm" method="post">
                     {% csrf_token %}
                     <input type="hidden" id="editCategoryId" name="category_id" value="">
                     <div class="modal-body">
-                        <!-- Name Field -->
                         <div class="form-group">
-                            <label for="editCategoryName" class="form-label">
-                                Name <span class="required">*</span>
-                            </label>
+                            <label class="form-label">Name</label>
                             <input type="text"
                                    class="form-control"
                                    id="editCategoryName"
                                    name="name"
                                    required>
-                            <div id="editNameError" class="error-message"></div>
+                            <div id="editNameError" class="error-text"></div>
                         </div>
-                        <!-- Is Active Field -->
-                        <div class="form-group">
-                            <label class="checkbox-wrapper">
+                        <div class="toggle-row">
+                            <div class="toggle-info">
+                                <span class="toggle-label">Active</span>
+                                <span class="toggle-desc">Show on storefront</span>
+                            </div>
+                            <label class="toggle-switch">
                                 <input type="checkbox" id="editCategoryActive" name="is_active">
-                                <div class="checkbox-content">
-                                    <span class="checkbox-label">Is active</span>
-                                    <span class="checkbox-hint">Enable this category on the storefront</span>
-                                </div>
+                                <span class="toggle-slider"></span>
                             </label>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn-cancel" data-bs-dismiss="modal">
-                            <span class="material-icons">close</span>
+                            <span class="material-icons">arrow_back</span>
                             Cancel
                         </button>
                         <button type="submit" class="btn-submit" id="submitEditCategoryBtn">
                             <span class="material-icons">check</span>
-                            Save Changes
+                            Save
                         </button>
                     </div>
                 </form>
