@@ -1,6 +1,19 @@
 from django import forms
-from catalog.models import Brand, Category
+from catalog.models import (
+    Brand,
+    Category,
+    Product,
+    ProductVariant,
+    ProductImage,
+)
 from accounts.forms import alphabet_only
+from django.core.validators import RegexValidator
+
+sku_validator = RegexValidator(
+    regex=r"^[A-Z0-9_-]+$",
+    message="SKU can contain only uppercase letters, numbers, hyphens (-), and underscores (_).",
+    code="invalid_sku",
+)
 
 
 class BrandForm(forms.ModelForm):
@@ -44,3 +57,77 @@ class CategoryForm(forms.ModelForm):
             raise forms.ValidationError("A Category with this name already exists.")
 
         return name.title()
+
+
+class ProductForm(forms.ModelForm):
+
+    name = forms.CharField(validators=[alphabet_only])
+
+    class Meta:
+        model = Product
+        fields = [
+            "name",
+            "brand",
+            "category",
+            "description",
+            "thumbnail",
+            "is_drafted",
+        ]
+
+    def clean_name(self):
+        name = self.cleaned_data["name"].strip()
+
+        product = Product.objects.filter(name__iexact=name)
+
+        if self.instance.pk:
+            product = product.exclude(pk=self.instance.pk)
+
+        if product.exists():
+            raise forms.ValidationError("A Product with this name already exists.")
+
+        return name.title()
+
+
+class ProductVariantForm(forms.ModelForm):
+    pass
+
+    sku = forms.CharField(validators=[sku_validator])
+
+    class Meta:
+        model = ProductVariant
+        fields = [
+            "product",
+            "sku",
+            "dial_color",
+            "strap_color",
+            "strap_material",
+            "case_material",
+            "movement_type",
+            "case_size_mm",
+            "price",
+            "stock",
+            "is_featured",
+            "is_drafted",
+        ]
+
+    def clean_sku(self):
+        sku = self.cleaned_data["sku"].strip()
+
+        product_variant = ProductVariant.objects.filter(sku__iexact=sku)
+
+        if self.instance.pk:
+            product_variant = product_variant.exclude(pk=self.instance.pk)
+
+        if product_variant.exists():
+            raise forms.ValidationError(
+                "A Product Variant with this sku already exists."
+            )
+
+        return sku.upper()
+
+
+class ProductImage(forms.ModelForm):
+
+    class Meta:
+        model = ProductImage
+        fields = ["image", "is_primary"]

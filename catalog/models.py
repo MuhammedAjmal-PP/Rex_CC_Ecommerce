@@ -98,6 +98,7 @@ class Product(models.Model):
         help_text="Timestamp when product was soft deleted",
     )
 
+    is_drafted = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -137,12 +138,19 @@ class ProductVariant(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     stock = models.PositiveIntegerField(default=0)
 
-    # Soft delete
     is_deleted = models.BooleanField(default=False)
-    is_featured = models.BooleanField(default=False)
+    deleted_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text="Timestamp when product was soft deleted",
+    )
 
+    is_featured = models.BooleanField(default=False)
+    is_drafted = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    objects = models.Manager()
 
     class Meta:
         ordering = ["product", "sku"]
