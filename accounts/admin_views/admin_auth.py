@@ -63,7 +63,7 @@ def admin_logout(request):
 def forgot_password(request):
     if request.method == "POST":
         email = request.POST.get("email")
-        request.session['reset_email'] = email
+        request.session["reset_email"] = email
 
         try:
             user = User.objects.get(email=email, is_staff=True)
@@ -99,18 +99,18 @@ def forgot_password(request):
 @superuser_only_redirect
 def password_reset_sent(request):
 
-    email = request.session.get('reset_email')
+    email = request.session.get("reset_email")
 
     if not email:
         messages.error(request, "Access denied. Please submit the form first.")
         return redirect("admin_forgot_password")
-    
-    request_exists=PasswordReset.objects.filter(user__email=email).exists()
+
+    request_exists = PasswordReset.objects.filter(user__email=email).exists()
 
     if request_exists:
         return render(request, "accounts/admin_auth/admin_password_reset_sent.html")
     else:
-        messages.error(request,"You have not sent a request yet.")
+        messages.error(request, "You have not sent a request yet.")
         return redirect("admin_forgot_password")
 
 
@@ -118,10 +118,13 @@ def password_reset_sent(request):
 @superuser_only_redirect
 def reset_password(request, reset_id):
 
-    session_email = request.session.get('reset_email')
+    session_email = request.session.get("reset_email")
 
     if not session_email:
-        messages.error(request, "Security check failed. You must open the link on the same browser you requested it from.")
+        messages.error(
+            request,
+            "Security check failed. You must open the link on the same browser you requested it from.",
+        )
         return redirect("admin_forgot_password")
 
     try:
@@ -146,13 +149,15 @@ def reset_password(request, reset_id):
             if form.is_valid():
                 form.save()
                 password_reset_id.delete()
-                request.session.pop('reset_email', None)
+                request.session.pop("reset_email", None)
                 messages.success(request, "Password reset successful.")
                 return redirect("admin_login")
         else:
             form = SetPasswordForm(user)
 
-        return render(request, "accounts/admin_auth/admin_reset_password.html", {"form": form})
+        return render(
+            request, "accounts/admin_auth/admin_reset_password.html", {"form": form}
+        )
 
     except PasswordReset.DoesNotExist:
         messages.error(request, "Invalid link.")

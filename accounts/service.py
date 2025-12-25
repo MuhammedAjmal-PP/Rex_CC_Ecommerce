@@ -3,6 +3,7 @@ from django.urls import reverse
 from django.conf import settings
 from .models import PasswordReset
 
+
 def send_admin_password_reset_email(user, email, request):
 
     # Create a new password reset instance
