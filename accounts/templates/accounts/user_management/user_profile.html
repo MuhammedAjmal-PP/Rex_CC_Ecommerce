@@ -20,7 +20,7 @@
     <div class="header-actions">
         <a href="{% url 'admin_users_list' %}" class="back-btn">
             <span class="material-icons">arrow_back</span>
-        Back</a>
+            Back</a>
         <div class="action-buttons">
             {% if user.is_active %}
                 <a href="{% url 'admin_user_stats_toggle' user.id %}"

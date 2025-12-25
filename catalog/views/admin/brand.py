@@ -13,7 +13,7 @@ from django.contrib.auth.decorators import user_passes_test
 
 @never_cache
 @user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
-def brand_list(request):
+def brands(request):
     """List all brands."""
 
     # Extract query parameters from request

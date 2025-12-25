@@ -1,23 +1,19 @@
 {% extends 'pages/admin/base_admin.html' %}
 {% load static %}
-{% load cloudinary %}
-{% cloudinary brand.logo.name width=100 height=100 %}
 {% block title %}
-    Brands
+    Categories
 {% endblock title %}
 {% block extra_css %}
     <link rel="stylesheet"
           href="{% static 'pages/admin/css/shared/admin_search_filter.css' %}">
     <link rel="stylesheet"
           href="{% static 'pages/admin/css/shared/admin_table_listing.css' %}">
-    <link rel="stylesheet"
-          href="{% static 'catalog/css/admin/brand/brand.css' %}">
 {% endblock extra_css %}
 {% block header_title %}
-    Brand Management
+    Category Management
 {% endblock header_title %}
 {% block header_subtitle %}
-    Manage Brands and their details
+    Manage product categories
 {% endblock header_subtitle %}
 {% block content %}
     <br>
@@ -29,7 +25,7 @@
                 <div class="search-input-wrapper">
                     <input type="text"
                            name="search"
-                           placeholder="Search Brands..."
+                           placeholder="Search Categories..."
                            value="{{ search_query }}"
                            class="form-control">
                     <button type="submit" class="search-btn">
@@ -54,76 +50,68 @@
             </form>
         </div>
         <div class="create-btn">
-            <a href="{% url 'admin_brand_add' %}">
+            <a href="#">
                 <span class="material-icons">add</span>
-                <span>Add Brand</span>
+                <span>Add Category</span>
             </a>
         </div>
     </div>
-    <!-- Brands Table -->
+    <!-- Categories Table -->
     <div class="table-container">
-        {% if brands %}
+        {% if categories %}
             <table class="admin-table">
                 <thead>
                     <tr>
-                        <th>Brand</th>
+                        <th>Category</th>
                         <th>Slug</th>
                         <th>Status</th>
+                        <th>Created At</th>
                         <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for brand in brands %}
+                    {% for category in categories %}
                         <tr>
                             <td>
-                                <a href="#" class="item-info-link">
-                                    <div class="item-info">
-                                        {% if brand.logo %}
-                                            <img src="{{ brand.logo.url }}"
-                                                 alt="{{ brand.logo.name }}"
-                                                 class="item-avatar"
-                                                 loading="lazy">
-                                        {% else %}
-                                            <div class="item-avatar-placeholder">{{ brand.name|first|upper }}</div>
-                                        {% endif %}
-                                        <div class="item-details">
-                                            <div class="item-name">{{ brand.name }}</div>
-                                        </div>
+                                <div class="item-info">
+                                    <div class="item-avatar-placeholder">{{ category.name|first|upper }}</div>
+                                    <div class="item-details">
+                                        <div class="item-name">{{ category.name }}</div>
                                     </div>
-                                </a>
+                                </div>
                             </td>
                             <td>
-                                <span class="slug-text">{{ brand.slug }}</span>
+                                <span class="slug-text">{{ category.slug }}</span>
                             </td>
                             <td>
-                                {% if brand.is_active %}
+                                {% if category.is_active %}
                                     <span class="status-badge active">Active</span>
                                 {% else %}
                                     <span class="status-badge inactive">Inactive</span>
                                 {% endif %}
                             </td>
                             <td>
+                                <div class="date-time">
+                                    <span class="date">{{ category.created_at|date:"Y-m-d" }}</span>
+                                    <span class="time">{{ category.created_at|date:"h:i A" }}</span>
+                                </div>
+                            </td>
+                            <td>
                                 <div class="action d-flex gap-3">
-                                    <a href="{% url 'admin_brand_view' brand.id %}"
-                                       class="action-btn"
-                                       title="View"><span class="material-icons fs-6">visibility</span>
+                                    <a href="#" class="action-btn" title="Edit"><span class="material-icons">edit</span>
                                     </a>
-                                    <a href="{% url 'admin_brand_edit' brand.id %}"
-                                       class="action-btn"
-                                       title="Edit"><span class="material-icons">edit</span>
-                                    </a>
-                                    {% if brand.is_active %}
-                                        <a href="{% url 'admin_brand_status_toggle' brand.id %}"
+                                    {% if category.is_active %}
+                                        <a href="#"
                                            class="action-btn"
                                            title="Deactivate"
-                                           onclick="return confirm('Are you sure you want to deactivate this brand?');">
+                                           onclick="return confirm('Are you sure you want to deactivate this category?');">
                                             <span class="material-icons fs-6">cancel</span>
                                         </a>
                                     {% else %}
-                                        <a href="{% url 'admin_brand_status_toggle' brand.id %}"
+                                        <a href="#"
                                            class="action-btn"
                                            title="Activate"
-                                           onclick="return confirm('Are you sure you want to activate this brand?');">
+                                           onclick="return confirm('Are you sure you want to activate this category?');">
                                             <span class="material-icons fs-6">check_circle</span>
                                         </a>
                                     {% endif %}
@@ -133,14 +121,14 @@
                     {% endfor %}
                 </tbody>
             </table>
-<!-- Pagination -->
+    <!-- Pagination -->
             <div class="pagination-container">
                 <div class="pagination-info">
-                    Showing {{ brands.start_index }} to {{ brands.end_index }} of {{ brands.paginator.count }} brands
+                    Showing {{ categories.start_index }} to {{ categories.end_index }} of {{ categories.paginator.count }} categories
                 </div>
                 <div class="pagination">
-                    {% if brands.has_previous %}
-                        <a href="?page={{ brands.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}"
+                    {% if categories.has_previous %}
+                        <a href="?page={{ categories.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}"
                            class="page-btn-nav"
                            aria-label="Previous page"><span class="material-icons">chevron_left</span></a>
                     {% else %}
@@ -148,17 +136,17 @@
                             <span class="material-icons">chevron_left</span>
                         </button>
                     {% endif %}
-                    {% for num in brands.paginator.page_range %}
-                        {% if brands.number == num %}
+                    {% for num in categories.paginator.page_range %}
+                        {% if categories.number == num %}
                             <span class="page-btn active" aria-current="page">{{ num }}</span>
-                        {% elif num > brands.number|add:'-3' and num < brands.number|add:'3' %}
-                            <a href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}"
+                        {% elif num > categories.number|add:'-3' and num < categories.number|add:'3' %}
+                            <a href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}"
                                class="page-btn"
                                aria-label="Page {{ num }}">{{ num }}</a>
                         {% endif %}
                     {% endfor %}
-                    {% if brands.has_next %}
-                        <a href="?page={{ brands.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}"
+                    {% if categories.has_next %}
+                        <a href="?page={{ categories.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}"
                            class="page-btn-nav"
                            aria-label="Next page"><span class="material-icons">chevron_right</span></a>
                     {% else %}
@@ -169,15 +157,15 @@
                 </div>
             </div>
         {% else %}
-<!-- Empty State -->
+    <!-- Empty State -->
             <div class="empty-state">
-                <span class="material-icons fs-2">sell</span>
-                <h3>No brands found</h3>
+                <span class="material-icons fs-2">category</span>
+                <h3>No categories found</h3>
                 <p>
-                    {% if search_query or status_filter %}
+                    {% if search_query or status_filter != 'all' %}
                         Try adjusting your search terms or clear the filter.
                     {% else %}
-                        No brands have been added yet.
+                        No categories have been added yet.
                     {% endif %}
                 </p>
             </div>

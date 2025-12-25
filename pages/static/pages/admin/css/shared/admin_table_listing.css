@@ -183,6 +183,11 @@
     transition: all 0.3s ease;
 }
 
+.action-btn .material-icons {
+    font-size: 20px !important;
+    line-height: 1;
+}
+
 .action-btn:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-md);
@@ -229,6 +234,16 @@
     font-size: 0.9rem;
     transition: all 0.3s ease;
     cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    height: 44px;
+}
+
+.page-btn .material-icons {
+    font-size: 20px;
+    line-height: 1;
 }
 
 .page-btn:hover:not(:disabled) {
@@ -248,4 +263,43 @@
     cursor: not-allowed;
     background: var(--color-light);
     color: var(--color-gray-light);
+}
+
+/* Navigation buttons (prev/next) with dark filled style */
+.page-btn-nav {
+    padding: 10px 16px;
+    border: 2px solid var(--color-black);
+    border-radius: 8px;
+    background: var(--color-black);
+    color: var(--color-white);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    height: 44px;
+}
+
+.page-btn-nav .material-icons {
+    font-size: 20px;
+    line-height: 1;
+}
+
+.page-btn-nav:hover:not(:disabled) {
+    background: var(--color-dark);
+    border-color: var(--color-dark);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.page-btn-nav:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    background: var(--color-gray-light);
+    border-color: var(--color-gray-light);
+    color: var(--color-white);
 }
