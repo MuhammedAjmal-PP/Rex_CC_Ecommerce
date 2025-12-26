@@ -130,8 +130,8 @@ function initFileUpload() {
         cropper = new Cropper(cropImage, {
             viewMode: 2,
             dragMode: 'crop',
-            aspectRatio: NaN, // Free ratio
-            autoCropArea: 0.8,
+            aspectRatio: NaN, // Free-form cropping - no aspect ratio restriction
+            autoCropArea: 1, // Select full image by default
             autoCrop: true,
             restore: true,
             guides: true,
