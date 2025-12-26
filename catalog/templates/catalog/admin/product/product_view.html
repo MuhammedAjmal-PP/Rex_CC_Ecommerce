@@ -108,6 +108,10 @@
                     </div>
                 </div>
                 <div class="meta-item">
+                    <span class="meta-label">Slug</span>
+                    <span class="meta-value slug-text">{{ product.slug }}</span>
+                </div>
+                <div class="meta-item">
                     <span class="meta-label">Created</span>
                     <span class="meta-value">{{ product.created_at|date:"M d, Y" }} at {{ product.created_at|date:"h:i A" }}</span>
                 </div>
@@ -377,7 +381,7 @@
                 </tbody>
             </table>
             <!-- Pagination -->
-            {% if variant.paginator.count > 1 %}
+            {% if variant.paginator.num_pages > 1 %}
                 <div class="pagination-container">
                     <div class="pagination-info">
                         Showing {{ variant.start_index }} to {{ variant.end_index }} of {{ variant.paginator.count }} variants

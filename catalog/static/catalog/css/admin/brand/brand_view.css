@@ -189,13 +189,20 @@
     align-items: center;
     justify-content: center;
     min-height: 180px;
-    background: var(--color-bg);
+    background: var(--color-white);
 }
 
 .logo-container img {
     max-width: 100%;
     max-height: 180px;
     object-fit: contain;
+    background: var(--color-white);
+}
+
+.brand-logo-preview {
+    background: var(--color-white);
+    border: 1px solid var(--color-border);
+    padding: 16px;
 }
 
 .no-logo {

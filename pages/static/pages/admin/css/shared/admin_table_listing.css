@@ -91,8 +91,9 @@
     width: 48px;
     height: 48px;
     border-radius: 8px;
-    object-fit: cover;
+    object-fit: contain;
     border: 2px solid var(--color-black);
+    background: var(--color-white);
     transition: all 0.3s ease;
 }
 
@@ -148,16 +149,16 @@
 
 .status-badge.active {
     background: linear-gradient(135deg,
-        var(--color-success) 0%,
-        var(--color-success-light) 100%);
+            var(--color-success) 0%,
+            var(--color-success-light) 100%);
     color: white;
     box-shadow: 0 4px 12px rgba(86, 171, 47, 0.3);
 }
 
 .status-badge.inactive {
     background: linear-gradient(135deg,
-        var(--color-inactive-light) 0%,
-        var(--color-inactive) 100%);
+            var(--color-inactive-light) 0%,
+            var(--color-inactive) 100%);
     color: white;
     box-shadow: 0 4px 12px rgba(149, 165, 166, 0.3);
 }

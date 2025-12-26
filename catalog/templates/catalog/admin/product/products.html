@@ -224,7 +224,7 @@
                 </tbody>
             </table>
             <!-- Pagination -->
-            {% if products.paginator.count > 1 %}
+            {% if products.paginator.num_pages > 1 %}
                 <div class="pagination-container">
                     <div class="pagination-info">
                         Showing {{ products.start_index }} to {{ products.end_index }} of {{ products.paginator.count }} products

@@ -74,7 +74,12 @@
                     </div>
                     <div class="card-body logo-container">
                         {% if brand.logo %}
-                            {% cloudinary brand.logo width=200 height=200 crop="fit" %}
+                            <img src="{{ brand.logo.url }}"
+                                 alt="{{ brand.name }} Logo"
+                                 class="brand-logo-preview"
+                                 width="200"
+                                 height="200"
+                                 loading="lazy">
                         {% else %}
                             <div class="no-logo">
                                 <span class="material-icons">image</span>
