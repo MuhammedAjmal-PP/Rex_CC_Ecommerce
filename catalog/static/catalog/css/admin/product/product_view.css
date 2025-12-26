@@ -103,70 +103,71 @@
 }
 
 .btn-publish {
-    background: var(--color-success);
+    background: var(--color-black);
     color: var(--color-white);
-    border-color: var(--color-success);
+    border-color: var(--color-black);
 }
 
 .btn-publish:hover {
-    background: #4a9429;
-    border-color: #4a9429;
+    background: var(--color-dark);
+    border-color: var(--color-dark);
 }
 
 .btn-unpublish {
-    background: var(--color-warning);
+    background: var(--color-gray);
     color: var(--color-white);
-    border-color: var(--color-warning);
+    border-color: var(--color-gray);
 }
 
 .btn-unpublish:hover {
-    background: #d68910;
-    border-color: #d68910;
+    background: var(--color-gray-dark);
+    border-color: var(--color-gray-dark);
 }
 
 .btn-delete {
     background: var(--color-white);
-    color: var(--color-danger);
-    border-color: var(--color-danger);
+    color: var(--color-black);
+    border-color: var(--color-black);
 }
 
 .btn-delete:hover {
-    background: var(--color-danger);
+    background: var(--color-black);
     color: var(--color-white);
 }
 
 .btn-restore {
-    background: var(--color-success);
+    background: var(--color-black);
     color: var(--color-white);
-    border-color: var(--color-success);
+    border-color: var(--color-black);
 }
 
 .btn-restore:hover {
-    background: #4a9429;
-    border-color: #4a9429;
+    background: var(--color-dark);
+    border-color: var(--color-dark);
 }
 
 /* ========================================
-   PRODUCT INFO CARD
+   PRODUCT INFO CARD - Three Column Layout
    ======================================== */
 
 .product-info-card {
-    display: flex;
-    gap: 32px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 40px;
     margin: 0 40px 32px 40px;
     padding: 32px;
     background: var(--color-white);
-    box-shadow: var(--shadow-md);
     border: 1px solid #e0e0e0;
 }
 
+/* Thumbnail Section */
 .product-thumbnail-section {
     flex-shrink: 0;
 }
 
 .product-large-thumbnail {
-    width: 200px;
-    height: 200px;
+    width: 220px;
+    height: 220px;
     object-fit: cover;
     border: 2px solid var(--color-black);
     transition: transform 0.3s ease;
@@ -177,8 +178,8 @@
 }
 
 .product-thumbnail-placeholder {
-    width: 200px;
-    height: 200px;
+    width: 220px;
+    height: 220px;
     background: var(--color-black);
     display: flex;
     align-items: center;
@@ -187,79 +188,186 @@
 }
 
 .product-thumbnail-placeholder .material-icons {
-    font-size: 64px;
+    font-size: 72px;
 }
 
-.product-details-section {
-    flex: 1;
+/* Main Section */
+.product-main-section {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 24px;
+    min-width: 0;
 }
 
-.product-title-row {
+.product-header {
     display: flex;
-    justify-content: space-between;
     align-items: flex-start;
-    gap: 20px;
+    justify-content: space-between;
+    gap: 16px;
 }
 
 .product-name {
-    font-size: 2rem;
-    font-weight: 700;
+    font-size: 2.25rem;
+    font-weight: 800;
     color: var(--color-black);
     margin: 0;
-    line-height: 1.2;
+    line-height: 1.1;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
-.product-meta-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-}
-
-.meta-item {
+/* Brand Section */
+.product-brand {
     display: flex;
     flex-direction: column;
     gap: 6px;
 }
 
-.meta-label {
-    font-size: 0.8rem;
+.brand-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--color-gray);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.brand-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--color-black);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Categories Section */
+.product-categories {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.categories-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--color-gray);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.category-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.category-badge {
+    display: inline-block;
+    padding: 6px 14px;
+    background: var(--color-white);
+    border: 1px solid var(--color-black);
+    font-size: 0.75rem;
     font-weight: 600;
+    color: var(--color-black);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.2s ease;
+}
+
+.category-badge:hover {
+    background: var(--color-black);
+    color: var(--color-white);
+}
+
+.no-categories {
+    font-size: 0.85rem;
+    color: var(--color-gray-light);
+    font-style: italic;
+}
+
+/* Description Section */
+.product-description {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-top: 16px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.description-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--color-gray);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.description-text {
+    margin: 0;
+    color: var(--color-gray-dark);
+    line-height: 1.7;
+    font-size: 0.9rem;
+}
+
+/* Meta Section */
+.product-meta-section {
+    min-width: 200px;
+}
+
+.meta-card {
+    background: var(--color-light);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.meta-card .meta-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.meta-card .meta-item>.material-icons {
+    font-size: 18px;
+    color: var(--color-gray);
+    margin-top: 2px;
+}
+
+.meta-card .meta-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.meta-card .meta-label {
+    font-size: 0.65rem;
+    font-weight: 700;
     color: var(--color-gray);
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
-.meta-value {
-    font-size: 1rem;
-    font-weight: 500;
-    color: var(--color-black);
+.meta-card .meta-value {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-dark);
 }
 
-.meta-value.deleted-text {
+.meta-card .meta-value.slug {
+    font-family: 'Courier New', monospace;
+    font-size: 0.8rem;
+    background: var(--color-white);
+    padding: 4px 8px;
+    border: 1px solid #e0e0e0;
+}
+
+.meta-card .meta-item.deleted {
     color: var(--color-danger);
 }
 
-.meta-value.slug-text {
-    font-family: 'Courier New', monospace;
-    font-size: 0.9rem;
-    background: rgba(0, 0, 0, 0.05);
-    padding: 4px 10px;
-    border-radius: 4px;
-}
-
-.product-description {
-    padding-top: 16px;
-    border-top: 1px solid #e0e0e0;
-}
-
-.product-description p {
-    margin: 8px 0 0 0;
-    color: var(--color-gray-dark);
-    line-height: 1.6;
-    font-size: 0.95rem;
+.meta-card .meta-item.deleted .material-icons,
+.meta-card .meta-item.deleted .meta-value {
+    color: var(--color-danger);
 }
 
 /* ========================================
@@ -649,22 +757,22 @@
 
 @media (max-width: 1200px) {
     .product-info-card {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
+        grid-template-columns: auto 1fr;
     }
 
-    .product-title-row {
-        flex-direction: column;
-        align-items: center;
+    .product-meta-section {
+        grid-column: 1 / -1;
     }
 
-    .product-meta-grid {
-        grid-template-columns: 1fr;
+    .meta-card {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 24px;
     }
 
-    .category-badges {
-        justify-content: center;
+    .meta-card .meta-item {
+        flex: 1;
+        min-width: 150px;
     }
 }
 
@@ -692,18 +800,42 @@
     }
 
     .product-info-card {
+        grid-template-columns: 1fr;
         margin: 0 20px 24px 20px;
         padding: 20px;
+        text-align: center;
+    }
+
+    .product-thumbnail-section {
+        justify-self: center;
     }
 
     .product-large-thumbnail,
     .product-thumbnail-placeholder {
-        width: 150px;
-        height: 150px;
+        width: 180px;
+        height: 180px;
+    }
+
+    .product-header {
+        flex-direction: column;
+        align-items: center;
     }
 
     .product-name {
         font-size: 1.5rem;
+    }
+
+    .product-brand,
+    .product-categories {
+        align-items: center;
+    }
+
+    .category-badges {
+        justify-content: center;
+    }
+
+    .meta-card {
+        flex-direction: column;
     }
 
     .product-header-actions {

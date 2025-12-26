@@ -65,13 +65,14 @@
     </div>
     <!-- Product Info Card -->
     <div class="product-info-card">
+        <!-- Left: Thumbnail -->
         <div class="product-thumbnail-section">
             {% if product.thumbnail %}
                 <img src="{{ product.thumbnail.url }}"
                      alt="{{ product.name }}"
                      class="product-large-thumbnail"
-                     width="200"
-                     height="200"
+                     width="220"
+                     height="220"
                      loading="lazy">
             {% else %}
                 <div class="product-thumbnail-placeholder">
@@ -79,8 +80,9 @@
                 </div>
             {% endif %}
         </div>
-        <div class="product-details-section">
-            <div class="product-title-row">
+        <!-- Center: Main Info -->
+        <div class="product-main-section">
+            <div class="product-header">
                 <h2 class="product-name">{{ product.name }}</h2>
                 <div class="product-status">
                     {% if product.is_deleted %}
@@ -92,46 +94,61 @@
                     {% endif %}
                 </div>
             </div>
-            <div class="product-meta-grid">
-                <div class="meta-item">
-                    <span class="meta-label">Brand</span>
-                    <span class="meta-value">{{ product.brand.name }}</span>
+            <div class="product-brand">
+                <span class="brand-label">Brand</span>
+                <span class="brand-name">{{ product.brand.name }}</span>
+            </div>
+            <div class="product-categories">
+                <span class="categories-label">Categories</span>
+                <div class="category-badges">
+                    {% for category in product.category.all %}
+                        <span class="category-badge">{{ category.name }}</span>
+                    {% empty %}
+                        <span class="no-categories">No categories assigned</span>
+                    {% endfor %}
                 </div>
-                <div class="meta-item">
-                    <span class="meta-label">Categories</span>
-                    <div class="category-badges">
-                        {% for category in product.category.all %}
-                            <span class="category-badge">{{ category.name }}</span>
-                        {% empty %}
-                            <span class="text-muted">No categories</span>
-                        {% endfor %}
-                    </div>
-                </div>
-                <div class="meta-item">
-                    <span class="meta-label">Slug</span>
-                    <span class="meta-value slug-text">{{ product.slug }}</span>
-                </div>
-                <div class="meta-item">
-                    <span class="meta-label">Created</span>
-                    <span class="meta-value">{{ product.created_at|date:"M d, Y" }} at {{ product.created_at|date:"h:i A" }}</span>
-                </div>
-                <div class="meta-item">
-                    <span class="meta-label">Last Updated</span>
-                    <span class="meta-value">{{ product.updated_at|date:"M d, Y" }} at {{ product.updated_at|date:"h:i A" }}</span>
-                </div>
-                {% if product.is_deleted %}
-                    <div class="meta-item">
-                        <span class="meta-label">Deleted At</span>
-                        <span class="meta-value deleted-text">{{ product.deleted_at|date:"M d, Y" }} at {{ product.deleted_at|date:"h:i A" }}</span>
-                    </div>
-                {% endif %}
             </div>
             {% if product.description %}
                 <div class="product-description">
-                    <span class="meta-label">Description</span>
-                    <p>{{ product.description }}</p>
+                    <span class="description-label">Description</span>
+                    <p class="description-text">{{ product.description }}</p>
                 </div>
             {% endif %}
+        </div>
+        <!-- Right: Meta Info -->
+        <div class="product-meta-section">
+            <div class="meta-card">
+                <div class="meta-item">
+                    <span class="material-icons">link</span>
+                    <div class="meta-content">
+                        <span class="meta-label">Slug</span>
+                        <span class="meta-value slug">{{ product.slug }}</span>
+                    </div>
+                </div>
+                <div class="meta-item">
+                    <span class="material-icons">calendar_today</span>
+                    <div class="meta-content">
+                        <span class="meta-label">Created</span>
+                        <span class="meta-value">{{ product.created_at|date:"M d, Y" }}</span>
+                    </div>
+                </div>
+                <div class="meta-item">
+                    <span class="material-icons">update</span>
+                    <div class="meta-content">
+                        <span class="meta-label">Updated</span>
+                        <span class="meta-value">{{ product.updated_at|date:"M d, Y" }}</span>
+                    </div>
+                </div>
+                {% if product.is_deleted %}
+                    <div class="meta-item deleted">
+                        <span class="material-icons">delete_forever</span>
+                        <div class="meta-content">
+                            <span class="meta-label">Deleted</span>
+                            <span class="meta-value">{{ product.deleted_at|date:"M d, Y" }}</span>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
         </div>
     </div>
     <!-- Variant Statistics Cards -->
