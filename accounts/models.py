@@ -82,7 +82,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     def save(self, *args, **kwargs):
         if self.pk:
             old = CustomUser.objects.filter(pk=self.pk).first()
-            if old and old.avatar and self.avatar and old.avatar != self.avatar:
+            if old and old.avatar and old.avatar != self.avatar:
                 old.avatar.delete(save=False)
 
         super().save(*args, **kwargs)

@@ -151,8 +151,16 @@ STATIC_URL = "static/"
 
 # Cloudinary config
 CLOUDINARY_URL = env("CLOUDINARY_URL")
-DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
-MEDIA_URL = "/media/"
+
+# Django 6.0+ requires STORAGES dict format (DEFAULT_FILE_STORAGE is deprecated)
+STORAGES = {
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}
 
 
 # Phonenumber config

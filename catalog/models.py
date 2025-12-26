@@ -33,7 +33,7 @@ class Brand(models.Model):
             if old.name != self.name:
                 self.slug = slugify(self.name)
 
-            if old and old.logo and self.logo and old.logo != self.logo:
+            if old and old.logo and old.logo != self.logo:
                 old.logo.delete(save=False)
         else:
             self.slug = slugify(self.name)
@@ -114,12 +114,7 @@ class Product(models.Model):
             if old.name != self.name:
                 self.slug = slugify(self.name)
 
-            if (
-                old
-                and old.thumbnail
-                and self.thumbnail
-                and old.thumbnail != self.thumbnail
-            ):
+            if old and old.thumbnail and old.thumbnail != self.thumbnail:
                 old.thumbnail.delete(save=False)
         else:
             self.slug = slugify(self.name)
@@ -197,7 +192,7 @@ class ProductImage(models.Model):
     def save(self, *args, **kwargs):
         if self.pk:
             old = ProductImage.objects.filter(pk=self.pk).first()
-            if old and old.image and self.image and old.image != self.image:
+            if old and old.image and old.image != self.image:
                 old.image.delete(save=False)
 
         super().save(*args, **kwargs)
