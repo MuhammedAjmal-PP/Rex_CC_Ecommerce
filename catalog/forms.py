@@ -10,7 +10,7 @@ from accounts.forms import alphabet_only
 from django.core.validators import RegexValidator
 
 sku_validator = RegexValidator(
-    regex=r"^[A-Z0-9_-]+$",
+    regex=r"^[A-Z0-9_./-]+$",
     message="SKU can contain only uppercase letters, numbers, hyphens (-), and underscores (_).",
     code="invalid_sku",
 )
@@ -89,7 +89,6 @@ class ProductForm(forms.ModelForm):
 
 
 class ProductVariantForm(forms.ModelForm):
-    pass
 
     sku = forms.CharField(validators=[sku_validator])
 
@@ -126,7 +125,7 @@ class ProductVariantForm(forms.ModelForm):
         return sku.upper()
 
 
-class ProductImage(forms.ModelForm):
+class ProductImageForm(forms.ModelForm):
 
     class Meta:
         model = ProductImage

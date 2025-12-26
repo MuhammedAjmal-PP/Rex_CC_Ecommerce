@@ -5,9 +5,10 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q
 from django.contrib import messages
 from django.urls import reverse
-from catalog.forms import ProductForm
+from catalog.forms import ProductForm, ProductVariantForm, ProductImageForm
 from django.utils import timezone
 from django.contrib.auth.decorators import user_passes_test
+from django.forms import formset_factory
 
 
 @never_cache
@@ -152,7 +153,6 @@ def product_view(request, id):
             | Q(dial_color__icontains=search_query)
             | Q(strap_color__icontains=search_query)
             | Q(strap_material__icontains=search_query)
-            | Q(material__icontains=search_query)
             | Q(case_material__icontains=search_query)
             | Q(movement_type__icontains=search_query)
             | Q(case_size_mm__icontains=search_query)
@@ -183,3 +183,44 @@ def product_view(request, id):
     }
 
     return render(request, "catalog/admin/product/product_view.html", context)
+
+
+@never_cache
+@user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
+def variant_add(request, id):
+    """Add a new variant."""
+    product = get_object_or_404(Product, id=id)
+
+    extraimg = int(request.GET.get("extra", 0))
+
+    ImageFormSet = formset_factory(ProductImageForm, min_num=3, extra=extraimg)
+
+    if request.method == "POST":
+        variantform = ProductVariantForm(request.POST)
+        imageformset = ImageFormSet(request.POST, request.FILES)
+
+        if variantform.is_valid() and imageformset.is_valid():
+            variant = variantform.save(commit=False)
+            variant.product = product
+            variant.save()
+
+            for form in imageformset:
+                # Only save if an image was actually uploaded
+                if form.cleaned_data and form.cleaned_data.get("image"):
+                    image = form.save(commit=False)
+                    image.variant = variant
+                    image.save()
+
+            messages.success(request, "Variant created successfully.")
+            return redirect("admin_product_view", id=id)
+
+    else:
+        variantform = ProductVariantForm(initial={"product": product})
+        imageformset = ImageFormSet()
+
+    context = {
+        "variantform": variantform,
+        "imageformset": imageformset,
+        "product": product,
+    }
+    return render(request, "catalog/admin/product/variant_form.html", context)

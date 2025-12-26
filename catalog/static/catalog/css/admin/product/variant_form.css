@@ -1,0 +1,907 @@
+/* ============================================================
+   REX CC ADMIN - VARIANT FORM STYLES
+   Clean Minimal Black & White Design with Formset Support
+   ============================================================ */
+
+:root {
+    --black: #000000;
+    --dark: #1a1a1a;
+    --gray: #666666;
+    --gray-light: #999999;
+    --border: #e5e5e5;
+    --bg: #f8f8f8;
+    --white: #ffffff;
+    --error: #dc2626;
+    --success: #16a34a;
+    --warning: #f59e0b;
+}
+
+/* ========================================
+   FORM CONTAINER
+   ======================================== */
+
+.form-container {
+    padding: 40px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* ========================================
+   PRODUCT BANNER
+   ======================================== */
+
+.product-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--white);
+    border: 1px solid var(--border);
+    padding: 20px 28px;
+    margin-bottom: 28px;
+}
+
+.product-banner-content {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.product-banner-img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border: 1px solid var(--border);
+}
+
+.product-banner-placeholder {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    border: 1px solid var(--border);
+}
+
+.product-banner-placeholder .material-icons {
+    font-size: 28px;
+    color: var(--gray-light);
+}
+
+.product-banner-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.product-banner-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--gray);
+}
+
+.product-banner-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--black);
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.product-banner-brand {
+    font-size: 0.85rem;
+    color: var(--gray);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.product-banner-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border: 1px solid var(--border);
+    color: var(--dark);
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.2s;
+}
+
+.product-banner-link:hover {
+    border-color: var(--black);
+    background: var(--black);
+    color: var(--white);
+}
+
+.product-banner-link .material-icons {
+    font-size: 18px;
+}
+
+/* ========================================
+   FORM GRID
+   ======================================== */
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    margin-bottom: 28px;
+}
+
+.form-column {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+}
+
+/* ========================================
+   FORM CARD
+   ======================================== */
+
+.form-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 18px 24px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--black);
+    border-bottom: 1px solid var(--border);
+}
+
+.card-header .material-icons {
+    font-size: 20px;
+}
+
+.card-header-badge {
+    margin-left: auto;
+    padding: 4px 10px;
+    background: var(--bg);
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--gray);
+    letter-spacing: 0.5px;
+}
+
+/* Add Image Form & Button */
+.add-image-form {
+    margin-left: 12px;
+}
+
+.btn-add-image {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--dark);
+    font-size: 0.7rem;
+    font-weight: 700;
+    font-family: inherit;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-add-image:hover {
+    background: var(--black);
+    border-color: var(--black);
+    color: var(--white);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-add-image:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+.btn-add-image .material-icons {
+    font-size: 16px;
+    transition: transform 0.2s ease;
+}
+
+.btn-add-image:hover .material-icons {
+    transform: rotate(90deg);
+}
+
+.card-body {
+    padding: 24px;
+}
+
+/* ========================================
+   FORM GROUPS
+   ======================================== */
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group:last-child {
+    margin-bottom: 0;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.form-row:last-child {
+    margin-bottom: 0;
+}
+
+.form-row .form-group {
+    margin-bottom: 0;
+}
+
+.form-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--black);
+    margin-bottom: 10px;
+}
+
+/* ========================================
+   INPUTS
+   ======================================== */
+
+.form-input {
+    width: 100%;
+    padding: 14px 16px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    border: 1px solid var(--border);
+    background: var(--white);
+    color: var(--dark);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-input::placeholder {
+    color: var(--gray-light);
+    font-size: 0.85rem;
+}
+
+.form-input:focus {
+    border-color: var(--black);
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+}
+
+.form-input:hover:not(:focus) {
+    border-color: var(--gray);
+}
+
+/* Input with prefix */
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+}
+
+.input-prefix {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 14px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-right: none;
+    font-weight: 700;
+    color: var(--gray);
+    font-size: 1rem;
+}
+
+.form-input.with-prefix {
+    border-left: none;
+}
+
+.input-hint {
+    display: block;
+    font-size: 0.7rem;
+    color: var(--gray-light);
+    margin-top: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+/* ========================================
+   STOCK INDICATOR
+   ======================================== */
+
+.stock-indicator {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+}
+
+.stock-bar {
+    height: 6px;
+    background: var(--bg);
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+
+.stock-fill {
+    height: 100%;
+    width: 0%;
+    background: var(--success);
+    transition: width 0.3s, background 0.3s;
+}
+
+.stock-fill.low {
+    background: var(--error);
+}
+
+.stock-fill.medium {
+    background: var(--warning);
+}
+
+.stock-fill.high {
+    background: var(--success);
+}
+
+.stock-status {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--gray);
+}
+
+/* ========================================
+   IMAGE FORMSET CONTAINER
+   ======================================== */
+
+.image-formset-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.image-form-item {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Image Upload Box */
+.image-upload-box {
+    position: relative;
+    aspect-ratio: 1;
+    border: 2px dashed var(--border);
+    background: var(--bg);
+    cursor: pointer;
+    transition: all 0.2s;
+    overflow: hidden;
+}
+
+.image-upload-box:hover {
+    border-color: var(--gray);
+    background: var(--white);
+}
+
+.image-upload-box.has-image {
+    border-style: solid;
+    border-color: var(--border);
+}
+
+/* Hide Django file input */
+.image-upload-box input[type="file"] {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 5;
+}
+
+/* Upload Placeholder Content */
+.upload-placeholder-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    pointer-events: none;
+}
+
+.upload-placeholder-content .material-icons {
+    font-size: 32px;
+    color: var(--gray-light);
+}
+
+.upload-placeholder-content .upload-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--dark);
+}
+
+.upload-placeholder-content .upload-hint {
+    font-size: 0.65rem;
+    color: var(--gray-light);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+/* Image Preview Wrapper */
+.image-preview-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--white);
+}
+
+.preview-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Preview Overlay */
+.preview-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: rgba(0, 0, 0, 0.7);
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.image-upload-box:hover .preview-overlay {
+    opacity: 1;
+}
+
+.preview-action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.preview-action-btn .material-icons {
+    font-size: 18px;
+}
+
+.preview-action-btn.change-btn {
+    background: var(--white);
+    color: var(--dark);
+}
+
+.preview-action-btn.change-btn:hover {
+    background: var(--bg);
+}
+
+.preview-action-btn.remove-btn {
+    background: var(--error);
+    color: var(--white);
+}
+
+.preview-action-btn.remove-btn:hover {
+    background: #b91c1c;
+}
+
+/* Primary Toggle */
+.image-primary-toggle {
+    display: flex;
+    justify-content: center;
+}
+
+.primary-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--gray);
+}
+
+.primary-checkbox input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.primary-checkbox .checkmark {
+    width: 16px;
+    height: 16px;
+    border: 1px solid var(--border);
+    background: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.primary-checkbox .checkmark::after {
+    content: "✓";
+    font-size: 10px;
+    color: var(--white);
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.primary-checkbox input:checked+.checkmark {
+    background: var(--black);
+    border-color: var(--black);
+}
+
+.primary-checkbox input:checked+.checkmark::after {
+    opacity: 1;
+}
+
+.primary-checkbox input:checked~.primary-text {
+    color: var(--black);
+}
+
+/* Image Upload Help */
+.image-upload-help {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    background: var(--bg);
+    font-size: 0.75rem;
+    color: var(--gray);
+}
+
+.image-upload-help .material-icons {
+    font-size: 16px;
+    color: var(--gray-light);
+}
+
+/* ========================================
+   TOGGLE ROW
+   ======================================== */
+
+.toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.toggle-row:first-child {
+    padding-top: 0;
+}
+
+.toggle-row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.toggle-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.toggle-label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--dark);
+}
+
+.toggle-desc {
+    font-size: 0.75rem;
+    color: var(--gray);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+/* Toggle Switch */
+.toggle-switch {
+    position: relative;
+    width: 50px;
+    height: 26px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--border);
+    transition: 0.3s;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background-color: var(--white);
+    transition: 0.3s;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-switch input:checked+.toggle-slider {
+    background-color: var(--black);
+}
+
+.toggle-switch input:checked+.toggle-slider:before {
+    transform: translateX(24px);
+}
+
+/* ========================================
+   META SECTION
+   ======================================== */
+
+.meta-section {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+}
+
+.meta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+}
+
+.meta-row:first-child {
+    padding-top: 0;
+}
+
+.meta-row:last-child {
+    padding-bottom: 0;
+}
+
+.meta-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--gray);
+}
+
+.meta-value {
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    color: var(--dark);
+}
+
+/* ========================================
+   ERROR TEXT
+   ======================================== */
+
+.error-text {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--error);
+    margin-top: 6px;
+}
+
+.form-errors {
+    text-align: center;
+}
+
+/* ========================================
+   FORM ACTIONS
+   ======================================== */
+
+.form-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.btn-cancel,
+.btn-submit {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 18px 24px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    font-family: inherit;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+}
+
+.btn-cancel {
+    background: var(--white);
+    border: 1px solid var(--border);
+    color: var(--dark);
+}
+
+.btn-cancel:hover {
+    border-color: var(--black);
+    color: var(--black);
+}
+
+.btn-submit {
+    background: var(--black);
+    border: 1px solid var(--black);
+    color: var(--white);
+}
+
+.btn-submit:hover {
+    background: var(--dark);
+}
+
+.btn-cancel .material-icons,
+.btn-submit .material-icons {
+    font-size: 18px;
+}
+
+/* ========================================
+   MODAL
+   ======================================== */
+
+#cropModal .modal-content {
+    border-radius: 0;
+    border: none;
+}
+
+#cropModal .modal-header {
+    background: var(--dark);
+    color: var(--white);
+    padding: 16px 20px;
+}
+
+#cropModal .modal-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+#cropModal .btn-close {
+    filter: invert(1);
+}
+
+#cropModal .modal-body {
+    padding: 0;
+    background: #111;
+}
+
+#cropModal .modal-footer {
+    padding: 16px 20px;
+    gap: 10px;
+}
+
+#cropModal .btn-secondary,
+#cropModal .btn-primary {
+    padding: 12px 24px;
+    font-weight: 600;
+    border-radius: 0;
+}
+
+#cropModal .btn-secondary {
+    background: var(--white);
+    border: 1px solid var(--border);
+    color: var(--gray);
+}
+
+#cropModal .btn-primary {
+    background: var(--black);
+    border: 1px solid var(--black);
+    color: var(--white);
+}
+
+#cropImage {
+    max-width: 100%;
+    display: block;
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+
+@media (max-width: 1024px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .form-container {
+        padding: 20px;
+    }
+
+    .product-banner {
+        flex-direction: column;
+        gap: 16px;
+        text-align: center;
+    }
+
+    .product-banner-content {
+        flex-direction: column;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .form-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .card-body {
+        padding: 20px;
+    }
+
+    .image-formset-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .product-banner-name {
+        font-size: 1rem;
+    }
+
+    .image-formset-container {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+}
