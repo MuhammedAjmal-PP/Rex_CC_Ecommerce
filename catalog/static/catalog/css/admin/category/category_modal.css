@@ -312,3 +312,41 @@
 #editCategoryModal.modal.show .modal-dialog {
     transform: scale(1) translateY(0);
 }
+
+/* ========================================
+   TABLE CONTENT STYLES
+   ======================================== */
+
+.slug-text {
+    color: #666666;
+    font-size: 0.9rem;
+    font-family: 'Courier New', monospace;
+    background: rgba(0, 0, 0, 0.05);
+    padding: 4px 8px;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.product-count {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: #f8f8f8;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #000000;
+    transition: all 0.2s ease;
+}
+
+.product-count:hover {
+    background: #f0f0f0;
+    border-color: #000000;
+}
+
+.product-count .material-icons {
+    font-size: 16px;
+    color: #666666;
+}

@@ -25,3 +25,31 @@
     border-radius: 4px;
     display: inline-block;
 }
+
+/* ========================================
+   PRODUCT COUNT DISPLAY
+   ======================================== */
+
+.product-count {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: #f8f8f8;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-black);
+    transition: all 0.2s ease;
+}
+
+.product-count:hover {
+    background: #f0f0f0;
+    border-color: var(--color-black);
+}
+
+.product-count .material-icons {
+    font-size: 16px;
+    color: var(--color-gray);
+}

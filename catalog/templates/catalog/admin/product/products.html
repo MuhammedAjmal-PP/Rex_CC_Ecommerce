@@ -122,7 +122,8 @@
                     {% for product in products %}
                         <tr>
                             <td>
-                                <a href="#" class="item-info-link">
+                                <a href="{% url 'admin_product_view' product.id %}"
+                                   class="item-info-link">
                                     <div class="item-info">
                                         {% if product.thumbnail %}
                                             <img src="{{ product.thumbnail.url }}"
@@ -176,10 +177,12 @@
                             </td>
                             <td>
                                 <div class="action-group">
+                                    <a href="{% url "admin_product_view" product.id %}"
+                                       class="action-btn"
+                                       title="View">
+                                        <span class="material-icons">visibility</span>
+                                    </a>
                                     {% if not product.is_deleted %}
-                                        <a href="#" class="action-btn" title="View">
-                                            <span class="material-icons">visibility</span>
-                                        </a>
                                         <a href="{% url 'admin_product_edit' product.id %}"
                                            class="action-btn"
                                            title="Edit">

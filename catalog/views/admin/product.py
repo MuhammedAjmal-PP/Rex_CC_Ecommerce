@@ -126,3 +126,60 @@ def product_draft_toggle(request, id):
         status = "published"
     messages.success(request, f"Product {status} successfully.")
     return redirect(request.META.get("HTTP_REFERER", reverse("admin_products")))
+
+
+@never_cache
+@user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
+def product_view(request, id):
+    """View a product."""
+    product = get_object_or_404(Product, id=id)
+
+    search_query = request.GET.get("search", "").strip()
+    status_filter = request.GET.get("status", "all")
+    page_number = request.GET.get("page", 1)
+
+    variant = product.variants.all()
+
+    total_variants = variant.count()
+    published_variants = variant.filter(is_drafted=False).count()
+    drafted_variants = variant.filter(is_drafted=True).count()
+    deleted_variants = variant.filter(is_deleted=True).count()
+    featured_variants = variant.filter(is_featured=True).count()
+
+    if search_query:
+        variant = variant.filter(
+            Q(sku__icontains=search_query)
+            | Q(dial_color__icontains=search_query)
+            | Q(strap_color__icontains=search_query)
+            | Q(strap_material__icontains=search_query)
+            | Q(material__icontains=search_query)
+            | Q(case_material__icontains=search_query)
+            | Q(movement_type__icontains=search_query)
+            | Q(case_size_mm__icontains=search_query)
+        ).distinct()
+
+    if status_filter == "published":
+        variant = variant.filter(is_drafted=False)
+    elif status_filter == "drafted":
+        variant = variant.filter(is_drafted=True)
+    elif status_filter == "deleted":
+        variant = variant.filter(is_deleted=True)
+    elif status_filter == "featured":
+        variant = variant.filter(is_featured=True)
+
+    paginator = Paginator(variant, 10)
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        "product": product,
+        "variant": page_obj,
+        "search_query": search_query,
+        "status_filter": status_filter,
+        "total_variants": total_variants,
+        "published_variants": published_variants,
+        "drafted_variants": drafted_variants,
+        "deleted_variants": deleted_variants,
+        "featured_variants": featured_variants,
+    }
+
+    return render(request, "catalog/admin/product/product_view.html", context)

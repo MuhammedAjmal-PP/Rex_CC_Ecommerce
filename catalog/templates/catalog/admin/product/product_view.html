@@ -1,0 +1,435 @@
+{% extends "pages/admin/base_admin.html" %}
+{% load static %}
+{% load cloudinary %}
+{% block title %}
+    {{ product.name }} - View Product
+{% endblock title %}
+{% block extra_css %}
+    <link rel="stylesheet"
+          href="{% static 'pages/admin/css/shared/admin_search_filter.css' %}">
+    <link rel="stylesheet"
+          href="{% static 'pages/admin/css/shared/admin_table_listing.css' %}">
+    <link rel="stylesheet"
+          href="{% static 'catalog/css/admin/product/product_view.css' %}">
+{% endblock extra_css %}
+{% block header_title %}
+    {{ product.name }}
+{% endblock header_title %}
+{% block header_subtitle %}
+    View product details and manage variants
+{% endblock header_subtitle %}
+{% block content %}
+    <!-- Back Navigation & Product Actions -->
+    <div class="product-header-actions">
+        <a href="{% url 'admin_products' %}" class="back-link">
+            <span class="material-icons">arrow_back</span>
+            <span>Back to Products</span>
+        </a>
+        <div class="product-actions">
+            <a href="{% url 'admin_product_edit' product.id %}"
+               class="btn-action btn-edit">
+                <span class="material-icons">edit</span>
+                <span>Edit Product</span>
+            </a>
+            {% if not product.is_deleted %}
+                {% if product.is_drafted %}
+                    <a href="{% url 'admin_product_draft_toggle' product.id %}"
+                       class="btn-action btn-publish"
+                       onclick="return confirm('Are you sure you want to publish this product?');">
+                        <span class="material-icons">check_circle</span>
+                        <span>Publish</span>
+                    </a>
+                {% else %}
+                    <a href="{% url 'admin_product_draft_toggle' product.id %}"
+                       class="btn-action btn-unpublish"
+                       onclick="return confirm('Are you sure you want to unpublish this product?');">
+                        <span class="material-icons">unpublished</span>
+                        <span>Unpublish</span>
+                    </a>
+                {% endif %}
+                <a href="{% url 'admin_product_delete_toggle' product.id %}"
+                   class="btn-action btn-delete"
+                   onclick="return confirm('Are you sure you want to delete this product?');">
+                    <span class="material-icons">delete_outline</span>
+                    <span>Delete</span>
+                </a>
+            {% else %}
+                <a href="{% url 'admin_product_delete_toggle' product.id %}"
+                   class="btn-action btn-restore"
+                   onclick="return confirm('Are you sure you want to restore this product?');">
+                    <span class="material-icons">restore</span>
+                    <span>Restore</span>
+                </a>
+            {% endif %}
+        </div>
+    </div>
+    <!-- Product Info Card -->
+    <div class="product-info-card">
+        <div class="product-thumbnail-section">
+            {% if product.thumbnail %}
+                <img src="{{ product.thumbnail.url }}"
+                     alt="{{ product.name }}"
+                     class="product-large-thumbnail"
+                     width="200"
+                     height="200"
+                     loading="lazy">
+            {% else %}
+                <div class="product-thumbnail-placeholder">
+                    <span class="material-icons">watch</span>
+                </div>
+            {% endif %}
+        </div>
+        <div class="product-details-section">
+            <div class="product-title-row">
+                <h2 class="product-name">{{ product.name }}</h2>
+                <div class="product-status">
+                    {% if product.is_deleted %}
+                        <span class="status-badge deleted">Deleted</span>
+                    {% elif product.is_drafted %}
+                        <span class="status-badge inactive">Drafted</span>
+                    {% else %}
+                        <span class="status-badge active">Published</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="product-meta-grid">
+                <div class="meta-item">
+                    <span class="meta-label">Brand</span>
+                    <span class="meta-value">{{ product.brand.name }}</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Categories</span>
+                    <div class="category-badges">
+                        {% for category in product.category.all %}
+                            <span class="category-badge">{{ category.name }}</span>
+                        {% empty %}
+                            <span class="text-muted">No categories</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Created</span>
+                    <span class="meta-value">{{ product.created_at|date:"M d, Y" }} at {{ product.created_at|date:"h:i A" }}</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Last Updated</span>
+                    <span class="meta-value">{{ product.updated_at|date:"M d, Y" }} at {{ product.updated_at|date:"h:i A" }}</span>
+                </div>
+                {% if product.is_deleted %}
+                    <div class="meta-item">
+                        <span class="meta-label">Deleted At</span>
+                        <span class="meta-value deleted-text">{{ product.deleted_at|date:"M d, Y" }} at {{ product.deleted_at|date:"h:i A" }}</span>
+                    </div>
+                {% endif %}
+            </div>
+            {% if product.description %}
+                <div class="product-description">
+                    <span class="meta-label">Description</span>
+                    <p>{{ product.description }}</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    <!-- Variant Statistics Cards -->
+    <div class="section-divider">
+        <h3 class="section-title">
+            <span class="material-icons">style</span>
+            Product Variants
+        </h3>
+    </div>
+    <div class="stats-container">
+        <a href="?status=all{% if search_query %}&search={{ search_query }}{% endif %}"
+           class="stat-card {% if status_filter == 'all' %}active{% endif %}">
+            <div class="stat-icon total">
+                <span class="material-icons fs-2">style</span>
+            </div>
+            <div class="stat-content">
+                <p class="stat-label">Total Variants</p>
+                <h3 class="stat-value">{{ total_variants }}</h3>
+            </div>
+        </a>
+        <a href="?status=published{% if search_query %}&search={{ search_query }}{% endif %}"
+           class="stat-card {% if status_filter == 'published' %}active{% endif %}">
+            <div class="stat-icon published">
+                <span class="material-icons fs-2">check_circle</span>
+            </div>
+            <div class="stat-content">
+                <p class="stat-label">Published Variants</p>
+                <h3 class="stat-value">{{ published_variants }}</h3>
+            </div>
+        </a>
+        <a href="?status=drafted{% if search_query %}&search={{ search_query }}{% endif %}"
+           class="stat-card {% if status_filter == 'drafted' %}active{% endif %}">
+            <div class="stat-icon drafted">
+                <span class="material-icons fs-2">edit_note</span>
+            </div>
+            <div class="stat-content">
+                <p class="stat-label">Drafted Variants</p>
+                <h3 class="stat-value">{{ drafted_variants }}</h3>
+            </div>
+        </a>
+        <a href="?status=featured{% if search_query %}&search={{ search_query }}{% endif %}"
+           class="stat-card {% if status_filter == 'featured' %}active{% endif %}">
+            <div class="stat-icon featured">
+                <span class="material-icons fs-2">star</span>
+            </div>
+            <div class="stat-content">
+                <p class="stat-label">Featured Variants</p>
+                <h3 class="stat-value">{{ featured_variants }}</h3>
+            </div>
+        </a>
+        <a href="?status=deleted{% if search_query %}&search={{ search_query }}{% endif %}"
+           class="stat-card {% if status_filter == 'deleted' %}active{% endif %}">
+            <div class="stat-icon deleted">
+                <span class="material-icons fs-2">delete_outline</span>
+            </div>
+            <div class="stat-content">
+                <p class="stat-label">Deleted Variants</p>
+                <h3 class="stat-value">{{ deleted_variants }}</h3>
+            </div>
+        </a>
+    </div>
+    <!-- Search and Filter Bar -->
+    <div class="search-filter-bar">
+        <div class="search-box">
+            <form method="get" class="search-form">
+                <input type="hidden" name="status" value="{{ status_filter }}">
+                <div class="search-input-wrapper">
+                    <input type="text"
+                           name="search"
+                           placeholder="Search variants by SKU, color, material..."
+                           value="{{ search_query }}"
+                           class="form-control">
+                    <button type="submit" class="search-btn">
+                        <span class="material-icons">search</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+        <div class="filter-group">
+            <form method="get" class="filter-form">
+                <input type="hidden" name="search" value="{{ search_query }}">
+                <div class="select-wrapper">
+                    <span class="material-icons filter-icon">filter_alt</span>
+                    <select name="status" class="status-select" onchange="this.form.submit()">
+                        <option value="all" {% if status_filter == 'all' %}selected{% endif %}>Status: All</option>
+                        <option value="published"
+                                {% if status_filter == 'published' %}selected{% endif %}>Status: Published</option>
+                        <option value="drafted"
+                                {% if status_filter == 'drafted' %}selected{% endif %}>Status: Drafted</option>
+                        <option value="featured"
+                                {% if status_filter == 'featured' %}selected{% endif %}>Status: Featured</option>
+                        <option value="deleted"
+                                {% if status_filter == 'deleted' %}selected{% endif %}>Status: Deleted</option>
+                    </select>
+                    <span class="material-icons dropdown-icon">arrow_drop_down</span>
+                </div>
+            </form>
+        </div>
+        <div class="create-btn">
+            <a href="#">
+                <span class="material-icons">add</span>
+                <span>Add Variant</span>
+            </a>
+        </div>
+    </div>
+    <!-- Variants Table -->
+    <div class="table-container">
+        {% if variant %}
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Variant</th>
+                        <th>Specifications</th>
+                        <th>Price</th>
+                        <th>Stock</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for v in variant %}
+                        <tr>
+                            <td>
+                                <div class="variant-info">
+                                    {% if v.images.first %}
+                                        <img src="{{ v.images.first.image.url }}"
+                                             alt="{{ v.sku }}"
+                                             class="variant-thumbnail"
+                                             width="48"
+                                             height="48"
+                                             loading="lazy">
+                                    {% else %}
+                                        <div class="variant-placeholder">
+                                            <span class="material-icons">watch</span>
+                                        </div>
+                                    {% endif %}
+                                    <div class="variant-details">
+                                        <div class="variant-sku">{{ v.sku }}</div>
+                                        <div class="variant-colors">
+                                            {% if v.dial_color %}
+                                                <span class="color-tag dial">
+                                                    <span class="material-icons">radio_button_checked</span>
+                                                    {{ v.dial_color }}
+                                                </span>
+                                            {% endif %}
+                                            {% if v.strap_color %}
+                                                <span class="color-tag strap">
+                                                    <span class="material-icons">straighten</span>
+                                                    {{ v.strap_color }}
+                                                </span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="specs-list">
+                                    {% if v.movement_type %}
+                                        <span class="spec-tag">
+                                            <span class="material-icons">settings</span>
+                                            {{ v.movement_type }}
+                                        </span>
+                                    {% endif %}
+                                    {% if v.case_size_mm %}
+                                        <span class="spec-tag">
+                                            <span class="material-icons">straighten</span>
+                                            {{ v.case_size_mm }}mm
+                                        </span>
+                                    {% endif %}
+                                    {% if v.case_material %}
+                                        <span class="spec-tag">
+                                            <span class="material-icons">layers</span>
+                                            {{ v.case_material }}
+                                        </span>
+                                    {% endif %}
+                                    {% if v.strap_material %}
+                                        <span class="spec-tag">
+                                            <span class="material-icons">cable</span>
+                                            {{ v.strap_material }}
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td>
+                                <div class="price-display">
+                                    <span class="currency">₹</span>
+                                    <span class="amount">{{ v.price|floatformat:2 }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="stock-display {% if v.stock == 0 %}out-of-stock{% elif v.stock < 10 %}low-stock{% else %}in-stock{% endif %}">
+                                    <span class="material-icons">inventory_2</span>
+                                    <span class="stock-value">{{ v.stock }}</span>
+                                    {% if v.stock == 0 %}
+                                        <span class="stock-label">Out of Stock</span>
+                                    {% elif v.stock < 10 %}
+                                        <span class="stock-label">Low Stock</span>
+                                    {% else %}
+                                        <span class="stock-label">In Stock</span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td>
+                                <div class="status-badges-row">
+                                    {% if v.is_deleted %}
+                                        <span class="status-badge deleted">Deleted</span>
+                                    {% elif v.is_drafted %}
+                                        <span class="status-badge inactive">Drafted</span>
+                                    {% else %}
+                                        <span class="status-badge active">Published</span>
+                                    {% endif %}
+                                    {% if v.is_featured %}
+                                        <span class="status-badge featured">
+                                            <span class="material-icons">star</span>
+                                            Featured
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td>
+                                <div class="action-group">
+                                    {% if not v.is_deleted %}
+                                        <a href="#" class="action-btn" title="View">
+                                            <span class="material-icons">visibility</span>
+                                        </a>
+                                        <a href="#" class="action-btn" title="Edit">
+                                            <span class="material-icons">edit</span>
+                                        </a>
+                                        <a href="#"
+                                           class="action-btn delete-btn"
+                                           title="Delete"
+                                           onclick="return confirm('Are you sure you want to delete this variant?');">
+                                            <span class="material-icons">delete_outline</span>
+                                        </a>
+                                    {% else %}
+                                        <a href="#"
+                                           class="action-btn restore-btn"
+                                           title="Restore"
+                                           onclick="return confirm('Are you sure you want to restore this variant?');">
+                                            <span class="material-icons">restore</span>
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <!-- Pagination -->
+            {% if variant.paginator.count > 1 %}
+                <div class="pagination-container">
+                    <div class="pagination-info">
+                        Showing {{ variant.start_index }} to {{ variant.end_index }} of {{ variant.paginator.count }} variants
+                    </div>
+                    <div class="pagination">
+                        {% if variant.has_previous %}
+                            <a href="?page={{ variant.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}"
+                               class="page-btn-nav"
+                               aria-label="Previous page">
+                                <span class="material-icons">chevron_left</span>
+                            </a>
+                        {% else %}
+                            <button class="page-btn-nav" disabled aria-label="Previous page (disabled)">
+                                <span class="material-icons">chevron_left</span>
+                            </button>
+                        {% endif %}
+                        {% for num in variant.paginator.page_range %}
+                            {% if variant.number == num %}
+                                <span class="page-btn active" aria-current="page">{{ num }}</span>
+                            {% elif num > variant.number|add:'-3' and num < variant.number|add:'3' %}
+                                <a href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}"
+                                   class="page-btn"
+                                   aria-label="Page {{ num }}">{{ num }}</a>
+                            {% endif %}
+                        {% endfor %}
+                        {% if variant.has_next %}
+                            <a href="?page={{ variant.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}"
+                               class="page-btn-nav"
+                               aria-label="Next page">
+                                <span class="material-icons">chevron_right</span>
+                            </a>
+                        {% else %}
+                            <button class="page-btn-nav" disabled aria-label="Next page (disabled)">
+                                <span class="material-icons">chevron_right</span>
+                            </button>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+        {% else %}
+            <!-- Empty State -->
+            <div class="empty-state">
+                <span class="material-icons">style</span>
+                <h3>No variants found</h3>
+                <p>
+                    {% if search_query or status_filter != 'all' %}
+                        Try adjusting your search terms or clear the filter.
+                    {% else %}
+                        No variants have been added for this product yet.
+                    {% endif %}
+                </p>
+            </div>
+        {% endif %}
+    </div>
+{% endblock content %}
