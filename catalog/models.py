@@ -1,5 +1,4 @@
 from django.db import models
-from cloudinary.models import CloudinaryField
 from django.utils.text import slugify
 
 
@@ -11,12 +10,11 @@ class Brand(models.Model):
     name = models.CharField(max_length=255, unique=True)
     slug = models.SlugField(unique=True, null=True, blank=True)
     tagline = models.TextField(null=True, blank=True)
-    logo = CloudinaryField(
-        "logo",
-        null=True,
+    logo = models.ImageField(
+        upload_to="brands_logo",
         blank=True,
-        folder="brands",
-        resource_type="image",
+        null=True,
+        help_text="Brand Logo",
     )
     description = models.TextField(blank=True, null=True)
     is_active = models.BooleanField(default=True)
@@ -30,9 +28,13 @@ class Brand(models.Model):
     def save(self, *args, **kwargs):
 
         if self.pk:
-            old_name = Brand.objects.values_list("name", flat=True).get(pk=self.pk)
-            if old_name != self.name:
+            old = Brand.objects.filter(pk=self.pk).first()
+
+            if old.name != self.name:
                 self.slug = slugify(self.name)
+
+            if old and old.logo and self.logo and old.logo != self.logo:
+                old.logo.delete(save=False)
         else:
             self.slug = slugify(self.name)
 
@@ -82,12 +84,11 @@ class Product(models.Model):
 
     description = models.TextField(blank=True)
 
-    thumbnail = CloudinaryField(
-        "product_thumb",
+    thumbnail = models.ImageField(
+        upload_to="product_thumbs/",
         null=True,
         blank=True,
-        folder="product-thumb/",
-        resource_type="image",
+        help_text="Product thumbnail image",
     )
 
     # Soft delete
@@ -109,9 +110,17 @@ class Product(models.Model):
 
     def save(self, *args, **kwargs):
         if self.pk:
-            old_name = Product.objects.values_list("name", flat=True).get(pk=self.pk)
-            if old_name != self.name:
+            old = Product.objects.filter(pk=self.pk).first()
+            if old.name != self.name:
                 self.slug = slugify(self.name)
+
+            if (
+                old
+                and old.thumbnail
+                and self.thumbnail
+                and old.thumbnail != self.thumbnail
+            ):
+                old.thumbnail.delete(save=False)
         else:
             self.slug = slugify(self.name)
 
@@ -164,12 +173,12 @@ class ProductImage(models.Model):
         ProductVariant, on_delete=models.CASCADE, related_name="images"
     )
 
-    image = CloudinaryField(
+    image = models.ImageField(
         "product_image",
         null=True,
         blank=True,
-        folder="products-image/",
-        resource_type="image",
+        upload_to="products_image/",
+        help_text="ProductVariant Image",
     )
 
     is_primary = models.BooleanField(default=False)
@@ -184,6 +193,14 @@ class ProductImage(models.Model):
                 name="unique_primary_image_per_variant",
             )
         ]
+
+    def save(self, *args, **kwargs):
+        if self.pk:
+            old = ProductImage.objects.filter(pk=self.pk).first()
+            if old and old.image and self.image and old.image != self.image:
+                old.image.delete(save=False)
+
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"Image for {self.variant.sku}"

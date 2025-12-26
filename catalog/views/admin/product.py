@@ -8,7 +8,6 @@ from django.urls import reverse
 from catalog.forms import ProductForm
 from django.utils import timezone
 from django.contrib.auth.decorators import user_passes_test
-import cloudinary.uploader
 
 
 @never_cache
@@ -82,41 +81,10 @@ def product_edit(request, id):
     """Edit an existing product."""
     product = get_object_or_404(Product, id=id)
 
-    # Store old thumbnail public_id before form processing
-    old_thumbnail = product.thumbnail
-    old_thumbnail_public_id = None
-    if (
-        old_thumbnail
-        and hasattr(old_thumbnail, "public_id")
-        and old_thumbnail.public_id
-    ):
-        old_thumbnail_public_id = old_thumbnail.public_id
-
     if request.method == "POST":
         form = ProductForm(request.POST, request.FILES, instance=product)
         if form.is_valid():
-            # Check if a new thumbnail was uploaded
-            new_thumbnail = request.FILES.get("thumbnail")
-            # Check if thumbnail removal was requested
-            remove_thumbnail = request.POST.get("remove_thumbnail") == "true"
-
-            # Save the form
-            saved_product = form.save(commit=False)
-
-            # Handle thumbnail removal - set to empty string for CloudinaryField
-            if remove_thumbnail and not new_thumbnail:
-                saved_product.thumbnail = ""
-
-            saved_product.save()
-            form.save_m2m()  # Save many-to-many relationships
-
-            # Delete old thumbnail from Cloudinary if new uploaded or removed
-            if old_thumbnail_public_id and (new_thumbnail or remove_thumbnail):
-                try:
-                    cloudinary.uploader.destroy(old_thumbnail_public_id)
-                except Exception as e:
-                    print(f"Failed to delete old thumbnail from Cloudinary: {e}")
-
+            form.save()
             messages.success(request, "Product updated successfully.")
             return redirect("admin_products")
         else:

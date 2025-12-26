@@ -14,9 +14,7 @@ def send_admin_password_reset_email(user, email, request):
     password_reset_url = reverse(
         "admin_reset_password", kwargs={"reset_id": new_password_reset.reset_id}
     )
-    full_password_reset_url = (
-        f"{request.scheme}://{request.get_host()}{password_reset_url}"
-    )
+    full_password_reset_url = request.build_absolute_uri(password_reset_url)
 
     # Email content
     email_subject = "Admin Reset password"

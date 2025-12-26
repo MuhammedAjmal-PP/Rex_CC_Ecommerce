@@ -5,7 +5,6 @@ from django.contrib.auth.models import (
     BaseUserManager,
 )
 from phonenumber_field.modelfields import PhoneNumberField
-from cloudinary.models import CloudinaryField
 import uuid
 
 
@@ -47,12 +46,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     # Basic info
     first_name = models.CharField(max_length=100, null=True, blank=True)
     last_name = models.CharField(max_length=100, null=True, blank=True)
-    avatar = CloudinaryField(
-        "avatar",
+    avatar = models.ImageField(
+        upload_to="user_avatar",
         null=True,
         blank=True,
-        folder="user_avatars",
-        resource_type="image",
+        help_text="User Profile Pic",
     )
 
     email = models.EmailField(unique=True)
@@ -80,6 +78,14 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     def get_short_name(self):
         """Return the short name for the user."""
         return self.first_name
+
+    def save(self, *args, **kwargs):
+        if self.pk:
+            old = CustomUser.objects.filter(pk=self.pk).first()
+            if old and old.avatar and self.avatar and old.avatar != self.avatar:
+                old.avatar.delete(save=False)
+
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.email

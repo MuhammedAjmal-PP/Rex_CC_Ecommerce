@@ -10,7 +10,6 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
-from django.conf.global_settings import CSRF_TRUSTED_ORIGINS
 from pathlib import Path
 import environ
 
@@ -67,8 +66,8 @@ INSTALLED_APPS = [
     "allauth.account",
     "allauth.socialaccount",
     "allauth.socialaccount.providers.google",
-    "cloudinary_storage",
     "cloudinary",
+    "cloudinary_storage",
     "phonenumber_field",
     # localapps
     "pages",
@@ -153,6 +152,7 @@ STATIC_URL = "static/"
 # Cloudinary config
 CLOUDINARY_URL = env("CLOUDINARY_URL")
 DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+MEDIA_URL = "/media/"
 
 
 # Phonenumber config
