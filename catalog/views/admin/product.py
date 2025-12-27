@@ -279,6 +279,8 @@ def variant_edit(request, product_id, variant_id):
     return render(request, "catalog/admin/product/variant_edit_form.html", context)
 
 
+@never_cache
+@user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
 def variant_view(request, product_id, variant_id):
     """
     view details of view

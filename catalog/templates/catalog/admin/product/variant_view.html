@@ -47,7 +47,9 @@
             <!-- Image Gallery with Horizontal Scroll -->
             <div class="hero-gallery">
                 <div class="hero-main-image{% if not images %} empty{% endif %}"
-                     id="mainImage">
+                     id="mainImage"
+                     onmousemove="zoom(event)"
+                     onmouseleave="resetZoom()">
                     {% if images %}
                         {% for image in images %}
                             {% if image.is_primary %}
