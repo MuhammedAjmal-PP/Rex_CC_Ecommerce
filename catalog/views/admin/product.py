@@ -278,7 +278,21 @@ def variant_edit(request, product_id, variant_id):
                         image.variant = variant
                         image.save()
 
-            messages.success(request, "Variant updated successfully.")
+            is_draft = variant.is_drafted
+            if not is_draft:
+                imagecount = variant.images.count()
+                if imagecount < 3:
+                    variant.is_drafted = True
+                    variant.save()
+                    messages.error(
+                        request,
+                        "A minimum of three product images is required to publish this variant.",
+                    )
+                    messages.success(request, "Variant saved as draft.")
+                else:
+                    messages.success(request, "Variant published successfully.")
+            else:
+                messages.success(request, "Variant updated successfully.")
             return redirect("admin_product_view", id=product_id)
     else:
         variantform = ProductVariantForm(instance=variant)
