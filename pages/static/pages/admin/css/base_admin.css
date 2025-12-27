@@ -5,6 +5,9 @@
    Desktop-only (min-width: 1280px recommended)
    ============================================================ */
 
+/* Import fonts to match admin auth styling */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:wght@400;600;700&display=swap');
+
 :root {
     --admin-bg: #F5F5F5;
     --admin-sidebar-bg: #1A1A1A;
@@ -16,8 +19,9 @@
     --admin-white: #FFFFFF;
     --admin-accent: #333333;
 
-    --font-head: 'Outfit', sans-serif;
-    --font-body: 'Outfit', sans-serif;
+    /* Fonts matching admin auth */
+    --font-head: 'Playfair Display', serif;
+    --font-body: 'Montserrat', sans-serif;
 }
 
 * {
@@ -69,22 +73,32 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 5px;
+    gap: 8px;
 }
 
 .logo-main {
     font-family: var(--font-head);
-    font-size: 1.8rem;
+    font-size: 2rem;
     font-weight: 700;
     letter-spacing: 3px;
     color: var(--admin-white);
 }
 
-.logo-sub {
-    font-size: 0.65rem;
-    letter-spacing: 4px;
+/* Accent color for 'CC' part of logo */
+.logo-main .logo-accent {
     color: var(--admin-text-light);
-    font-weight: 400;
+}
+
+.logo-sub {
+    display: inline-block;
+    background-color: var(--admin-white);
+    color: var(--admin-sidebar-bg);
+    font-size: 0.6rem;
+    font-weight: 600;
+    letter-spacing: 3px;
+    padding: 5px 18px;
+    text-transform: uppercase;
+    font-family: var(--font-body);
 }
 
 /* ========================================
