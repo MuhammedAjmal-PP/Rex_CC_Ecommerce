@@ -173,16 +173,35 @@ function initFileUpload() {
             return;
         }
 
+        // Detect original file type to preserve format
+        const originalName = selectedFile?.name || 'brand_logo.png';
+        const originalType = selectedFile?.type || 'image/png';
+
+        // Supported formats by canvas.toBlob
+        const supportedFormats = {
+            'image/png': { mime: 'image/png', quality: undefined },
+            'image/jpeg': { mime: 'image/jpeg', quality: 0.9 },
+            'image/jpg': { mime: 'image/jpeg', quality: 0.9 },
+            'image/webp': { mime: 'image/webp', quality: 0.9 },
+            'image/avif': { mime: 'image/avif', quality: 0.9 },
+            'image/gif': { mime: 'image/png', quality: undefined },
+            'image/svg+xml': { mime: 'image/png', quality: undefined },
+        };
+
+        // Get format settings, default to PNG for unknown formats
+        const formatSettings = supportedFormats[originalType] || { mime: 'image/png', quality: undefined };
+        const mimeType = formatSettings.mime;
+        const quality = formatSettings.quality;
+
         canvas.toBlob(function (blob) {
             if (!blob) {
                 alert('Failed to create image blob');
                 return;
             }
 
-            // Create file from blob
-            const originalName = selectedFile?.name || 'brand_logo.jpg';
+            // Create file from blob preserving original format
             const croppedFile = new File([blob], originalName, {
-                type: 'image/jpeg',
+                type: mimeType,
                 lastModified: Date.now()
             });
 
@@ -197,7 +216,7 @@ function initFileUpload() {
 
             // Close modal
             cropModal.hide();
-        }, 'image/jpeg', 0.9);
+        }, mimeType, quality);
     });
 
     /* ========= SHOW/HIDE PREVIEW ========= */

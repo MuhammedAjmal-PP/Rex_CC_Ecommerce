@@ -223,16 +223,38 @@ function initImageFormsetWithCropper() {
             return;
         }
 
+        // Detect original file type to preserve format
+        const originalFile = currentFileInput?.files[0];
+        const originalName = originalFile?.name || 'variant_image.png';
+        const originalType = originalFile?.type || 'image/png';
+
+        // Supported formats by canvas.toBlob (browser support varies)
+        // PNG, JPEG, WebP are widely supported
+        // AVIF, GIF may need fallback
+        const supportedFormats = {
+            'image/png': { mime: 'image/png', quality: undefined },
+            'image/jpeg': { mime: 'image/jpeg', quality: 0.9 },
+            'image/jpg': { mime: 'image/jpeg', quality: 0.9 },
+            'image/webp': { mime: 'image/webp', quality: 0.9 },
+            'image/avif': { mime: 'image/avif', quality: 0.9 },
+            'image/gif': { mime: 'image/png', quality: undefined }, // GIF -> PNG (canvas doesn't animate)
+            'image/svg+xml': { mime: 'image/png', quality: undefined }, // SVG -> PNG (canvas rasterizes)
+        };
+
+        // Get format settings, default to PNG for unknown formats (preserves transparency)
+        const formatSettings = supportedFormats[originalType] || { mime: 'image/png', quality: undefined };
+        const mimeType = formatSettings.mime;
+        const quality = formatSettings.quality;
+
         canvas.toBlob(function (blob) {
             if (!blob) {
                 alert('Failed to create image blob');
                 return;
             }
 
-            // Create file from blob
-            const originalName = currentFileInput?.files[0]?.name || 'variant_image.jpg';
+            // Create file from blob preserving original format
             const croppedFile = new File([blob], originalName, {
-                type: 'image/jpeg',
+                type: mimeType,
                 lastModified: Date.now()
             });
 
@@ -250,7 +272,7 @@ function initImageFormsetWithCropper() {
 
             // Close modal
             cropModal.hide();
-        }, 'image/jpeg', 0.9);
+        }, mimeType, quality);
     });
 }
 
