@@ -241,7 +241,7 @@ def variant_add(request, product_id):
                     messages.success(request, "Variant published successfully.")
             else:
                 messages.success(request, "Variant saved as draft.")
-            return redirect("admin_product_view", id=product_id)
+            return redirect("admin_product_view", product_id=product_id)
 
     else:
         variantform = ProductVariantForm(initial={"product": product})

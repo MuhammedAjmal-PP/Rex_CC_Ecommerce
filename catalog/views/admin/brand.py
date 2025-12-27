@@ -93,7 +93,7 @@ def brand_status_toggle(request, id):
     brand.is_active = not brand.is_active
     brand.save()
 
-    status_msg = "activatied" if brand.is_active else "deactivated"
+    status_msg = "activated" if brand.is_active else "deactivated"
     messages.success(request, f"Brand {status_msg} successfully.")
 
     return redirect(request.META.get("HTTP_REFERER", reverse("admin_brands")))

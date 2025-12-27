@@ -396,14 +396,14 @@
                                                 <span class="material-icons">unpublished</span>
                                             </a>
                                         {% endif %}
-                                        <a href="#"
+                                        <a href="{% url 'admin_variant_delete_toggle' product.id v.id %}"
                                            class="action-btn delete-btn"
                                            title="Delete"
                                            onclick="return confirm('Are you sure you want to delete this variant?');">
                                             <span class="material-icons">delete_outline</span>
                                         </a>
                                     {% else %}
-                                        <a href="#"
+                                        <a href="{% url 'admin_variant_delete_toggle' product.id v.id %}"
                                            class="action-btn restore-btn"
                                            title="Restore"
                                            onclick="return confirm('Are you sure you want to restore this variant?');">

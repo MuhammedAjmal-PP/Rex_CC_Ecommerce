@@ -114,7 +114,7 @@ def category_status_toggle(request, id):
     category.is_active = not category.is_active
     category.save()
 
-    status_msg = "activatied" if category.is_active else "deactivated"
+    status_msg = "activated" if category.is_active else "deactivated"
     messages.success(request, f"Category {status_msg} successfully.")
 
     return redirect(request.META.get("HTTP_REFERER", reverse("admin_categories")))

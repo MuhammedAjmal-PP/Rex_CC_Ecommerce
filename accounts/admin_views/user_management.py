@@ -201,11 +201,11 @@ def user_status_toggle(request, id):
         user.is_active = not user.is_active
         user.save()
 
-        status_msg = "activatied" if user.is_active else "deactivated"
+        status_msg = "activated" if user.is_active else "deactivated"
         messages.success(request, f"User {status_msg} successfully.")
 
     except User.DoesNotExist:
-        messages.error(request, "User Not founded")
+        messages.error(request, "User not found")
 
     fallback = reverse("admin_users_list")
     previous_page = request.META.get("HTTP_REFERER", fallback)
