@@ -374,7 +374,9 @@
                                         <a href="#" class="action-btn" title="View">
                                             <span class="material-icons">visibility</span>
                                         </a>
-                                        <a href="#" class="action-btn" title="Edit">
+                                        <a href="{% url "admin_variant_edit" product.id v.id %}"
+                                           class="action-btn"
+                                           title="Edit">
                                             <span class="material-icons">edit</span>
                                         </a>
                                         <a href="#"

@@ -100,6 +100,15 @@ function initImageFormsetWithCropper() {
 
         if (!fileInput) return;
 
+        // Check for existing image (from data attribute)
+        const existingUrl = item.dataset.existingUrl;
+        if (existingUrl && existingUrl.trim() !== '') {
+            // Mark as having image for styling
+            if (uploadBox) uploadBox.classList.add('has-image');
+            // Mark the item as having an existing image (for remove logic)
+            item.dataset.hasExisting = 'true';
+        }
+
         // Handle file selection - open cropper
         fileInput.addEventListener('change', function (e) {
             const file = e.target.files[0];

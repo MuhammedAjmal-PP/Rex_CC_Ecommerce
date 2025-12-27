@@ -1,12 +1,7 @@
 {% extends "pages/admin/base_admin.html" %}
 {% load static %}
-{% load cloudinary %}
 {% block title %}
-    {% if variantform.instance.pk %}
-        Edit Variant
-    {% else %}
-        Add Variant
-    {% endif %}
+    Add Variant
 {% endblock title %}
 {% block extra_css %}
     <link rel="stylesheet"
@@ -15,18 +10,10 @@
           href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
 {% endblock extra_css %}
 {% block header_title %}
-    {% if variantform.instance.pk %}
-        Edit Variant
-    {% else %}
-        Add Variant
-    {% endif %}
+    Add Variant
 {% endblock header_title %}
 {% block header_subtitle %}
-    {% if variantform.instance.pk %}
-        Update variant details for {{ product.name }}
-    {% else %}
-        Create a new variant for {{ product.name }}
-    {% endif %}
+    Create a new variant for {{ product.name }}
 {% endblock header_subtitle %}
 {% block content %}
     <div class="form-container">
@@ -231,8 +218,12 @@
                                 {% for form in imageformset %}
                                     <div class="image-form-item" data-form-index="{{ forloop.counter0 }}">
                                         <div class="image-upload-box" id="uploadBox{{ forloop.counter0 }}">
-                                            <!-- Hidden file input -->
-                                            {{ form.image }}
+                                            <!-- File input -->
+                                            <input type="file"
+                                                   name="{{ form.image.html_name }}"
+                                                   id="{{ form.image.id_for_label }}"
+                                                   accept="image/*"
+                                                   class="image-file-input">
                                             <!-- Upload placeholder -->
                                             <div class="upload-placeholder-content"
                                                  id="placeholder{{ forloop.counter0 }}">
@@ -267,7 +258,9 @@
                                         <!-- Primary toggle -->
                                         <div class="image-primary-toggle">
                                             <label class="primary-checkbox">
-                                                {{ form.is_primary }}
+                                                <input type="checkbox"
+                                                       name="{{ form.is_primary.html_name }}"
+                                                       id="{{ form.is_primary.id_for_label }}">
                                                 <span class="checkmark"></span>
                                                 <span class="primary-text">Primary</span>
                                             </label>
@@ -282,7 +275,7 @@
                             </div>
                             <div class="image-upload-help">
                                 <span class="material-icons">info</span>
-                                <span>Upload up to 10 images. Mark one as primary for the main display.</span>
+                                <span>Mark one as primary for the main display.</span>
                             </div>
                         </div>
                     </div>
@@ -299,9 +292,7 @@
                                     <span class="toggle-desc">Show in featured collections</span>
                                 </div>
                                 <label class="toggle-switch">
-                                    <input type="checkbox"
-                                           name="is_featured"
-                                           {% if variantform.is_featured.value %}checked{% endif %}>
+                                    <input type="checkbox" name="is_featured">
                                     <span class="toggle-slider"></span>
                                 </label>
                             </div>
@@ -311,9 +302,7 @@
                                     <span class="toggle-desc">Hidden from catalog</span>
                                 </div>
                                 <label class="toggle-switch">
-                                    <input type="checkbox"
-                                           name="is_drafted"
-                                           {% if variantform.is_drafted.value %}checked{% endif %}>
+                                    <input type="checkbox" name="is_drafted" checked>
                                     <span class="toggle-slider"></span>
                                 </label>
                             </div>
@@ -339,11 +328,7 @@
                 </a>
                 <button type="submit" class="btn-submit">
                     <span class="material-icons">add</span>
-                    {% if variantform.instance.pk %}
-                        Save Changes
-                    {% else %}
-                        Create Variant
-                    {% endif %}
+                    Create Variant
                 </button>
             </div>
         </form>

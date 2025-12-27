@@ -1,5 +1,5 @@
 from django.views.decorators.cache import never_cache
-from catalog.models import Product
+from catalog.models import Product, ProductVariant, ProductImage
 from django.core.paginator import Paginator
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q
@@ -8,7 +8,7 @@ from django.urls import reverse
 from catalog.forms import ProductForm, ProductVariantForm, ProductImageForm
 from django.utils import timezone
 from django.contrib.auth.decorators import user_passes_test
-from django.forms import formset_factory
+from django.forms import formset_factory, modelformset_factory
 
 
 @never_cache
@@ -223,4 +223,32 @@ def variant_add(request, id):
         "imageformset": imageformset,
         "product": product,
     }
-    return render(request, "catalog/admin/product/variant_form.html", context)
+    return render(request, "catalog/admin/product/variant_add_form.html", context)
+
+
+@never_cache
+@user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
+def variant_edit(request, product_id, variant_id):
+    """Edit an existing variant."""
+    product = get_object_or_404(Product, id=product_id)
+    variant = get_object_or_404(ProductVariant, product=product, id=variant_id)
+    images = variant.images.all()
+
+    extraimg = int(request.GET.get("extra", 0))
+
+    variantform = ProductVariantForm(instance=variant)
+    ImageFormset = modelformset_factory(
+        ProductImage,
+        form=ProductImageForm,
+        min_num=3,
+        extra=extraimg,
+    )
+    imageformset = ImageFormset(queryset=images)
+
+    context = {
+        "variantform": variantform,
+        "imageformset": imageformset,
+        "product": product,
+        "variant": variant,
+    }
+    return render(request, "catalog/admin/product/variant_edit_form.html", context)
