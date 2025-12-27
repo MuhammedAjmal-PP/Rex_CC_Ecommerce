@@ -19,7 +19,10 @@ def products(request):
     # Extract query parameters from request
     search_query = request.GET.get("search", "").strip()
     status_filter = request.GET.get("status", "all")
-    page_number = request.GET.get("page", 1)
+    try:
+        page_number = int(request.GET.get("page", 1))
+    except (ValueError, TypeError):
+        page_number = 1
 
     products = Product.objects.all().order_by("name")
 
@@ -103,7 +106,7 @@ def product_edit(request, product_id):
 @never_cache
 @user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
 def product_delete_toggle(request, product_id):
-    """Delete a product."""
+    """Delete a product and cascade to variants."""
     product = get_object_or_404(Product, id=product_id)
     product.is_deleted = not product.is_deleted
 
@@ -111,9 +114,15 @@ def product_delete_toggle(request, product_id):
         product.is_drafted = True
         product.deleted_at = timezone.now()
         status = "deleted"
+        # Cascade soft-delete to all variants
+        product.variants.update(
+            is_deleted=True, is_drafted=True, deleted_at=timezone.now()
+        )
     else:
         product.deleted_at = None
         status = "restored"
+        # Restore variants (but keep them drafted for manual review)
+        product.variants.update(is_deleted=False, deleted_at=None)
     product.save()
     messages.success(request, f"Product {status} successfully.")
     return redirect(request.META.get("HTTP_REFERER", reverse("admin_products")))
@@ -153,7 +162,10 @@ def product_view(request, product_id):
 
     search_query = request.GET.get("search", "").strip()
     status_filter = request.GET.get("status", "all")
-    page_number = request.GET.get("page", 1)
+    try:
+        page_number = int(request.GET.get("page", 1))
+    except (ValueError, TypeError):
+        page_number = 1
 
     variant = product.variants.all()
 
@@ -308,7 +320,7 @@ def variant_edit(request, product_id, variant_id):
                     messages.success(request, "Variant published successfully.")
             else:
                 messages.success(request, "Variant updated successfully.")
-            return redirect("admin_product_view", id=product_id)
+            return redirect("admin_product_view", product_id=product_id)
     else:
         variantform = ProductVariantForm(instance=variant)
         imageformset = ImageFormset(queryset=images)

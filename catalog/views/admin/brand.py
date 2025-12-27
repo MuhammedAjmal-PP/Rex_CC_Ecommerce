@@ -18,7 +18,10 @@ def brands(request):
     # Extract query parameters from request
     search_query = request.GET.get("search", "").strip()
     status_filter = request.GET.get("status", "all")
-    page_number = request.GET.get("page", 1)
+    try:
+        page_number = int(request.GET.get("page", 1))
+    except (ValueError, TypeError):
+        page_number = 1
 
     brands = Brand.objects.all().order_by("name")
 

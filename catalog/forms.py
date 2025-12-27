@@ -92,6 +92,14 @@ class ProductVariantForm(forms.ModelForm):
 
     sku = forms.CharField(validators=[sku_validator])
 
+    # Make specification fields required at the form level
+    dial_color = forms.CharField(max_length=100, required=True)
+    case_size_mm = forms.IntegerField(required=True, min_value=1)
+    case_material = forms.CharField(max_length=100, required=True)
+    movement_type = forms.CharField(max_length=100, required=True)
+    strap_color = forms.CharField(max_length=100, required=True)
+    strap_material = forms.CharField(max_length=100, required=True)
+
     class Meta:
         model = ProductVariant
         fields = [

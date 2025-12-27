@@ -85,8 +85,15 @@ def forgot_password(request):
                 )
                 return redirect("admin_forgot_password")
 
-            send_admin_password_reset_email(user, email, request)
-            return redirect("admin_password_reset_sent")
+            email_sent = send_admin_password_reset_email(user, email, request)
+            if email_sent:
+                return redirect("admin_password_reset_sent")
+            else:
+                messages.error(
+                    request,
+                    "Failed to send password reset email. Please try again later.",
+                )
+                return redirect("admin_forgot_password")
 
         except User.DoesNotExist:
             messages.error(request, "This email is not registered as an admin.")

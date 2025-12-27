@@ -2,10 +2,16 @@ from django.core.mail import send_mail
 from django.urls import reverse
 from django.conf import settings
 from .models import PasswordReset
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def send_admin_password_reset_email(user, email, request):
-
+    """
+    Send password reset email to admin user.
+    Returns True if email was sent successfully, False otherwise.
+    """
     # Create a new password reset instance
     new_password_reset = PasswordReset(user=user)
     new_password_reset.save()
@@ -36,11 +42,16 @@ def send_admin_password_reset_email(user, email, request):
         This is an automated message from the Admin Panel
         """
 
-    # Send email using send_mail
-    send_mail(
-        email_subject,
-        email_body,
-        settings.EMAIL_HOST_USER,
-        [email],
-        fail_silently=True,
-    )
+    # Send email with proper error handling
+    try:
+        send_mail(
+            email_subject,
+            email_body,
+            settings.EMAIL_HOST_USER,
+            [email],
+            fail_silently=False,
+        )
+        return True
+    except Exception as e:
+        logger.error(f"Failed to send password reset email to {email}: {e}")
+        return False

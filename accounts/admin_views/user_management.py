@@ -19,7 +19,10 @@ def user_list(request):
     # Extract query parameters from request
     search_query = request.GET.get("search", "").strip()
     status_filter = request.GET.get("status", "all")
-    page_number = request.GET.get("page", 1)
+    try:
+        page_number = int(request.GET.get("page", 1))
+    except (ValueError, TypeError):
+        page_number = 1
 
     # Base queryset: all non-superuser accounts, ordered by creation date
     users = User.objects.filter(is_superuser=False).order_by("-created_at")
