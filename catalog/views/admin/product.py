@@ -356,13 +356,26 @@ def variant_draft_toggle(request, product_id, variant_id):
     """Toggle draft status for a variant."""
     product = get_object_or_404(Product, id=product_id)
     variant = get_object_or_404(ProductVariant, product=product, id=variant_id)
-    variant.is_drafted = not variant.is_drafted
-    variant.save()
-    if variant.is_drafted:
-        status = "drafted"
+
+    imagecount = variant.images.count()
+
+    if imagecount < 3:
+        variant.is_drafted = True
+        variant.save()
+        messages.error(
+            request,
+            "A minimum of three product images is required to publish this variant.",
+        )
+        messages.success(request, "Variant saved as draft.")
     else:
-        status = "published"
-    messages.success(request, f"Variant {status} successfully.")
+        variant.is_drafted = not variant.is_drafted
+        variant.save()
+        if variant.is_drafted:
+            status = "drafted"
+        else:
+            status = "published"
+        messages.success(request, f"Variant {status} successfully.")
+
     return redirect(
         request.META.get(
             "HTTP_REFERER", reverse("admin_product_view", kwargs={"id": product_id})
