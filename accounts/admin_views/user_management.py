@@ -1,5 +1,5 @@
 from django.contrib import messages
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib.auth import get_user_model
 from django.db.models import Q
 from django.core.paginator import Paginator
@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import user_passes_test
 from django.urls import reverse
 
 User = get_user_model()
+User = User.objects.filter(is_superuser=False)
 
 
 @never_cache
@@ -25,7 +26,7 @@ def user_list(request):
         page_number = 1
 
     # Base queryset: all non-superuser accounts, ordered by creation date
-    users = User.objects.filter(is_superuser=False).order_by("-created_at")
+    users = User.order_by("-created_at")
 
     # Apply search filter if query is provided
     if search_query:
@@ -42,10 +43,9 @@ def user_list(request):
         users = users.filter(is_active=False)
 
     # Calculate user statistics
-    base_users = User.objects.filter(is_superuser=False)
-    total_users = base_users.count()
-    active_users = base_users.filter(is_active=True).count()
-    inactive_users = base_users.filter(is_active=False).count()
+    total_users = users.count()
+    active_users = users.filter(is_active=True).count()
+    inactive_users = users.filter(is_active=False).count()
 
     # Paginate results (10 users per page)
     paginator = Paginator(users, 10)
@@ -70,7 +70,7 @@ def user_profile(request, id):
     """
     User Managemnet View of Admin Panel , its Users Profile.
     """
-    user = User.objects.filter(id=id).first()
+    user = get_object_or_404(User, id=id)
 
     # Static data for testing
     addresses = {
@@ -197,19 +197,13 @@ def user_profile(request, id):
 @user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
 def user_status_toggle(request, id):
     """
-    User Managemnet View of Admin Panel , its Users status toggle.
+    Toggle active/inactive status of a user from admin panel
     """
-    try:
-        user = User.objects.get(id=id)
-        user.is_active = not user.is_active
-        user.save()
+    user = get_object_or_404(User, id=id)
+    user.is_active = not user.is_active
+    user.save()
 
-        status_msg = "activated" if user.is_active else "deactivated"
-        messages.success(request, f"User {status_msg} successfully.")
+    status_msg = "activated" if user.is_active else "deactivated"
+    messages.success(request, f"User {status_msg} successfully.")
 
-    except User.DoesNotExist:
-        messages.error(request, "User not found")
-
-    fallback = reverse("admin_users_list")
-    previous_page = request.META.get("HTTP_REFERER", fallback)
-    return redirect(previous_page)
+    return redirect(request.META.get("HTTP_REFERER", reverse("admin_users_list")))
