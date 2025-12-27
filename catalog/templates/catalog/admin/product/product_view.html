@@ -370,15 +370,32 @@
                             </td>
                             <td>
                                 <div class="action-group">
+                                    <a href="{% url "admin_variant_view" product.id v.id %}"
+                                       class="action-btn"
+                                       title="View">
+                                        <span class="material-icons">visibility</span>
+                                    </a>
                                     {% if not v.is_deleted %}
-                                        <a href="#" class="action-btn" title="View">
-                                            <span class="material-icons">visibility</span>
-                                        </a>
                                         <a href="{% url "admin_variant_edit" product.id v.id %}"
                                            class="action-btn"
                                            title="Edit">
                                             <span class="material-icons">edit</span>
                                         </a>
+                                        {% if v.is_drafted %}
+                                            <a href="{% url 'admin_variant_draft_toggle' product.id v.id %}"
+                                               class="action-btn"
+                                               title="Publish"
+                                               onclick="return confirm('Are you sure you want to publish this variant?');">
+                                                <span class="material-icons">check_circle</span>
+                                            </a>
+                                        {% else %}
+                                            <a href="{% url 'admin_variant_draft_toggle' product.id v.id %}"
+                                               class="action-btn"
+                                               title="Unpublish"
+                                               onclick="return confirm('Are you sure you want to unpublish this variant?');">
+                                                <span class="material-icons">unpublished</span>
+                                            </a>
+                                        {% endif %}
                                         <a href="#"
                                            class="action-btn delete-btn"
                                            title="Delete"

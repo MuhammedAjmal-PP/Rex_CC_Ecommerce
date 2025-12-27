@@ -22,6 +22,9 @@ from catalog.views.admin.product import (
     product_draft_toggle,
     variant_add,
     variant_edit,
+    variant_view,
+    variant_delete_toggle,
+    variant_draft_toggle,
 )
 
 urlpatterns = [
@@ -60,10 +63,27 @@ urlpatterns = [
     ),
     path("product/<int:id>/view/", product_view, name="admin_product_view"),
     # variants
-    path("product/<int:id>/variant/add/", variant_add, name="admin_variant_add"),
+    path(
+        "product/<int:product_id>/variant/add/", variant_add, name="admin_variant_add"
+    ),
     path(
         "product/<int:product_id>/variant/<int:variant_id>/edit/",
         variant_edit,
         name="admin_variant_edit",
+    ),
+    path(
+        "product/<int:product_id>/variant/<int:variant_id>/view/",
+        variant_view,
+        name="admin_variant_view",
+    ),
+    path(
+        "product/<int:product_id>/variant/<int:variant_id>/delete-toggle/",
+        variant_delete_toggle,
+        name="admin_variant_delete_toggle",
+    ),
+    path(
+        "product/<int:product_id>/variant/<int:variant_id>/draft-toggle/",
+        variant_draft_toggle,
+        name="admin_variant_draft_toggle",
     ),
 ]

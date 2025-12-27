@@ -415,7 +415,12 @@
     height: 100%;
     opacity: 0;
     cursor: pointer;
-    z-index: 5;
+    z-index: 2;
+}
+
+/* When image is shown, hide the file input so overlay buttons work */
+.image-upload-box.has-image input[type="file"] {
+    pointer-events: none;
 }
 
 /* Upload Placeholder Content */

@@ -187,9 +187,9 @@ def product_view(request, id):
 
 @never_cache
 @user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
-def variant_add(request, id):
+def variant_add(request, product_id):
     """Add a new variant."""
-    product = get_object_or_404(Product, id=id)
+    product = get_object_or_404(Product, id=product_id)
 
     extraimg = int(request.GET.get("extra", 0))
 
@@ -241,6 +241,7 @@ def variant_edit(request, product_id, variant_id):
         form=ProductImageForm,
         min_num=3,
         extra=extraimg,
+        can_delete=True,  # Enable deletion of existing images
     )
 
     if request.method == "POST":
@@ -253,11 +254,15 @@ def variant_edit(request, product_id, variant_id):
             variant.save()
 
             for form in imageformset:
-                # Only save if an image was actually uploaded
-                if form.cleaned_data and form.cleaned_data.get("image"):
-                    image = form.save(commit=False)
-                    image.variant = variant
-                    image.save()
+                if form.cleaned_data:
+                    # Handle deletion of existing images
+                    if form.cleaned_data.get("DELETE") and form.instance.pk:
+                        form.instance.delete()
+                    # Save new images
+                    elif form.cleaned_data.get("image"):
+                        image = form.save(commit=False)
+                        image.variant = variant
+                        image.save()
 
             messages.success(request, "Variant updated successfully.")
             return redirect("admin_product_view", id=product_id)
@@ -272,3 +277,64 @@ def variant_edit(request, product_id, variant_id):
         "variant": variant,
     }
     return render(request, "catalog/admin/product/variant_edit_form.html", context)
+
+
+def variant_view(request, product_id, variant_id):
+    """
+    view details of view
+    """
+    product = get_object_or_404(Product, id=product_id)
+    variant = get_object_or_404(ProductVariant, product=product, id=variant_id)
+    images = variant.images.all()
+
+    context = {
+        "product": product,
+        "variant": variant,
+        "images": images,
+    }
+
+    return render(request, "catalog/admin/product/variant_view.html", context)
+
+
+@never_cache
+@user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
+def variant_delete_toggle(request, product_id, variant_id):
+    """Toggle delete status for a variant."""
+    product = get_object_or_404(Product, id=product_id)
+    variant = get_object_or_404(ProductVariant, product=product, id=variant_id)
+    variant.is_deleted = not variant.is_deleted
+
+    if variant.is_deleted:
+        variant.is_drafted = True
+        variant.deleted_at = timezone.now()
+        status = "deleted"
+    else:
+        variant.deleted_at = None
+        status = "restored"
+    variant.save()
+    messages.success(request, f"Variant {status} successfully.")
+    return redirect(
+        request.META.get(
+            "HTTP_REFERER", reverse("admin_product_view", kwargs={"id": product_id})
+        )
+    )
+
+
+@never_cache
+@user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
+def variant_draft_toggle(request, product_id, variant_id):
+    """Toggle draft status for a variant."""
+    product = get_object_or_404(Product, id=product_id)
+    variant = get_object_or_404(ProductVariant, product=product, id=variant_id)
+    variant.is_drafted = not variant.is_drafted
+    variant.save()
+    if variant.is_drafted:
+        status = "drafted"
+    else:
+        status = "published"
+    messages.success(request, f"Variant {status} successfully.")
+    return redirect(
+        request.META.get(
+            "HTTP_REFERER", reverse("admin_product_view", kwargs={"id": product_id})
+        )
+    )

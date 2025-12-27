@@ -165,6 +165,29 @@ function initImageFormsetWithCropper() {
                 if (placeholder) placeholder.hidden = false;
                 if (previewImg) previewImg.src = '';
                 if (uploadBox) uploadBox.classList.remove('has-image');
+
+                // For existing images (modelformset edit mode), add DELETE field
+                const hasExisting = item.dataset.hasExisting === 'true';
+                if (hasExisting) {
+                    // Check if DELETE input already exists
+                    const formPrefix = `form-${index}`;
+                    let deleteInput = item.querySelector(`input[name="${formPrefix}-DELETE"]`);
+
+                    if (!deleteInput) {
+                        // Create hidden DELETE input to mark image for deletion
+                        deleteInput = document.createElement('input');
+                        deleteInput.type = 'hidden';
+                        deleteInput.name = `${formPrefix}-DELETE`;
+                        deleteInput.value = 'on';
+                        item.appendChild(deleteInput);
+                    } else {
+                        deleteInput.value = 'on';
+                    }
+
+                    // Clear the existing URL data attribute
+                    item.dataset.existingUrl = '';
+                    item.dataset.hasExisting = 'false';
+                }
             });
         }
     });
