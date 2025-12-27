@@ -236,14 +236,34 @@ def variant_edit(request, product_id, variant_id):
 
     extraimg = int(request.GET.get("extra", 0))
 
-    variantform = ProductVariantForm(instance=variant)
     ImageFormset = modelformset_factory(
         ProductImage,
         form=ProductImageForm,
         min_num=3,
         extra=extraimg,
     )
-    imageformset = ImageFormset(queryset=images)
+
+    if request.method == "POST":
+        variantform = ProductVariantForm(request.POST, instance=variant)
+        imageformset = ImageFormset(request.POST, request.FILES, queryset=images)
+
+        if variantform.is_valid() and imageformset.is_valid():
+            variant = variantform.save(commit=False)
+            variant.product = product
+            variant.save()
+
+            for form in imageformset:
+                # Only save if an image was actually uploaded
+                if form.cleaned_data and form.cleaned_data.get("image"):
+                    image = form.save(commit=False)
+                    image.variant = variant
+                    image.save()
+
+            messages.success(request, "Variant updated successfully.")
+            return redirect("admin_product_view", id=product_id)
+    else:
+        variantform = ProductVariantForm(instance=variant)
+        imageformset = ImageFormset(queryset=images)
 
     context = {
         "variantform": variantform,
