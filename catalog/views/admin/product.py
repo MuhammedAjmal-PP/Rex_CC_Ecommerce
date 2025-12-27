@@ -372,7 +372,8 @@ def variant_delete_toggle(request, product_id, variant_id):
     messages.success(request, f"Variant {status} successfully.")
     return redirect(
         request.META.get(
-            "HTTP_REFERER", reverse("admin_product_view", kwargs={"id": product_id})
+            "HTTP_REFERER",
+            reverse("admin_product_view", kwargs={"product_id": product_id}),
         )
     )
 
@@ -405,6 +406,7 @@ def variant_draft_toggle(request, product_id, variant_id):
 
     return redirect(
         request.META.get(
-            "HTTP_REFERER", reverse("admin_product_view", kwargs={"id": product_id})
+            "HTTP_REFERER",
+            reverse("admin_product_view", kwargs={"product_id": product_id}),
         )
     )
