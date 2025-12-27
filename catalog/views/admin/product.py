@@ -1,4 +1,3 @@
-from email import message
 from django.views.decorators.cache import never_cache
 from catalog.models import Product, ProductVariant, ProductImage
 from django.core.paginator import Paginator
@@ -79,9 +78,9 @@ def product_add(request):
 
 @never_cache
 @user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
-def product_edit(request, id):
+def product_edit(request, product_id):
     """Edit an existing product."""
-    product = get_object_or_404(Product, id=id)
+    product = get_object_or_404(Product, id=product_id)
 
     if request.method == "POST":
         form = ProductForm(request.POST, request.FILES, instance=product)
@@ -93,14 +92,19 @@ def product_edit(request, id):
             messages.error(request, "Please correct the errors below.")
     else:
         form = ProductForm(instance=product)
-    return render(request, "catalog/admin/product/product_form.html", {"form": form})
+
+    context = {
+        "product": product,
+        "form": form,
+    }
+    return render(request, "catalog/admin/product/product_form.html", context)
 
 
 @never_cache
 @user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
-def product_delete_toggle(request, id):
+def product_delete_toggle(request, product_id):
     """Delete a product."""
-    product = get_object_or_404(Product, id=id)
+    product = get_object_or_404(Product, id=product_id)
     product.is_deleted = not product.is_deleted
 
     if product.is_deleted:
@@ -117,24 +121,35 @@ def product_delete_toggle(request, id):
 
 @never_cache
 @user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
-def product_draft_toggle(request, id):
+def product_draft_toggle(request, product_id):
     """Draft a product."""
-    product = get_object_or_404(Product, id=id)
-    product.is_drafted = not product.is_drafted
-    product.save()
-    if product.is_drafted:
-        status = "drafted"
+    product = get_object_or_404(Product, id=product_id)
+    published_variant_count = product.variants.filter(is_drafted=False).count()
+
+    if published_variant_count < 1:
+        product.is_drafted = True
+        product.save()
+        messages.error(
+            request,
+            "At least one published variant is required to publish this product.",
+        )
+        messages.success(request, "Product saved as draft.")
     else:
-        status = "published"
-    messages.success(request, f"Product {status} successfully.")
+        product.is_drafted = not product.is_drafted
+        product.save()
+        if product.is_drafted:
+            status = "drafted"
+        else:
+            status = "published"
+        messages.success(request, f"Product {status} successfully.")
     return redirect(request.META.get("HTTP_REFERER", reverse("admin_products")))
 
 
 @never_cache
 @user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
-def product_view(request, id):
+def product_view(request, product_id):
     """View a product."""
-    product = get_object_or_404(Product, id=id)
+    product = get_object_or_404(Product, id=product_id)
 
     search_query = request.GET.get("search", "").strip()
     status_filter = request.GET.get("status", "all")

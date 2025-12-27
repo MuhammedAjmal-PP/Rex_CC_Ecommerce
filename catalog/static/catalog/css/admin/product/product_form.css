@@ -637,6 +637,26 @@
     max-width: 100%;
     display: block;
 }
+/* ========================================
+   DATE & TIME DISPLAY
+   ======================================== */
+
+.date-time {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.date-time .date {
+    font-weight: 600;
+    color: #000000;
+    font-size: 0.9rem;
+}
+
+.date-time .time {
+    color: #666666;
+    font-size: 0.8rem;
+}
 
 /* ========================================
    RESPONSIVE

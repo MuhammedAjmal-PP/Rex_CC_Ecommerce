@@ -64,28 +64,30 @@
                             </div>
                         </div>
                         <!-- Categories -->
-                        <div class="form-section">
-                            <div class="section-title">
-                                <span class="material-icons">category</span>
-                                <span>Categories</span>
-                            </div>
-                            <div class="section-body">
-                                <div class="category-tags">
-                                    {% for choice in form.category %}
-                                        <label class="category-tag" for="category_{{ forloop.counter }}">
-                                            <input type="checkbox"
-                                                   name="category"
-                                                   value="{{ choice.data.value }}"
-                                                   id="category_{{ forloop.counter }}"
-                                                   {% if choice.data.selected %}checked{% endif %}>
-                                            <span class="tag-text">{{ choice.data.label }}</span>
-                                            <span class="tag-check material-icons">check</span>
-                                        </label>
-                                    {% endfor %}
+                        {% if form.instance.pk %}
+                            <div class="form-section">
+                                <div class="section-title">
+                                    <span class="material-icons">category</span>
+                                    <span>Categories</span>
                                 </div>
-                                {% if form.category.errors %}<span class="error-text">{{ form.category.errors.0 }}</span>{% endif %}
+                                <div class="section-body">
+                                    <div class="category-tags">
+                                        {% for choice in form.category %}
+                                            <label class="category-tag" for="category_{{ forloop.counter }}">
+                                                <input type="checkbox"
+                                                       name="category"
+                                                       value="{{ choice.data.value }}"
+                                                       id="category_{{ forloop.counter }}"
+                                                       {% if choice.data.selected %}checked{% endif %}>
+                                                <span class="tag-text">{{ choice.data.label }}</span>
+                                                <span class="tag-check material-icons">check</span>
+                                            </label>
+                                        {% endfor %}
+                                    </div>
+                                    {% if form.category.errors %}<span class="error-text">{{ form.category.errors.0 }}</span>{% endif %}
+                                </div>
                             </div>
-                        </div>
+                        {% endif %}
                     </div>
                     <!-- Right Column -->
                     <div class="form-column form-column-right">
@@ -134,33 +136,65 @@
                                 {% if form.thumbnail.errors %}<span class="error-text">{{ form.thumbnail.errors.0 }}</span>{% endif %}
                             </div>
                         </div>
-                        <!-- Publishing -->
-                        <div class="form-section">
-                            <div class="section-title">
-                                <span class="material-icons">tune</span>
-                                <span>Publishing</span>
-                            </div>
-                            <div class="section-body">
-                                <div class="toggle-row">
-                                    <div class="toggle-info">
-                                        <span class="toggle-label">Save as Draft</span>
-                                        <span class="toggle-desc">Hidden from catalog</span>
+                        {% if form.instance.pk %}
+                            <!-- Publishing -->
+                            <div class="form-section">
+                                <div class="section-title">
+                                    <span class="material-icons">tune</span>
+                                    <span>Publishing</span>
+                                </div>
+                                <div class="section-body">
+                                    <div class="toggle-row">
+                                        <div class="toggle-info">
+                                            <span class="toggle-label">Save as Draft</span>
+                                            <span class="toggle-desc">Hidden from catalog</span>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            {{ form.is_drafted }}
+                                            <span class="toggle-slider"></span>
+                                        </label>
                                     </div>
-                                    <label class="toggle-switch">
-                                        {{ form.is_drafted }}
-                                        <span class="toggle-slider"></span>
-                                    </label>
-                                </div>
-                                <div class="meta-row">
-                                    <span class="meta-label">Created By</span>
-                                    <span class="meta-value">{{ request.user.get_full_name|default:request.user.email }}</span>
-                                </div>
-                                <div class="meta-row">
-                                    <span class="meta-label">Date</span>
-                                    <span class="meta-value">{% now "M d, Y" %}</span>
+                                    <div class="meta-row">
+                                        <span class="meta-label">Created at</span>
+                                        <div class="date-time">
+                                            <span class="date">{{ product.created_at|date:"Y-m-d" }}</span>
+                                            <span class="time">{{ product.created_at|date:"h:i A" }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="meta-row">
+                                        <span class="meta-label">Last Updated at</span>
+                                        <div class="date-time">
+                                            <span class="date">{{ product.updated_at|date:"Y-m-d" }}</span>
+                                            <span class="time">{{ product.updated_at|date:"h:i A" }}</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        {% else %}
+                            <!-- Categories -->
+                            <div class="form-section">
+                                <div class="section-title">
+                                    <span class="material-icons">category</span>
+                                    <span>Categories</span>
+                                </div>
+                                <div class="section-body">
+                                    <div class="category-tags">
+                                        {% for choice in form.category %}
+                                            <label class="category-tag" for="category_{{ forloop.counter }}">
+                                                <input type="checkbox"
+                                                       name="category"
+                                                       value="{{ choice.data.value }}"
+                                                       id="category_{{ forloop.counter }}"
+                                                       {% if choice.data.selected %}checked{% endif %}>
+                                                <span class="tag-text">{{ choice.data.label }}</span>
+                                                <span class="tag-check material-icons">check</span>
+                                            </label>
+                                        {% endfor %}
+                                    </div>
+                                    {% if form.category.errors %}<span class="error-text">{{ form.category.errors.0 }}</span>{% endif %}
+                                </div>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>

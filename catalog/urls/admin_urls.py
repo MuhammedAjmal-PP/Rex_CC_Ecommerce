@@ -50,18 +50,18 @@ urlpatterns = [
     # products
     path("products/", products, name="admin_products"),
     path("product/add/", product_add, name="admin_product_add"),
-    path("product/<int:id>/edit/", product_edit, name="admin_product_edit"),
+    path("product/<int:product_id>/edit/", product_edit, name="admin_product_edit"),
     path(
-        "product/<int:id>/delete-toggle/",
+        "product/<int:product_id>/delete-toggle/",
         product_delete_toggle,
         name="admin_product_delete_toggle",
     ),
     path(
-        "product/<int:id>/draft-toggle/",
+        "product/<int:product_id>/draft-toggle/",
         product_draft_toggle,
         name="admin_product_draft_toggle",
     ),
-    path("product/<int:id>/view/", product_view, name="admin_product_view"),
+    path("product/<int:product_id>/view/", product_view, name="admin_product_view"),
     # variants
     path(
         "product/<int:product_id>/variant/add/", variant_add, name="admin_variant_add"
