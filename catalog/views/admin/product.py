@@ -1,3 +1,4 @@
+from email import message
 from django.views.decorators.cache import never_cache
 from catalog.models import Product, ProductVariant, ProductImage
 from django.core.paginator import Paginator
@@ -190,7 +191,6 @@ def product_view(request, id):
 def variant_add(request, product_id):
     """Add a new variant."""
     product = get_object_or_404(Product, id=product_id)
-
     extraimg = int(request.GET.get("extra", 0))
 
     ImageFormSet = formset_factory(ProductImageForm, min_num=3, extra=extraimg)
@@ -211,8 +211,22 @@ def variant_add(request, product_id):
                     image.variant = variant
                     image.save()
 
-            messages.success(request, "Variant created successfully.")
-            return redirect("admin_product_view", id=id)
+            is_draft = variant.is_drafted
+            if not is_draft:
+                imagecount = variant.images.count()
+                if imagecount < 3:
+                    variant.is_drafted = True
+                    variant.save()
+                    messages.error(
+                        request,
+                        "A minimum of three product images is required to publish this variant.",
+                    )
+                    messages.success(request, "Variant saved as draft.")
+                else:
+                    messages.success(request, "Variant published successfully.")
+            else:
+                messages.success(request, "Variant saved as draft.")
+            return redirect("admin_product_view", id=product_id)
 
     else:
         variantform = ProductVariantForm(initial={"product": product})
