@@ -1,19 +1,172 @@
-<!-- templates/home.html -->
-<h1>Welcome to My Site</h1>
-{% if user.is_authenticated %}
-  <h2>Welcome, {{ user.email }}!</h2>
-  <p>You are currently logged in.</p>
-  <p><a href="{% url 'account_logout' %}">Log Out</a></p>
-{% else %}
-  <h2>You are not logged in</h2>
-  <p>Please log in or sign up to access all features.</p>
-{% endif %}
-
-<h2>Options:</h2>
-<ul>
-  {% if not user.is_authenticated %}
-    <li><a href="{% url 'account_signup' %}">Sign Up</a></li>
-    <li><a href="{% url 'account_login' %}">Log In</a></li>
-  {% endif %}
-  <li><a href="{% url 'account_reset_password' %}">Reset Password</a></li>
-</ul>
+{% extends "pages/user/base_user.html" %}
+{% load static %}
+{% block head_title %}REX CC | Premium Luxury Watches{% endblock %}
+{% block content %}
+  <!-- Hero Section - Static & Modern -->
+  <section class="hero">
+    <div class="hero-content">
+      <p class="hero-tagline">Premium Luxury Watches</p>
+      <h1 class="hero-title">
+        Time Is <span>Precious</span>
+      </h1>
+      <p class="hero-subtitle">
+        Discover our exclusive collection of world-renowned luxury timepieces.
+        Each watch tells a story of precision, elegance, and timeless craftsmanship.
+      </p>
+      <div class="hero-cta">
+        <a href="#products" class="btn btn-primary">Explore Collection</a>
+        <a href="#brands" class="btn btn-outline">View Brands</a>
+      </div>
+    </div>
+    <div class="hero-decor">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </section>
+  <!-- Features Strip -->
+  <section class="section" style="background: var(--bg-card); padding: 40px;">
+    <div class="container">
+      <div class="features-grid">
+        <div class="feature-item">
+          <span class="material-icons feature-icon">verified</span>
+          <h4 class="feature-title">100% Authentic</h4>
+          <p class="feature-text">Every timepiece is certified authentic and comes with full manufacturer warranty.</p>
+        </div>
+        <div class="feature-item">
+          <span class="material-icons feature-icon">local_shipping</span>
+          <h4 class="feature-title">Free Shipping</h4>
+          <p class="feature-text">Complimentary insured shipping on all orders above ₹50,000.</p>
+        </div>
+        <div class="feature-item">
+          <span class="material-icons feature-icon">support_agent</span>
+          <h4 class="feature-title">Expert Support</h4>
+          <p class="feature-text">Our watch specialists are available 24/7 to assist you.</p>
+        </div>
+        <div class="feature-item">
+          <span class="material-icons feature-icon">autorenew</span>
+          <h4 class="feature-title">Easy Returns</h4>
+          <p class="feature-text">15-day hassle-free returns with full refund guarantee.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- Featured Products Section -->
+  <section class="section" id="products">
+    <div class="container">
+      <div class="section-header">
+        <p class="section-label">Curated Selection</p>
+        <h2 class="section-title">Featured Timepieces</h2>
+        <p class="section-subtitle">Handpicked luxury watches from our exclusive collection</p>
+      </div>
+      {% if products %}
+        <div class="products-grid">
+          {% for product in products|slice:":8" %}
+            <article class="product-card">
+              <div class="product-image">
+                {% if product.thumbnail %}
+                  <img src="{{ product.thumbnail.url }}"
+                       alt="{{ product.name }}"
+                       width="280"
+                       height="280"
+                       loading="lazy">
+                {% else %}
+                  <img src="https://via.placeholder.com/280x280/f8f8f8/666666?text=No+Image"
+                       alt="{{ product.name }}"
+                       width="280"
+                       height="280">
+                {% endif %}
+                {% if product.is_drafted == False %}<span class="product-badge">New</span>{% endif %}
+                <button class="product-quick-view">Quick View</button>
+              </div>
+              <div class="product-info">
+                <p class="product-brand">{{ product.brand.name }}</p>
+                <h3 class="product-name">{{ product.name }}</h3>
+                {% with first_variant=product.variants.first %}
+                  {% if first_variant %}
+                    <p class="product-price">
+                      <span class="currency">₹</span>{{ first_variant.price|floatformat:0 }}
+                    </p>
+                  {% endif %}
+                {% endwith %}
+              </div>
+            </article>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="no-products">
+          <span class="material-icons no-products-icon">watch</span>
+          <p>No products available at the moment. Check back soon!</p>
+        </div>
+      {% endif %}
+    </div>
+  </section>
+  <!-- Categories Section -->
+  <section class="section" style="background: var(--bg-card);" id="categories">
+    <div class="container">
+      <div class="section-header">
+        <p class="section-label">Browse By</p>
+        <h2 class="section-title">Categories</h2>
+        <p class="section-subtitle">Find your perfect watch by category</p>
+      </div>
+      {% if categories %}
+        <div class="categories-grid">
+          {% for category in categories %}
+            <a href="?search={{ category.name }}" class="category-card">
+              <span class="material-icons category-icon">watch</span>
+              <h3 class="category-name">{{ category.name }}</h3>
+              <p class="category-count">{{ category.products.count }} Products</p>
+            </a>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="no-products">
+          <p>No categories available.</p>
+        </div>
+      {% endif %}
+    </div>
+  </section>
+  <!-- Brands Section -->
+  <section class="section section-brands" id="brands">
+    <div class="container">
+      <div class="section-header">
+        <p class="section-label">World-Renowned</p>
+        <h2 class="section-title">Premium Brands</h2>
+        <p class="section-subtitle">Explore timepieces from the world's most prestigious watchmakers</p>
+      </div>
+      {% if brands %}
+        <div class="brands-grid">
+          {% for brand in brands %}
+            <a href="?search={{ brand.name }}" class="brand-card">
+              {% if brand.logo %}
+                <img src="{{ brand.logo.url }}"
+                     alt="{{ brand.name }}"
+                     class="brand-logo"
+                     width="120"
+                     height="60"
+                     loading="lazy">
+              {% else %}
+                <span class="brand-name">{{ brand.name }}</span>
+              {% endif %}
+            </a>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="no-products">
+          <p>No brands available.</p>
+        </div>
+      {% endif %}
+    </div>
+  </section>
+  <!-- Newsletter CTA -->
+  <section class="section section-cta">
+    <div class="container">
+      <h2 class="cta-title">Stay Updated</h2>
+      <p class="cta-text">Subscribe to receive exclusive offers and the latest arrivals.</p>
+      <form class="cta-form">
+        <input type="email" class="cta-input" placeholder="Enter your email address">
+        <button type="submit" class="btn btn-primary">Subscribe</button>
+      </form>
+    </div>
+  </section>
+{% endblock %}
