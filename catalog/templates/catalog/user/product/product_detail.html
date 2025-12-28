@@ -1,0 +1,345 @@
+{% extends "pages/user/base_user.html" %}
+{% load static %}
+{% block head_title %}
+    {{ product.name }} | REX CC
+{% endblock head_title %}
+{% block extra_css %}
+    <link rel="stylesheet"
+          href="{% static 'catalog/user/css/product_detail.css' %}">
+{% endblock extra_css %}
+{% block content %}
+    <!-- Breadcrumbs -->
+    <nav class="breadcrumbs">
+        <div class="breadcrumbs-container">
+            <a href="{% url 'home' %}">Home</a>
+            <span class="breadcrumb-sep">/</span>
+            <a href="{% url 'product_list' %}">Products</a>
+            {% if first_category %}
+                <span class="breadcrumb-sep">/</span>
+                <a href="{% url 'product_list' %}?category={{ first_category.slug }}">{{ first_category.name }}</a>
+            {% endif %}
+            <span class="breadcrumb-sep">/</span>
+            <span class="breadcrumb-current">{{ product.name }}</span>
+        </div>
+    </nav>
+    <!-- Product Main Section -->
+    <section class="product-detail">
+        <div class="product-container">
+            <!-- Image Gallery -->
+            <div class="product-gallery">
+                <div class="gallery-main">
+                    {% if primary_image %}
+                        <div class="zoom-container" id="zoomContainer">
+                            <img src="{{ primary_image.image.url }}"
+                                 alt="{{ product.name }}"
+                                 id="mainImage"
+                                 class="main-image"
+                                 width="600"
+                                 height="600">
+                            <div class="zoom-lens" id="zoomLens"></div>
+                            <div class="zoom-result" id="zoomResult"></div>
+                        </div>
+                    {% elif product.thumbnail %}
+                        <div class="zoom-container" id="zoomContainer">
+                            <img src="{{ product.thumbnail.url }}"
+                                 alt="{{ product.name }}"
+                                 id="mainImage"
+                                 class="main-image"
+                                 width="600"
+                                 height="600">
+                            <div class="zoom-lens" id="zoomLens"></div>
+                            <div class="zoom-result" id="zoomResult"></div>
+                        </div>
+                    {% else %}
+                        <img src="https://via.placeholder.com/600x600/f8f8f8/666666?text=No+Image"
+                             alt="{{ product.name }}"
+                             width="600"
+                             height="600">
+                    {% endif %}
+                </div>
+                {% if variant_images %}
+                    <div class="gallery-thumbs">
+                        {% for img in variant_images %}
+                            <button class="thumb-btn {% if img == primary_image %}active{% endif %}"
+                                    onclick="changeImage('{{ img.image.url }}', this)">
+                                <img src="{{ img.image.url }}"
+                                     alt="Thumbnail {{ forloop.counter }}"
+                                     width="80"
+                                     height="80">
+                            </button>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            <!-- Product Info -->
+            <div class="product-info">
+                <!-- Brand -->
+                <p class="product-brand">{{ product.brand.name }}</p>
+                <!-- Title -->
+                <h1 class="product-title">{{ product.name }}</h1>
+                <!-- Ratings -->
+                <div class="product-ratings">
+                    <div class="stars">
+                        {% for i in "12345" %}
+                            {% if forloop.counter <= ratings.average|floatformat:0|add:0 %}
+                                <span class="material-icons star filled">star</span>
+                            {% elif forloop.counter == ratings.average|floatformat:0|add:1 and ratings.average|floatformat:1|slice:"-1:" != "0" %}
+                                <span class="material-icons star filled">star_half</span>
+                            {% else %}
+                                <span class="material-icons star">star_outline</span>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <span class="rating-value">{{ ratings.average }}</span>
+                    <span class="rating-count">({{ ratings.total }} reviews)</span>
+                </div>
+                <!-- Price -->
+                <div class="product-price">
+                    <span class="currency">₹</span>{{ variant.price|floatformat:0 }}
+                </div>
+                <!-- Coupons -->
+                <div class="product-coupons">
+                    <h4 class="coupons-title">
+                        <span class="material-icons">local_offer</span>
+                        Available Offers
+                    </h4>
+                    <ul class="coupons-list">
+                        {% for coupon in coupons %}
+                            <li>
+                                <span class="coupon-code">{{ coupon.code }}</span>
+                                <span class="coupon-desc">{{ coupon.discount }}</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <!-- Variant Selection -->
+                {% if variants.count > 1 %}
+                    <div class="variant-selection">
+                        <h4 class="variant-title">Select Variant</h4>
+                        <div class="variant-options">
+                            {% for v in variants %}
+                                <a href="?variant={{ v.sku }}"
+                                   class="variant-option {% if v == variant %}active{% endif %}">
+                                    <span class="variant-sku">{{ v.sku }}</span>
+                                    {% if v.dial_color %}<span class="variant-color">{{ v.dial_color }}</span>{% endif %}
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+                <!-- Stock Status -->
+                <div class="stock-status {{ stock_status }}">
+                    <span class="material-icons">
+                        {% if stock_status == 'in_stock' %}
+                            check_circle
+                        {% elif stock_status == 'low_stock' %}
+                            warning
+                        {% else %}
+                            cancel
+                        {% endif %}
+                    </span>
+                    {{ stock_label }}
+                </div>
+                <!-- Add to Cart -->
+                <div class="product-actions">
+                    {% if stock_status != 'out_of_stock' %}
+                        <div class="quantity-selector">
+                            <button class="qty-btn" onclick="decreaseQty()">-</button>
+                            <input type="number" id="quantity" value="1" min="1" max="{{ stock_count }}">
+                            <button class="qty-btn" onclick="increaseQty()">+</button>
+                        </div>
+                        <button class="btn-add-cart" onclick="addToCart()">
+                            <span class="material-icons">shopping_cart</span>
+                            Add to Cart
+                        </button>
+                    {% else %}
+                        <button class="btn-sold-out" disabled>
+                            <span class="material-icons">block</span>
+                            Sold Out
+                        </button>
+                    {% endif %}
+                    <button class="btn-wishlist">
+                        <span class="material-icons">favorite_border</span>
+                    </button>
+                </div>
+                <!-- Highlights/Specs -->
+                <div class="product-highlights">
+                    <h4 class="highlights-title">Specifications</h4>
+                    <table class="specs-table">
+                        {% for spec in highlights %}
+                            <tr>
+                                <th>{{ spec.label }}</th>
+                                <td>{{ spec.value }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Description -->
+    {% if product.description %}
+        <section class="section-description">
+            <div class="description-container">
+                <h2 class="section-title">Product Description</h2>
+                <div class="description-content">{{ product.description|linebreaks }}</div>
+            </div>
+        </section>
+    {% endif %}
+    <!-- Reviews Section -->
+    <section class="section-reviews">
+        <div class="reviews-container">
+            <h2 class="section-title">Customer Reviews</h2>
+            <!-- Rating Summary -->
+            <div class="rating-summary">
+                <div class="rating-big">
+                    <span class="rating-number">{{ ratings.average }}</span>
+                    <span class="rating-star material-icons">star</span>
+                </div>
+                <div class="rating-bars">
+                    {% for star in ratings.stars %}
+                        <div class="rating-bar-row">
+                            <span class="bar-label">{{ star.value }} star</span>
+                            <div class="bar-track">
+                                <div class="bar-fill" style="width: {{ star.percent }}%"></div>
+                            </div>
+                            <span class="bar-percent">{{ star.percent }}%</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <!-- Reviews List -->
+            <div class="reviews-list">
+                {% for review in reviews %}
+                    <div class="review-card">
+                        <div class="review-header">
+                            <div class="review-author">{{ review.author }}</div>
+                            <div class="review-date">{{ review.date }}</div>
+                        </div>
+                        <div class="review-stars">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= review.rating %}
+                                    <span class="material-icons star filled">star</span>
+                                {% else %}
+                                    <span class="material-icons star">star_outline</span>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <h4 class="review-title">{{ review.title }}</h4>
+                        <p class="review-content">{{ review.content }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    <!-- Related Products -->
+    {% if related_products %}
+        <section class="section-related">
+            <div class="related-container">
+                <h2 class="section-title">You May Also Like</h2>
+                <div class="related-grid">
+                    {% for item in related_products %}
+                        <a href="{% url 'product_detail' item.slug %}" class="related-card">
+                            <div class="related-image">
+                                {% if item.thumbnail %}
+                                    <img src="{{ item.thumbnail.url }}"
+                                         alt="{{ item.name }}"
+                                         width="200"
+                                         height="200"
+                                         loading="lazy">
+                                {% else %}
+                                    <img src="https://via.placeholder.com/200x200/f8f8f8/666666?text=No+Image"
+                                         alt="{{ item.name }}"
+                                         width="200"
+                                         height="200">
+                                {% endif %}
+                            </div>
+                            <div class="related-info">
+                                <p class="related-brand">{{ item.brand.name }}</p>
+                                <h4 class="related-name">{{ item.name }}</h4>
+                                {% with first_variant=item.variants.first %}
+                                    {% if first_variant %}<p class="related-price">₹{{ first_variant.price|floatformat:0 }}</p>{% endif %}
+                                {% endwith %}
+                            </div>
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+    {% endif %}
+{% endblock content %}
+{% block extra_js %}
+    <script>
+// Image zoom functionality
+const mainImage = document.getElementById('mainImage');
+const zoomLens = document.getElementById('zoomLens');
+const zoomResult = document.getElementById('zoomResult');
+const zoomContainer = document.getElementById('zoomContainer');
+
+if (mainImage && zoomLens && zoomResult && zoomContainer) {
+    zoomContainer.addEventListener('mouseenter', function() {
+        zoomLens.style.display = 'block';
+        zoomResult.style.display = 'block';
+        zoomResult.style.backgroundImage = `url('${mainImage.src}')`;
+    });
+
+    zoomContainer.addEventListener('mouseleave', function() {
+        zoomLens.style.display = 'none';
+        zoomResult.style.display = 'none';
+    });
+
+    zoomContainer.addEventListener('mousemove', function(e) {
+        const rect = mainImage.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        const lensSize = 100;
+        let lensX = x - lensSize / 2;
+        let lensY = y - lensSize / 2;
+        
+        lensX = Math.max(0, Math.min(lensX, rect.width - lensSize));
+        lensY = Math.max(0, Math.min(lensY, rect.height - lensSize));
+        
+        zoomLens.style.left = lensX + 'px';
+        zoomLens.style.top = lensY + 'px';
+        
+        const zoomLevel = 2;
+        const bgX = lensX * zoomLevel;
+        const bgY = lensY * zoomLevel;
+        
+        zoomResult.style.backgroundSize = `${rect.width * zoomLevel}px ${rect.height * zoomLevel}px`;
+        zoomResult.style.backgroundPosition = `-${bgX}px -${bgY}px`;
+    });
+}
+
+// Change main image
+function changeImage(src, btn) {
+    if (mainImage) {
+        mainImage.src = src;
+    }
+    document.querySelectorAll('.thumb-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+}
+
+// Quantity controls
+function increaseQty() {
+    const input = document.getElementById('quantity');
+    const max = parseInt(input.max);
+    if (parseInt(input.value) < max) {
+        input.value = parseInt(input.value) + 1;
+    }
+}
+
+function decreaseQty() {
+    const input = document.getElementById('quantity');
+    if (parseInt(input.value) > 1) {
+        input.value = parseInt(input.value) - 1;
+    }
+}
+
+// Add to cart (placeholder)
+function addToCart() {
+    alert('Add to cart functionality coming soon!');
+}
+    </script>
+{% endblock extra_js %}

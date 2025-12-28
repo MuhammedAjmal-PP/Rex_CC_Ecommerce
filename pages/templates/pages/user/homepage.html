@@ -67,7 +67,7 @@
       {% if products %}
         <div class="products-grid">
           {% for product in products|slice:":8" %}
-            <article class="product-card">
+            <a href="{% url 'product_detail' product.slug %}" class="product-card">
               <div class="product-image">
                 {% if product.thumbnail %}
                   <img src="{{ product.thumbnail.url }}"
@@ -82,7 +82,6 @@
                        height="280">
                 {% endif %}
                 {% if product.is_drafted == False %}<span class="product-badge">New</span>{% endif %}
-                <button class="product-quick-view">Quick View</button>
               </div>
               <div class="product-info">
                 <p class="product-brand">{{ product.brand.name }}</p>
@@ -95,7 +94,7 @@
                   {% endif %}
                 {% endwith %}
               </div>
-            </article>
+            </a>
           {% endfor %}
         </div>
       {% else %}
