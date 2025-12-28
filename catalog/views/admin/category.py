@@ -51,81 +51,58 @@ def categories(request):
 @never_cache
 @user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
 def category_add(request):
-    """Add a new category via AJAX with non-AJAX fallback."""
-    is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
-
+    """Add a new category via AJAX."""
     if request.method == "POST":
         form = CategoryForm(request.POST)
         if form.is_valid():
             category = form.save()
-            if is_ajax:
-                return JsonResponse(
-                    {
-                        "success": True,
-                        "message": "Category added successfully.",
-                        "category": {
-                            "id": category.id,
-                            "name": category.name,
-                            "slug": category.slug,
-                            "is_active": category.is_active,
-                        },
-                    }
-                )
-            else:
-                messages.success(request, "Category added successfully.")
-                return redirect("admin_categories")
+            return JsonResponse(
+                {
+                    "success": True,
+                    "message": "Category added successfully.",
+                    "category": {
+                        "id": category.id,
+                        "name": category.name,
+                        "slug": category.slug,
+                        "is_active": category.is_active,
+                    },
+                }
+            )
         else:
-            if is_ajax:
-                errors = {field: error[0] for field, error in form.errors.items()}
-                return JsonResponse({"success": False, "errors": errors}, status=400)
-            else:
-                messages.error(request, "Please correct the errors in the form.")
-                return redirect("admin_categories")
-
-    if is_ajax:
-        return JsonResponse({"error": "Invalid request"}, status=405)
-    return redirect("admin_categories")
+            errors = {field: error[0] for field, error in form.errors.items()}
+            return JsonResponse({"success": False, "errors": errors}, status=400)
+    return JsonResponse({"error": "Invalid request"}, status=405)
 
 
 @never_cache
 @user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
 def category_edit(request, id):
-    """Edit a category via AJAX with non-AJAX fallback."""
-    is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
+    """edit a new category via AJAX."""
+
     category = get_object_or_404(Category, id=id)
 
     if request.method == "POST":
+
         form = CategoryForm(request.POST, instance=category)
 
         if form.is_valid():
             category = form.save()
-            if is_ajax:
-                return JsonResponse(
-                    {
-                        "success": True,
-                        "message": "Category edited successfully.",
-                        "category": {
-                            "id": category.id,
-                            "name": category.name,
-                            "slug": category.slug,
-                            "is_active": category.is_active,
-                        },
-                    }
-                )
-            else:
-                messages.success(request, "Category updated successfully.")
-                return redirect("admin_categories")
+            return JsonResponse(
+                {
+                    "success": True,
+                    "message": "Category edited successfully.",
+                    "category": {
+                        "id": category.id,
+                        "name": category.name,
+                        "slug": category.slug,
+                        "is_active": category.is_active,
+                    },
+                }
+            )
         else:
-            if is_ajax:
-                errors = {field: error[0] for field, error in form.errors.items()}
-                return JsonResponse({"success": False, "errors": errors}, status=400)
-            else:
-                messages.error(request, "Please correct the errors in the form.")
-                return redirect("admin_categories")
-
-    if is_ajax:
-        return JsonResponse({"error": "Invalid request"}, status=405)
-    return redirect("admin_categories")
+            errors = {field: error[0] for field, error in form.errors.items()}
+            return JsonResponse({"success": False, "errors": errors}, status=400)
+    return JsonResponse({"error": "Invalid request"}, status=405)
 
 
 @never_cache
