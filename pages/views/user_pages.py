@@ -7,22 +7,13 @@ from django.db.models import Q
 
 
 def home(request):
-
-    search_query = request.GET.get("search", "").strip()
-
+    """
+    Homepage view - displays featured products, categories, and brands.
+    Search is handled by the product list page via navigation.
+    """
     categories = Category.objects.filter(is_active=True)
     brands = Brand.objects.filter(is_active=True)
-    products = Product.objects.filter(is_drafted=False)
-
-    if search_query:
-        brands = brands.filter(name__icontains=search_query).distinct()
-        categories = categories.filter(name__icontains=search_query).distinct()
-        products = products.filter(
-            Q(name__icontains=search_query)
-            | Q(description__icontains=search_query)
-            | Q(category__name__icontains=search_query)
-            | Q(brand__name__icontains=search_query)
-        ).distinct()
+    products = Product.objects.filter(is_drafted=False, is_deleted=False)
 
     context = {
         "categories": categories,

@@ -1,6 +1,11 @@
 {% extends "pages/user/base_user.html" %}
 {% load static %}
-{% block head_title %}REX CC | Premium Luxury Watches{% endblock %}
+{% block head_title %}
+  REX CC | Premium Luxury Watches
+{% endblock head_title %}
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'pages/user/css/homepage.css' %}">
+{% endblock extra_css %}
 {% block content %}
   <!-- Hero Section - Static & Modern -->
   <section class="hero">
@@ -19,13 +24,13 @@
       </div>
     </div>
     <div class="hero-decor">
-      <span></span>
-      <span></span>
-      <span></span>
+      <span class="decor-diamond"></span>
+      <span class="decor-diamond active"></span>
+      <span class="decor-diamond"></span>
     </div>
   </section>
   <!-- Features Strip -->
-  <section class="section" style="background: var(--bg-card); padding: 40px;">
+  <section class="section section-features">
     <div class="container">
       <div class="features-grid">
         <div class="feature-item">
@@ -102,7 +107,7 @@
     </div>
   </section>
   <!-- Categories Section -->
-  <section class="section" style="background: var(--bg-card);" id="categories">
+  <section class="section section-categories" id="categories">
     <div class="container">
       <div class="section-header">
         <p class="section-label">Browse By</p>
@@ -169,4 +174,4 @@
       </form>
     </div>
   </section>
-{% endblock %}
+{% endblock content %}
