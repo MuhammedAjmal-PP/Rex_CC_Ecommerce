@@ -1,3 +1,5 @@
+from email.policy import default
+from os import name
 from django import forms
 from catalog.models import (
     Brand,
@@ -6,7 +8,7 @@ from catalog.models import (
     ProductVariant,
     ProductImage,
 )
-from accounts.forms import alphabet_only
+
 from django.core.validators import RegexValidator
 
 sku_validator = RegexValidator(
@@ -15,10 +17,15 @@ sku_validator = RegexValidator(
     code="invalid_sku",
 )
 
+name_validator = RegexValidator(
+    regex=r"^[a-zA-Z' -]+$",
+    message="Only letters, spaces, hyphens, and apostrophes are allowed.",
+)
+
 
 class BrandForm(forms.ModelForm):
 
-    name = forms.CharField(validators=[alphabet_only])
+    name = forms.CharField(validators=[name_validator])
 
     class Meta:
         model = Brand
@@ -39,7 +46,7 @@ class BrandForm(forms.ModelForm):
 
 class CategoryForm(forms.ModelForm):
 
-    name = forms.CharField(validators=[alphabet_only])
+    name = forms.CharField(validators=[name_validator])
 
     class Meta:
         model = Category
@@ -61,7 +68,7 @@ class CategoryForm(forms.ModelForm):
 
 class ProductForm(forms.ModelForm):
 
-    name = forms.CharField(validators=[alphabet_only])
+    # name = forms.CharField(validators=[name_validator])
 
     class Meta:
         model = Product

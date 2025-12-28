@@ -72,7 +72,9 @@ def product_add(request):
     if request.method == "POST":
         form = ProductForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
+            product = form.save(commit=False)
+            product.is_drafted = False
+            product.save()
             return redirect("admin_products")
     else:
         form = ProductForm()
