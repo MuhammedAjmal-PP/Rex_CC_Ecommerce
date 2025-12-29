@@ -67,7 +67,7 @@
       {% if products %}
         <div class="products-grid">
           {% for product in products|slice:":8" %}
-            <a href="{% url 'product_detail' product.slug %}" class="product-card">
+            <a href="#" class="product-card">
               <div class="product-image">
                 {% if product.thumbnail %}
                   <img src="{{ product.thumbnail.url }}"
