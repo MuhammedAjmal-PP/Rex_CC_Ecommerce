@@ -9,7 +9,6 @@ from django.db.models import Q
 def home(request):
     """
     Homepage view - displays featured products, categories, and brands.
-    Search is handled by the product list page via navigation.
     """
     categories = Category.objects.filter(is_active=True)
     brands = Brand.objects.filter(is_active=True)
