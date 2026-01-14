@@ -1,7 +1,15 @@
+from ast import arg
 from django.core.paginator import Paginator
-from django.db.models import Q, Min
+from django.db.models import Q, Min, Max
 from django.shortcuts import render
 from catalog.models import Product, Category, Brand
+
+
+def remove_query_param(request, *args):
+    params = request.GET.copy()
+    for key in args:
+        params.pop(key, None)
+    return f"?{params.urlencode()}" if params else ""
 
 
 def product_list(request):
@@ -17,14 +25,33 @@ def product_list(request):
     max_price = request.GET.get("max_price", "")
     page_number = request.GET.get("page", 1)
 
-    # Build clear-search URL (keep all filters except search)
-    params = request.GET.copy()
-    params.pop("search", None)
+    clear_search_url = remove_query_param(request, "search")
 
-    clear_search_url = f"?{params.urlencode()}" if params else ""
+    clear_filter = remove_query_param(
+        request,
+        "category",
+        "brand",
+        "min_price",
+        "max_price",
+    )
 
     # Get all active products
-    products = Product.objects.filter(is_drafted=False, is_deleted=False)
+    products = (
+        Product.objects.filter(
+            is_deleted=False,
+            is_drafted=False,
+            variants__is_deleted=False,
+            variants__is_drafted=False,
+            variants__stock__gt=0,
+            brand__is_active=True,
+            category__is_active=True,
+        )
+        .annotate(
+            min_price=Min("variants__price"),
+            max_price=Max("variants__price"),
+        )
+        .distinct()
+    )
 
     # Search filter
     if search:
@@ -32,6 +59,10 @@ def product_list(request):
             Q(name__icontains=search)
             | Q(brand__name__icontains=search)
             | Q(category__name__icontains=search)
+            | Q(variants__sku__icontains=search)
+            | Q(variants__dial_color__icontains=search)
+            | Q(variants__strap_color__icontains=search)
+            | Q(variants__movement_type__icontains=search)
         )
 
     # Category filter
@@ -92,14 +123,15 @@ def product_list(request):
         "categories": categories,
         "brands": brands,
         "search_query": search,
-        "filter_category": category,
-        "filter_brand": brand,
+        "category": category,
+        "brand": brand,
         "min_price": min_price,
         "max_price": max_price,
         "sort": sort,
         "sort_options": sort_options,
-        "has_filters": bool(search or category or brand or min_price or max_price),
+        "has_filters": bool(category or brand or min_price or max_price),
         "clear_search_url": clear_search_url,
+        "clear_filter": clear_filter,
     }
 
     return render(request, "catalog/user/product/product_list.html", context)
