@@ -33,20 +33,33 @@
             <div class="nav-container">
                 <a href="{% url 'home' %}" class="nav-brand">REX <span class="brand-accent">CC</span></a>
                 <form class="nav-search" action="{% url 'product_list' %}" method="get">
+                    <!-- Preserve filters when searching (on product list page) -->
+                    {% if sort %}<input type="hidden" name="sort" value="{{ sort }}">{% endif %}
+                    {% if category %}<input type="hidden" name="category" value="{{ category }}">{% endif %}
+                    {% if brand %}<input type="hidden" name="brand" value="{{ brand }}">{% endif %}
+                    {% if min_price %}<input type="hidden" name="min_price" value="{{ min_price }}">{% endif %}
+                    {% if max_price %}<input type="hidden" name="max_price" value="{{ max_price }}">{% endif %}
                     <div class="search-form">
                         <input type="text"
                                name="search"
                                class="search-input"
                                placeholder="Search luxury watches..."
                                value="{{ search_query }}">
-                        <button type="submit" class="search-btn">
-                            <span class="material-icons">search</span>
-                        </button>
-                        {% comment %} {% if search_query %}
-                            <a href="{% url 'product_list' %}{% if sort %}?sort={{ sort }}{% endif %}{% if selected_category %}{% if sort %}&{% else %}?{% endif %}category={{ selected_category }}{% endif %}{% if selected_brand %}{% if sort or selected_category %}&{% else %}?{% endif %}brand={{ selected_brand }}{% endif %}" class="search-clear-btn" title="Clear search">
-                                <span class="material-icons">close</span>
-                            </a>
-                        {% endif %} {% endcomment %}
+                        <div class="search-action-btn">
+                            {% if search_query %}
+                                <!-- CLEAR SEARCH  -->
+                                <a href="{% url 'product_list' %}{{ clear_search_url }}"
+                                   class="search-clear-btn"
+                                   title="Clear search">
+                                    <span class="material-icons">close</span>
+                                </a>
+                            {% else %}
+                                <!-- SUBMIT SEARCH  -->
+                                <button type="submit" class="search-submit-btn">
+                                    <span class="material-icons">search</span>
+                                </button>
+                            {% endif %}
+                        </div>
                     </div>
                 </form>
                 <div class="nav-links">

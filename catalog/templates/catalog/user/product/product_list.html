@@ -16,7 +16,7 @@
     <div class="listing-container">
         <!-- Filter Sidebar -->
         <aside class="filter-sidebar">
-            <form method="GET" action="{% url 'product_list' %}" id="filterForm">
+            <form method="get" action="{% url 'product_list' %}" id="filterForm">
                 <!-- Preserve search and sort when filtering -->
                 {% if search_query %}<input type="hidden" name="search" value="{{ search_query }}">{% endif %}
                 {% if sort %}<input type="hidden" name="sort" value="{{ sort }}">{% endif %}
@@ -43,7 +43,7 @@
                                 </span>
                             </label>
                         {% empty %}
-                            <p style="color: var(--text-muted); font-size: 0.85rem;">No categories available</p>
+                            <p class="filter-empty-msg">No categories available</p>
                         {% endfor %}
                     </div>
                 </div>
@@ -64,7 +64,7 @@
                                 </span>
                             </label>
                         {% empty %}
-                            <p style="color: var(--text-muted); font-size: 0.85rem;">No brands available</p>
+                            <p class="filter-empty-msg">No brands available</p>
                         {% endfor %}
                     </div>
                 </div>
@@ -110,28 +110,28 @@
                         <span class="active-filter-tag">
                             Search: "{{ search_query }}"
                             <a href="?{% if sort %}sort={{ sort }}&{% endif %}{% if selected_category %}category={{ selected_category }}&{% endif %}{% if selected_brand %}brand={{ selected_brand }}&{% endif %}{% if min_price %}min_price={{ min_price }}&{% endif %}{% if max_price %}max_price={{ max_price }}{% endif %}"
-                               title="Remove">&times;</a>
+                               title="Remove">×</a>
                         </span>
                     {% endif %}
                     {% if selected_category %}
                         <span class="active-filter-tag">
                             Category: {{ selected_category }}
                             <a href="?{% if search_query %}search={{ search_query }}&{% endif %}{% if sort %}sort={{ sort }}&{% endif %}{% if selected_brand %}brand={{ selected_brand }}&{% endif %}{% if min_price %}min_price={{ min_price }}&{% endif %}{% if max_price %}max_price={{ max_price }}{% endif %}"
-                               title="Remove">&times;</a>
+                               title="Remove">×</a>
                         </span>
                     {% endif %}
                     {% if selected_brand %}
                         <span class="active-filter-tag">
                             Brand: {{ selected_brand }}
                             <a href="?{% if search_query %}search={{ search_query }}&{% endif %}{% if sort %}sort={{ sort }}&{% endif %}{% if selected_category %}category={{ selected_category }}&{% endif %}{% if min_price %}min_price={{ min_price }}&{% endif %}{% if max_price %}max_price={{ max_price }}{% endif %}"
-                               title="Remove">&times;</a>
+                               title="Remove">×</a>
                         </span>
                     {% endif %}
                     {% if min_price or max_price %}
                         <span class="active-filter-tag">
                             Price: ₹{{ min_price|default:"0" }} - ₹{{ max_price|default:"∞" }}
                             <a href="?{% if search_query %}search={{ search_query }}&{% endif %}{% if sort %}sort={{ sort }}&{% endif %}{% if selected_category %}category={{ selected_category }}&{% endif %}{% if selected_brand %}brand={{ selected_brand }}{% endif %}"
-                               title="Remove">&times;</a>
+                               title="Remove">×</a>
                         </span>
                     {% endif %}
                 </div>

@@ -1,7 +1,6 @@
 from django.core.paginator import Paginator
 from django.db.models import Q, Min
 from django.shortcuts import render
-
 from catalog.models import Product, Category, Brand
 
 
@@ -17,6 +16,12 @@ def product_list(request):
     min_price = request.GET.get("min_price", "")
     max_price = request.GET.get("max_price", "")
     page_number = request.GET.get("page", 1)
+
+    # Build clear-search URL (keep all filters except search)
+    params = request.GET.copy()
+    params.pop("search", None)
+
+    clear_search_url = f"?{params.urlencode()}" if params else ""
 
     # Get all active products
     products = Product.objects.filter(is_drafted=False, is_deleted=False)
@@ -83,7 +88,7 @@ def product_list(request):
 
     context = {
         "products": page_obj,
-        "page_obj": page_obj,
+        # "page_obj": page_obj,
         "categories": categories,
         "brands": brands,
         "search_query": search,
@@ -94,6 +99,7 @@ def product_list(request):
         "sort": sort,
         "sort_options": sort_options,
         "has_filters": bool(search or category or brand or min_price or max_price),
+        "clear_search_url": clear_search_url,
     }
 
     return render(request, "catalog/user/product/product_list.html", context)
