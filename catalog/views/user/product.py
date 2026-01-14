@@ -26,7 +26,10 @@ def product_list(request):
     page_number = request.GET.get("page", 1)
 
     clear_search_url = remove_query_param(request, "search")
+<<<<<<< HEAD
 
+=======
+>>>>>>> 489c29e (feat: add active filter chips and polish product list sidebar UI)
     clear_filter = remove_query_param(
         request,
         "category",
@@ -34,6 +37,12 @@ def product_list(request):
         "min_price",
         "max_price",
     )
+<<<<<<< HEAD
+=======
+    clear_category = remove_query_param(request, "category")
+    clear_brand = remove_query_param(request, "brand")
+    clear_price = remove_query_param(request, "min_price", "max_price")
+>>>>>>> 489c29e (feat: add active filter chips and polish product list sidebar UI)
 
     # Get all active products
     products = (
@@ -100,12 +109,20 @@ def product_list(request):
         products = products.order_by("-created_at")
 
     # Pagination
-    paginator = Paginator(products, 12)
+    paginator = Paginator(products, 9)
     page_obj = paginator.get_page(page_number)
 
     # Get filter options
     categories = Category.objects.filter(is_active=True)
     brands = Brand.objects.filter(is_active=True)
+
+    # Get actual category and brand objects for display
+    category_obj = None
+    brand_obj = None
+    if category:
+        category_obj = Category.objects.filter(slug=category, is_active=True).first()
+    if brand:
+        brand_obj = Brand.objects.filter(slug=brand, is_active=True).first()
 
     sort_options = [
         ("", "Default"),
@@ -119,12 +136,19 @@ def product_list(request):
 
     context = {
         "products": page_obj,
-        # "page_obj": page_obj,
+        "page_obj": page_obj,
         "categories": categories,
         "brands": brands,
         "search_query": search,
+<<<<<<< HEAD
         "category": category,
         "brand": brand,
+=======
+        "category": category,  # slug for form
+        "brand": brand,  # slug for form
+        "category_obj": category_obj,  # object for display
+        "brand_obj": brand_obj,  # object for display
+>>>>>>> 489c29e (feat: add active filter chips and polish product list sidebar UI)
         "min_price": min_price,
         "max_price": max_price,
         "sort": sort,
@@ -132,6 +156,12 @@ def product_list(request):
         "has_filters": bool(category or brand or min_price or max_price),
         "clear_search_url": clear_search_url,
         "clear_filter": clear_filter,
+<<<<<<< HEAD
+=======
+        "clear_category": clear_category,
+        "clear_brand": clear_brand,
+        "clear_price": clear_price,
+>>>>>>> 489c29e (feat: add active filter chips and polish product list sidebar UI)
     }
 
     return render(request, "catalog/user/product/product_list.html", context)

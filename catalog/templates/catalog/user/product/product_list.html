@@ -10,6 +10,7 @@
 {% block content %}
     <!-- Page Header -->
     <section class="page-header">
+<<<<<<< HEAD
         <h1 class="page-title">
             {% if category %}
                 {{ category.name }}
@@ -20,6 +21,33 @@
             {% endif %}
         </h1>
         <p class="page-subtitle">Discover our exclusive range of luxury timepieces</p>
+=======
+        <div class="page-header-content">
+            <span class="page-header-badge">Luxury Timepieces</span>
+            <h1 class="page-title">
+                {% if category_obj and brand_obj %}
+                    {{ brand_obj.name }} {{ category_obj.name }}
+                {% elif category_obj %}
+                    {{ category_obj.name }}
+                {% elif brand_obj %}
+                    {{ brand_obj.name }}
+                {% elif search_query %}
+                    Search: "{{ search_query }}"
+                {% else %}
+                    Our Collection
+                {% endif %}
+            </h1>
+            <p class="page-subtitle">
+                {% if search_query %}
+                    Showing results for your search
+                {% elif category_obj or brand_obj %}
+                    Curated selection of premium watches
+                {% else %}
+                    Discover our exclusive range of luxury timepieces
+                {% endif %}
+            </p>
+        </div>
+>>>>>>> 489c29e (feat: add active filter chips and polish product list sidebar UI)
     </section>
     <div class="listing-container">
         <!-- Filter Sidebar -->
@@ -37,18 +65,20 @@
                 </div>
                 <!-- Category Filter -->
                 <div class="filter-group">
-                    <h4 class="filter-group-title">Category</h4>
-                    <div class="filter-options">
-                        {% for category in categories %}
+                    <h4 class="filter-group-title">
+                        <span class="material-icons filter-group-icon">category</span>
+                        Category
+                    </h4>
+                    <div class="filter-options scrollable">
+                        {% for cat in categories %}
                             <label class="filter-option">
                                 <input type="radio"
                                        name="category"
-                                       value="{{ category.slug }}"
-                                       {% if filter_category == category.slug %}checked{% endif %}
-                                       onchange="this.form.submit()">
+                                       value="{{ cat.slug }}"
+                                       {% if category == cat.slug %}checked{% endif %}>
                                 <span class="filter-option-label">
                                     <span class="filter-checkbox"></span>
-                                    {{ category.name }}
+                                    {{ cat.name }}
                                 </span>
                             </label>
                         {% empty %}
@@ -58,18 +88,20 @@
                 </div>
                 <!-- Brand Filter -->
                 <div class="filter-group">
-                    <h4 class="filter-group-title">Brand</h4>
-                    <div class="filter-options">
-                        {% for brand in brands %}
+                    <h4 class="filter-group-title">
+                        <span class="material-icons filter-group-icon">watch</span>
+                        Brand
+                    </h4>
+                    <div class="filter-options scrollable">
+                        {% for br in brands %}
                             <label class="filter-option">
                                 <input type="radio"
                                        name="brand"
-                                       value="{{ brand.slug }}"
-                                       {% if filter_brand == brand.slug %}checked{% endif %}
-                                       onchange="this.form.submit()">
+                                       value="{{ br.slug }}"
+                                       {% if brand == br.slug %}checked{% endif %}>
                                 <span class="filter-option-label">
                                     <span class="filter-checkbox"></span>
-                                    {{ brand.name }}
+                                    {{ br.name }}
                                 </span>
                             </label>
                         {% empty %}
@@ -81,21 +113,32 @@
                 <div class="filter-group">
                     <h4 class="filter-group-title">Price Range</h4>
                     <div class="price-range">
-                        <input type="number"
-                               name="min_price"
-                               class="price-input"
-                               placeholder="Min"
-                               value="{{ min_price }}"
-                               min="0">
-                        <span class="price-separator">–</span>
-                        <input type="number"
-                               name="max_price"
-                               class="price-input"
-                               placeholder="Max"
-                               value="{{ max_price }}"
-                               min="0">
+                        <div class="price-input-wrapper">
+                            <label for="min_price">Minimum</label>
+                            <input type="number"
+                                   id="min_price"
+                                   name="min_price"
+                                   class="price-input"
+                                   placeholder="0"
+                                   value="{{ min_price }}"
+                                   min="0">
+                        </div>
+                        <span class="price-separator">—</span>
+                        <div class="price-input-wrapper">
+                            <label for="max_price">Maximum</label>
+                            <input type="number"
+                                   id="max_price"
+                                   name="max_price"
+                                   class="price-input"
+                                   placeholder="Any"
+                                   value="{{ max_price }}"
+                                   min="0">
+                        </div>
                     </div>
-                    <button type="submit" class="filter-apply-btn">Apply Price</button>
+                    <button type="submit" class="filter-apply-btn">
+                        <span class="material-icons btn-icon">filter_alt</span>
+                        Apply Filter
+                    </button>
                 </div>
             </form>
         </aside>
@@ -115,32 +158,22 @@
             <!-- Active Filters Display -->
             {% if has_filters %}
                 <div class="active-filters">
-                    {% if search_query %}
+                    {% if category %}
                         <span class="active-filter-tag">
-                            Search: "{{ search_query }}"
-                            <a href="?{% if sort %}sort={{ sort }}&{% endif %}{% if selected_category %}category={{ selected_category }}&{% endif %}{% if selected_brand %}brand={{ selected_brand }}&{% endif %}{% if min_price %}min_price={{ min_price }}&{% endif %}{% if max_price %}max_price={{ max_price }}{% endif %}"
-                               title="Remove">×</a>
+                            Category: {{ category }}
+                            <a href="{% url 'product_list' %}{{ clear_category }}" title="Remove">×</a>
                         </span>
                     {% endif %}
-                    {% if selected_category %}
+                    {% if brand %}
                         <span class="active-filter-tag">
-                            Category: {{ selected_category }}
-                            <a href="?{% if search_query %}search={{ search_query }}&{% endif %}{% if sort %}sort={{ sort }}&{% endif %}{% if selected_brand %}brand={{ selected_brand }}&{% endif %}{% if min_price %}min_price={{ min_price }}&{% endif %}{% if max_price %}max_price={{ max_price }}{% endif %}"
-                               title="Remove">×</a>
-                        </span>
-                    {% endif %}
-                    {% if selected_brand %}
-                        <span class="active-filter-tag">
-                            Brand: {{ selected_brand }}
-                            <a href="?{% if search_query %}search={{ search_query }}&{% endif %}{% if sort %}sort={{ sort }}&{% endif %}{% if selected_category %}category={{ selected_category }}&{% endif %}{% if min_price %}min_price={{ min_price }}&{% endif %}{% if max_price %}max_price={{ max_price }}{% endif %}"
-                               title="Remove">×</a>
+                            Brand: {{ brand }}
+                            <a href="{% url 'product_list' %}{{ clear_brand }}" title="Remove">×</a>
                         </span>
                     {% endif %}
                     {% if min_price or max_price %}
                         <span class="active-filter-tag">
                             Price: ₹{{ min_price|default:"0" }} - ₹{{ max_price|default:"∞" }}
-                            <a href="?{% if search_query %}search={{ search_query }}&{% endif %}{% if sort %}sort={{ sort }}&{% endif %}{% if selected_category %}category={{ selected_category }}&{% endif %}{% if selected_brand %}brand={{ selected_brand }}{% endif %}"
-                               title="Remove">×</a>
+                            <a href="{% url 'product_list' %}{{ clear_price }}" title="Remove">×</a>
                         </span>
                     {% endif %}
                 </div>
@@ -224,10 +257,15 @@
                 {% endif %}
             {% else %}
                 <div class="no-products-listing">
-                    <span class="material-icons">watch_off</span>
+                    <div class="no-products-icon">
+                        <span class="material-icons">watch_off</span>
+                    </div>
                     <h3>No Products Found</h3>
                     <p>Try adjusting your search or filter criteria.</p>
-                    <a href="{% url 'product_list' %}" class="btn btn-primary">Clear All Filters</a>
+                    <a href="{% url 'product_list' %}" class="clear-filters-btn">
+                        <span class="material-icons">filter_alt_off</span>
+                        Clear All Filters
+                    </a>
                 </div>
             {% endif %}
         </main>
