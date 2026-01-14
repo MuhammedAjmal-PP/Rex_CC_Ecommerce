@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from catalog.models import Category, Brand, Product, ProductVariant, ProductImage
+from catalog.models import Category, Brand, Product
 from django.db.models import Q
 
 

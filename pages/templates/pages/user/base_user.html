@@ -1,4 +1,5 @@
 {% load static %}
+{% load cloudinary %}
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -21,8 +22,8 @@
         <!-- Google Material Icons -->
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
               rel="stylesheet">
-        <!-- Base Homepage CSS -->
-        <link rel="stylesheet" href="{% static 'pages/user/css/homepage.css' %}">
+        <!-- Base User CSS -->
+        <link rel="stylesheet" href="{% static 'pages/user/css/base_user.css' %}">
         {% block extra_css %}
         {% endblock extra_css %}
     </head>
@@ -32,44 +33,108 @@
             <div class="nav-container">
                 <a href="{% url 'home' %}" class="nav-brand">REX <span class="brand-accent">CC</span></a>
                 <form class="nav-search" action="{% url 'product_list' %}" method="get">
-                    <!-- Preserve filters when searching (on product list page) -->
-                    {% if sort %}<input type="hidden" name="sort" value="{{ sort }}">{% endif %}
-                    {% if selected_category %}<input type="hidden" name="category" value="{{ selected_category }}">{% endif %}
-                    {% if selected_brand %}<input type="hidden" name="brand" value="{{ selected_brand }}">{% endif %}
-                    {% if min_price %}<input type="hidden" name="min_price" value="{{ min_price }}">{% endif %}
-                    {% if max_price %}<input type="hidden" name="max_price" value="{{ max_price }}">{% endif %}
                     <div class="search-form">
                         <input type="text"
                                name="search"
                                class="search-input"
                                placeholder="Search luxury watches..."
-                               value="{{ search_query|default:'' }}">
+                               value="{{ search_query }}">
                         <button type="submit" class="search-btn">
                             <span class="material-icons">search</span>
                         </button>
-                        {% if search_query %}
-                            <a href="{% url 'product_list' %}{% if sort %}?sort={{ sort }}{% endif %}{% if selected_category %}{% if sort %}&{% else %}?{% endif %}category={{ selected_category }}{% endif %}{% if selected_brand %}{% if sort or selected_category %}&{% else %}?{% endif %}brand={{ selected_brand }}{% endif %}"
-                               class="search-clear-btn"
-                               title="Clear search">
+                        {% comment %} {% if search_query %}
+                            <a href="{% url 'product_list' %}{% if sort %}?sort={{ sort }}{% endif %}{% if selected_category %}{% if sort %}&{% else %}?{% endif %}category={{ selected_category }}{% endif %}{% if selected_brand %}{% if sort or selected_category %}&{% else %}?{% endif %}brand={{ selected_brand }}{% endif %}" class="search-clear-btn" title="Clear search">
                                 <span class="material-icons">close</span>
                             </a>
-                        {% endif %}
+                        {% endif %} {% endcomment %}
                     </div>
                 </form>
                 <div class="nav-links">
                     {% if user.is_authenticated %}
-                        <a href="#" class="nav-link">Account</a>
-                        <a href="{% url 'account_logout' %}" class="nav-link">Logout</a>
+                        <a href="#" class="nav-icon" title="Account">
+                            {% if user.avatar %}
+                                <img src="{{ user.avatar.url }}"
+                                     alt="Profile Picture"
+                                     class="user-avatar"
+                                     width="36"
+                                     height="36">
+                            {% else %}
+                                <span class="material-icons">person</span>
+                            {% endif %}
+                        </a>
                     {% else %}
-                        <a href="{% url 'account_login' %}" class="nav-link">Sign In</a>
-                        <a href="{% url 'account_signup' %}" class="nav-link">Join Us</a>
+                        <a href="#"
+                           data-bs-toggle="modal"
+                           data-bs-target="#registerAccount"
+                           class="nav-icon"
+                           title="Account">
+                            <span class="material-icons">person</span>
+                        </a>
                     {% endif %}
+                    <a href="#" class="nav-icon" title="Wishlist"><span class="material-icons">favorite</span></a>
                     <a href="#" class="nav-icon" title="Cart">
                         <span class="material-icons">shopping_bag</span>
                     </a>
                 </div>
             </div>
         </nav>
+        <!-- Premium Account Modal - Two Panel Design -->
+        <div class="modal fade"
+             id="registerAccount"
+             tabindex="-1"
+             aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-xl">
+                <div class="modal-content account-modal-premium">
+                    <!-- Close Button -->
+                    <button type="button"
+                            class="account-modal-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close">
+                        <span class="material-icons">close</span>
+                    </button>
+                    <div class="account-modal-grid">
+                        <!-- Left Panel - Promotional Content -->
+                        <div class="account-modal-promo">
+                            <span class="promo-tagline">EXCLUSIVITY AWAITS</span>
+                            <h2 class="promo-title">
+                                The Art of
+                                <br>
+                                <span class="promo-accent">Precision</span>
+                            </h2>
+                            <p class="promo-description">
+                                Join an elite circle of collectors and enthusiasts. Experience horology at its absolute peak.
+                            </p>
+                            <div class="promo-featured">
+                                <span class="featured-label">— FEATURED COLLECTION</span>
+                                <div class="featured-preview">
+                                    <span class="material-icons featured-play">play_circle</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Right Panel - Auth Actions -->
+                        <div class="account-modal-auth">
+                            <h3 class="auth-title">Welcome Back</h3>
+                            <p class="auth-subtitle">Please sign in to your dashboard or create a new profile.</p>
+                            <div class="auth-actions">
+                                <a href="{% url 'account_login' %}" class="auth-btn auth-btn-primary">
+                                    SIGN IN
+                                    <span class="material-icons">arrow_forward</span>
+                                </a>
+                                <a href="{% url 'account_signup' %}" class="auth-btn auth-btn-outline">JOIN US</a>
+                            </div>
+                            <div class="auth-partners">
+                                <span class="partners-label">PARTNERED WITH</span>
+                                <div class="partners-brands">
+                                    <span class="partner-brand">GENÈVE</span>
+                                    <span class="partner-brand">HERITAGE</span>
+                                    <span class="partner-brand">CHRONOS</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <!-- Flash Messages -->
         {% if messages %}
             <div class="message-container">

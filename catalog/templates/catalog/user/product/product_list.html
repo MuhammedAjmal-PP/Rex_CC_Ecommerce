@@ -165,7 +165,7 @@
                             <div class="product-info-listing">
                                 <p class="product-brand-listing">{{ product.brand.name }}</p>
                                 <h3 class="product-name-listing">
-                                    <a href="{% url 'product_detail' product.slug %}">{{ product.name }}</a>
+                                    <a href="#">{{ product.name }}</a>
                                 </h3>
                                 {% with first_variant=product.variants.first %}
                                     {% if first_variant %}
@@ -226,14 +226,14 @@
 {% endblock content %}
 {% block extra_js %}
     <script>
-    function updateSort(value) {
-        const url = new URL(window.location.href);
-        if (value) {
-            url.searchParams.set('sort', value);
-        } else {
-            url.searchParams.delete('sort');
+        function updateSort(value) {
+            const url = new URL(window.location.href);
+            if (value) {
+                url.searchParams.set('sort', value);
+            } else {
+                url.searchParams.delete('sort');
+            }
+            window.location.href = url.toString();
         }
-        window.location.href = url.toString();
-    }
     </script>
 {% endblock extra_js %}
