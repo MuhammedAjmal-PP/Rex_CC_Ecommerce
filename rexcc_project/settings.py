@@ -72,6 +72,7 @@ INSTALLED_APPS = [
     # localapps
     "pages",
     "catalog",
+    "customers.user_profile",
 ]
 
 MIDDLEWARE = [
