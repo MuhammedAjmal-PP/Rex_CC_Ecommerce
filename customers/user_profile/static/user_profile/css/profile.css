@@ -1,0 +1,246 @@
+/* User Profile Dashboard CSS */
+.profile-container {
+    padding: 3rem 0;
+    background-color: #f8f9fa;
+    /* Light gray background */
+}
+
+/* Page Header */
+.profile-header {
+    margin-bottom: 2rem;
+}
+
+.profile-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 0.5rem;
+}
+
+.profile-subtitle {
+    color: #6c757d;
+    font-size: 1rem;
+}
+
+/* User Info Card - Minimal */
+.user-info-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+}
+
+.user-avatar-lg {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    object-fit: cover;
+    background-color: #1a1a1a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+}
+
+.user-details h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.user-details p {
+    margin: 0;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.user-badge {
+    display: inline-block;
+    background: #FFD700;
+    color: #1a1a1a;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 12px;
+    margin-top: 4px;
+}
+
+.edit-profile-btn {
+    margin-left: auto;
+    font-size: 0.9rem;
+    padding: 0.6rem 1.5rem;
+    border-radius: 50px;
+    border: 1px solid #e0e0e0;
+    color: #1a1a1a;
+    background: white;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+    text-decoration: none;
+}
+
+.edit-profile-btn:hover {
+    background-color: #1a1a1a;
+    color: white;
+    border-color: #1a1a1a;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.edit-profile-btn .material-icons {
+    font-size: 1.1rem;
+    transition: inherit;
+}
+
+/* Premium Banner */
+.premium-banner {
+    background: linear-gradient(135deg, #b8860b 0%, #daa520 100%);
+    border-radius: 16px;
+    padding: 3rem;
+    color: white;
+    margin-bottom: 3rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.premium-content {
+    position: relative;
+    z-index: 2;
+    max-width: 800px;
+}
+
+.premium-icon-top {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+.premium-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.premium-text {
+    font-size: 1rem;
+    opacity: 0.9;
+    margin-bottom: 2rem;
+    max-width: 600px;
+}
+
+.premium-benefits {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.benefit-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.benefit-item .material-icons {
+    font-size: 1.2rem;
+}
+
+.premium-btn {
+    background: white;
+    color: #b8860b;
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.premium-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    color: #b8860b;
+}
+
+/* Dashboard Grid */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.dashboard-card {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    border-color: transparent;
+}
+
+.card-icon-wrapper {
+    width: 48px;
+    height: 48px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    color: #1a1a1a;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.dashboard-card:hover .card-icon-wrapper {
+    background-color: #1a1a1a;
+    color: white;
+}
+
+.material-icons {
+    font-size: 24px;
+}
+
+.card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #1a1a1a;
+}
+
+.card-description {
+    font-size: 0.9rem;
+    color: #6c757d;
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* Logout specific style */
+.logout-card .card-icon-wrapper {
+    background-color: #fff0f0;
+    color: #dc3545;
+}
+
+.logout-card:hover .card-icon-wrapper {
+    background-color: #dc3545;
+    color: white;
+}

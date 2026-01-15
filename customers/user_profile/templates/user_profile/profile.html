@@ -1,0 +1,197 @@
+{% extends "pages/user/base_user.html" %}
+{% load static %}
+{% block head_title %}
+    My Account | REX CC
+{% endblock head_title %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'user_profile/css/profile.css' %}">
+{% endblock extra_css %}
+{% block content %}
+    <div class="profile-container">
+        <div class="container">
+            <!-- Header -->
+            <div class="profile-header">
+                <h1 class="profile-title">My Account</h1>
+                <p class="profile-subtitle">Manage your profile, orders, and settings.</p>
+            </div>
+            <!-- User Info Card -->
+            <div class="user-info-card">
+                <div class="user-avatar-lg">
+                    {% if user.avatar %}
+                        <img src="{{ user.avatar.url }}"
+                             alt="{{ user.first_name }}"
+                             class="user-avatar-lg"
+                             width="64"
+                             height="64">
+                    {% else %}
+                        <span>{{ user.first_name|first|default:"U" }}</span>
+                    {% endif %}
+                </div>
+                <div class="user-details">
+                    <h3>
+                        {% if user.first_name and user.last_name %}
+                            {{ user.first_name }} {{ user.last_name }}
+                        {% else %}
+                            {{ user.first_name }}
+                        {% endif %}
+                    </h3>
+                    <p>{{ user.email }}</p>
+                    <!-- Gold Badge could be dynamic later -->
+                    <!-- <span class="user-badge">GOLD MEMBER</span> -->
+                </div>
+                <!-- Placeholder Edit Profile link -->
+                <!-- Edit Profile Button -->
+                <a href="#" class="edit-profile-btn">
+                    <span class="material-icons">edit</span>
+                    Edit Profile
+                </a>
+            </div>
+            <!-- Premium Club Banner -->
+            <div class="premium-banner">
+                <div class="premium-content">
+                    <span class="material-icons premium-icon-top">workspace_premium</span>
+                    <h2 class="premium-title">Join Rex CC Premium Club</h2>
+                    <p class="premium-text">Unlock exclusive benefits and elevate your watch collecting experience.</p>
+                    <div class="premium-benefits">
+                        <div class="benefit-item">
+                            <span class="material-icons">local_shipping</span>
+                            Free Shipping on All Orders
+                        </div>
+                        <div class="benefit-item">
+                            <span class="material-icons">bolt</span>
+                            Early Access to New Launches
+                        </div>
+                        <div class="benefit-item">
+                            <span class="material-icons">card_giftcard</span>
+                            3x Reward Points
+                        </div>
+                    </div>
+                    <a href="#" class="premium-btn">Explore Benefits</a>
+                </div>
+            </div>
+            <!-- Dashboard Grid -->
+            <div class="dashboard-grid">
+                <!-- My Orders -->
+                <a href="#" class="dashboard-card">
+                    <div class="card-icon-wrapper">
+                        <span class="material-icons">inventory_2</span>
+                    </div>
+                    <h3 class="card-title">My Orders</h3>
+                    <p class="card-description">Track orders, view details, and reorder your favorite watches.</p>
+                </a>
+                <!-- Wishlist -->
+                <a href="#" class="dashboard-card">
+                    <div class="card-icon-wrapper">
+                        <span class="material-icons">favorite_border</span>
+                    </div>
+                    <h3 class="card-title">Wishlist</h3>
+                    <p class="card-description">View and manage your saved watches and collections.</p>
+                </a>
+                <!-- Return / Replace -->
+                <a href="#" class="dashboard-card">
+                    <div class="card-icon-wrapper">
+                        <span class="material-icons">autorenew</span>
+                    </div>
+                    <h3 class="card-title">Return / Replace</h3>
+                    <p class="card-description">Manage returns and replacements for your purchases.</p>
+                </a>
+                <!-- Track Order -->
+                <a href="#" class="dashboard-card">
+                    <div class="card-icon-wrapper">
+                        <span class="material-icons">trending_up</span>
+                    </div>
+                    <h3 class="card-title">Track Order</h3>
+                    <p class="card-description">Quick access to track your active orders in real-time.</p>
+                </a>
+                <!-- Addresses -->
+                <a href="#" class="dashboard-card">
+                    <div class="card-icon-wrapper">
+                        <span class="material-icons">location_on</span>
+                    </div>
+                    <h3 class="card-title">Addresses</h3>
+                    <p class="card-description">Manage your shipping and billing addresses.</p>
+                </a>
+                <!-- Payment Methods -->
+                <a href="#" class="dashboard-card">
+                    <div class="card-icon-wrapper">
+                        <span class="material-icons">credit_card</span>
+                    </div>
+                    <h3 class="card-title">Payment Methods</h3>
+                    <p class="card-description">Saved cards, UPI IDs, and netbanking options.</p>
+                </a>
+                <!-- Reward Points -->
+                <a href="#" class="dashboard-card">
+                    <div class="card-icon-wrapper">
+                        <span class="material-icons">account_balance_wallet</span>
+                    </div>
+                    <h3 class="card-title">Reward Points & Wallet</h3>
+                    <p class="card-description">View your wallet balance and cashback points.</p>
+                </a>
+                <!-- Notifications -->
+                <a href="#" class="dashboard-card">
+                    <div class="card-icon-wrapper">
+                        <span class="material-icons">notifications_none</span>
+                    </div>
+                    <h3 class="card-title">Notifications</h3>
+                    <p class="card-description">Alerts about orders, offers, and returns.</p>
+                </a>
+                <!-- Support -->
+                <a href="#" class="dashboard-card">
+                    <div class="card-icon-wrapper">
+                        <span class="material-icons">headset_mic</span>
+                    </div>
+                    <h3 class="card-title">Support & Tickets</h3>
+                    <p class="card-description">Access help center and raise support tickets.</p>
+                </a>
+                <!-- Personal Info -->
+                <a href="#" class="dashboard-card">
+                    <div class="card-icon-wrapper">
+                        <span class="material-icons">person_outline</span>
+                    </div>
+                    <h3 class="card-title">Personal Information</h3>
+                    <p class="card-description">Update your name, email, phone, and gender.</p>
+                </a>
+                <!-- Change Password -->
+                <a href="#" class="dashboard-card">
+                    <div class="card-icon-wrapper">
+                        <span class="material-icons">lock_outline</span>
+                    </div>
+                    <h3 class="card-title">Change Password</h3>
+                    <p class="card-description">Update your login credentials and security settings.</p>
+                </a>
+                <!-- Referral Program -->
+                <a href="#" class="dashboard-card">
+                    <div class="card-icon-wrapper">
+                        <span class="material-icons">people_outline</span>
+                    </div>
+                    <h3 class="card-title">Referral Program</h3>
+                    <p class="card-description">Share your unique link and earn rewards.</p>
+                </a>
+                <!-- Coupons & Offers -->
+                <a href="#" class="dashboard-card">
+                    <div class="card-icon-wrapper">
+                        <span class="material-icons">local_offer</span>
+                    </div>
+                    <h3 class="card-title">Coupons & Offers</h3>
+                    <p class="card-description">View available discount coupons and special offers.</p>
+                </a>
+                <!-- Recently Viewed -->
+                <a href="#" class="dashboard-card">
+                    <div class="card-icon-wrapper">
+                        <span class="material-icons">schedule</span>
+                    </div>
+                    <h3 class="card-title">Recently Viewed</h3>
+                    <p class="card-description">Browse your watch viewing history.</p>
+                </a>
+                <!-- Logout -->
+                <a href="{% url 'account_logout' %}" class="dashboard-card logout-card">
+                    <div class="card-icon-wrapper">
+                        <span class="material-icons">logout</span>
+                    </div>
+                    <h3 class="card-title">Logout</h3>
+                    <p class="card-description">Sign out of your Rex CC account securely.</p>
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
