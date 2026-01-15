@@ -31,6 +31,12 @@
     color: var(--text-muted);
 }
 
+/* Override Bootstrap Divider */
+.breadcrumb-item+.breadcrumb-item::before {
+    content: none;
+    padding: 0;
+}
+
 .breadcrumb-item a {
     color: var(--text-muted);
     text-decoration: none;
@@ -568,8 +574,76 @@
 }
 
 /* ========================================
-   REVIEWS SECTION
+   BRAND DETAILS SECTION
    ======================================== */
+
+.brand-details-section {
+    padding-top: 10px;
+}
+
+.divider {
+    border: none;
+    border-top: 1px dashed var(--border-light);
+    margin: 20px 0;
+}
+
+.brand-info-card {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: #f8f8f8;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid var(--border-light);
+}
+
+.brand-logo {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    border-radius: 50%;
+    /* Optional circle logo */
+    background: white;
+    padding: 5px;
+    border: 1px solid var(--border-light);
+}
+
+.brand-text {
+    flex: 1;
+}
+
+.brand-name {
+    font-family: var(--font-head);
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-pri);
+    margin: 0 0 5px 0;
+}
+
+.brand-tagline {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-style: italic;
+    margin: 0 0 10px 0;
+}
+
+.brand-link {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--btn-bronze);
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.brand-link:hover {
+    text-decoration: underline;
+}
+
+/* ========================================
+   RESPONSIVE DESIGN (UPDATED)
+   ======================================== */
+
 
 .reviews-section {
     background: var(--bg-main);

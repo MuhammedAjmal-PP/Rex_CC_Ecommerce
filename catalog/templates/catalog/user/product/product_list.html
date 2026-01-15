@@ -173,38 +173,39 @@
             {% if products %}
                 <div class="products-grid-listing">
                     {% for product in products %}
-                        <article class="product-card-listing">
-                            <div class="product-image-listing">
-                                {% if product.thumbnail %}
-                                    <img src="{{ product.thumbnail.url }}"
-                                         alt="{{ product.name }}"
-                                         width="260"
-                                         height="260"
-                                         loading="lazy">
-                                {% else %}
-                                    <img src="https://via.placeholder.com/260x260/f8f8f8/666666?text=No+Image"
-                                         alt="{{ product.name }}"
-                                         width="260"
-                                         height="260">
-                                {% endif %}
-                                {% with first_variant=product.variants.first %}
-                                    {% if first_variant and first_variant.is_featured %}<span class="product-badge-listing">Featured</span>{% endif %}
-                                {% endwith %}
-                            </div>
-                            <div class="product-info-listing">
-                                <p class="product-brand-listing">{{ product.brand.name }}</p>
-                                <h3 class="product-name-listing">
-                                    <a href="{% url 'product_detail' product.slug %}">{{ product.name }}</a>
-                                </h3>
-                                {% with first_variant=product.variants.first %}
-                                    {% if first_variant %}
-                                        <p class="product-price-listing">
-                                            <span class="currency">₹</span>{{ first_variant.price|floatformat:0 }}
-                                        </p>
+                        <a href="{% url 'product_detail' product.slug %}"
+                           class="product-card-link">
+                            <article class="product-card-listing">
+                                <div class="product-image-listing">
+                                    {% if product.thumbnail %}
+                                        <img src="{{ product.thumbnail.url }}"
+                                             alt="{{ product.name }}"
+                                             width="260"
+                                             height="260"
+                                             loading="lazy">
+                                    {% else %}
+                                        <img src="https://via.placeholder.com/260x260/f8f8f8/666666?text=No+Image"
+                                             alt="{{ product.name }}"
+                                             width="260"
+                                             height="260">
                                     {% endif %}
-                                {% endwith %}
-                            </div>
-                        </article>
+                                    {% with first_variant=product.variants.first %}
+                                        {% if first_variant and first_variant.is_featured %}<span class="product-badge-listing">Featured</span>{% endif %}
+                                    {% endwith %}
+                                </div>
+                                <div class="product-info-listing">
+                                    <p class="product-brand-listing">{{ product.brand.name }}</p>
+                                    <h3 class="product-name-listing">{{ product.name }}</h3>
+                                    {% with first_variant=product.variants.first %}
+                                        {% if first_variant %}
+                                            <p class="product-price-listing">
+                                                <span class="currency">₹</span>{{ first_variant.price|floatformat:0 }}
+                                            </p>
+                                        {% endif %}
+                                    {% endwith %}
+                                </div>
+                            </article>
+                        </a>
                     {% endfor %}
                 </div>
                 <!-- Pagination -->

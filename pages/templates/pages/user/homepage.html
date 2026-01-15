@@ -67,7 +67,7 @@
       {% if products %}
         <div class="products-grid">
           {% for product in products|slice:":8" %}
-            <a href="#" class="product-card">
+            <a href="{% url 'product_detail' product.slug %}" class="product-card">
               <div class="product-image">
                 {% if product.thumbnail %}
                   <img src="{{ product.thumbnail.url }}"
@@ -75,11 +75,6 @@
                        width="280"
                        height="280"
                        loading="lazy">
-                {% else %}
-                  <img src="https://via.placeholder.com/280x280/f8f8f8/666666?text=No+Image"
-                       alt="{{ product.name }}"
-                       width="280"
-                       height="280">
                 {% endif %}
                 {% if product.is_drafted == False %}<span class="product-badge">New</span>{% endif %}
               </div>

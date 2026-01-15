@@ -264,13 +264,6 @@ def product_detail(request, slug):
             "title": "Perfect Gift",
             "comment": "Bought this as a gift for my husband and he absolutely loves it. The packaging was premium and the watch itself is stunning.",
         },
-        {
-            "author": "James T.",
-            "date": "November 30, 2025",
-            "rating": 4,
-            "title": "Great Value",
-            "comment": "Beautiful timepiece at a reasonable price point. The movement is smooth and the strap is very comfortable for daily wear.",
-        },
     ]
 
     # Get related products (same category, different product)

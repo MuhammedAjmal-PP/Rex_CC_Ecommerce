@@ -70,133 +70,154 @@
         </div>
         <!-- Right Column: Product Info -->
         <div class="product-info">
-            <!-- Brand -->
-            <span class="product-brand">{{ product.brand.name }}</span>
-            <!-- Product Name -->
-            <h1 class="product-name">{{ product.name }}</h1>
-            <!-- Ratings -->
-            <div class="product-ratings">
-                <div class="stars">
-                    {% for i in "12345" %}
-                        {% if forloop.counter <= ratings_data.average|floatformat:0|add:0 %}
-                            <span class="material-icons star-filled">star</span>
-                        {% elif forloop.counter == ratings_data.average|floatformat:0|add:1 and ratings_data.average|floatformat:1 != ratings_data.average|floatformat:0 %}
-                            <span class="material-icons star-half">star_half</span>
-                        {% else %}
-                            <span class="material-icons star-empty">star_border</span>
-                        {% endif %}
+            <!-- 1. Product Details (Hero) -->
+            <div class="product-hero-info">
+                <nav class="product-meta-badges">
+                    {% for cat in categories %}
+                        <a href="{% url 'product_list' %}?category={{ cat.slug }}"
+                           class="meta-badge category-badge">{{ cat.name }}</a>
                     {% endfor %}
-                </div>
-                <span class="rating-value">{{ ratings_data.average }}</span>
-                <span class="rating-count">({{ ratings_data.total_reviews }} reviews)</span>
-            </div>
-            <!-- Price -->
-            <div class="product-price-section">
-                <div class="price-container">
-                    <span class="current-price">
-                        <span class="currency">₹</span>{{ selected_variant.price|floatformat:0 }}
-                    </span>
-                    {% if discount_percentage > 0 %}
-                        <span class="original-price">
-                            <span class="currency">₹</span>{{ original_price|floatformat:0 }}
-                        </span>
-                        <span class="discount-badge">{{ discount_percentage }}% OFF</span>
-                    {% endif %}
-                </div>
-                {% if selected_variant.is_featured %}<span class="featured-badge">Featured</span>{% endif %}
-            </div>
-            <!-- Stock Status -->
-            <div class="stock-status stock-{{ stock_status }}">
-                {% if stock_status == 'in_stock' %}
-                    <span class="material-icons">check_circle</span>
-                {% elif stock_status == 'low_stock' %}
-                    <span class="material-icons">warning</span>
-                {% else %}
-                    <span class="material-icons">cancel</span>
-                {% endif %}
-                {{ stock_message }}
-            </div>
-            <!-- Variant Selector (WhatsApp Style) -->
-            {% if variants|length > 1 %}
-                <div class="variant-selector">
-                    <h4 class="variant-label">Select Style</h4>
-                    <div class="variant-rings">
-                        {% for variant in variants %}
-                            <a href="?variant={{ variant.sku }}"
-                               class="variant-ring {% if variant == selected_variant %}active{% endif %} {% if variant.stock == 0 %}out-of-stock{% endif %}"
-                               title="{{ variant.sku }}">
-                                <div class="variant-preview-wrapper">
-                                    {% with v_img=variant.images.first %}
-                                        {% if v_img %}
-                                            <img src="{{ v_img.image.url }}"
-                                                 alt="{{ variant.sku }}"
-                                                 class="variant-ring-img"
-                                                 width="54"
-                                                 height="54">
-                                        {% else %}
-                                            <!-- Fallback if no image -->
-                                            <div class="variant-ring-placeholder">{{ variant.sku|slice:":2" }}</div>
-                                        {% endif %}
-                                    {% endwith %}
-                                </div>
-                                <div class="variant-tooltip">
-                                    <span class="variant-tooltip-name">
-                                        {% if variant.dial_color and variant.strap_color %}
-                                            {{ variant.dial_color }} / {{ variant.strap_color }}
-                                        {% else %}
-                                            {{ variant.sku }}
-                                        {% endif %}
-                                        {% if variant.stock == 0 %}(Sold Out){% endif %}
-                                    </span>
-                                </div>
-                            </a>
+                </nav>
+                <h1 class="product-name">{{ product.name }}</h1>
+                <div class="product-ratings">
+                    <div class="stars">
+                        {% for i in "12345" %}
+                            {% if forloop.counter <= ratings_data.average|floatformat:0|add:0 %}
+                                <span class="material-icons star-filled">star</span>
+                            {% elif forloop.counter == ratings_data.average|floatformat:0|add:1 and ratings_data.average|floatformat:1 != ratings_data.average|floatformat:0 %}
+                                <span class="material-icons star-half">star_half</span>
+                            {% else %}
+                                <span class="material-icons star-empty">star_border</span>
+                            {% endif %}
                         {% endfor %}
                     </div>
+                    <span class="rating-value">{{ ratings_data.average }}</span>
+                    <span class="rating-count">({{ ratings_data.total_reviews }} reviews)</span>
                 </div>
-            {% endif %}
-            <!-- Add to Cart Section -->
-            <div class="add-to-cart-section">
-                <div class="quantity-selector">
-                    <button class="qty-btn"
-                            id="qtyMinus"
-                            {% if stock_status == 'out_of_stock' %}disabled{% endif %}>
-                        <span class="material-icons">remove</span>
-                    </button>
-                    <input type="number"
-                           class="qty-input"
-                           id="qtyInput"
-                           value="1"
-                           min="1"
-                           max="{{ selected_variant.stock }}"
-                           {% if stock_status == 'out_of_stock' %}disabled{% endif %}>
-                    <button class="qty-btn"
-                            id="qtyPlus"
-                            {% if stock_status == 'out_of_stock' %}disabled{% endif %}>
-                        <span class="material-icons">add</span>
-                    </button>
-                </div>
-                <button class="add-to-cart-btn"
-                        id="addToCartBtn"
-                        {% if stock_status == 'out_of_stock' %}disabled{% endif %}>
-                    <span class="material-icons">shopping_bag</span>
-                    {% if stock_status == 'out_of_stock' %}
-                        Out of Stock
-                    {% else %}
-                        Add to Cart
-                    {% endif %}
-                </button>
-                <button class="wishlist-btn" id="wishlistBtn" title="Add to Wishlist">
-                    <span class="material-icons">favorite_border</span>
-                </button>
+                {% if product.description %}
+                    <div class="product-description-short">
+                        <p>{{ product.description|truncatewords:30 }}</p>
+                    </div>
+                {% endif %}
             </div>
-            <!-- Product Description -->
-            {% if product.description %}
-                <div class="product-description">
-                    <h4 class="section-title">Description</h4>
-                    <p>{{ product.description }}</p>
+            <!-- 2. Variant Selection -->
+            <!-- Show variants section first if multiple exist -->
+            <div class="variant-selection-section">
+                {% if variants|length > 1 %}
+                    <div class="variant-selector">
+                        <h4 class="variant-label">Select Style</h4>
+                        <div class="variant-rings">
+                            {% for variant in variants %}
+                                <a href="?variant={{ variant.sku }}"
+                                   class="variant-ring {% if variant == selected_variant %}active{% endif %} {% if variant.stock == 0 %}out-of-stock{% endif %}"
+                                   title="{{ variant.sku }}">
+                                    <div class="variant-preview-wrapper">
+                                        {% with v_img=variant.images.first %}
+                                            {% if v_img %}
+                                                <img src="{{ v_img.image.url }}"
+                                                     alt="{{ variant.sku }}"
+                                                     class="variant-ring-img"
+                                                     width="54"
+                                                     height="54">
+                                            {% else %}
+                                                <div class="variant-ring-placeholder">{{ variant.sku|slice:":2" }}</div>
+                                            {% endif %}
+                                        {% endwith %}
+                                    </div>
+                                    <div class="variant-tooltip">
+                                        <span class="variant-tooltip-name">
+                                            {% if variant.dial_color %}
+                                                {{ variant.dial_color }}
+                                            {% else %}
+                                                {{ variant.sku }}
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+                <!-- Price & Stock update based on variant -->
+                <div class="product-price-section">
+                    <div class="price-container">
+                        <span class="current-price">
+                            <span class="currency">₹</span>{{ selected_variant.price|floatformat:0 }}
+                        </span>
+                        {% if discount_percentage > 0 %}
+                            <span class="original-price">
+                                <span class="currency">₹</span>{{ original_price|floatformat:0 }}
+                            </span>
+                            <span class="discount-badge">{{ discount_percentage }}% OFF</span>
+                        {% endif %}
+                    </div>
+                    <div class="stock-status stock-{{ stock_status }}">
+                        {% if stock_status == 'in_stock' %}
+                            <span class="material-icons">check_circle</span>
+                        {% elif stock_status == 'low_stock' %}
+                            <span class="material-icons">warning</span>
+                        {% else %}
+                            <span class="material-icons">cancel</span>
+                        {% endif %}
+                        {{ stock_message }}
+                    </div>
                 </div>
-            {% endif %}
-            <!-- Specifications -->
+                <!-- Add to Cart -->
+                <div class="add-to-cart-section">
+                    <div class="quantity-selector">
+                        <button class="qty-btn"
+                                id="qtyMinus"
+                                {% if stock_status == 'out_of_stock' %}disabled{% endif %}>
+                            <span class="material-icons">remove</span>
+                        </button>
+                        <input type="number"
+                               class="qty-input"
+                               id="qtyInput"
+                               value="1"
+                               min="1"
+                               max="{{ selected_variant.stock }}"
+                               {% if stock_status == 'out_of_stock' %}disabled{% endif %}>
+                        <button class="qty-btn"
+                                id="qtyPlus"
+                                {% if stock_status == 'out_of_stock' %}disabled{% endif %}>
+                            <span class="material-icons">add</span>
+                        </button>
+                    </div>
+                    <button class="add-to-cart-btn"
+                            id="addToCartBtn"
+                            {% if stock_status == 'out_of_stock' %}disabled{% endif %}>
+                        <span class="material-icons">shopping_bag</span>
+                        {% if stock_status == 'out_of_stock' %}
+                            Out of Stock
+                        {% else %}
+                            Add to Cart
+                        {% endif %}
+                    </button>
+                    <button class="wishlist-btn" id="wishlistBtn" title="Add to Wishlist">
+                        <span class="material-icons">favorite_border</span>
+                    </button>
+                </div>
+            </div>
+            <!-- 3. Brand Details -->
+            <div class="brand-details-section">
+                <hr class="divider">
+                <div class="brand-info-card">
+                    {% if product.brand.logo %}
+                        <img src="{{ product.brand.logo.url }}"
+                             alt="{{ product.brand.name }}"
+                             class="brand-logo"
+                             width="60"
+                             height="60">
+                    {% endif %}
+                    <div class="brand-text">
+                        <h4 class="brand-name">{{ product.brand.name }}</h4>
+                        {% if product.brand.tagline %}<p class="brand-tagline">{{ product.brand.tagline }}</p>{% endif %}
+                        <a href="{% url 'product_list' %}?brand={{ product.brand.slug }}"
+                           class="brand-link">View Collection</a>
+                    </div>
+                </div>
+            </div>
+            <!-- 4. Specifications -->
             {% if specifications %}
                 <div class="product-specifications">
                     <h4 class="section-title">Specifications</h4>

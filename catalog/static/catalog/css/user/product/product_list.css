@@ -391,6 +391,16 @@
     align-items: stretch;
 }
 
+.product-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.product-card-link:hover .product-name-listing {
+    color: var(--btn-bronze);
+}
+
 /* Product Card - inherit from homepage styles */
 .product-card-listing {
     display: flex;
