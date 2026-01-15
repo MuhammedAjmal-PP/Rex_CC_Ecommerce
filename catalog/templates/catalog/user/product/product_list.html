@@ -10,18 +10,6 @@
 {% block content %}
     <!-- Page Header -->
     <section class="page-header">
-<<<<<<< HEAD
-        <h1 class="page-title">
-            {% if category %}
-                {{ category.name }}
-            {% elif brand %}
-                {{ brand.name }}
-            {% else %}
-                Our Collection
-            {% endif %}
-        </h1>
-        <p class="page-subtitle">Discover our exclusive range of luxury timepieces</p>
-=======
         <div class="page-header-content">
             <span class="page-header-badge">Luxury Timepieces</span>
             <h1 class="page-title">
@@ -47,15 +35,14 @@
                 {% endif %}
             </p>
         </div>
->>>>>>> 489c29e (feat: add active filter chips and polish product list sidebar UI)
     </section>
     <div class="listing-container">
         <!-- Filter Sidebar -->
         <aside class="filter-sidebar">
             <form method="get" action="{% url 'product_list' %}" id="filterForm">
                 <!-- Preserve search and sort when filtering -->
-                {% comment %} {% if search_query %}<input type="hidden" name="search" value="{{ search_query }}">{% endif %}
-                {% if sort %}<input type="hidden" name="sort" value="{{ sort }}">{% endif %} {% endcomment %}
+                {% if search_query %}<input type="hidden" name="search" value="{{ search_query }}">{% endif %}
+                {% if sort %}<input type="hidden" name="sort" value="{{ sort }}">{% endif %}
                 <div class="filter-header">
                     <h3 class="filter-title">Filters</h3>
                     {% if has_filters %}
