@@ -5,7 +5,7 @@
 {% endblock head_title %}
 {% block extra_css %}
     <link rel="stylesheet"
-          href="{% static 'catalog/user/css/product_list.css' %}">
+          href="{% static 'catalog/css/user/product/product_list.css' %}">
 {% endblock extra_css %}
 {% block content %}
     <!-- Page Header -->
@@ -194,7 +194,7 @@
                             <div class="product-info-listing">
                                 <p class="product-brand-listing">{{ product.brand.name }}</p>
                                 <h3 class="product-name-listing">
-                                    <a href="#">{{ product.name }}</a>
+                                    <a href="{% url 'product_detail' product.slug %}">{{ product.name }}</a>
                                 </h3>
                                 {% with first_variant=product.variants.first %}
                                     {% if first_variant %}

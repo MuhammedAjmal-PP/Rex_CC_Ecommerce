@@ -1,7 +1,8 @@
 from django.core.paginator import Paginator
 from django.db.models import Q, Min, Max
-from django.shortcuts import render
-from catalog.models import Product, Category, Brand
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from catalog.models import Product, ProductVariant, Category, Brand
 
 
 def remove_query_param(request, *args):
@@ -150,3 +151,173 @@ def product_list(request):
     }
 
     return render(request, "catalog/user/product/product_list.html", context)
+
+
+def product_detail(request, slug):
+    """
+    Product detail view with comprehensive product information.
+    Redirects to product list if product is unavailable or blocked.
+    """
+    product = get_object_or_404(Product, slug=slug)
+    active_categories = product.category.filter(is_active=True)
+
+    if (
+        product.is_deleted
+        or product.is_drafted
+        or not product.brand.is_active
+        or not active_categories.exists()
+    ):
+        messages.error(request, "This product is currently unavailable.")
+        return redirect("product_list")
+
+    # Get all active variants for this product
+    variants = (
+        ProductVariant.objects.filter(
+            product=product,
+            is_deleted=False,
+            is_drafted=False,
+        )
+        .prefetch_related("images")
+        .order_by("-is_featured", "sku")
+    )
+
+    # Check if any variants exist
+    if not variants.exists():
+        messages.error(request, "This product is currently unavailable.")
+        return redirect("product_list")
+
+    # Get the selected variant (from query param or default to first)
+    variant_sku = request.GET.get("variant")
+    if variant_sku:
+        variant = variants.filter(sku=variant_sku).first()
+        if not variant:
+            variant = variants.first()
+    else:
+        # Default: first featured variant, or first variant
+        variant = variants.filter(is_featured=True).first() or variants.first()
+
+    # Get all images for selected variant
+    variant_images = variant.images.all()
+    primary_image = variant_images.filter(is_primary=True).first()
+    if not primary_image and variant_images.exists():
+        primary_image = variant_images.first()
+
+    # Calculate stock status
+    stock = variant.stock
+    if stock == 0:
+        stock_status = "out_of_stock"
+        stock_message = "Out of Stock"
+    elif stock <= 5:
+        stock_status = "low_stock"
+        stock_message = f"Only {stock} left in stock!"
+    else:
+        stock_status = "in_stock"
+        stock_message = "In Stock"
+
+    # Static discount details (mock logic)
+    # Assuming the current price is the discounted price, let's fake an original price
+    from decimal import Decimal
+
+    discount_percentage = 15  # Static 15% discount
+    # Convert percentage math to Decimal to avoid "unsupported operand type(s) for *: 'decimal.Decimal' and 'float'"
+    multiplier = Decimal(100) / Decimal(100 - discount_percentage)
+    original_price = variant.price * multiplier
+
+    # Build breadcrumbs
+    first_category = active_categories.first()
+    breadcrumbs = [
+        {"name": "Home", "url": "/"},
+        {
+            "name": first_category.name,
+            "url": f"/products/?category={first_category.slug}",
+        },
+        {"name": product.brand.name, "url": f"/products/?brand={product.brand.slug}"},
+        {"name": product.name, "url": None},
+    ]
+
+    # Static ratings data
+    ratings_data = {
+        "average": 4.5,
+        "total_reviews": 127,
+        "distribution": {
+            5: 70,
+            4: 18,
+            3: 8,
+            2: 3,
+            1: 1,
+        },
+    }
+
+    # Static reviews
+    static_reviews = [
+        {
+            "author": "Michael R.",
+            "date": "December 28, 2025",
+            "rating": 5,
+            "title": "Exceptional Quality",
+            "comment": "This watch exceeded all my expectations. The craftsmanship is outstanding and it looks even better in person. The attention to detail is remarkable.",
+        },
+        {
+            "author": "Sarah K.",
+            "date": "December 15, 2025",
+            "rating": 5,
+            "title": "Perfect Gift",
+            "comment": "Bought this as a gift for my husband and he absolutely loves it. The packaging was premium and the watch itself is stunning.",
+        },
+        {
+            "author": "James T.",
+            "date": "November 30, 2025",
+            "rating": 4,
+            "title": "Great Value",
+            "comment": "Beautiful timepiece at a reasonable price point. The movement is smooth and the strap is very comfortable for daily wear.",
+        },
+    ]
+
+    # Get related products (same category, different product)
+    related_products = (
+        Product.objects.filter(
+            category__in=active_categories,
+            is_deleted=False,
+            is_drafted=False,
+            brand__is_active=True,
+        )
+        .exclude(id=product.id)
+        .prefetch_related("variants")
+        .distinct()[:4]
+    )
+
+    # Build specifications
+    specifications = []
+    if variant.movement_type:
+        specifications.append(("Movement Type", variant.movement_type))
+    if variant.case_material:
+        specifications.append(("Case Material", variant.case_material))
+    if variant.case_size_mm:
+        specifications.append(("Case Size", f"{variant.case_size_mm}mm"))
+    if variant.dial_color:
+        specifications.append(("Dial Color", variant.dial_color))
+    if variant.strap_material:
+        specifications.append(("Strap Material", variant.strap_material))
+    if variant.strap_color:
+        specifications.append(("Strap Color", variant.strap_color))
+    specifications.append(("SKU", variant.sku))
+
+    context = {
+        "product": product,
+        "variants": variants,
+        "selected_variant": variant,
+        "variant_images": variant_images,
+        "primary_image": primary_image,
+        "stock_status": stock_status,
+        "stock_message": stock_message,
+        "original_price": original_price,
+        "discount_percentage": discount_percentage,
+        "breadcrumbs": breadcrumbs,
+        "ratings_data": ratings_data,
+        "reviews": static_reviews,
+        "related_products": related_products,
+        "specifications": specifications,
+        "categories": active_categories,
+    }
+
+    return render(request, "catalog/user/product/product_details.html", context)
