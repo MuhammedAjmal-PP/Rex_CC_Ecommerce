@@ -243,6 +243,18 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
                 integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
                 crossorigin="anonymous"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const messageContainer = document.querySelector('.message-container');
+                if (messageContainer) {
+                    setTimeout(() => {
+                        messageContainer.style.transition = "opacity 0.5s ease";
+                        messageContainer.style.opacity = "0";
+                        setTimeout(() => messageContainer.remove(), 500);
+                    }, 3000);
+                }
+            });
+        </script>
         {% block extra_js %}
         {% endblock extra_js %}
     </body>
