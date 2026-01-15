@@ -5,6 +5,8 @@
 {% endblock head_title %}
 {% block extra_css %}
     <link rel="stylesheet" href="{% static 'user_profile/css/profile.css' %}">
+    <link rel="stylesheet"
+          href="{% static 'user_profile/css/password_change.css' %}">
 {% endblock extra_css %}
 {% block content %}
     <div class="profile-container">
@@ -152,7 +154,10 @@
                     <p class="card-description">Update your name, email, phone, and gender.</p>
                 </a>
                 <!-- Change Password -->
-                <a href="#" class="dashboard-card">
+                <a href="#"
+                   data-bs-toggle="modal"
+                   data-bs-target="#changePasswordModal"
+                   class="dashboard-card">
                     <div class="card-icon-wrapper">
                         <span class="material-icons">lock_outline</span>
                     </div>
@@ -194,4 +199,5 @@
             </div>
         </div>
     </div>
+    {% include "user_profile/passwordchange.html" %}
 {% endblock content %}
