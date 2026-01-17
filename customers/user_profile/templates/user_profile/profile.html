@@ -4,200 +4,163 @@
     My Account | REX CC
 {% endblock head_title %}
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'user_profile/css/profile.css' %}">
+    <link rel="stylesheet" href="{% static 'user_profile/css/dashboard.css' %}">
     <link rel="stylesheet"
           href="{% static 'user_profile/css/password_change.css' %}">
 {% endblock extra_css %}
 {% block content %}
-    <div class="profile-container">
-        <div class="container">
-            <!-- Header -->
-            <div class="profile-header">
-                <h1 class="profile-title">My Account</h1>
-                <p class="profile-subtitle">Manage your profile, orders, and settings.</p>
-            </div>
-            <!-- User Info Card -->
-            <div class="user-info-card">
-                <div class="user-avatar-lg">
-                    {% if user.avatar %}
-                        <img src="{{ user.avatar.url }}"
-                             alt="{{ user.first_name }}"
-                             class="user-avatar-lg"
-                             width="64"
-                             height="64">
+    <div class="dashboard-wrapper">
+        <!-- Sidebar Navigation -->
+        <aside class="dashboard-sidebar">
+            <div class="user-profile-summary">
+                {% if user.avatar %}
+                    <img src="{{ user.avatar.url }}"
+                         alt="{{ user.first_name }}"
+                         class="sidebar-avatar">
+                {% else %}
+                    <div class="sidebar-avatar-placeholder">{{ user.first_name|first|default:"U" }}</div>
+                {% endif %}
+                <h2 class="user-name">
+                    {% if user.first_name %}
+                        {{ user.first_name }} {{ user.last_name }}
                     {% else %}
-                        <span>{{ user.first_name|first|default:"U" }}</span>
+                        User
                     {% endif %}
-                </div>
-                <div class="user-details">
-                    <h3>
-                        {% if user.first_name and user.last_name %}
-                            {{ user.first_name }} {{ user.last_name }}
-                        {% else %}
-                            {{ user.first_name }}
-                        {% endif %}
-                    </h3>
-                    <p>{{ user.email }}</p>
-                    <!-- Gold Badge could be dynamic later -->
-                    <!-- <span class="user-badge">GOLD MEMBER</span> -->
-                </div>
-                <!-- Placeholder Edit Profile link -->
-                <!-- Edit Profile Button -->
-                <a href="#" class="edit-profile-btn">
-                    <span class="material-icons">edit</span>
-                    Edit Profile
-                </a>
+                </h2>
+                <p class="user-email">{{ user.email }}</p>
             </div>
-            <!-- Premium Club Banner -->
-            <div class="premium-banner">
-                <div class="premium-content">
-                    <span class="material-icons premium-icon-top">workspace_premium</span>
-                    <h2 class="premium-title">Join Rex CC Premium Club</h2>
-                    <p class="premium-text">Unlock exclusive benefits and elevate your watch collecting experience.</p>
-                    <div class="premium-benefits">
-                        <div class="benefit-item">
-                            <span class="material-icons">local_shipping</span>
-                            Free Shipping on All Orders
-                        </div>
-                        <div class="benefit-item">
-                            <span class="material-icons">bolt</span>
-                            Early Access to New Launches
-                        </div>
-                        <div class="benefit-item">
-                            <span class="material-icons">card_giftcard</span>
-                            3x Reward Points
-                        </div>
-                    </div>
-                    <a href="#" class="premium-btn">Explore Benefits</a>
-                </div>
-            </div>
-            <!-- Dashboard Grid -->
-            <div class="dashboard-grid">
-                <!-- My Orders -->
-                <a href="#" class="dashboard-card">
-                    <div class="card-icon-wrapper">
-                        <span class="material-icons">inventory_2</span>
-                    </div>
-                    <h3 class="card-title">My Orders</h3>
-                    <p class="card-description">Track orders, view details, and reorder your favorite watches.</p>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active">
+                    <i data-feather="user"></i> Profile
                 </a>
-                <!-- Wishlist -->
-                <a href="#" class="dashboard-card">
-                    <div class="card-icon-wrapper">
-                        <span class="material-icons">favorite_border</span>
-                    </div>
-                    <h3 class="card-title">Wishlist</h3>
-                    <p class="card-description">View and manage your saved watches and collections.</p>
+                <a href="#" class="nav-item">
+                    <i data-feather="shopping-bag"></i> My Orders
                 </a>
-                <!-- Return / Replace -->
-                <a href="#" class="dashboard-card">
-                    <div class="card-icon-wrapper">
-                        <span class="material-icons">autorenew</span>
-                    </div>
-                    <h3 class="card-title">Return / Replace</h3>
-                    <p class="card-description">Manage returns and replacements for your purchases.</p>
+                <a href="#" class="nav-item">
+                    <i data-feather="heart"></i> Wishlist
                 </a>
-                <!-- Track Order -->
-                <a href="#" class="dashboard-card">
-                    <div class="card-icon-wrapper">
-                        <span class="material-icons">trending_up</span>
-                    </div>
-                    <h3 class="card-title">Track Order</h3>
-                    <p class="card-description">Quick access to track your active orders in real-time.</p>
+                <a href="#" class="nav-item">
+                    <i data-feather="map-pin"></i> Addresses
                 </a>
-                <!-- Addresses -->
-                <a href="#" class="dashboard-card">
-                    <div class="card-icon-wrapper">
-                        <span class="material-icons">location_on</span>
-                    </div>
-                    <h3 class="card-title">Addresses</h3>
-                    <p class="card-description">Manage your shipping and billing addresses.</p>
+                <a href="#" class="nav-item">
+                    <i data-feather="credit-card"></i> Payments
                 </a>
-                <!-- Payment Methods -->
-                <a href="#" class="dashboard-card">
-                    <div class="card-icon-wrapper">
-                        <span class="material-icons">credit_card</span>
-                    </div>
-                    <h3 class="card-title">Payment Methods</h3>
-                    <p class="card-description">Saved cards, UPI IDs, and netbanking options.</p>
-                </a>
-                <!-- Reward Points -->
-                <a href="#" class="dashboard-card">
-                    <div class="card-icon-wrapper">
-                        <span class="material-icons">account_balance_wallet</span>
-                    </div>
-                    <h3 class="card-title">Reward Points & Wallet</h3>
-                    <p class="card-description">View your wallet balance and cashback points.</p>
-                </a>
-                <!-- Notifications -->
-                <a href="#" class="dashboard-card">
-                    <div class="card-icon-wrapper">
-                        <span class="material-icons">notifications_none</span>
-                    </div>
-                    <h3 class="card-title">Notifications</h3>
-                    <p class="card-description">Alerts about orders, offers, and returns.</p>
-                </a>
-                <!-- Support -->
-                <a href="#" class="dashboard-card">
-                    <div class="card-icon-wrapper">
-                        <span class="material-icons">headset_mic</span>
-                    </div>
-                    <h3 class="card-title">Support & Tickets</h3>
-                    <p class="card-description">Access help center and raise support tickets.</p>
-                </a>
-                <!-- Personal Info -->
-                <a href="#" class="dashboard-card">
-                    <div class="card-icon-wrapper">
-                        <span class="material-icons">person_outline</span>
-                    </div>
-                    <h3 class="card-title">Personal Information</h3>
-                    <p class="card-description">Update your name, email, phone, and gender.</p>
-                </a>
-                <!-- Change Password -->
                 <a href="#"
+                   class="nav-item"
                    data-bs-toggle="modal"
-                   data-bs-target="#changePasswordModal"
-                   class="dashboard-card">
-                    <div class="card-icon-wrapper">
-                        <span class="material-icons">lock_outline</span>
-                    </div>
-                    <h3 class="card-title">Change Password</h3>
-                    <p class="card-description">Update your login credentials and security settings.</p>
+                   data-bs-target="#changePasswordModal">
+                    <i data-feather="lock"></i> Security
                 </a>
-                <!-- Referral Program -->
-                <a href="#" class="dashboard-card">
-                    <div class="card-icon-wrapper">
-                        <span class="material-icons">people_outline</span>
-                    </div>
-                    <h3 class="card-title">Referral Program</h3>
-                    <p class="card-description">Share your unique link and earn rewards.</p>
+                <a href="#" class="nav-item">
+                    <i data-feather="settings"></i> Settings
                 </a>
-                <!-- Coupons & Offers -->
-                <a href="#" class="dashboard-card">
-                    <div class="card-icon-wrapper">
-                        <span class="material-icons">local_offer</span>
-                    </div>
-                    <h3 class="card-title">Coupons & Offers</h3>
-                    <p class="card-description">View available discount coupons and special offers.</p>
+                <a href="{% url 'account_logout' %}" class="nav-item logout">
+                    <i data-feather="log-out"></i> Logout
                 </a>
-                <!-- Recently Viewed -->
-                <a href="#" class="dashboard-card">
-                    <div class="card-icon-wrapper">
-                        <span class="material-icons">schedule</span>
+            </nav>
+        </aside>
+        <!-- Main Bento Grid Content -->
+        <main class="dashboard-content">
+            <!-- 1. Featured Tile: Recent Order -->
+            <a href="#" class="bento-tile tile-featured">
+                <div class="tile-header">
+                    <h3 class="tile-title">Recent Order</h3>
+                    <i data-feather="package" class="tile-icon"></i>
+                </div>
+                <div class="tile-body">
+                    <!-- Fallback if no order, but for UI demo we show a state -->
+                    <div class="order-status-card">
+                        <span class="latest-order-id">Order #REX-88219</span>
+                        <h4 class="mb-1 font-heading">Omega Seamaster Diver</h4>
+                        <div class="progress-track">
+                            <!-- Example: 75% width for 'Shipped' -->
+                            <div class="progress-fill" style="width: 75%;"></div>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="status-label">In Transit</span>
+                            <span class="text-sm text-muted">Expected: Jan 18</span>
+                        </div>
                     </div>
-                    <h3 class="card-title">Recently Viewed</h3>
-                    <p class="card-description">Browse your watch viewing history.</p>
-                </a>
-                <!-- Logout -->
-                <a href="{% url 'account_logout' %}" class="dashboard-card logout-card">
-                    <div class="card-icon-wrapper">
-                        <span class="material-icons">logout</span>
+                </div>
+                <div class="tile-action">
+                    Track Shipment <i data-feather="arrow-right" class="icon-sm"></i>
+                </div>
+            </a>
+            <!-- 2. Wallet / Rewards -->
+            <a href="#" class="bento-tile tile-standard">
+                <div class="tile-header">
+                    <h3 class="tile-title title-sm">Wallet</h3>
+                    <i data-feather="gift" class="tile-icon"></i>
+                </div>
+                <div class="tile-body">
+                    <div class="stat-value">2,450</div>
+                    <div class="stat-label">Reward Points</div>
+                </div>
+                <div class="tile-action">
+                    Redeem <i data-feather="chevron-right" class="icon-sm"></i>
+                </div>
+            </a>
+            <!-- 3. Active Coupons -->
+            <a href="#" class="bento-tile tile-standard">
+                <div class="tile-header">
+                    <h3 class="tile-title title-sm">Offers</h3>
+                    <i data-feather="tag" class="tile-icon"></i>
+                </div>
+                <div class="tile-body">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">Active Coupons</div>
+                </div>
+                <div class="tile-action">
+                    View All <i data-feather="chevron-right" class="icon-sm"></i>
+                </div>
+            </a>
+            <!-- 4. Personal Info Quick Edit -->
+            <a href="#" class="bento-tile tile-standard">
+                <div class="tile-header">
+                    <h3 class="tile-title title-sm">Profile</h3>
+                    <i data-feather="user" class="tile-icon"></i>
+                </div>
+                <div class="tile-body d-flex flex-column justify-content-center">
+                    <div class="stat-label text-sm">Update your details</div>
+                </div>
+                <div class="tile-action">
+                    Edit <i data-feather="edit-2" class="icon-sm"></i>
+                </div>
+            </a>
+            <!-- 5. Recently Viewed (Wide) -->
+            <a href="#" class="bento-tile tile-wide">
+                <div class="tile-header">
+                    <h3 class="tile-title">Recently Viewed</h3>
+                    <i data-feather="clock" class="tile-icon"></i>
+                </div>
+                <div class="tile-body">
+                    <div class="recent-list">
+                        <!-- Placeholders for recently viewed items -->
+                        <div class="recent-thumb"></div>
+                        <div class="recent-thumb"></div>
+                        <div class="recent-thumb"></div>
+                        <div class="recent-thumb"></div>
                     </div>
-                    <h3 class="card-title">Logout</h3>
-                    <p class="card-description">Sign out of your Rex CC account securely.</p>
-                </a>
-            </div>
-        </div>
+                </div>
+            </a>
+            <!-- 6. Help / Support -->
+            <a href="#" class="bento-tile tile-standard">
+                <div class="tile-header">
+                    <h3 class="tile-title title-sm">Support</h3>
+                    <i data-feather="headphones" class="tile-icon"></i>
+                </div>
+                <div class="tile-body d-flex flex-column justify-content-center">
+                    <div class="stat-label">Need help?</div>
+                </div>
+                <div class="tile-action">
+                    Contact <i data-feather="message-circle" class="icon-sm"></i>
+                </div>
+            </a>
+        </main>
     </div>
-    {% include "user_profile/passwordchange.html" %}
 {% endblock content %}
+{% block extra_js %}
+    <!-- Initialize Feather Icons -->
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script>feather.replace();</script>
+{% endblock extra_js %}
