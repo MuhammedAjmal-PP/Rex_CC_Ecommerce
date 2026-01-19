@@ -5,7 +5,8 @@
     View Variant - {{ variant.sku }}
 {% endblock title %}
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'catalog/css/admin/product/variant_view.css' %}">
+    <link rel="stylesheet"
+          href="{% static 'catalog/css/admin/product/variant_view.css' %}">
 {% endblock extra_css %}
 {% block header_title %}
     View Variant
@@ -15,11 +16,14 @@
 {% endblock header_subtitle %}
 {% block content %}
     <div class="form-container">
-    <!-- Back Link -->
+        <!-- Back Link -->
         <div class="product-banner">
             <div class="product-banner-content">
                 {% if product.thumbnail %}
-                    <img src="{{ product.thumbnail.url }}" alt="{{ product.name }}" class="product-banner-img" width="60"
+                    <img src="{{ product.thumbnail.url }}"
+                         alt="{{ product.name }}"
+                         class="product-banner-img"
+                         width="60"
                          height="60">
                 {% else %}
                     <div class="product-banner-placeholder">
@@ -32,25 +36,36 @@
                     <span class="product-banner-brand">{{ product.brand.name }}</span>
                 </div>
             </div>
-            <a href="{% url 'admin_product_view' product.id %}" class="product-banner-link">
+            <a href="{% url 'admin_product_view' product.id %}"
+               class="product-banner-link">
                 <span class="material-icons">arrow_back</span>
                 Back to Product
             </a>
         </div>
-    <!-- Hero Section -->
+        <!-- Hero Section -->
         <div class="variant-hero">
-        <!-- Image Gallery with Horizontal Scroll -->
+            <!-- Image Gallery with Horizontal Scroll -->
             <div class="hero-gallery">
-                <div class="hero-main-image{% if not images %} empty{% endif %}" id="mainImage" onmousemove="zoom(event)"
+                <div class="hero-main-image{% if not images %} empty{% endif %}"
+                     id="mainImage"
+                     onmousemove="zoom(event)"
                      onmouseleave="resetZoom()">
                     {% if images %}
                         {% for image in images %}
                             {% if image.is_primary %}
-                                <img src="{{ image.image.url }}" alt="{{ variant.sku }}" id="mainImageSrc" width="400" height="400">
+                                <img src="{{ image.image.url }}"
+                                     alt="{{ variant.sku }}"
+                                     id="mainImageSrc"
+                                     width="400"
+                                     height="400">
                             {% endif %}
                         {% endfor %}
                         {% if not images.0.is_primary %}
-                            <img src="{{ images.0.image.url }}" alt="{{ variant.sku }}" id="mainImageSrc" width="400" height="400">
+                            <img src="{{ images.0.image.url }}"
+                                 alt="{{ variant.sku }}"
+                                 id="mainImageSrc"
+                                 width="400"
+                                 height="400">
                         {% endif %}
                     {% else %}
                         <span class="material-icons">hide_image</span>
@@ -65,15 +80,18 @@
                         {% for image in images %}
                             <div class="hero-thumb{% if forloop.first %} active{% endif %}{% if image.is_primary %} primary{% endif %}"
                                  onclick="changeMainImage('{{ image.image.url }}', this)">
-                                <img src="{{ image.image.url }}" alt="Image {{ forloop.counter }}" width="72" height="72">
+                                <img src="{{ image.image.url }}"
+                                     alt="Image {{ forloop.counter }}"
+                                     width="72"
+                                     height="72">
                             </div>
                         {% endfor %}
                     </div>
                 {% endif %}
             </div>
-        <!-- Variant Info -->
+            <!-- Variant Info -->
             <div class="hero-info">
-            <!-- Status Badges -->
+                <!-- Status Badges -->
                 <div class="hero-badges">
                     {% if variant.is_deleted %}
                         <span class="badge badge-deleted">
@@ -106,14 +124,16 @@
                     <span class="stock-count">{{ variant.stock }} in stock</span>
                     {% if variant.stock == 0 %}
                         <span class="stock-badge out-of-stock">Out of Stock</span>
-                    {% elif variant.stock < 10 %} <span class="stock-badge low-stock">Low Stock</span>
+                    {% elif variant.stock < 10 %}
+                        <span class="stock-badge low-stock">Low Stock</span>
                     {% else %}
                         <span class="stock-badge in-stock">Available</span>
                     {% endif %}
                 </div>
-            <!-- Action Buttons -->
+                <!-- Action Buttons -->
                 <div class="hero-actions">
-                    <a href="{% url 'admin_variant_edit' product.id variant.id %}" class="action-btn action-btn-primary">
+                    <a href="{% url 'admin_variant_edit' product.id variant.id %}"
+                       class="action-btn action-btn-primary">
                         <span class="material-icons">edit</span>
                         Edit Variant
                     </a>
@@ -147,7 +167,7 @@
                 </div>
             </div>
         </div>
-    <!-- Specifications Section -->
+        <!-- Specifications Section -->
         <div class="specs-section">
             <div class="card-header">
                 <span class="material-icons">tune</span>
@@ -202,7 +222,7 @@
                         </div>
                     </div>
                 </div>
-            <!-- Meta Info -->
+                <!-- Meta Info -->
                 <div class="meta-info">
                     <div class="meta-item">
                         <span class="meta-item-label">Created</span>
