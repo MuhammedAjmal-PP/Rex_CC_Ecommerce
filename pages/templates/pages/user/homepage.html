@@ -1,111 +1,159 @@
 {% extends "pages/user/base_user.html" %}
 {% load static %}
-{% block body_class %}home-page{% endblock body_class %}
+{% block body_class %}
+home-page
+{% endblock body_class %}
 {% block extra_css %}
-  <link rel="stylesheet" href="{% static 'pages/user/css/homepage.css' %}">
+<link rel="stylesheet" href="{% static 'pages/user/css/homepage.css' %}">
+<link rel="stylesheet" href="{% static 'catalog/css/user/product/product_card.css' %}">
 {% endblock extra_css %}
 {% block content %}
 <!-- 1. Parallax Video Hero -->
-  <section class="hero-wrap">
+<section class="hero-wrap">
     <video class="hero-video-bg" autoplay muted loop playsinline poster="{% static 'pages/user/img/hero-poster.jpg' %}">
-    <!-- High Quality Placeholder Video -->
-      <source src="https://videos.pexels.com/video-files/13736231/13736231-uhd_3840_2160_30fps.mp4" type="video/mp4">
+        <!-- High Quality Placeholder Video -->
+        <source src="https://videos.pexels.com/video-files/13736231/13736231-uhd_3840_2160_30fps.mp4" type="video/mp4">
     </video>
     <div class="hero-overlay"></div>
     <div class="hero-content">
-      <p class="hero-sub">— The 2026 Collection —</p>
-      <h1 class="hero-super-title">
-        Time is an
-        <br>
-        Art Form.
-      </h1>
+        <p class="hero-sub">— The 2026 Collection —</p>
+        <h1 class="hero-super-title">
+            Time is an
+            <br>
+            Art Form.
+        </h1>
     </div>
     <div class="scroll-indicator">
-      <span class="scroll-line"></span>
+        <span class="scroll-line"></span>
     </div>
-  </section>
-<!-- 2. Editorial Categories (Magazine Layout) -->
-  <section class="section-editorial">
-    <div class="editorial-grid">
-    <!-- Tile 1 -->
-      {% if categories.0 %}
-        <a href="{% url 'product_list' %}?category={{ categories.0.name }}" class="editorial-item">
-          {% if categories.0.category_image %}
-            <img src="{{ categories.0.category_image.url }}" class="editorial-img" alt="{{ categories.0.name }}">
-          {% else %}
-            <img src="https://images.unsplash.com/photo-1547996160-81dfa63595aa?q=80&w=2148&auto=format&fit=crop"
-                 class="editorial-img" alt="Luxury Watches">
-          {% endif %}
-          <div class="editorial-text">
-            <h3 class="editorial-title">{{ categories.0.name }}</h3>
-            <span class="editorial-link">Discover Collection</span>
-          </div>
-        </a>
-      {% endif %}
-    <!-- Tile 2 -->
-      {% if categories.1 %}
-        <a href="{% url 'product_list' %}?category={{ categories.1.name }}" class="editorial-item">
-          {% if categories.1.category_image %}
-            <img src="{{ categories.1.category_image.url }}" class="editorial-img" alt="{{ categories.1.name }}">
-          {% else %}
-            <img src="https://images.unsplash.com/photo-1523170335258-f5ed11844a49?q=80&w=2080&auto=format&fit=crop"
-                 class="editorial-img" alt="Formal Watches">
-          {% endif %}
-          <div class="editorial-text">
-            <h3 class="editorial-title">{{ categories.1.name }}</h3>
-            <span class="editorial-link">Explore {{ categories.1.name }}</span>
-          </div>
-        </a>
-      {% endif %}
-    </div>
-  </section>
-<!-- 3. Product Gallery (Netflix-style Slider) -->
-  <section class="section-gallery">
-    <div class="gallery-header">
-      <h2 class="gallery-title">New Arrivals</h2>
-      <a href="{% url 'product_list' %}" class="gallery-link">View All Timepieces</a>
-    </div>
-    <div class="gallery-scroll-container">
-      {% for product in products|slice:":8" %}
-        <div class="product-card-frameless">
-          <a href="{% url 'product_detail' product.slug %}" class="p-img-box">
-            {% if product.thumbnail %}
-              <img src="{{ product.thumbnail.url }}" alt="{{ product.name }}" class="p-img" loading="lazy">
-            {% else %}
-              <img src="https://via.placeholder.com/600x800?text=No+Image" class="p-img">
-            {% endif %}
-            <div class="p-quick-add">View Details</div>
-          </a>
-          <div class="p-info">
-            <span class="p-brand">{{ product.brand.name }}</span>
-            <h3 class="p-name">{{ product.name }}</h3>
-            {% with first_variant=product.variants.first %}
-              {% if first_variant %}<div class="p-price">₹{{ first_variant.price|floatformat:0 }}</div>{% endif %}
-            {% endwith %}
-          </div>
-        </div>
-      {% endfor %}
-    </div>
-  </section>
-<!-- 4. Trust Strip -->
-  <section class="section-trust">
+</section>
+
+<!-- 2. Trust/Benefits Section (Compact Line) -->
+<section class="section-trust">
     <div class="trust-grid">
-      <div class="trust-item">
-        <div class="material-icons trust-icon">verified</div>
-        <div class="trust-text">Authenticity Guaranteed</div>
-      </div>
-      <div class="trust-item">
-        <div class="material-icons trust-icon">local_shipping</div>
-        <div class="trust-text">Worldwide Shipping</div>
-      </div>
-      <div class="trust-item">
-        <div class="material-icons trust-icon">security</div>
-        <div class="trust-text">Secure Payment</div>
-      </div>
-      <div class="trust-item">
-        <div class="material-icons trust-icon">support_agent</div>
-        <div class="trust-text">Concierge Service</div>
-      </div>
+        <div class="trust-item">
+            <div class="trust-icon-circle">
+                <span class="material-icons trust-icon">local_shipping</span>
+            </div>
+            <div class="trust-text">FREE SHIPPING</div>
+        </div>
+        <div class="trust-item">
+            <div class="trust-icon-circle">
+                <span class="material-icons trust-icon">verified</span>
+            </div>
+            <div class="trust-text">100% AUTHENTIC</div>
+        </div>
+        <div class="trust-item">
+            <div class="trust-icon-circle">
+                <span class="material-icons trust-icon">workspace_premium</span>
+            </div>
+            <div class="trust-text">EMI AVAILABLE</div>
+        </div>
+        <div class="trust-item">
+            <div class="trust-icon-circle">
+                <span class="material-icons trust-icon">replay</span>
+            </div>
+            <div class="trust-text">EASY EXCHANGE</div>
+        </div>
     </div>
-  </section>
+</section>
+
+<!-- 3. Featured Brands Section -->
+{% if brands %}
+<section class="section-brands">
+    <div class="section-header">
+        <p class="section-subtitle">OFFICIAL AUTHORISED DEALER</p>
+        <h2 class="section-title">Featured Brands</h2>
+    </div>
+    <div class="brands-grid">
+        {% for brand in brands %}
+        <a href="{% url 'product_list' %}?brand={{ brand.slug }}" class="brand-card">
+            <div class="brand-image-box">
+                {% if brand.logo %}
+                <img src="{{ brand.logo.url }}" alt="{{ brand.name }}" class="brand-logo">
+                {% endif %}
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+<!-- 4. New Arrivals Section -->
+{% if new_arrivals %}
+<section class="section-products">
+    <div class="section-header">
+        <h2 class="section-title">New Arrivals</h2>
+        <a href="{% url 'product_list' %}" class="section-link">View All</a>
+    </div>
+    <div class="carousel-container">
+        {% for variant in new_arrivals %}
+        {% include 'catalog/user/product/product_card.html' with variant=variant %}
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+<!-- 5. Featured Products Section -->
+{% if featured_variants %}
+<section class="section-products section-featured">
+    <div class="section-header">
+        <h2 class="section-title">Featured Products</h2>
+        <a href="{% url 'product_list' %}?featured=true" class="section-link">View All</a>
+    </div>
+    <div class="product-grid">
+        {% for variant in featured_variants %}
+        {% include 'catalog/user/product/product_card.html' with variant=variant %}
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+<!-- 6. Offer Section -->
+{% if offer_variants %}
+<section class="section-offers">
+    <div class="offers-container">
+        <!-- Promotional Banner -->
+        <div class="offer-promo-banner">
+            <p class="offer-label">OFFER</p>
+            <h2 class="offer-heading">WATCHES</h2>
+            <p class="offer-subtext">Take A Look At This Season's Best Offers</p>
+        </div>
+
+        <!-- Offer Products Carousel -->
+        <div class="offer-carousel">
+            {% for variant in offer_variants %}
+            {% include 'catalog/user/product/product_card.html' with variant=variant %}
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %} <!-- 7. Newsletter Section -->
+<section class="section-newsletter">
+    <div class="newsletter-container">
+        <div class="newsletter-content">
+            <p class="newsletter-label">STAY CONNECTED</p>
+            <h2 class="newsletter-title">Join Our Exclusive Circle</h2>
+            <p class="newsletter-description">
+                Be the first to discover new arrivals, exclusive offers, and horological insights.
+                Join our community of watch enthusiasts.
+            </p>
+
+            <form class="newsletter-form" method="post" action="#">
+                {% csrf_token %}
+                <div class="newsletter-input-group">
+                    <input type="email" name="email" class="newsletter-input" placeholder="Enter your email address"
+                        required>
+                    <button type="submit" class="newsletter-submit">
+                        Subscribe
+                        <span class="material-icons">arrow_forward</span>
+                    </button>
+                </div>
+                <p class="newsletter-privacy">
+                    By subscribing, you agree to our Privacy Policy. Unsubscribe anytime.
+                </p>
+            </form>
+        </div>
+    </div>
+</section>
 {% endblock content %}

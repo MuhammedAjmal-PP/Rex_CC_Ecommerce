@@ -14,7 +14,7 @@ def remove_query_param(request, *args):
 
 def product_list(request):
     """
-    product listing view on user pages
+    product listing view on user pages - displays variants
     """
     # Get parameters
     search = request.GET.get("search", "")
@@ -38,72 +38,65 @@ def product_list(request):
     clear_brand = remove_query_param(request, "brand")
     clear_price = remove_query_param(request, "min_price", "max_price")
 
-    # Get all active products
-    products = (
-        Product.objects.filter(
+    # Get all active variants instead of products
+    variants = (
+        ProductVariant.objects.filter(
             is_deleted=False,
             is_drafted=False,
-            variants__is_deleted=False,
-            variants__is_drafted=False,
-            variants__stock__gt=0,
-            brand__is_active=True,
-            category__is_active=True,
+            product__is_deleted=False,
+            product__is_drafted=False,
+            product__brand__is_active=True,
+            product__category__is_active=True,
         )
-        .annotate(
-            min_price=Min("variants__price"),
-            max_price=Max("variants__price"),
-        )
-        .distinct()
+        .select_related("product", "product__brand", "product__category")
+        .prefetch_related("images")
     )
 
     # Search filter
     if search:
-        products = products.filter(
-            Q(name__icontains=search)
-            | Q(brand__name__icontains=search)
-            | Q(category__name__icontains=search)
-            | Q(variants__sku__icontains=search)
-            | Q(variants__dial_color__icontains=search)
-            | Q(variants__strap_color__icontains=search)
-            | Q(variants__movement_type__icontains=search)
+        variants = variants.filter(
+            Q(product__name__icontains=search)
+            | Q(product__brand__name__icontains=search)
+            | Q(product__category__name__icontains=search)
+            | Q(sku__icontains=search)
+            | Q(dial_color__icontains=search)
+            | Q(strap_color__icontains=search)
+            | Q(movement_type__icontains=search)
         )
 
     # Category filter
     if category:
-        products = products.filter(category__slug=category)
+        variants = variants.filter(product__category__slug=category)
 
     # Brand filter
     if brand:
-        products = products.filter(brand__slug=brand)
+        variants = variants.filter(product__brand__slug=brand)
 
     # Price filters
     if min_price:
-        products = products.filter(variants__price__gte=min_price)
+        variants = variants.filter(price__gte=min_price)
 
     if max_price:
-        products = products.filter(variants__price__lte=max_price)
-
-    # Remove duplicates
-    products = products.distinct()
+        variants = variants.filter(price__lte=max_price)
 
     # Sorting
     if sort == "price_low":
-        products = products.annotate(price=Min("variants__price")).order_by("price")
+        variants = variants.order_by("price")
     elif sort == "price_high":
-        products = products.annotate(price=Min("variants__price")).order_by("-price")
+        variants = variants.order_by("-price")
     elif sort == "az":
-        products = products.order_by("name")
+        variants = variants.order_by("product__name")
     elif sort == "za":
-        products = products.order_by("-name")
+        variants = variants.order_by("-product__name")
     elif sort == "new":
-        products = products.order_by("-created_at")
+        variants = variants.order_by("-created_at")
     elif sort == "featured":
-        products = products.filter(variants__is_featured=True).distinct()
+        variants = variants.filter(is_featured=True)
     else:
-        products = products.order_by("-created_at")
+        variants = variants.order_by("-created_at")
 
     # Pagination
-    paginator = Paginator(products, 9)
+    paginator = Paginator(variants, 15)  # 15 variants for 3 rows x 5 cols
     page_obj = paginator.get_page(page_number)
 
     # Get filter options
@@ -129,7 +122,7 @@ def product_list(request):
     ]
 
     context = {
-        "products": page_obj,
+        "variants": page_obj,  # Changed from products
         "page_obj": page_obj,
         "categories": categories,
         "brands": brands,

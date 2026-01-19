@@ -49,7 +49,7 @@
 .promo-tagline {
     font-size: 11px;
     letter-spacing: 3px;
-    color: var(--color-gold);
+    color: #BFA15F;
     font-weight: 600;
     margin-bottom: 20px;
     display: block;
@@ -64,7 +64,7 @@
 }
 
 .promo-accent {
-    color: var(--color-gold);
+    color: #BFA15F;
     font-style: italic;
 }
 
@@ -91,7 +91,7 @@
 .featured-preview {
     width: 80px;
     height: 80px;
-    border: 2px solid var(--color-gold);
+    border: 2px solid #BFA15F;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -102,12 +102,12 @@
 
 .featured-preview:hover {
     transform: scale(1.1);
-    background: var(--color-gold);
+    background: #BFA15F;
 }
 
 .featured-play {
     font-size: 36px;
-    color: var(--color-gold);
+    color: #BFA15F;
 }
 
 .featured-preview:hover .featured-play {
@@ -161,26 +161,28 @@
 }
 
 .auth-btn-primary {
-    background: #1a1a1a;
+    background: linear-gradient(135deg, #CD7F32 0%, #b06825 100%);
     color: white;
-    border: 2px solid #1a1a1a;
+    border: 2px solid #CD7F32;
 }
 
 .auth-btn-primary:hover {
-    background: var(--color-gold);
-    border-color: var(--color-gold);
+    background: linear-gradient(135deg, #b06825 0%, #9a5a1f 100%);
+    border-color: #b06825;
     color: white;
+    box-shadow: 0 8px 20px rgba(205, 127, 50, 0.35);
 }
 
 .auth-btn-outline {
     background: transparent;
-    color: #1a1a1a;
-    border: 2px solid #1a1a1a;
+    color: #666666;
+    border: 2px solid #E0E0E0;
 }
 
 .auth-btn-outline:hover {
-    background: #1a1a1a;
-    color: white;
+    background: #F2F2F2;
+    border-color: #CD7F32;
+    color: #CD7F32;
 }
 
 .auth-partners {
@@ -224,7 +226,7 @@
 }
 
 .nav-icon:hover {
-    color: var(--color-gold);
+    color: #BFA15F;
 }
 
 .nav-icon .material-icons {
@@ -235,7 +237,7 @@
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--color-gold) 0%, #d4a574 100%);
+    background: linear-gradient(135deg, #CD7F32 0%, #b06825 100%);
     color: white;
     display: flex;
     align-items: center;
@@ -260,5 +262,5 @@ body.home-page .nav-icon {
 }
 
 body.home-page .nav-icon:hover {
-    color: var(--color-gold);
+    color: #BFA15F;
 }

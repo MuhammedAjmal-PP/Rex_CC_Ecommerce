@@ -8,9 +8,12 @@
    ======================================== */
 
 :root {
-    --color-gold: #c9a961;
+    --color-gold: #BFA15F;
+    --color-bronze: #CD7F32;
     --black: #000;
     --white: #fff;
+    --color-text-pri: #111111;
+    --color-text-muted: #666666;
     --header-height: 80px;
     --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
 }
@@ -171,7 +174,7 @@ body:not(.home-page) .site-header {
     left: 0;
     width: 0;
     height: 2px;
-    background-color: var(--color-gold);
+    background-color: #BFA15F;
     transition: width 0.3s var(--ease-out-expo);
 }
 
@@ -204,7 +207,7 @@ body:not(.home-page) .site-header {
 }
 
 .brand-center a:hover {
-    color: var(--color-gold);
+    color: #BFA15F;
 }
 
 /* ========================================
@@ -262,7 +265,7 @@ body:not(.home-page) .site-header {
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--color-gold) 0%, #d4a574 100%);
+    background: linear-gradient(135deg, #CD7F32 0%, #b06825 100%);
     color: white;
     display: flex;
     align-items: center;
@@ -376,6 +379,17 @@ body:not(.home-page) .site-header {
     z-index: 999;
 }
 
+/* Interaction Bridge */
+.mega-menu::before {
+    content: '';
+    position: absolute;
+    top: -20px;
+    left: 0;
+    width: 100%;
+    height: 20px;
+    background: transparent;
+}
+
 .has-dropdown:hover .mega-menu {
     display: grid;
 }
@@ -398,7 +412,7 @@ body:not(.home-page) .site-header {
 }
 
 .mega-column a:hover {
-    color: var(--color-gold);
+    color: #BFA15F;
     padding-left: 10px;
 }
 
@@ -419,7 +433,7 @@ body:not(.home-page) .site-header {
 }
 
 .brand-grid span:hover {
-    background: var(--color-gold);
+    background: #CD7F32;
     color: white;
 }
 
@@ -532,7 +546,7 @@ body:not(.home-page) .site-header {
     font-weight: 700;
     letter-spacing: 2px;
     text-transform: uppercase;
-    color: var(--color-gold);
+    color: #BFA15F;
     margin-bottom: 20px;
 }
 
@@ -550,7 +564,7 @@ body:not(.home-page) .site-header {
 }
 
 .footer-col ul li a:hover {
-    color: var(--color-gold);
+    color: #BFA15F;
 }
 
 .footer-bottom {
@@ -622,11 +636,11 @@ body.home-page .nav-link {
 }
 
 body.home-page .nav-link:hover {
-    color: var(--color-gold);
+    color: #BFA15F;
 }
 
 body.home-page .nav-link::after {
-    background-color: var(--color-gold);
+    background-color: #BFA15F;
 }
 
 body.home-page .brand-center a {
@@ -640,7 +654,7 @@ body.home-page .search-icon {
 }
 
 body.home-page .nav-icon:hover {
-    color: var(--color-gold);
+    color: #BFA15F;
 }
 
 body.home-page .search-input {

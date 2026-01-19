@@ -13,23 +13,59 @@ def home(request):
     Homepage view
     """
     categories = Category.objects.filter(is_active=True)
-    brands = Brand.objects.filter(is_active=True)
-    products = Product.objects.filter(is_drafted=False, is_deleted=False)
-    products = Product.objects.prefetch_related(
-        Prefetch(
-            "variants",
-            queryset=ProductVariant.objects.order_by("-created_at"),
-            to_attr="ordered_variants",
-        )
-    )
+    
+    # Get brands with logos for featured brands section
+    brands = Brand.objects.filter(is_active=True, logo__isnull=False)[:5]
+    
+    # Get the latest variant for initial mega menu display
+    latest_variant = ProductVariant.objects.filter(
+        product__is_drafted=False,
+        product__is_deleted=False,
+        is_drafted=False,
+        is_deleted=False,
+        stock__gt=0
+    ).select_related('product', 'product__brand').prefetch_related('images').order_by('-created_at').first()
+
+    # Get new arrivals - latest 8 variants
+    new_arrivals = ProductVariant.objects.filter(
+        product__is_drafted=False,
+        product__is_deleted=False,
+        is_drafted=False,
+        is_deleted=False,
+        stock__gt=0
+    ).select_related('product', 'product__brand').prefetch_related('images').order_by('-created_at')[:8]
+    
+    # Get featured variants
+    featured_variants = ProductVariant.objects.filter(
+        product__is_drafted=False,
+        product__is_deleted=False,
+        is_drafted=False,
+        is_deleted=False,
+        is_featured=True,
+        stock__gt=0
+    ).select_related('product', 'product__brand').prefetch_related('images').order_by('-created_at')[:8]
+    
+    # Get offer variants (variants with active discounts)
+    offer_variants = ProductVariant.objects.filter(
+        product__is_drafted=False,
+        product__is_deleted=False,
+        is_drafted=False,
+        is_deleted=False,
+        stock__gt=0,
+        discount_percentage__gt=0
+    ).select_related('product', 'product__brand').prefetch_related('images').order_by('-discount_percentage')[:8]
 
     context = {
         "categories": categories,
         "brands": brands,
-        "products": products,
+        "latest_variant": latest_variant,
+        "new_arrivals": new_arrivals,
+        "featured_variants": featured_variants,
+        "offer_variants": offer_variants,
     }
 
     return render(request, "pages/user/homepage.html", context)
+
 
 
 @require_GET
@@ -43,10 +79,12 @@ def get_latest_product(request):
     
     # Base queryset for active variants
     variants = ProductVariant.objects.filter(
-        product__is_active=True,
-        is_active=True,
+        product__is_drafted=False,
+        product__is_deleted=False,
+        is_drafted=False,
+        is_deleted=False,
         stock__gt=0
-    ).select_related('product', 'product__brand', 'color', 'size').order_by('-created_at')
+    ).select_related('product', 'product__brand').order_by('-created_at')
     
     # Filter by category if provided
     if category_slug:
@@ -71,24 +109,17 @@ def get_latest_product(request):
         # Get variant image or fallback to product thumbnail
         variant_image = None
         if latest_variant.images.exists():
-            variant_image = latest_variant.images.first().image.url
+            variant_image = latest_variant.images.filter(is_primary=True)
         elif latest_variant.product.thumbnail:
             variant_image = latest_variant.product.thumbnail.url
         
         return JsonResponse({
             'success': True,
             'variant': {
-                'id': latest_variant.id,
-                'sku': latest_variant.sku,
                 'name': latest_variant.product.name,
                 'slug': latest_variant.product.slug,
-                'price': str(latest_variant.price),
-                'final_price': str(latest_variant.final_price),
                 'discount_percentage': latest_variant.discount_percentage,
-                'color': latest_variant.color.name if latest_variant.color else None,
-                'size': latest_variant.size.name if latest_variant.size else None,
                 'thumbnail': variant_image,
-                'stock': latest_variant.stock,
             }
         })
     

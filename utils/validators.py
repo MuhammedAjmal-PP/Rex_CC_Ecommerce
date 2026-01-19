@@ -20,7 +20,7 @@ formatted_name_validator= RegexValidator(
     message="Only letters, spaces, hyphens, and apostrophes are allowed.",
 )
 
-image_FileExtensionValidator=FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'webp'])
+image_FileExtensionValidator=FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'webp',"avif"])
 
 def image_size_validator(image):
     # Limit to 5MB
