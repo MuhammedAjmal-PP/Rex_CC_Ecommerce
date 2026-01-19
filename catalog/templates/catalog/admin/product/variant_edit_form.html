@@ -2,334 +2,334 @@
 {% load static %}
 {% load cloudinary %}
 {% block title %}
-Edit Variant
+    Edit Variant
 {% endblock title %}
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'catalog/css/admin/product/variant_form.css' %}">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
+    <link rel="stylesheet" href="{% static 'catalog/css/admin/product/variant_form.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
 {% endblock extra_css %}
 {% block header_title %}
-Edit Variant
+    Edit Variant
 {% endblock header_title %}
 {% block header_subtitle %}
-Update variant details for {{ product.name }}
+    Update variant details for {{ product.name }}
 {% endblock header_subtitle %}
 {% block content %}
-<div class="form-container">
+    <div class="form-container">
     <!-- Product Info Banner -->
-    <div class="product-banner">
-        <div class="product-banner-content">
-            {% if product.thumbnail %}
-            <img src="{{ product.thumbnail.url }}" alt="{{ product.name }}" class="product-banner-img" width="60"
-                height="60">
-            {% else %}
-            <div class="product-banner-placeholder">
-                <span class="material-icons">watch</span>
+        <div class="product-banner">
+            <div class="product-banner-content">
+                {% if product.thumbnail %}
+                    <img src="{{ product.thumbnail.url }}" alt="{{ product.name }}" class="product-banner-img" width="60"
+                         height="60">
+                {% else %}
+                    <div class="product-banner-placeholder">
+                        <span class="material-icons">watch</span>
+                    </div>
+                {% endif %}
+                <div class="product-banner-info">
+                    <span class="product-banner-label">Parent Product</span>
+                    <h2 class="product-banner-name">{{ product.name }}</h2>
+                    <span class="product-banner-brand">{{ product.brand.name }}</span>
+                </div>
             </div>
-            {% endif %}
-            <div class="product-banner-info">
-                <span class="product-banner-label">Parent Product</span>
-                <h2 class="product-banner-name">{{ product.name }}</h2>
-                <span class="product-banner-brand">{{ product.brand.name }}</span>
-            </div>
+            <a href="{% url 'admin_product_view' product.id %}" class="product-banner-link">
+                <span class="material-icons">visibility</span>
+                View Product
+            </a>
         </div>
-        <a href="{% url 'admin_product_view' product.id %}" class="product-banner-link">
-            <span class="material-icons">visibility</span>
-            View Product
-        </a>
-    </div>
-    <form method="post" enctype="multipart/form-data" class="variant-form" id="variantForm">
-        {% csrf_token %}
-        <input type="hidden" name="product" value="{{ product.id }}">
-        <div class="form-grid">
+        <form method="post" enctype="multipart/form-data" class="variant-form" id="variantForm">
+            {% csrf_token %}
+            <input type="hidden" name="product" value="{{ product.id }}">
+            <div class="form-grid">
             <!-- Left Column -->
-            <div class="form-column">
+                <div class="form-column">
                 <!-- Variant Identification -->
-                <div class="form-card">
-                    <div class="card-header">
-                        <span class="material-icons">fingerprint</span>
-                        <span>Identification</span>
-                    </div>
-                    <div class="card-body">
-                        <div class="form-group">
-                            <label class="form-label">SKU *</label>
-                            <input type="text" name="sku" class="form-input" placeholder="e.g., ROLEX-SUB-001"
-                                value="{{ variant.sku }}" required>
-                            {% if variantform.sku.errors %}<span class="error-text">{{ variantform.sku.errors.0
-                                }}</span>{% endif %}
-                            <span class="input-hint">Unique identifier for this variant</span>
+                    <div class="form-card">
+                        <div class="card-header">
+                            <span class="material-icons">fingerprint</span>
+                            <span>Identification</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label class="form-label">SKU *</label>
+                                <input type="text" name="sku" class="form-input" placeholder="e.g., ROLEX-SUB-001"
+                                       value="{{ variant.sku }}" required>
+                                {% if variantform.sku.errors %}<span class="error-text">{{ variantform.sku.errors.0
+                                    }}</span>{% endif %}
+                                <span class="input-hint">Unique identifier for this variant</span>
+                            </div>
                         </div>
                     </div>
-                </div>
                 <!-- Specifications -->
-                <div class="form-card">
-                    <div class="card-header">
-                        <span class="material-icons">tune</span>
-                        <span>Specifications</span>
+                    <div class="form-card">
+                        <div class="card-header">
+                            <span class="material-icons">tune</span>
+                            <span>Specifications</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Dial Color *</label>
+                                    <input type="text" name="dial_color" class="form-input"
+                                           placeholder="e.g., Black, Blue, Silver" value="{{ variant.dial_color }}" required>
+                                    {% if variantform.dial_color.errors %}<span class="error-text">{{
+                                        variantform.dial_color.errors.0 }}</span>{% endif %}
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Case Size (mm) *</label>
+                                    <input type="number" name="case_size_mm" class="form-input"
+                                           placeholder="e.g., 40, 42, 44" value="{{ variant.case_size_mm|default:'' }}"
+                                           min="20" required>
+                                    {% if variantform.case_size_mm.errors %}
+                                        <span class="error-text">{{ variantform.case_size_mm.errors.0 }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Case Material *</label>
+                                    <input type="text" name="case_material" class="form-input"
+                                           placeholder="e.g., Stainless Steel, Gold" value="{{ variant.case_material }}"
+                                           required>
+                                    {% if variantform.case_material.errors %}
+                                        <span class="error-text">{{ variantform.case_material.errors.0 }}</span>
+                                    {% endif %}
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Movement Type *</label>
+                                    <input type="text" name="movement_type" class="form-input"
+                                           placeholder="e.g., Automatic, Quartz" value="{{ variant.movement_type }}" required>
+                                    {% if variantform.movement_type.errors %}
+                                        <span class="error-text">{{ variantform.movement_type.errors.0 }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Strap Color *</label>
+                                    <input type="text" name="strap_color" class="form-input"
+                                           placeholder="e.g., Black, Brown, Silver" value="{{ variant.strap_color }}" required>
+                                    {% if variantform.strap_color.errors %}
+                                        <span class="error-text">{{ variantform.strap_color.errors.0 }}</span>
+                                    {% endif %}
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Strap Material *</label>
+                                    <input type="text" name="strap_material" class="form-input"
+                                           placeholder="e.g., Leather, Rubber, Steel" value="{{ variant.strap_material }}"
+                                           required>
+                                    {% if variantform.strap_material.errors %}
+                                        <span class="error-text">{{ variantform.strap_material.errors.0 }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">Dial Color *</label>
-                                <input type="text" name="dial_color" class="form-input"
-                                    placeholder="e.g., Black, Blue, Silver" value="{{ variant.dial_color }}" required>
-                                {% if variantform.dial_color.errors %}<span class="error-text">{{
-                                    variantform.dial_color.errors.0 }}</span>{% endif %}
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Case Size (mm) *</label>
-                                <input type="number" name="case_size_mm" class="form-input"
-                                    placeholder="e.g., 40, 42, 44" value="{{ variant.case_size_mm|default:'' }}"
-                                    min="20" required>
-                                {% if variantform.case_size_mm.errors %}
-                                <span class="error-text">{{ variantform.case_size_mm.errors.0 }}</span>
-                                {% endif %}
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">Case Material *</label>
-                                <input type="text" name="case_material" class="form-input"
-                                    placeholder="e.g., Stainless Steel, Gold" value="{{ variant.case_material }}"
-                                    required>
-                                {% if variantform.case_material.errors %}
-                                <span class="error-text">{{ variantform.case_material.errors.0 }}</span>
-                                {% endif %}
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Movement Type *</label>
-                                <input type="text" name="movement_type" class="form-input"
-                                    placeholder="e.g., Automatic, Quartz" value="{{ variant.movement_type }}" required>
-                                {% if variantform.movement_type.errors %}
-                                <span class="error-text">{{ variantform.movement_type.errors.0 }}</span>
-                                {% endif %}
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">Strap Color *</label>
-                                <input type="text" name="strap_color" class="form-input"
-                                    placeholder="e.g., Black, Brown, Silver" value="{{ variant.strap_color }}" required>
-                                {% if variantform.strap_color.errors %}
-                                <span class="error-text">{{ variantform.strap_color.errors.0 }}</span>
-                                {% endif %}
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Strap Material *</label>
-                                <input type="text" name="strap_material" class="form-input"
-                                    placeholder="e.g., Leather, Rubber, Steel" value="{{ variant.strap_material }}"
-                                    required>
-                                {% if variantform.strap_material.errors %}
-                                <span class="error-text">{{ variantform.strap_material.errors.0 }}</span>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                </div>
                 <!-- Pricing & Stock -->
-                <div class="form-card">
-                    <div class="card-header">
-                        <span class="material-icons">payments</span>
-                        <span>Pricing & Inventory</span>
-                    </div>
-                    <div class="card-body">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">Price *</label>
-                                <div class="input-wrapper currency">
-                                    <span class="input-prefix">₹</span>
-                                    <input type="number" name="price" class="form-input with-prefix" placeholder="0.00"
-                                        step="0.01" min="0" value="{{ variant.price }}" required>
-                                </div>
-                                {% if variantform.price.errors %}<span class="error-text">{{ variantform.price.errors.0
-                                    }}</span>{% endif %}
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Discount (%)</label>
-                                <div class="input-wrapper suffix">
-                                    <input type="number" name="discount_percentage" class="form-input with-suffix"
-                                        placeholder="0" min="0" max="100" value="{{ variant.discount_percentage }}">
-                                    <span class="input-suffix">%</span>
-                                </div>
-                                {% if variantform.discount_percentage.errors %}<span class="error-text">{{
-                                    variantform.discount_percentage.errors.0 }}</span>{% endif %}
-                            </div>
+                    <div class="form-card">
+                        <div class="card-header">
+                            <span class="material-icons">payments</span>
+                            <span>Pricing & Inventory</span>
                         </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">Stock Quantity</label>
-                                <input type="number" name="stock" class="form-input" placeholder="0" min="0"
-                                    value="{{ variant.stock }}">
-                                {% if variantform.stock.errors %}<span class="error-text">{{ variantform.stock.errors.0
-                                    }}</span>{% endif %}
+                        <div class="card-body">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Price *</label>
+                                    <div class="input-wrapper currency">
+                                        <span class="input-prefix">₹</span>
+                                        <input type="number" name="price" class="form-input with-prefix" placeholder="0.00"
+                                               step="0.01" min="0" value="{{ variant.price }}" required>
+                                    </div>
+                                    {% if variantform.price.errors %}<span class="error-text">{{ variantform.price.errors.0
+                                        }}</span>{% endif %}
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Discount (%)</label>
+                                    <div class="input-wrapper suffix">
+                                        <input type="number" name="discount_percentage" class="form-input with-suffix"
+                                               placeholder="0" min="0" max="100" value="{{ variant.discount_percentage }}">
+                                        <span class="input-suffix">%</span>
+                                    </div>
+                                    {% if variantform.discount_percentage.errors %}<span class="error-text">{{
+                                        variantform.discount_percentage.errors.0 }}</span>{% endif %}
+                                </div>
                             </div>
-                        </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Stock Quantity</label>
+                                    <input type="number" name="stock" class="form-input" placeholder="0" min="0"
+                                           value="{{ variant.stock }}">
+                                    {% if variantform.stock.errors %}<span class="error-text">{{ variantform.stock.errors.0
+                                        }}</span>{% endif %}
+                                </div>
+                            </div>
                         <!-- Stock Status Indicator -->
-                        <div class="stock-indicator" id="stockIndicator">
-                            <div class="stock-bar">
-                                <div class="stock-fill" id="stockFill"></div>
+                            <div class="stock-indicator" id="stockIndicator">
+                                <div class="stock-bar">
+                                    <div class="stock-fill" id="stockFill"></div>
+                                </div>
+                                <span class="stock-status" id="stockStatus">Enter stock quantity</span>
                             </div>
-                            <span class="stock-status" id="stockStatus">Enter stock quantity</span>
                         </div>
                     </div>
                 </div>
-            </div>
             <!-- Right Column -->
-            <div class="form-column">
+                <div class="form-column">
                 <!-- Variant Images Section with Formset -->
-                <div class="form-card">
-                    <div class="card-header">
-                        <span class="material-icons">photo_library</span>
-                        <span>Variant Images</span>
-                        <span class="card-header-badge">{{ imageformset.total_form_count }} slots</span>
-                        <button type="button" class="btn-add-image"
-                            onclick="location.href='?extra={{ imageformset.extra|add:'1' }}'">
-                            <span class="material-icons">add_circle</span>
-                            <span>Add Slot</span>
+                    <div class="form-card">
+                        <div class="card-header">
+                            <span class="material-icons">photo_library</span>
+                            <span>Variant Images</span>
+                            <span class="card-header-badge">{{ imageformset.total_form_count }} slots</span>
+                            <button type="button" class="btn-add-image"
+                                    onclick="location.href='?extra={{ imageformset.extra|add:'1' }}'">
+                                <span class="material-icons">add_circle</span>
+                                <span>Add Slot</span>
+                            </button>
+                        </div>
+                        <div class="card-body">
+                        <!-- Formset Management Data -->
+                            {{ imageformset.management_form }}
+                            <div class="image-formset-container" id="imageFormsetContainer">
+                                {% for form in imageformset %}
+                                    <div class="image-form-item" data-form-index="{{ forloop.counter0 }}"
+                                         data-existing-url="{% if form.instance.image %}{{ form.instance.image.url }}{% endif %}"
+                                         data-has-existing="{% if form.instance.pk %}true{% else %}false{% endif %}">
+                                        <div class="image-upload-box{% if form.instance.image %} has-image{% endif %}"
+                                             id="uploadBox{{ forloop.counter0 }}">
+                                    <!-- File input -->
+                                            <input type="file" name="{{ form.image.html_name }}"
+                                                   id="{{ form.image.id_for_label }}" accept="image/*" class="image-file-input">
+                                    <!-- Hidden fields for modelformset -->
+                                            {% if form.instance.pk %}
+                                                <input type="hidden" name="{{ form.prefix }}-id" value="{{ form.instance.pk }}">
+                                            {% endif %}
+                                    <!-- Upload placeholder (hidden if existing image) -->
+                                            <div class="upload-placeholder-content" id="placeholder{{ forloop.counter0 }}" {% if
+                                                 form.instance.image %}hidden{% endif %}>
+                                                <span class="material-icons">add_photo_alternate</span>
+                                                <span class="upload-label">Image {{ forloop.counter }}</span>
+                                                <span class="upload-hint">Click to upload</span>
+                                            </div>
+                                    <!-- Preview container (visible if existing image) -->
+                                <div class="image-preview-wrapper" id="preview{{ forloop.counter0 }}" {% if not
+                                     form.instance.image %}hidden{% endif %}>
+                                    <img src="{% if form.instance.image %}{{ form.instance.image.url }}{% endif %}"
+                                         alt="Preview" class="preview-image" id="previewImg{{ forloop.counter0 }}"
+                                         width="150" height="150">
+                                    <div class="preview-overlay">
+                                        <button type="button" class="preview-action-btn change-btn"
+                                                data-index="{{ forloop.counter0 }}">
+                                            <span class="material-icons">edit</span>
+                                        </button>
+                                        <button type="button" class="preview-action-btn remove-btn"
+                                                data-index="{{ forloop.counter0 }}">
+                                            <span class="material-icons">delete</span>
+                                        </button>
+                                    </div>
+                                </div>
+</div>
+                                <!-- Primary toggle - properly shows existing state -->
+<div class="image-primary-toggle">
+    <label class="primary-checkbox">
+        <input type="checkbox" name="{{ form.is_primary.html_name }}"
+               id="{{ form.is_primary.id_for_label }}" {% if form.instance.is_primary
+               %}checked{% endif %}>
+        <span class="checkmark"></span>
+        <span class="primary-text">Primary</span>
+    </label>
+</div>
+{% if form.errors %}
+    <div class="form-errors">
+        {% for error in form.errors.values %}<span class="error-text">{{ error.0 }}</span>{%
+            endfor %}
+            </div>
+        {% endif %}
+    </div>
+{% endfor %}
+</div>
+<div class="image-upload-help">
+    <span class="material-icons">info</span>
+    <span>Mark one as primary for the main display.</span>
+</div>
+</div>
+</div>
+                <!-- Publishing Options -->
+<div class="form-card">
+    <div class="card-header">
+        <span class="material-icons">publish</span>
+        <span>Publishing</span>
+    </div>
+    <div class="card-body">
+        <div class="toggle-row">
+            <div class="toggle-info">
+                <span class="toggle-label">Featured Variant</span>
+                <span class="toggle-desc">Show in featured collections</span>
+            </div>
+            <label class="toggle-switch">
+                <input type="checkbox" name="is_featured" {% if variant.is_featured %}checked{% endif
+                           %}>
+                    <span class="toggle-slider"></span>
+                    </label>
+                    </div>
+                    <div class="toggle-row">
+                        <div class="toggle-info">
+                            <span class="toggle-label">Save as Draft</span>
+                            <span class="toggle-desc">Hidden from catalog</span>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" name="is_drafted" {% if variant.is_drafted %}checked{% endif %}>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="meta-section">
+                        <div class="meta-row">
+                            <span class="meta-label">Created</span>
+                            <span class="meta-value">{{ variant.created_at|date:"M d, Y" }}</span>
+                        </div>
+                        <div class="meta-row">
+                            <span class="meta-label">Last Updated</span>
+                            <span class="meta-value">{{ variant.updated_at|date:"M d, Y H:i" }}</span>
+                        </div>
+                    </div>
+                    </div>
+                    </div>
+                    </div>
+                    </div>
+        <!-- Form Actions -->
+                    <div class="form-actions">
+                        <a href="{% url 'admin_product_view' product.id %}" class="btn-cancel">
+                            <span class="material-icons">arrow_back</span>
+                            Cancel
+                        </a>
+                        <button type="submit" class="btn-submit">
+                            <span class="material-icons">save</span>
+                            Save Changes
                         </button>
                     </div>
-                    <div class="card-body">
-                        <!-- Formset Management Data -->
-                        {{ imageformset.management_form }}
-                        <div class="image-formset-container" id="imageFormsetContainer">
-                            {% for form in imageformset %}
-                            <div class="image-form-item" data-form-index="{{ forloop.counter0 }}"
-                                data-existing-url="{% if form.instance.image %}{{ form.instance.image.url }}{% endif %}"
-                                data-has-existing="{% if form.instance.pk %}true{% else %}false{% endif %}">
-                                <div class="image-upload-box{% if form.instance.image %} has-image{% endif %}"
-                                    id="uploadBox{{ forloop.counter0 }}">
-                                    <!-- File input -->
-                                    <input type="file" name="{{ form.image.html_name }}"
-                                        id="{{ form.image.id_for_label }}" accept="image/*" class="image-file-input">
-                                    <!-- Hidden fields for modelformset -->
-                                    {% if form.instance.pk %}
-                                    <input type="hidden" name="{{ form.prefix }}-id" value="{{ form.instance.pk }}">
-                                    {% endif %}
-                                    <!-- Upload placeholder (hidden if existing image) -->
-                                    <div class="upload-placeholder-content" id="placeholder{{ forloop.counter0 }}" {% if
-                                        form.instance.image %}hidden{% endif %}>
-                                        <span class="material-icons">add_photo_alternate</span>
-                                        <span class="upload-label">Image {{ forloop.counter }}</span>
-                                        <span class="upload-hint">Click to upload</span>
-                                    </div>
-                                    <!-- Preview container (visible if existing image) -->
-                                    <div class="image-preview-wrapper" id="preview{{ forloop.counter0 }}" {% if not
-                                        form.instance.image %}hidden{% endif %}>
-                                        <img src="{% if form.instance.image %}{{ form.instance.image.url }}{% endif %}"
-                                            alt="Preview" class="preview-image" id="previewImg{{ forloop.counter0 }}"
-                                            width="150" height="150">
-                                        <div class="preview-overlay">
-                                            <button type="button" class="preview-action-btn change-btn"
-                                                data-index="{{ forloop.counter0 }}">
-                                                <span class="material-icons">edit</span>
-                                            </button>
-                                            <button type="button" class="preview-action-btn remove-btn"
-                                                data-index="{{ forloop.counter0 }}">
-                                                <span class="material-icons">delete</span>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- Primary toggle - properly shows existing state -->
-                                <div class="image-primary-toggle">
-                                    <label class="primary-checkbox">
-                                        <input type="checkbox" name="{{ form.is_primary.html_name }}"
-                                            id="{{ form.is_primary.id_for_label }}" {% if form.instance.is_primary
-                                            %}checked{% endif %}>
-                                        <span class="checkmark"></span>
-                                        <span class="primary-text">Primary</span>
-                                    </label>
-                                </div>
-                                {% if form.errors %}
-                                <div class="form-errors">
-                                    {% for error in form.errors.values %}<span class="error-text">{{ error.0 }}</span>{%
-                                    endfor %}
-                                </div>
-                                {% endif %}
-                            </div>
-                            {% endfor %}
-                        </div>
-                        <div class="image-upload-help">
-                            <span class="material-icons">info</span>
-                            <span>Mark one as primary for the main display.</span>
-                        </div>
+                    </form>
                     </div>
-                </div>
-                <!-- Publishing Options -->
-                <div class="form-card">
-                    <div class="card-header">
-                        <span class="material-icons">publish</span>
-                        <span>Publishing</span>
-                    </div>
-                    <div class="card-body">
-                        <div class="toggle-row">
-                            <div class="toggle-info">
-                                <span class="toggle-label">Featured Variant</span>
-                                <span class="toggle-desc">Show in featured collections</span>
-                            </div>
-                            <label class="toggle-switch">
-                                <input type="checkbox" name="is_featured" {% if variant.is_featured %}checked{% endif
-                                    %}>
-                                <span class="toggle-slider"></span>
-                            </label>
-                        </div>
-                        <div class="toggle-row">
-                            <div class="toggle-info">
-                                <span class="toggle-label">Save as Draft</span>
-                                <span class="toggle-desc">Hidden from catalog</span>
-                            </div>
-                            <label class="toggle-switch">
-                                <input type="checkbox" name="is_drafted" {% if variant.is_drafted %}checked{% endif %}>
-                                <span class="toggle-slider"></span>
-                            </label>
-                        </div>
-                        <div class="meta-section">
-                            <div class="meta-row">
-                                <span class="meta-label">Created</span>
-                                <span class="meta-value">{{ variant.created_at|date:"M d, Y" }}</span>
-                            </div>
-                            <div class="meta-row">
-                                <span class="meta-label">Last Updated</span>
-                                <span class="meta-value">{{ variant.updated_at|date:"M d, Y H:i" }}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Form Actions -->
-        <div class="form-actions">
-            <a href="{% url 'admin_product_view' product.id %}" class="btn-cancel">
-                <span class="material-icons">arrow_back</span>
-                Cancel
-            </a>
-            <button type="submit" class="btn-submit">
-                <span class="material-icons">save</span>
-                Save Changes
-            </button>
-        </div>
-    </form>
-</div>
 <!-- Crop Modal -->
-<div class="modal fade" id="cropModal" tabindex="-1">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Crop Image</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <img id="cropImage" src="" alt="Crop" width="600" height="400">
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" id="cropBtn" class="btn btn-primary">Apply</button>
-            </div>
-        </div>
-    </div>
-</div>
-{% endblock content %}
-{% block extra_js %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
-<script src="{% static 'catalog/js/admin/product/variant_form.js' %}"></script>
-{% endblock extra_js %}
+                    <div class="modal fade" id="cropModal" tabindex="-1">
+                        <div class="modal-dialog modal-lg modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Crop Image</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <img id="cropImage" src="" alt="Crop" width="600" height="400">
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="button" id="cropBtn" class="btn btn-primary">Apply</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endblock content %}
+                {% block extra_js %}
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+                    <script src="{% static 'catalog/js/admin/product/variant_form.js' %}"></script>
+                {% endblock extra_js %}
