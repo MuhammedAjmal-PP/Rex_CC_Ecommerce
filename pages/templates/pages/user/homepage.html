@@ -1,20 +1,15 @@
 {% extends "pages/user/base_user.html" %}
 {% load static %}
+{% block body_class %}home-page{% endblock body_class %}
 {% block extra_css %}
   <link rel="stylesheet" href="{% static 'pages/user/css/homepage.css' %}">
 {% endblock extra_css %}
 {% block content %}
-  <!-- 1. Parallax Video Hero -->
+<!-- 1. Parallax Video Hero -->
   <section class="hero-wrap">
-    <video class="hero-video-bg"
-           autoplay
-           muted
-           loop
-           playsinline
-           poster="{% static 'pages/user/img/hero-poster.jpg' %}">
-      <!-- High Quality Placeholder Video -->
-      <source src="https://videos.pexels.com/video-files/13736231/13736231-uhd_3840_2160_30fps.mp4"
-              type="video/mp4">
+    <video class="hero-video-bg" autoplay muted loop playsinline poster="{% static 'pages/user/img/hero-poster.jpg' %}">
+    <!-- High Quality Placeholder Video -->
+      <source src="https://videos.pexels.com/video-files/13736231/13736231-uhd_3840_2160_30fps.mp4" type="video/mp4">
     </video>
     <div class="hero-overlay"></div>
     <div class="hero-content">
@@ -29,21 +24,17 @@
       <span class="scroll-line"></span>
     </div>
   </section>
-  <!-- 2. Editorial Categories (Magazine Layout) -->
+<!-- 2. Editorial Categories (Magazine Layout) -->
   <section class="section-editorial">
     <div class="editorial-grid">
-      <!-- Tile 1 -->
+    <!-- Tile 1 -->
       {% if categories.0 %}
-        <a href="{% url 'product_list' %}?category={{ categories.0.name }}"
-           class="editorial-item">
+        <a href="{% url 'product_list' %}?category={{ categories.0.name }}" class="editorial-item">
           {% if categories.0.category_image %}
-            <img src="{{ categories.0.category_image.url }}"
-                 class="editorial-img"
-                 alt="{{ categories.0.name }}">
+            <img src="{{ categories.0.category_image.url }}" class="editorial-img" alt="{{ categories.0.name }}">
           {% else %}
             <img src="https://images.unsplash.com/photo-1547996160-81dfa63595aa?q=80&w=2148&auto=format&fit=crop"
-                 class="editorial-img"
-                 alt="Luxury Watches">
+                 class="editorial-img" alt="Luxury Watches">
           {% endif %}
           <div class="editorial-text">
             <h3 class="editorial-title">{{ categories.0.name }}</h3>
@@ -51,18 +42,14 @@
           </div>
         </a>
       {% endif %}
-      <!-- Tile 2 -->
+    <!-- Tile 2 -->
       {% if categories.1 %}
-        <a href="{% url 'product_list' %}?category={{ categories.1.name }}"
-           class="editorial-item">
+        <a href="{% url 'product_list' %}?category={{ categories.1.name }}" class="editorial-item">
           {% if categories.1.category_image %}
-            <img src="{{ categories.1.category_image.url }}"
-                 class="editorial-img"
-                 alt="{{ categories.1.name }}">
+            <img src="{{ categories.1.category_image.url }}" class="editorial-img" alt="{{ categories.1.name }}">
           {% else %}
             <img src="https://images.unsplash.com/photo-1523170335258-f5ed11844a49?q=80&w=2080&auto=format&fit=crop"
-                 class="editorial-img"
-                 alt="Formal Watches">
+                 class="editorial-img" alt="Formal Watches">
           {% endif %}
           <div class="editorial-text">
             <h3 class="editorial-title">{{ categories.1.name }}</h3>
@@ -72,7 +59,7 @@
       {% endif %}
     </div>
   </section>
-  <!-- 3. Product Gallery (Netflix-style Slider) -->
+<!-- 3. Product Gallery (Netflix-style Slider) -->
   <section class="section-gallery">
     <div class="gallery-header">
       <h2 class="gallery-title">New Arrivals</h2>
@@ -83,10 +70,7 @@
         <div class="product-card-frameless">
           <a href="{% url 'product_detail' product.slug %}" class="p-img-box">
             {% if product.thumbnail %}
-              <img src="{{ product.thumbnail.url }}"
-                   alt="{{ product.name }}"
-                   class="p-img"
-                   loading="lazy">
+              <img src="{{ product.thumbnail.url }}" alt="{{ product.name }}" class="p-img" loading="lazy">
             {% else %}
               <img src="https://via.placeholder.com/600x800?text=No+Image" class="p-img">
             {% endif %}
@@ -103,7 +87,7 @@
       {% endfor %}
     </div>
   </section>
-  <!-- 4. Trust Strip -->
+<!-- 4. Trust Strip -->
   <section class="section-trust">
     <div class="trust-grid">
       <div class="trust-item">

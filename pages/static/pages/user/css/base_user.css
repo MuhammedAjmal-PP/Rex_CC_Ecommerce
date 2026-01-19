@@ -1,79 +1,36 @@
-/* -----------------------------------------------------------
-   REX CC | ULTRA-PREMIUM GLOBAL STYLES
-   File: pages/static/pages/user/css/base_user.css
-   Concept: Minimalist Luxury, Intelligent Navigation, Deep Immersion
-   ----------------------------------------------------------- */
-
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+/* ========================================
+   Rex CC - Base User Styles
+   Desktop-Only Design (No Responsive)
+   ======================================== */
 
 /* ========================================
-   1. VARIABLES & RESET
+   1. CSS VARIABLES & ROOT
    ======================================== */
 
 :root {
-    /* Brand Palette - Deep Luxury */
-    --color-bg-main: #FFFFFF;
-    --color-bg-alt: #FAFAFA;
-    --color-text-pri: #050505;
-    --color-text-sec: #555555;
-    --color-gold: #D4AF37;
-    /* Gold from index.html */
-    --color-gold-hover: #D4B88C;
-    --color-border: #EEEEEE;
-    --black: #111;
+    --color-gold: #c9a961;
+    --black: #000;
     --white: #fff;
-    --gray: #f4f4f4;
-
-    /* Semantic */
-    --color-error: #D32F2F;
-    --color-success: #2E7D32;
-
-    /* Typography */
-    --font-heading: 'Playfair Display', serif;
-    --font-body: 'Montserrat', sans-serif;
-
-    /* Dimensions */
     --header-height: 80px;
-    --container-width: 1600px;
-
-    /* Easing */
     --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
 }
 
 * {
-    box-sizing: border-box;
     margin: 0;
     padding: 0;
-}
-
-html {
-    scroll-behavior: smooth;
+    box-sizing: border-box;
 }
 
 body {
-    background-color: var(--color-bg-main);
-    color: var(--color-text-pri);
-    font-family: var(--font-body);
-    font-weight: 300;
-    line-height: 1.7;
-    min-height: 100vh;
+    font-family: 'Montserrat', sans-serif;
+    color: #333;
+    background: var(--white);
     overflow-x: hidden;
-    -webkit-font-smoothing: antialiased;
 }
 
 a {
     text-decoration: none;
     color: inherit;
-    transition: color 0.3s ease;
-}
-
-ul {
-    list-style: none;
-}
-
-img {
-    max-width: 100%;
-    display: block;
 }
 
 /* ========================================
@@ -91,6 +48,16 @@ img {
     letter-spacing: 1.5px;
     font-weight: 600;
     overflow: hidden;
+    transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1001;
+}
+
+.top-bar.is-hidden {
+    transform: translateY(-100%);
 }
 
 .text-container {
@@ -98,19 +65,15 @@ img {
     width: 100%;
     text-align: center;
     height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .text-slide {
     position: absolute;
     width: 100%;
-    left: 0;
-    top: 9px;
-    opacity: 0;
     animation: fadeText 8s infinite;
-}
-
-.text-slide:nth-child(1) {
-    animation-delay: 0s;
 }
 
 .text-slide:nth-child(2) {
@@ -120,20 +83,15 @@ img {
 @keyframes fadeText {
 
     0%,
+    45% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    50%,
     100% {
         opacity: 0;
-        transform: translateY(5px);
-    }
-
-    10%,
-    40% {
-        opacity: 1;
-        transform: translateY(0);
-    }
-
-    50% {
-        opacity: 0;
-        transform: translateY(-5px);
+        transform: translateX(-20px);
     }
 }
 
@@ -149,44 +107,178 @@ img {
     height: var(--header-height);
     background: var(--white);
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-    position: sticky;
+    position: fixed;
     top: 0;
+    left: 0;
+    right: 0;
     z-index: 1000;
     transition: transform 0.4s var(--ease-out-expo), background-color 0.4s ease;
 }
 
-/* State: Scrolled Down (Hidden) */
 .site-header.is-hidden {
     transform: translateY(-100%);
 }
 
-/* State: Visible with background */
 .site-header.is-visible {
     transform: translateY(0);
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(12px);
 }
 
-/* Left: Icons Area */
-.header-icons-left {
+body:not(.home-page) .site-header {
+    top: 35px;
+}
+
+/* ========================================
+   4. LEFT NAVIGATION
+   ======================================== */
+
+.nav-left {
+    display: flex;
+    align-items: center;
+}
+
+.nav-list {
+    display: flex;
+    gap: 30px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    align-items: center;
+}
+
+.nav-link {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #333;
+    position: relative;
+    transition: color 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.nav-link:hover {
+    color: var(--color-gold);
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--color-gold);
+    transition: width 0.3s var(--ease-out-expo);
+}
+
+.nav-link:hover::after {
+    width: 100%;
+}
+
+.nav-link .material-icons {
+    font-size: 18px;
+    vertical-align: middle;
+}
+
+/* ========================================
+   5. CENTER BRAND
+   ======================================== */
+
+.brand-center {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.brand-center a {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: #1a1a1a;
+    transition: color 0.3s;
+}
+
+.brand-center a:hover {
+    color: var(--color-gold);
+}
+
+/* ========================================
+   6. RIGHT ICONS
+   ======================================== */
+
+.header-icons-right {
     display: flex;
     align-items: center;
     gap: 20px;
 }
 
-.icon-link {
-    color: #333;
-    font-size: 18px;
-    text-decoration: none;
-    transition: color 0.3s;
-    position: relative;
+.material-icons {
+    font-size: 22px;
 }
 
-.icon-link:hover {
+.search-icon {
+    font-size: 22px;
+    cursor: pointer;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.nav-icon {
+    color: #333;
+    text-decoration: none;
+    transition: color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+}
+
+.nav-icon:hover {
     color: var(--color-gold);
 }
 
-/* Expanding Search Bar */
+.nav-icon .material-icons {
+    font-size: 26px;
+}
+
+/* User Avatar */
+.user-avatar {
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #eee;
+}
+
+.user-initials-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--color-gold) 0%, #d4a574 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: 2px solid #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* ========================================
+   7. SEARCH BAR (Expanding)
+   ======================================== */
+
 .search-wrapper {
     display: flex;
     align-items: center;
@@ -194,6 +286,13 @@ img {
     padding: 5px;
     border-radius: 20px;
     transition: all 0.4s ease;
+}
+
+.search-form-inline {
+    display: flex;
+    align-items: center;
+    position: relative;
+    width: 100%;
 }
 
 .search-input {
@@ -205,11 +304,6 @@ img {
     transition: all 0.4s ease;
     font-family: 'Montserrat', sans-serif;
     font-size: 13px;
-}
-
-.search-icon {
-    cursor: pointer;
-    font-size: 18px;
 }
 
 .search-wrapper:hover {
@@ -224,157 +318,133 @@ img {
     margin-left: 10px;
 }
 
-/* User Avatar */
-.user-avatar img {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 1px solid #eee;
+.search-wrapper.has-query {
+    border-color: #ddd;
+    background: #fff;
+    padding-right: 10px;
 }
 
-/* Center: Brand */
-.brand-center {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
+.search-wrapper.has-query .search-input {
+    width: 180px;
+    opacity: 1;
+    margin-left: 10px;
 }
 
-.brand-center a {
-    font-family: 'Playfair Display', serif;
-    font-size: 28px;
-    font-weight: 700;
-    color: var(--black);
-    text-decoration: none;
-    letter-spacing: 1px;
+.search-wrapper.has-query .search-clear-icon {
+    opacity: 1;
 }
 
-/* Right: Navigation */
-.nav-right {
+.search-clear-icon {
+    color: #999;
+    font-size: 14px;
+    cursor: pointer;
+    transition: color 0.3s ease;
     display: flex;
-}
-
-.nav-list {
-    display: flex;
-    list-style: none;
-    gap: 30px;
-}
-
-.nav-link {
+    align-items: center;
     text-decoration: none;
-    color: #333;
-    font-size: 13px;
-    text-transform: uppercase;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    position: relative;
-    padding-bottom: 5px;
-    transition: color 0.3s;
+    opacity: 0;
+    margin-left: 5px;
 }
 
-.nav-link:hover {
-    color: var(--color-gold);
+.search-wrapper:hover .search-clear-icon {
+    opacity: 1;
 }
 
-.nav-link::after {
-    content: '';
-    position: absolute;
-    width: 0;
-    height: 2px;
-    bottom: 0;
-    left: 0;
-    background-color: var(--color-gold);
-    transition: width 0.3s;
+.search-clear-icon:hover {
+    color: #e74c3c;
 }
 
-.nav-link:hover::after {
-    width: 100%;
-}
+/* ========================================
+   8. MEGA MENU DROPDOWN
+   ======================================== */
 
-.text-xs {
-    font-size: 10px;
-    margin-left: 3px;
-}
-
-/* Mega Menu Dropdown */
 .has-dropdown {
     position: relative;
 }
 
 .mega-menu {
     position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%) translateY(20px);
-    width: 600px;
-    background: var(--white);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    padding: 30px;
-    display: flex;
-    justify-content: space-between;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s ease;
-    border-top: 3px solid var(--color-gold);
+    top: calc(100% + 20px);
+    left: -100px;
+    background: white;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    padding: 40px;
+    display: none;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 40px;
+    min-width: 700px;
     z-index: 999;
 }
 
 .has-dropdown:hover .mega-menu {
-    opacity: 1;
-    visibility: visible;
-    transform: translateX(-50%) translateY(0);
+    display: grid;
 }
 
 .mega-column h4 {
     font-size: 12px;
-    margin-bottom: 15px;
+    font-weight: 700;
+    letter-spacing: 2px;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    color: #888;
+    color: #999;
+    margin-bottom: 20px;
 }
 
 .mega-column a {
     display: block;
-    text-decoration: none;
-    color: #333;
+    padding: 10px 0;
     font-size: 14px;
-    margin-bottom: 8px;
-    transition: 0.2s;
+    color: #333;
+    transition: all 0.3s;
 }
 
 .mega-column a:hover {
     color: var(--color-gold);
-    padding-left: 5px;
+    padding-left: 10px;
 }
 
 .brand-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 10px;
+    gap: 12px;
 }
 
 .brand-grid span {
+    padding: 8px 12px;
+    background: #f8f8f8;
+    border-radius: 4px;
     font-size: 13px;
-    padding: 5px 0;
-    border-bottom: 1px solid #eee;
+    text-align: center;
+    transition: all 0.3s;
+    cursor: pointer;
 }
 
-.featured-img {
+.brand-grid span:hover {
+    background: var(--color-gold);
+    color: white;
+}
+
+.mega-column.featured-img {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.mega-column.featured-img img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin-bottom: 12px;
+}
+
+.mega-column.featured-img span {
+    font-size: 12px;
+    color: #666;
     text-align: center;
 }
 
-.featured-img img {
-    margin-bottom: 10px;
-    border-radius: 4px;
-}
-
-.featured-img span {
-    font-size: 12px;
-    color: #666;
-}
-
 /* ========================================
-   4. SEARCH OVERLAY (Cinematic)
+   9. SEARCH OVERLAY
    ======================================== */
 
 .search-overlay {
@@ -383,8 +453,8 @@ img {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(255, 255, 255, 0.98);
-    z-index: 2000;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 9999;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -395,153 +465,132 @@ img {
 
 .search-overlay.is-open {
     opacity: 1;
-    pointer-events: auto;
-}
-
-.search-container {
-    width: 100%;
-    max-width: 800px;
-    text-align: center;
-    transform: translateY(20px);
-    transition: transform 0.4s var(--ease-out-expo);
-}
-
-.search-overlay.is-open .search-container {
-    transform: translateY(0);
-}
-
-.search-input-lg {
-    width: 100%;
-    border: none;
-    border-bottom: 2px solid var(--color-border);
-    font-family: var(--font-heading);
-    font-size: 3rem;
-    color: var(--color-text-pri);
-    background: transparent;
-    padding: 20px 0;
-    text-align: center;
-}
-
-.search-input-lg:focus {
-    outline: none;
-    border-color: var(--color-gold);
+    pointer-events: all;
 }
 
 .search-close {
     position: absolute;
     top: 40px;
-    right: 50px;
-    font-size: 2rem;
+    right: 40px;
+    color: white;
+    font-size: 36px;
     cursor: pointer;
-    color: var(--color-text-pri);
-    transition: transform 0.3s ease;
 }
 
-.search-close:hover {
-    transform: rotate(90deg);
+.search-container {
+    width: 600px;
+    text-align: center;
+}
+
+.search-input-lg {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    font-size: 32px;
+    padding: 20px 0;
+    outline: none;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.search-input-lg::placeholder {
+    color: rgba(255, 255, 255, 0.5);
 }
 
 /* ========================================
-   5. PREMIUM FOOTER
+   10. FOOTER
    ======================================== */
 
 .site-footer {
-    background-color: #080808;
-    /* Deep Charcoal/Black */
-    color: #FFFFFF;
-    padding: 100px 50px 40px;
-    margin-top: auto;
+    background: #1a1a1a;
+    color: rgba(255, 255, 255, 0.8);
+    padding: 60px 40px 20px;
 }
 
 .footer-grid {
-    max-width: var(--container-width);
-    margin: 0 auto;
     display: grid;
     grid-template-columns: 2fr 1fr 1fr 1fr;
-    /* Brand gets more space */
-    gap: 80px;
-    margin-bottom: 80px;
+    gap: 40px;
+    margin-bottom: 40px;
 }
 
 .footer-brand h2 {
-    font-family: var(--font-heading);
-    font-size: 2.2rem;
-    letter-spacing: 2px;
-    margin-bottom: 25px;
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    color: white;
+    margin-bottom: 16px;
 }
 
 .footer-quote {
-    font-size: 1rem;
-    color: #888;
-    max-width: 300px;
+    font-size: 14px;
     line-height: 1.8;
-    font-style: italic;
 }
 
 .footer-col h4 {
-    font-family: var(--font-heading);
-    font-size: 1rem;
-    margin-bottom: 30px;
-    color: #FFF;
-    letter-spacing: 1px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--color-gold);
+    margin-bottom: 20px;
+}
+
+.footer-col ul {
+    list-style: none;
 }
 
 .footer-col ul li {
-    margin-bottom: 15px;
+    margin-bottom: 12px;
 }
 
-.footer-col ul a {
-    color: #777;
-    font-size: 0.85rem;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
+.footer-col ul li a {
+    font-size: 14px;
+    transition: color 0.3s;
 }
 
-.footer-col ul a:hover {
+.footer-col ul li a:hover {
     color: var(--color-gold);
 }
 
 .footer-bottom {
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
-    padding-top: 40px;
     text-align: center;
-    color: #444;
-    font-size: 0.75rem;
-    letter-spacing: 2px;
-    text-transform: uppercase;
+    padding-top: 30px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
 }
 
 /* ========================================
-   6. FLASH MESSAGES
+   11. TOAST MESSAGES
    ======================================== */
+
 .toast-container {
     position: fixed;
-    bottom: 40px;
-    right: 40px;
-    z-index: 3000;
+    top: 120px;
+    right: 30px;
+    z-index: 9999;
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 10px;
 }
 
 .toast-msg {
-    background: #FFF;
-    color: var(--color-text-pri);
-    padding: 15px 25px;
-    border-left: 4px solid var(--color-gold);
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-    border-radius: 2px;
-    min-width: 300px;
+    background: white;
+    padding: 16px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
     display: flex;
     align-items: center;
-    gap: 15px;
-    animation: slideInRight 0.4s var(--ease-out-expo);
+    gap: 12px;
+    font-size: 14px;
+    animation: slideInRight 0.3s ease;
 }
 
 @keyframes slideInRight {
     from {
         opacity: 0;
-        transform: translateX(50px);
+        transform: translateX(100%);
     }
 
     to {
@@ -550,4 +599,63 @@ img {
     }
 }
 
-/* Desktop Only - No Responsive Styles */
+/* ========================================
+   12. HOMEPAGE SPECIFIC STYLES
+   ======================================== */
+
+body.home-page .site-header {
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.3) 100%);
+    box-shadow: none;
+    backdrop-filter: blur(10px);
+}
+
+body.home-page .top-bar {
+    display: none;
+}
+
+body:not(.home-page) .top-bar {
+    display: flex;
+}
+
+body.home-page .nav-link {
+    color: rgba(255, 255, 255, 0.95);
+}
+
+body.home-page .nav-link:hover {
+    color: var(--color-gold);
+}
+
+body.home-page .nav-link::after {
+    background-color: var(--color-gold);
+}
+
+body.home-page .brand-center a {
+    color: rgba(255, 255, 255, 0.98);
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+body.home-page .nav-icon,
+body.home-page .search-icon {
+    color: rgba(255, 255, 255, 0.95);
+}
+
+body.home-page .nav-icon:hover {
+    color: var(--color-gold);
+}
+
+body.home-page .search-input {
+    background: rgba(255, 255, 255, 0.95);
+    color: #333;
+}
+
+body.home-page .search-input::placeholder {
+    color: rgba(0, 0, 0, 0.5);
+}
+
+body:not(.home-page) {
+    padding-top: 115px;
+}
+
+body.home-page {
+    padding-top: 0;
+}

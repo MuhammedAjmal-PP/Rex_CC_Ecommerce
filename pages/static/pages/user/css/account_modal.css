@@ -1,0 +1,264 @@
+/* Premium Account Modal CSS */
+
+/* Modal Grid Layout */
+.account-modal-premium {
+    border: none;
+    border-radius: 0;
+    overflow: hidden;
+}
+
+.account-modal-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: 600px;
+}
+
+.account-modal-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: white;
+}
+
+.account-modal-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: rotate(90deg);
+}
+
+/* Left Panel - Promo */
+.account-modal-promo {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+    padding: 60px;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.promo-tagline {
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--color-gold);
+    font-weight: 600;
+    margin-bottom: 20px;
+    display: block;
+}
+
+.promo-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 52px;
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 24px;
+}
+
+.promo-accent {
+    color: var(--color-gold);
+    font-style: italic;
+}
+
+.promo-description {
+    font-size: 16px;
+    line-height: 1.8;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 40px;
+    max-width: 400px;
+}
+
+.promo-featured {
+    margin-top: auto;
+}
+
+.featured-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: rgba(255, 255, 255, 0.6);
+    display: block;
+    margin-bottom: 16px;
+}
+
+.featured-preview {
+    width: 80px;
+    height: 80px;
+    border: 2px solid var(--color-gold);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.featured-preview:hover {
+    transform: scale(1.1);
+    background: var(--color-gold);
+}
+
+.featured-play {
+    font-size: 36px;
+    color: var(--color-gold);
+}
+
+.featured-preview:hover .featured-play {
+    color: white;
+}
+
+/* Right Panel - Auth */
+.account-modal-auth {
+    background: white;
+    padding: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.auth-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: #1a1a1a;
+}
+
+.auth-subtitle {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 40px;
+    line-height: 1.6;
+}
+
+.auth-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 50px;
+}
+
+.auth-btn {
+    padding: 16px 32px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 0;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.auth-btn-primary {
+    background: #1a1a1a;
+    color: white;
+    border: 2px solid #1a1a1a;
+}
+
+.auth-btn-primary:hover {
+    background: var(--color-gold);
+    border-color: var(--color-gold);
+    color: white;
+}
+
+.auth-btn-outline {
+    background: transparent;
+    color: #1a1a1a;
+    border: 2px solid #1a1a1a;
+}
+
+.auth-btn-outline:hover {
+    background: #1a1a1a;
+    color: white;
+}
+
+.auth-partners {
+    border-top: 1px solid #eee;
+    padding-top: 30px;
+}
+
+.partners-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: #999;
+    display: block;
+    margin-bottom: 16px;
+}
+
+.partners-brands {
+    display: flex;
+    gap: 20px;
+}
+
+.partner-brand {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #ccc;
+}
+
+/* Nav Links Styling */
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.nav-icon {
+    color: #333;
+    text-decoration: none;
+    transition: color 0. 3s ease;
+    display: flex;
+    align-items: center;
+}
+
+.nav-icon:hover {
+    color: var(--color-gold);
+}
+
+.nav-icon .material-icons {
+    font-size: 24px;
+}
+
+.user-initials-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--color-gold) 0%, #d4a574 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: 2px solid #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.nav-icon .user-avatar {
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #eee;
+}
+
+/* Homepage specific */
+body.home-page .nav-icon {
+    color: rgba(255, 255, 255, 0.95);
+}
+
+body.home-page .nav-icon:hover {
+    color: var(--color-gold);
+}
