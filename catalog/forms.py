@@ -8,25 +8,14 @@ from catalog.models import (
     ProductVariant,
     ProductImage,
 )
-
-from django.core.validators import RegexValidator
-
-sku_validator = RegexValidator(
-    regex=r"^[A-Z0-9_./-]+$",
-    message="SKU can contain only uppercase letters, numbers, hyphens (-), and underscores (_).",
-    code="invalid_sku",
-)
-
-name_validator = RegexValidator(
-    regex=r"^[a-zA-Z' -]+$",
-    message="Only letters, spaces, hyphens, and apostrophes are allowed.",
-)
+from utils.validators import (sku_validator,formatted_name_validator,image_FileExtensionValidator,image_size_validator,)
+from django.core.validators import MaxValueValidator,MinValueValidator
 
 
 class BrandForm(forms.ModelForm):
 
-    name = forms.CharField(validators=[name_validator])
-
+    name = forms.CharField(validators=[formatted_name_validator])
+    logo=forms.ImageField(validators=[image_size_validator,image_FileExtensionValidator])
     class Meta:
         model = Brand
         fields = ["name", "tagline", "description", "logo", "is_active"]
@@ -46,7 +35,7 @@ class BrandForm(forms.ModelForm):
 
 class CategoryForm(forms.ModelForm):
 
-    name = forms.CharField(validators=[name_validator])
+    name = forms.CharField(validators=[formatted_name_validator])
 
     class Meta:
         model = Category
@@ -69,6 +58,7 @@ class CategoryForm(forms.ModelForm):
 class ProductForm(forms.ModelForm):
 
     # name = forms.CharField(validators=[name_validator])
+    thumbnail=forms.ImageField(validators=[image_FileExtensionValidator,image_size_validator])
 
     class Meta:
         model = Product
@@ -106,6 +96,8 @@ class ProductVariantForm(forms.ModelForm):
     movement_type = forms.CharField(max_length=100, required=True)
     strap_color = forms.CharField(max_length=100, required=True)
     strap_material = forms.CharField(max_length=100, required=True)
+    discount_percentage=forms.IntegerField(validators=[MaxValueValidator(100),MinValueValidator(0)])
+    
 
     class Meta:
         model = ProductVariant
@@ -122,6 +114,7 @@ class ProductVariantForm(forms.ModelForm):
             "stock",
             "is_featured",
             "is_drafted",
+            "discount_percentage"
         ]
 
     def clean_sku(self):
@@ -141,7 +134,7 @@ class ProductVariantForm(forms.ModelForm):
 
 
 class ProductImageForm(forms.ModelForm):
-
+    image=forms.ImageField(validators=[image_FileExtensionValidator,image_size_validator])
     class Meta:
         model = ProductImage
         fields = ["image", "is_primary"]

@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.text import slugify
-
+from decimal import Decimal
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 # Create your models here.
 
@@ -140,6 +141,13 @@ class ProductVariant(models.Model):
     case_size_mm = models.PositiveIntegerField(null=True, blank=True)
 
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    discount_percentage = models.PositiveIntegerField(
+        default=0,
+        validators=[MaxValueValidator(100), MinValueValidator(0)],
+        help_text="Discount percentage (0–100)",
+        null=True,
+        blank=True,
+    )
     stock = models.PositiveIntegerField(default=0)
 
     is_deleted = models.BooleanField(default=False)
@@ -158,6 +166,15 @@ class ProductVariant(models.Model):
 
     class Meta:
         ordering = ["product", "sku"]
+
+    @property
+    def final_price(self):
+        if self.discount_percentage > 0:
+            discount_amount = (
+                self.price * Decimal(self.discount_percentage)
+            ) / Decimal(100)
+            return self.price - discount_amount
+        return self.price
 
     def __str__(self):
         return f"{self.product.name} ({self.sku})"

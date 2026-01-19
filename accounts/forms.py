@@ -1,15 +1,7 @@
 from django import forms
 from allauth.account.forms import SignupForm
 from phonenumber_field.formfields import PhoneNumberField
-from django.core.validators import RegexValidator
-
-
-alphabet_only = RegexValidator(
-    regex=r"^[A-Za-z]+(?: [A-Za-z]+)*$",
-    message="Only letters and spaces are allowed.",
-    code="invalid_alphabet",
-)
-
+from utils.validators import name_validator
 
 class CustomSignupForm(SignupForm):
     """Custom signup form for django-allauth with additional fields."""
@@ -17,7 +9,7 @@ class CustomSignupForm(SignupForm):
     first_name = forms.CharField(
         max_length=100,
         required=True,
-        validators=[alphabet_only],
+        validators=[name_validator],
         widget=forms.TextInput(
             attrs={
                 "placeholder": "First Name",
@@ -31,7 +23,7 @@ class CustomSignupForm(SignupForm):
     last_name = forms.CharField(
         max_length=100,
         required=False,
-        validators=[alphabet_only],
+        validators=[name_validator],
         widget=forms.TextInput(
             attrs={
                 "placeholder": "Last Name",

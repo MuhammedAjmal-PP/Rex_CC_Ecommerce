@@ -315,6 +315,23 @@
     border-left: none;
 }
 
+.input-suffix {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 14px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-left: none;
+    font-weight: 700;
+    color: var(--gray);
+    font-size: 1rem;
+}
+
+.form-input.with-suffix {
+    border-right: none;
+}
+
 .input-hint {
     display: block;
     font-size: 0.7rem;

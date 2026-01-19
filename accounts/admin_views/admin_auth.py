@@ -8,7 +8,7 @@ from accounts.decorators import superuser_only_redirect
 from django.contrib.auth import get_user_model
 from accounts.models import PasswordReset
 from django.utils import timezone
-from accounts.service import send_admin_password_reset_email
+from utils.service import send_admin_password_reset_email
 from django.contrib.auth.forms import SetPasswordForm
 
 
