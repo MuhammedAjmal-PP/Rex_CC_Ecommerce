@@ -162,7 +162,9 @@ STORAGES = {
         "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
     },
 }
-
+# GLOBAL IMAGE SETTINGS 
+IMAGE_MAX_SIZE_MB = 5
+ALLOWED_IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "webp", "avif"]
 
 # Phonenumber config
 PHONENUMBER_DB_FORMAT = "NATIONAL"

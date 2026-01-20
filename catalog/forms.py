@@ -8,14 +8,14 @@ from catalog.models import (
     ProductVariant,
     ProductImage,
 )
-from utils.validators import (sku_validator,formatted_name_validator,image_FileExtensionValidator,image_size_validator,)
+from utils.validators import (sku_validator,formatted_name_validator,image_file_extension_validator,image_size_validator,)
 from django.core.validators import MaxValueValidator,MinValueValidator
 
 
 class BrandForm(forms.ModelForm):
 
     name = forms.CharField(validators=[formatted_name_validator])
-    logo=forms.ImageField(validators=[image_size_validator,image_FileExtensionValidator])
+    logo=forms.ImageField(validators=[image_size_validator,image_file_extension_validator])
     class Meta:
         model = Brand
         fields = ["name", "tagline", "description", "logo", "is_active"]
@@ -58,7 +58,7 @@ class CategoryForm(forms.ModelForm):
 class ProductForm(forms.ModelForm):
 
     # name = forms.CharField(validators=[name_validator])
-    thumbnail=forms.ImageField(validators=[image_FileExtensionValidator,image_size_validator])
+    thumbnail=forms.ImageField(validators=[image_file_extension_validator,image_size_validator])
 
     class Meta:
         model = Product
@@ -134,7 +134,7 @@ class ProductVariantForm(forms.ModelForm):
 
 
 class ProductImageForm(forms.ModelForm):
-    image=forms.ImageField(validators=[image_FileExtensionValidator,image_size_validator])
+    image=forms.ImageField(validators=[image_file_extension_validator,image_size_validator])
     class Meta:
         model = ProductImage
         fields = ["image", "is_primary"]
