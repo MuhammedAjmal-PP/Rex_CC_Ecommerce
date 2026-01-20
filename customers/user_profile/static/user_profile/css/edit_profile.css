@@ -32,6 +32,7 @@
 /* Header */
 .profile-header {
     margin-bottom: 2rem;
+    max-width: 100%;
 }
 
 .back-link {
@@ -58,11 +59,17 @@
     font-size: 2rem;
     color: var(--color-text-primary);
     margin-bottom: 0.5rem;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
 }
 
 .page-subtitle {
     color: var(--color-text-secondary);
     font-size: 1rem;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
 }
 
 /* Content Sections */
@@ -74,10 +81,13 @@
 
 .profile-section {
     background-color: var(--color-bg-card);
-    border-radius: var(--radius-main);
+    border-radius: var(--radius-md);
     padding: 2rem;
-    box-shadow: var(--shadow-soft);
+    box-shadow: var(--shadow-sm);
     border: 1px solid var(--color-border);
+    max-width: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
 }
 
 .section-title {
@@ -88,11 +98,14 @@
     display: flex;
     align-items: center;
     gap: 0.75rem;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 .section-title .material-icons {
     color: var(--color-accent);
     font-size: 24px;
+    flex-shrink: 0;
 }
 
 .subsection-title {
@@ -100,6 +113,8 @@
     font-weight: 600;
     color: var(--color-text-primary);
     margin-bottom: 1rem;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 /* Avatar Section */
@@ -223,6 +238,9 @@
     font-size: 0.95rem;
     transition: all 0.2s;
     font-family: var(--font-body);
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .form-control:focus {
@@ -239,6 +257,9 @@
     transition: all 0.2s;
     font-family: var(--font-body);
     background-color: white;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .error-message {
@@ -332,6 +353,8 @@
 .email-address {
     font-weight: 500;
     color: var(--color-text-primary);
+    word-break: break-all;
+    overflow-wrap: break-word;
 }
 
 .email-badges {
@@ -498,4 +521,39 @@
         width: 100%;
         justify-content: center;
     }
+}
+
+/* Password Input Wrapper */
+.password-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-input-wrapper .form-control {
+    padding-right: 3rem;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-text-secondary);
+    padding: 0.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
+}
+
+.password-toggle:hover {
+    color: var(--color-accent);
+}
+
+.password-toggle .material-icons {
+    font-size: 20px;
 }

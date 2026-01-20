@@ -25,6 +25,25 @@
     font-family: var(--font-body);
 }
 
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+    transition: color 0.2s;
+}
+
+.back-link:hover {
+    color: var(--color-accent);
+}
+
+.back-link .material-icons {
+    font-size: 18px;
+}
+
 .addresses-wrapper {
     max-width: 1200px;
     margin: 0 auto;
@@ -43,11 +62,15 @@
     font-size: 2rem;
     color: var(--color-text-primary);
     margin-bottom: 0.5rem;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 .page-subtitle {
     color: var(--color-text-secondary);
     font-size: 1rem;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 /* Addresses Grid */

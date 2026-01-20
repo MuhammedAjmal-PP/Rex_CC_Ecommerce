@@ -8,15 +8,19 @@ from ..forms import AddressForm
 
 @login_required
 def address_list(request):
-    """Display all user addresses"""
+    """List all addresses for the current user"""
     addresses = Address.objects.filter(user=request.user)
-    return render(request, "user_profile/addresses.html", {"addresses": addresses})
+    form = AddressForm()  # Always provide empty form for modal
+    
+    return render(request, "user_profile/addresses.html", {
+        "addresses": addresses,
+        "form": form,
+    })
 
 
 @login_required
 def address_add(request):
     """Add a new address"""
-    
     if request.method == "POST":
         form = AddressForm(request.POST)
         if form.is_valid():
@@ -24,22 +28,18 @@ def address_add(request):
             address.user = request.user
             address.save()
             messages.success(request, "Address added successfully!")
-            return redirect("address_list")
-    else:
-        form = AddressForm()
+        else:
+            # Show form errors
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{field}: {error}")
     
-    addresses = Address.objects.filter(user=request.user)
-    return render(request, "user_profile/addresses.html", {
-        "addresses": addresses,
-        "form": form,
-        "show_add_modal": True
-    })
+    return redirect("address_list")
 
 
 @login_required
 def address_edit(request, address_id):
     """Edit an existing address"""
-    
     address = get_object_or_404(Address, id=address_id, user=request.user)
     
     if request.method == "POST":
@@ -48,7 +48,21 @@ def address_edit(request, address_id):
             form.save()
             messages.success(request, "Address updated successfully!")
             return redirect("address_list")
+        else:
+            # Show form errors
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{field}: {error}")
+            # Re-display modal with errors
+            addresses = Address.objects.filter(user=request.user)
+            return render(request, "user_profile/addresses.html", {
+                "addresses": addresses,
+                "form": form,
+                "edit_address": address,
+                "show_edit_modal": True
+            })
     else:
+        # GET request - show edit modal with pre-filled form
         form = AddressForm(instance=address)
     
     addresses = Address.objects.filter(user=request.user)
@@ -58,6 +72,7 @@ def address_edit(request, address_id):
         "edit_address": address,
         "show_edit_modal": True
     })
+
 
 
 @login_required

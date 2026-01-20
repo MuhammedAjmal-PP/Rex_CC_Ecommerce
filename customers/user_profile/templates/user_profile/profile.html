@@ -108,7 +108,7 @@
                         My Addresses
                     </h3>
                     <a href="{% url 'address_list' %}" class="btn-secondary-sm">
-                        <span class="material-icons">add</span>
+                        <span class="material-icons">view_list</span>
                         Manage Addresses
                     </a>
                 </div>
@@ -155,27 +155,6 @@
                     {% endif %}
                 </div>
             </div>
-
-            <!-- Quick Actions Grid -->
-            <div class="quick-actions">
-                <a href="{% url 'edit_profile' %}" class="action-card">
-                    <span class="material-icons">edit</span>
-                    <h4>Edit Profile</h4>
-                    <p>Update your information</p>
-                </a>
-
-                <a href="{% url 'address_list' %}" class="action-card">
-                    <span class="material-icons">add_location</span>
-                    <h4>Manage Addresses</h4>
-                    <p>Add or edit addresses</p>
-                </a>
-
-                <a href="#" class="action-card" data-bs-toggle="modal" data-bs-target="#passwordModal">
-                    <span class="material-icons">vpn_key</span>
-                    <h4>Change Password</h4>
-                    <p>Update your password</p>
-                </a>
-            </div>
         </main>
     </div>
 </div>
@@ -209,8 +188,14 @@
                             <span class="material-icons">lock_open</span>
                             Current Password
                         </label>
-                        <input type="password" name="old_password" id="id_old_password" class="form-control" required
-                            autocomplete="current-password">
+                        <div class="password-input-wrapper">
+                            <input type="password" name="old_password" id="id_old_password" class="form-control"
+                                required autocomplete="current-password">
+                            <button type="button" class="password-toggle"
+                                onclick="togglePassword('id_old_password', this)">
+                                <span class="material-icons">visibility</span>
+                            </button>
+                        </div>
                     </div>
 
                     <div class="form-group">
@@ -218,8 +203,14 @@
                             <span class="material-icons">lock</span>
                             New Password
                         </label>
-                        <input type="password" name="new_password1" id="id_new_password1" class="form-control" required
-                            autocomplete="new-password">
+                        <div class="password-input-wrapper">
+                            <input type="password" name="new_password1" id="id_new_password1" class="form-control"
+                                required autocomplete="new-password">
+                            <button type="button" class="password-toggle"
+                                onclick="togglePassword('id_new_password1', this)">
+                                <span class="material-icons">visibility</span>
+                            </button>
+                        </div>
                         <small class="form-text">Must be at least 8 characters long</small>
                     </div>
 
@@ -228,8 +219,14 @@
                             <span class="material-icons">lock</span>
                             Confirm New Password
                         </label>
-                        <input type="password" name="new_password2" id="id_new_password2" class="form-control" required
-                            autocomplete="new-password">
+                        <div class="password-input-wrapper">
+                            <input type="password" name="new_password2" id="id_new_password2" class="form-control"
+                                required autocomplete="new-password">
+                            <button type="button" class="password-toggle"
+                                onclick="togglePassword('id_new_password2', this)">
+                                <span class="material-icons">visibility</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -253,4 +250,20 @@
     });
 </script>
 {% endif %}
+
+<script>
+    // Password visibility toggle
+    function togglePassword(inputId, button) {
+        const input = document.getElementById(inputId);
+        const icon = button.querySelector('.material-icons');
+
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.textContent = 'visibility_off';
+        } else {
+            input.type = 'password';
+            icon.textContent = 'visibility';
+        }
+    }
+</script>
 {% endblock %}
