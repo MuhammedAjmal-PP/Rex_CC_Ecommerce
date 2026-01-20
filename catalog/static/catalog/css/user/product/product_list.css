@@ -4,18 +4,73 @@
    ----------------------------------------------------------- */
 
 /* ========================================
+   BREADCRUMB NAVIGATION
+   ======================================== */
+
+.breadcrumb-section {
+    padding: 40px 40px 35px;
+    text-align: center;
+    background: transparent;
+    border-bottom: 1px solid #E0E0E0;
+    width: 100%;
+}
+
+.page-title-small {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    color: #111111;
+    margin: 0 auto 12px;
+    font-weight: 400;
+    text-align: center;
+    max-width: 1400px;
+}
+
+.breadcrumb-nav {
+    font-size: 0.85rem;
+    color: #666666;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.breadcrumb-nav a {
+    color: #666666;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.breadcrumb-nav a:hover {
+    color: #CD7F32;
+}
+
+.breadcrumb-nav .separator {
+    color: #999;
+    margin: 0 4px;
+}
+
+.breadcrumb-nav .current {
+    color: #111111;
+    font-weight: 500;
+}
+
+/* ========================================
    LISTING LAYOUT
    ======================================== */
 
 .listing-container {
     display: grid;
-    grid-template-columns: 280px 1fr;
-    gap: 40px;
+    grid-template-columns: 260px 1fr;
+    gap: 30px;
     max-width: 1400px;
+    width: 100%;
     margin: 0 auto;
-    padding: 40px;
+    padding: 30px 20px;
     min-height: calc(100vh - 80px);
     align-items: start;
+    box-sizing: border-box;
 }
 
 /* ========================================
@@ -23,14 +78,18 @@
    ======================================== */
 
 .filter-sidebar {
-    background: var(--bg-card);
-    padding: 30px;
+    background: #FFFFFF;
+    padding: 25px;
     border-radius: 4px;
-    box-shadow: var(--shadow-sm);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    width: 100%;
+    max-width: 260px;
     height: fit-content;
     position: sticky;
     top: 100px;
-    overflow: hidden;
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+    box-sizing: border-box;
 }
 
 .filter-header {
@@ -290,6 +349,10 @@
     display: flex;
     flex-direction: column;
     gap: 25px;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow: hidden;
 }
 
 /* Search & Sort Bar */
@@ -381,42 +444,82 @@
 }
 
 /* ========================================
-   PRODUCTS GRID
+   PRODUCTS GRID - Flexbox Layout
    ======================================== */
 
 .products-grid-listing {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 25px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
     align-items: stretch;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .product-card-link {
     text-decoration: none;
     color: inherit;
     display: block;
+    flex: 0 0 calc(20% - 15px);
+    /* 5 columns on large screens */
+    max-width: calc(20% - 15px);
 }
+
+/* Responsive flex columns */
+@media (max-width: 1200px) {
+    .product-card-link {
+        flex: 0 0 calc(25% - 14px);
+        /* 4 columns */
+        max-width: calc(25% - 14px);
+    }
+}
+
+@media (max-width: 900px) {
+    .product-card-link {
+        flex: 0 0 calc(33.333% - 12px);
+        /* 3 columns */
+        max-width: calc(33.333% - 12px);
+    }
+}
+
+@media (max-width: 640px) {
+    .product-card-link {
+        flex: 0 0 calc(50% - 9px);
+        /* 2 columns */
+        max-width: calc(50% - 9px);
+    }
+}
+
+@media (max-width: 400px) {
+    .product-card-link {
+        flex: 0 0 100%;
+        /* 1 column */
+        max-width: 100%;
+    }
+}
+
 
 .product-card-link:hover .product-name-listing {
-    color: var(--btn-bronze);
+    color: #CD7F32;
 }
 
-/* Product Card - inherit from homepage styles */
+/* Product Card - Clean Swiss Time House Style */
 .product-card-listing {
     display: flex;
     flex-direction: column;
-    background: var(--bg-card);
-    border-radius: 4px;
+    background: #FFFFFF;
+    border: 1px solid #E5E5E5;
     overflow: hidden;
-    box-shadow: var(--shadow-sm);
-    transition: var(--transition);
+    transition: all 0.3s ease;
     position: relative;
-    min-height: 380px;
+    min-height: 360px;
 }
 
 .product-card-listing:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-lg);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    border-color: #CD7F32;
 }
 
 .product-image-listing {

@@ -48,8 +48,8 @@ def product_list(request):
             product__brand__is_active=True,
             product__category__is_active=True,
         )
-        .select_related("product", "product__brand", "product__category")
-        .prefetch_related("images")
+        .select_related("product", "product__brand")
+        .prefetch_related("images", "product__category")
     )
 
     # Search filter
@@ -95,6 +95,8 @@ def product_list(request):
     else:
         variants = variants.order_by("-created_at")
 
+    variants = variants.distinct()
+
     # Pagination
     paginator = Paginator(variants, 15)  # 15 variants for 3 rows x 5 cols
     page_obj = paginator.get_page(page_number)
@@ -120,6 +122,7 @@ def product_list(request):
         ("new", "New Arrivals"),
         ("featured", "Featured"),
     ]
+
 
     context = {
         "variants": page_obj,  # Changed from products
