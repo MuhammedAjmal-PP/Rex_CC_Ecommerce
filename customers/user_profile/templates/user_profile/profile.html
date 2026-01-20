@@ -1,166 +1,256 @@
 {% extends "pages/user/base_user.html" %}
 {% load static %}
-{% block head_title %}
-    My Account | REX CC
-{% endblock head_title %}
+
+{% block head_title %}My Profile | REX CC{% endblock %}
+
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'user_profile/css/dashboard.css' %}">
-    <link rel="stylesheet"
-          href="{% static 'user_profile/css/password_change.css' %}">
-{% endblock extra_css %}
+<link rel="stylesheet" href="{% static 'user_profile/css/profile.css' %}">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+{% endblock %}
+
 {% block content %}
-    <div class="dashboard-wrapper">
-        <!-- Sidebar Navigation -->
-        <aside class="dashboard-sidebar">
-            <div class="user-profile-summary">
+<div class="profile-container">
+    <div class="profile-wrapper">
+        <!-- Sidebar -->
+        <aside class="profile-sidebar">
+            <div class="user-summary">
                 {% if user.avatar %}
-                    <img src="{{ user.avatar.url }}"
-                         alt="{{ user.first_name }}"
-                         class="sidebar-avatar">
+                <img src="{{ user.avatar.url }}" alt="{{ user.first_name }}" class="user-avatar">
                 {% else %}
-                    <div class="sidebar-avatar-placeholder">{{ user.first_name|first|default:"U" }}</div>
+                <div class="user-avatar-placeholder">{{ user.first_name|first|default:"U" }}</div>
                 {% endif %}
                 <h2 class="user-name">
                     {% if user.first_name %}
-                        {{ user.first_name }} {{ user.last_name }}
+                    {{ user.first_name }} {{ user.last_name }}
                     {% else %}
-                        User
+                    User Account
                     {% endif %}
                 </h2>
                 <p class="user-email">{{ user.email }}</p>
             </div>
+
             <nav class="sidebar-nav">
-                <a href="#" class="nav-item active">
-                    <i data-feather="user"></i> Profile
+                <a href="{% url 'user_profile' %}" class="nav-item active">
+                    <span class="material-icons">person</span>
+                    <span>Profile</span>
                 </a>
                 <a href="#" class="nav-item">
-                    <i data-feather="shopping-bag"></i> My Orders
+                    <span class="material-icons">shopping_bag</span>
+                    <span>My Orders</span>
                 </a>
                 <a href="#" class="nav-item">
-                    <i data-feather="heart"></i> Wishlist
+                    <span class="material-icons">favorite</span>
+                    <span>Wishlist</span>
                 </a>
-                <a href="#" class="nav-item">
-                    <i data-feather="map-pin"></i> Addresses
+                <a href="{% url 'address_list' %}" class="nav-item">
+                    <span class="material-icons">location_on</span>
+                    <span>Addresses</span>
                 </a>
-                <a href="#" class="nav-item">
-                    <i data-feather="credit-card"></i> Payments
+                <a href="#" class="nav-item" data-bs-toggle="modal" data-bs-target="#passwordModal">
+                    <span class="material-icons">lock</span>
+                    <span>Change Password</span>
                 </a>
-                <a href="#"
-                   class="nav-item"
-                   data-bs-toggle="modal"
-                   data-bs-target="#changePasswordModal">
-                    <i data-feather="lock"></i> Security
-                </a>
-                <a href="#" class="nav-item">
-                    <i data-feather="settings"></i> Settings
-                </a>
-                <a href="{% url 'account_logout' %}" class="nav-item logout">
-                    <i data-feather="log-out"></i> Logout
+                <a href="{% url 'account_logout' %}" class="nav-item nav-item-logout">
+                    <span class="material-icons">logout</span>
+                    <span>Logout</span>
                 </a>
             </nav>
         </aside>
-        <!-- Main Bento Grid Content -->
-        <main class="dashboard-content">
-            <!-- 1. Featured Tile: Recent Order -->
-            <a href="#" class="bento-tile tile-featured">
-                <div class="tile-header">
-                    <h3 class="tile-title">Recent Order</h3>
-                    <i data-feather="package" class="tile-icon"></i>
+
+        <!-- Main Content -->
+        <main class="profile-main">
+            <div class="profile-header">
+                <div>
+                    <h1 class="page-title">My Profile</h1>
+                    <p class="page-subtitle">Manage your account settings and preferences</p>
                 </div>
-                <div class="tile-body">
-                    <!-- Fallback if no order, but for UI demo we show a state -->
-                    <div class="order-status-card">
-                        <span class="latest-order-id">Order #REX-88219</span>
-                        <h4 class="mb-1 font-heading">Omega Seamaster Diver</h4>
-                        <div class="progress-track">
-                            <!-- Example: 75% width for 'Shipped' -->
-                            <div class="progress-fill" style="width: 75%;"></div>
+                <a href="{% url 'edit_profile' %}" class="btn-primary">
+                    <span class="material-icons">edit</span>
+                    Edit Profile
+                </a>
+            </div>
+
+            <!-- Profile Information Card -->
+            <div class="info-card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <span class="material-icons">account_circle</span>
+                        Personal Information
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <label>First Name</label>
+                            <p>{{ user.first_name|default:"Not provided" }}</p>
                         </div>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="status-label">In Transit</span>
-                            <span class="text-sm text-muted">Expected: Jan 18</span>
+                        <div class="info-item">
+                            <label>Last Name</label>
+                            <p>{{ user.last_name|default:"Not provided" }}</p>
+                        </div>
+                        <div class="info-item">
+                            <label>Email</label>
+                            <p>{{ user.email }}</p>
+                        </div>
+                        <div class="info-item">
+                            <label>Phone Number</label>
+                            <p>{{ user.phone_number|default:"Not provided" }}</p>
                         </div>
                     </div>
                 </div>
-                <div class="tile-action">
-                    Track Shipment <i data-feather="arrow-right" class="icon-sm"></i>
+            </div>
+
+            <!-- Addresses Card -->
+            <div class="info-card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <span class="material-icons">location_on</span>
+                        My Addresses
+                    </h3>
+                    <a href="{% url 'address_list' %}" class="btn-secondary-sm">
+                        <span class="material-icons">add</span>
+                        Manage Addresses
+                    </a>
                 </div>
-            </a>
-            <!-- 2. Wallet / Rewards -->
-            <a href="#" class="bento-tile tile-standard">
-                <div class="tile-header">
-                    <h3 class="tile-title title-sm">Wallet</h3>
-                    <i data-feather="gift" class="tile-icon"></i>
-                </div>
-                <div class="tile-body">
-                    <div class="stat-value">2,450</div>
-                    <div class="stat-label">Reward Points</div>
-                </div>
-                <div class="tile-action">
-                    Redeem <i data-feather="chevron-right" class="icon-sm"></i>
-                </div>
-            </a>
-            <!-- 3. Active Coupons -->
-            <a href="#" class="bento-tile tile-standard">
-                <div class="tile-header">
-                    <h3 class="tile-title title-sm">Offers</h3>
-                    <i data-feather="tag" class="tile-icon"></i>
-                </div>
-                <div class="tile-body">
-                    <div class="stat-value">3</div>
-                    <div class="stat-label">Active Coupons</div>
-                </div>
-                <div class="tile-action">
-                    View All <i data-feather="chevron-right" class="icon-sm"></i>
-                </div>
-            </a>
-            <!-- 4. Personal Info Quick Edit -->
-            <a href="#" class="bento-tile tile-standard">
-                <div class="tile-header">
-                    <h3 class="tile-title title-sm">Profile</h3>
-                    <i data-feather="user" class="tile-icon"></i>
-                </div>
-                <div class="tile-body d-flex flex-column justify-content-center">
-                    <div class="stat-label text-sm">Update your details</div>
-                </div>
-                <div class="tile-action">
-                    Edit <i data-feather="edit-2" class="icon-sm"></i>
-                </div>
-            </a>
-            <!-- 5. Recently Viewed (Wide) -->
-            <a href="#" class="bento-tile tile-wide">
-                <div class="tile-header">
-                    <h3 class="tile-title">Recently Viewed</h3>
-                    <i data-feather="clock" class="tile-icon"></i>
-                </div>
-                <div class="tile-body">
-                    <div class="recent-list">
-                        <!-- Placeholders for recently viewed items -->
-                        <div class="recent-thumb"></div>
-                        <div class="recent-thumb"></div>
-                        <div class="recent-thumb"></div>
-                        <div class="recent-thumb"></div>
+                <div class="card-body">
+                    {% if addresses %}
+                    <div class="address-list">
+                        {% for address in addresses|slice:":3" %}
+                        <div class="address-item {% if address.is_default %}default{% endif %}">
+                            <div class="address-icon">
+                                {% if address.address_type == 'home' %}
+                                <span class="material-icons">home</span>
+                                {% elif address.address_type == 'work' %}
+                                <span class="material-icons">work</span>
+                                {% else %}
+                                <span class="material-icons">place</span>
+                                {% endif %}
+                            </div>
+                            <div class="address-details">
+                                <div class="address-header">
+                                    <h4>{{ address.full_name }}</h4>
+                                    {% if address.is_default %}
+                                    <span class="default-badge">Default</span>
+                                    {% endif %}
+                                </div>
+                                <p>{{ address.address_line_1 }}</p>
+                                <p>{{ address.city }}, {{ address.state }} {{ address.postal_code }}</p>
+                                <p class="address-phone">{{ address.phone_number }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
                     </div>
+                    {% if addresses.count > 3 %}
+                    <a href="{% url 'address_list' %}" class="view-all-link">
+                        View all {{ addresses.count }} addresses
+                        <span class="material-icons">arrow_forward</span>
+                    </a>
+                    {% endif %}
+                    {% else %}
+                    <div class="empty-state">
+                        <span class="material-icons">location_off</span>
+                        <p>No addresses added yet</p>
+                        <a href="{% url 'address_list' %}" class="btn-primary">Add Address</a>
+                    </div>
+                    {% endif %}
                 </div>
-            </a>
-            <!-- 6. Help / Support -->
-            <a href="#" class="bento-tile tile-standard">
-                <div class="tile-header">
-                    <h3 class="tile-title title-sm">Support</h3>
-                    <i data-feather="headphones" class="tile-icon"></i>
-                </div>
-                <div class="tile-body d-flex flex-column justify-content-center">
-                    <div class="stat-label">Need help?</div>
-                </div>
-                <div class="tile-action">
-                    Contact <i data-feather="message-circle" class="icon-sm"></i>
-                </div>
-            </a>
+            </div>
+
+            <!-- Quick Actions Grid -->
+            <div class="quick-actions">
+                <a href="{% url 'edit_profile' %}" class="action-card">
+                    <span class="material-icons">edit</span>
+                    <h4>Edit Profile</h4>
+                    <p>Update your information</p>
+                </a>
+
+                <a href="{% url 'address_list' %}" class="action-card">
+                    <span class="material-icons">add_location</span>
+                    <h4>Manage Addresses</h4>
+                    <p>Add or edit addresses</p>
+                </a>
+
+                <a href="#" class="action-card" data-bs-toggle="modal" data-bs-target="#passwordModal">
+                    <span class="material-icons">vpn_key</span>
+                    <h4>Change Password</h4>
+                    <p>Update your password</p>
+                </a>
+            </div>
         </main>
     </div>
-{% endblock content %}
-{% block extra_js %}
-    <!-- Initialize Feather Icons -->
-    <script src="https://unpkg.com/feather-icons"></script>
-    <script>feather.replace();</script>
-{% endblock extra_js %}
+</div>
+
+<!-- Password Change Modal -->
+<div class="modal fade" id="passwordModal" tabindex="-1" aria-labelledby="passwordModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="passwordModalLabel">
+                    <span class="material-icons">lock</span>
+                    Change Password
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" action="{% url 'change_password' %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    {% if form.errors %}
+                    <div class="alert alert-danger">
+                        {% for field, errors in form.errors.items %}
+                        {% for error in errors %}
+                        <p class="mb-0">{{ error }}</p>
+                        {% endfor %}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <div class="form-group">
+                        <label for="id_old_password">
+                            <span class="material-icons">lock_open</span>
+                            Current Password
+                        </label>
+                        <input type="password" name="old_password" id="id_old_password" class="form-control" required
+                            autocomplete="current-password">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_new_password1">
+                            <span class="material-icons">lock</span>
+                            New Password
+                        </label>
+                        <input type="password" name="new_password1" id="id_new_password1" class="form-control" required
+                            autocomplete="new-password">
+                        <small class="form-text">Must be at least 8 characters long</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_new_password2">
+                            <span class="material-icons">lock</span>
+                            Confirm New Password
+                        </label>
+                        <input type="password" name="new_password2" id="id_new_password2" class="form-control" required
+                            autocomplete="new-password">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn-primary">
+                        <span class="material-icons">check</span>
+                        Update Password
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Show modal if there are password form errors -->
+{% if show_password_modal %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var passwordModal = new bootstrap.Modal(document.getElementById('passwordModal'));
+        passwordModal.show();
+    });
+</script>
+{% endif %}
+{% endblock %}

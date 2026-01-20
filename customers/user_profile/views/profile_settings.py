@@ -5,6 +5,8 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 from django.contrib import messages
 from allauth.account.forms import AddEmailForm
+from allauth.account.models import EmailAddress
+from ..models import Address
 
 
 # Create your views here.
@@ -14,10 +16,17 @@ from allauth.account.forms import AddEmailForm
 @login_required(login_url="account_login")
 def profile(request):
     """
-    Renders the user profile dashboard.
+    Renders the user profile dashboard with addresses and email management.
     """
-    form = PasswordChangeForm(user=request.user)
-    return render(request, "user_profile/profile.html", {"form": form})
+    addresses = Address.objects.filter(user=request.user)
+    email_addresses = EmailAddress.objects.filter(user=request.user)
+    
+    context = {
+        "addresses": addresses,
+        "email_addresses": email_addresses,
+    }
+    
+    return render(request, "user_profile/profile.html", context)
 
 
 @login_required

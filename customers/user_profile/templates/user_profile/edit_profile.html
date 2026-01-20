@@ -1,0 +1,232 @@
+{% extends "pages/user/base_user.html" %}
+{% load static %}
+
+{% block head_title %}Edit Profile | REX CC{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'user_profile/css/edit_profile.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="edit-profile-container">
+    <div class="edit-profile-wrapper">
+        <!-- Header -->
+        <div class="profile-header">
+            <a href="{% url 'user_profile' %}" class="back-link">
+                <span class="material-icons">arrow_back</span>
+                Back to Profile
+            </a>
+            <h1 class="page-title">Edit Profile</h1>
+            <p class="page-subtitle">Update your personal information and settings</p>
+        </div>
+
+        <!-- Profile Edit Form -->
+        <div class="profile-content">
+            <div class="profile-section">
+                <h2 class="section-title">
+                    <span class="material-icons">person</span>
+                    Personal Information
+                </h2>
+
+                <form method="post" enctype="multipart/form-data" class="profile-form">
+                    {% csrf_token %}
+
+                    <!-- Avatar Upload -->
+                    <div class="avatar-section">
+                        <div class="current-avatar">
+                            {% if user.avatar %}
+                            <img src="{{ user.avatar.url }}" alt="{{ user.first_name }}" id="avatar-preview">
+                            {% else %}
+                            <div class="avatar-placeholder" id="avatar-preview">
+                                {{ user.first_name|first|default:"U" }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="avatar-controls">
+                            <label for="id_avatar" class="btn-upload">
+                                <span class="material-icons">photo_camera</span>
+                                Change Photo
+                            </label>
+                            {{ form.avatar }}
+                            <p class="help-text">JPG, PNG or GIF (max. 5MB)</p>
+                        </div>
+                    </div>
+
+                    <!-- Form Fields -->
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="id_first_name">
+                                <span class="material-icons">badge</span>
+                                First Name
+                            </label>
+                            {{ form.first_name }}
+                            {% if form.first_name.errors %}
+                            <div class="error-message">{{ form.first_name.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group">
+                            <label for="id_last_name">
+                                <span class="material-icons">badge</span>
+                                Last Name
+                            </label>
+                            {{ form.last_name }}
+                            {% if form.last_name.errors %}
+                            <div class="error-message">{{ form.last_name.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label for="id_phone_number">
+                                <span class="material-icons">phone</span>
+                                Phone Number
+                            </label>
+                            {{ form.phone_number }}
+                            {% if form.phone_number.errors %}
+                            <div class="error-message">{{ form.phone_number.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <a href="{% url 'user_profile' %}" class="btn-secondary">Cancel</a>
+                        <button type="submit" class="btn-primary">
+                            <span class="material-icons">save</span>
+                            Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Email Management Section -->
+            <div class="profile-section">
+                <h2 class="section-title">
+                    <span class="material-icons">email</span>
+                    Email Addresses
+                </h2>
+
+                <div class="email-list">
+                    {% for email in request.user.emailaddress_set.all %}
+                    <div class="email-item {% if email.primary %}primary{% endif %}">
+                        <div class="email-info">
+                            <span class="email-address">{{ email.email }}</span>
+                            <div class="email-badges">
+                                {% if email.primary %}
+                                <span class="badge badge-primary">Primary</span>
+                                {% endif %}
+                                {% if email.verified %}
+                                <span class="badge badge-verified">
+                                    <span class="material-icons">verified</span>
+                                    Verified
+                                </span>
+                                {% else %}
+                                <span class="badge badge-unverified">Unverified</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="email-actions">
+                            {% if not email.primary and email.verified %}
+                            <form method="post" action="{% url 'make_email_primary' email.id %}"
+                                style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-text"
+                                    onclick="return confirm('This will change your primary email and block the old email. Continue?');">
+                                    Make Primary
+                                </button>
+                            </form>
+                            {% endif %}
+                            {% if not email.primary %}
+                            <form method="post" action="{% url 'remove_email' email.id %}" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-text text-danger"
+                                    onclick="return confirm('Remove this email?');">
+                                    Remove
+                                </button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Add Email Form -->
+                <div class="add-email-section">
+                    <h3 class="subsection-title">Add New Email</h3>
+                    <form method="post" action="{% url 'change_email_request' %}" class="add-email-form">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="email">
+                                <span class="material-icons">add_circle</span>
+                                New Email Address
+                            </label>
+                            <div class="input-with-button">
+                                <input type="email" name="email" id="email" class="form-control"
+                                    placeholder="your.new@email.com" required>
+                                <button type="submit" class="btn-primary">
+                                    Add Email
+                                </button>
+                            </div>
+                            <p class="help-text">You'll receive a verification email to confirm this address</p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Security Section -->
+            <div class="profile-section">
+                <h2 class="section-title">
+                    <span class="material-icons">security</span>
+                    Security
+                </h2>
+
+                <div class="security-item">
+                    <div class="security-info">
+                        <h3>Password</h3>
+                        <p class="text-muted">Last changed: Never</p>
+                    </div>
+                    <a href="#" class="btn-secondary" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                        Change Password
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Change Password Modal -->
+<div class="modal fade" id="changePasswordModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Change Password</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" action="{% url 'change_password' %}">
+                <div class="modal-body">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label>Current Password</label>
+                        <input type="password" name="old_password" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>New Password</label>
+                        <input type="password" name="new_password1" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Confirm New Password</label>
+                        <input type="password" name="new_password2" class="form-control" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn-primary">Update Password</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'user_profile/js/profile_edit.js' %}"></script>
+{% endblock %}
