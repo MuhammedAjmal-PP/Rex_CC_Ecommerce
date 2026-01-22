@@ -1,0 +1,88 @@
+{% extends "pages/user/base_user.html" %}
+{% load static %}
+{% block head_title %}
+    My Profile | REX CC
+{% endblock head_title %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'user_profile/css/profile.css' %}">
+    {% block extra_page_css %}
+    {% endblock extra_page_css %}
+{% endblock extra_css %}
+{% block content %}
+    <div class="profile-container">
+        <div class="profile-wrapper">
+            <!-- Sidebar -->
+            <aside class="profile-sidebar">
+                <div class="user-summary">
+                    {% if user.avatar %}
+                        <img src="{{ user.avatar.url }}"
+                             alt="{{ user.first_name }}"
+                             class="user-avatar">
+                    {% else %}
+                        <div class="user-avatar-placeholder">{{ user.first_name|first|default:"U" }}</div>
+                    {% endif %}
+                    <h2 class="user-name">
+                        {% if user.first_name %}
+                            {{ user.first_name }} {{ user.last_name }}
+                        {% else %}
+                            User Account
+                        {% endif %}
+                    </h2>
+                    <p class="user-email">{{ user.email }}</p>
+                </div>
+                <nav class="sidebar-nav">
+                    <a href="{% url 'user_profile' %}"
+                       class="nav-item {% if request.resolver_match.url_name == 'user_profile' %}active{% endif %}">
+                        <span class="material-icons">person</span>
+                        <span>Profile</span>
+                    </a>
+                    <a href="#" class="nav-item">
+                        <span class="material-icons">shopping_bag</span>
+                        <span>My Orders</span>
+                    </a>
+                    <a href="#" class="nav-item">
+                        <span class="material-icons">favorite</span>
+                        <span>Wishlist</span>
+                    </a>
+                    <a href="#"
+                       class="nav-item {% if request.resolver_match.url_name == 'address_list' %}active{% endif %}">
+                        <span class="material-icons">location_on</span>
+                        <span>Addresses</span>
+                    </a>
+                    <a href="{% url 'account_logout' %}" class="nav-item nav-item-logout">
+                        <span class="material-icons">logout</span>
+                        <span>Logout</span>
+                    </a>        
+                </nav>
+            </aside>
+            <!-- Main Content -->
+            <main class="profile-main">
+                <div class="profile-header">
+                    <div>
+                        <h1 class="page-title">
+                            {% block page_header %}
+                            {% endblock page_header %}
+                        </h1>
+                        <p class="page-subtitle">
+                            {% block page_subtitle %}
+                               
+                            {% endblock page_subtitle %}
+                        </p>
+                    </div>
+                    {% block page_nav_btn %}
+                        
+                    {% endblock page_nav_btn %}
+                </div>
+                <!-- Profile Information Card -->
+                {% block page_content %}
+                {% endblock page_content %}
+            </main>
+        </div>
+    </div>
+    {% block add_extra %}
+    {% endblock add_extra %}
+{% endblock content %}
+{% block extra_js %}
+    {% block extra_page_js %}
+    {% endblock extra_page_js %}
+{% endblock extra_js %}

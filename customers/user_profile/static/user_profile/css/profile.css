@@ -125,7 +125,7 @@
 }
 
 .nav-item-logout {
-    margin-top: 1rem;
+    /* margin-top: 1rem; */
     color: var(--color-error);
 }
 

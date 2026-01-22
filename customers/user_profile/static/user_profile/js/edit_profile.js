@@ -1,45 +1,19 @@
-// Profile Edit JavaScript with Image Cropping - Free Size
+// Profile Edit JavaScript - Complete with Image Cropping and Password Management
 
 let cropper = null;
 
-document.addEventListener('DOMContentLoaded', function () {
-    // Avatar preview with cropping functionality
-    initAvatarCropping();
+// Password visibility toggle
+function togglePassword(inputElement, button) {
+    const icon = button.querySelector('.material-icons');
 
-    // Form validation feedback
-    const forms = document.querySelectorAll('.profile-form, .add-email-form');
-    forms.forEach(form => {
-        form.addEventListener('submit', function (e) {
-            const submitBtn = form.querySelector('button[type="submit"]');
-            if (submitBtn) {
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Saving...';
-            }
-        });
-    });
-
-    // Email confirmation for making email primary
-    const primaryEmailForms = document.querySelectorAll('form[action*="make-primary"]');
-    primaryEmailForms.forEach(form => {
-        form.addEventListener('submit', function (e) {
-            const confirmed = confirm(
-                'This will change your primary email and block the old email from being reused. Continue?'
-            );
-            if (!confirmed) {
-                e.preventDefault();
-            }
-        });
-    });
-
-    // Auto-dismiss alerts after 5 seconds
-    const alerts = document.querySelectorAll('.alert');
-    alerts.forEach(alert => {
-        setTimeout(() => {
-            alert.classList.add('fade');
-            setTimeout(() => alert.remove(), 300);
-        }, 5000);
-    });
-});
+    if (inputElement.type === 'password') {
+        inputElement.type = 'text';
+        icon.textContent = 'visibility_off';
+    } else {
+        inputElement.type = 'password';
+        icon.textContent = 'visibility';
+    }
+}
 
 // Avatar Cropping Functionality
 function initAvatarCropping() {
@@ -203,3 +177,124 @@ function initAvatarCropping() {
         modal.hide();
     });
 }
+
+// Password Change Functionality
+function initPasswordChange() {
+    const collapseElement = document.getElementById('changePasswordCollapse');
+    const toggleBtn = document.getElementById('togglePasswordBtn');
+    const toggleBtnText = document.getElementById('toggleBtnText');
+    const passwordForm = document.getElementById('changePasswordForm');
+    const alertBox = document.getElementById('passwordAlert');
+
+    // Check if elements exist
+    if (!collapseElement || !toggleBtn || !toggleBtnText) {
+        console.error('Required password change elements not found');
+        return;
+    }
+
+    // Toggle button text when collapse shows/hides
+    collapseElement.addEventListener('shown.bs.collapse', function () {
+        toggleBtnText.textContent = 'Cancel';
+    });
+
+    collapseElement.addEventListener('hidden.bs.collapse', function () {
+        toggleBtnText.textContent = 'Change Password';
+    });
+
+    // Password change form submission
+    if (passwordForm && alertBox) {
+        passwordForm.addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            const form = e.target;
+            const submitBtn = form.querySelector("button[type='submit']");
+            const formData = new FormData(form);
+
+            submitBtn.disabled = true;
+            alertBox.innerHTML = ""; // Clear previous messages
+
+            try {
+                const response = await fetch(form.dataset.changePasswordUrl, {
+                    method: "POST",
+                    body: formData,
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest"
+                    }
+                });
+
+                const data = await response.json();
+                submitBtn.disabled = false;
+
+                if (data.success) {
+                    alertBox.innerHTML = `<div class="alert alert-success">${data.message}</div>`;
+                    form.reset();
+
+                    // Close collapse after a short delay
+                    setTimeout(() => {
+                        bootstrap.Collapse.getOrCreateInstance(collapseElement).hide();
+                        // Clear alert after closing
+                        setTimeout(() => {
+                            alertBox.innerHTML = "";
+                        }, 300);
+                    }, 2000);
+
+                } else {
+                    let errors = "";
+                    for (const field in data.errors) {
+                        data.errors[field].forEach(msg => {
+                            errors += `<p class="mb-0">${msg}</p>`;
+                        });
+                    }
+                    alertBox.innerHTML = `<div class="alert alert-danger">${errors}</div>`;
+                }
+            } catch (error) {
+                submitBtn.disabled = false;
+                alertBox.innerHTML = `<div class="alert alert-danger">An error occurred. Please try again.</div>`;
+                console.error('Password change error:', error);
+            }
+        });
+    }
+}
+
+// Main initialization
+document.addEventListener('DOMContentLoaded', function () {
+    // Initialize avatar cropping functionality
+    initAvatarCropping();
+
+    // Initialize password change functionality
+    initPasswordChange();
+
+    // Form validation feedback
+    const forms = document.querySelectorAll('.profile-form, .add-email-form');
+    forms.forEach(form => {
+        form.addEventListener('submit', function (e) {
+            const submitBtn = form.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Saving...';
+            }
+        });
+    });
+
+    // Email confirmation for making email primary
+    const primaryEmailForms = document.querySelectorAll('form[action*="make-primary"]');
+    primaryEmailForms.forEach(form => {
+        form.addEventListener('submit', function (e) {
+            const confirmed = confirm(
+                'This will change your primary email and block the old email from being reused. Continue?'
+            );
+            if (!confirmed) {
+                e.preventDefault();
+            }
+        });
+    });
+
+    // Auto-dismiss alerts after 5 seconds
+    const alerts = document.querySelectorAll('.alert');
+    alerts.forEach(alert => {
+        setTimeout(() => {
+            alert.classList.add('fade');
+            setTimeout(() => alert.remove(), 300);
+        }, 5000);
+    });
+});
