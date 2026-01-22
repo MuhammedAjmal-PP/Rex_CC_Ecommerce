@@ -1,13 +1,21 @@
+// Debug: Check if script is loading
+console.log("base_user.js loaded successfully");
+
 // Header Scroll Logic - REVERSED for home page
 let lastScroll = 0;
 const header = document.getElementById("siteHeader");
 const topBar = document.querySelector(".top-bar");
 const isHomePage = document.body.classList.contains("home-page");
 
+console.log("Is Home Page:", isHomePage);
+console.log("Header element:", header);
+console.log("Top bar element:", topBar);
+
 // Hide header on page load if on home page
 if (isHomePage) {
   header.classList.add("is-hidden");
   if (topBar) topBar.classList.add("is-hidden");
+  console.log("Home page detected - header hidden on load");
 }
 
 window.addEventListener("scroll", () => {
@@ -58,13 +66,30 @@ window.addEventListener("scroll", () => {
 
 // Search Overlay Logic
 function openSearch() {
-  document.getElementById("searchOverlay").classList.add("is-open");
-  document.querySelector(".search-input-lg").focus();
+  console.log("Opening search overlay");
+  const overlay = document.getElementById("searchOverlay");
+  if (overlay) {
+    overlay.classList.add("is-open");
+    const input = document.querySelector(".search-input-lg");
+    if (input) {
+      setTimeout(() => input.focus(), 100);
+    }
+  } else {
+    console.error("Search overlay element not found");
+  }
 }
 
 function closeSearch() {
-  document.getElementById("searchOverlay").classList.remove("is-open");
+  console.log("Closing search overlay");
+  const overlay = document.getElementById("searchOverlay");
+  if (overlay) {
+    overlay.classList.remove("is-open");
+  }
 }
+
+// Make functions globally available
+window.openSearch = openSearch;
+window.closeSearch = closeSearch;
 
 // Keydown Escape
 document.addEventListener("keydown", (e) => {
@@ -82,80 +107,110 @@ setTimeout(() => {
 }, 4000);
 
 // Dynamic Mega Menu Product Preview
-const categoryLinks = document.querySelectorAll(".mega-category-link");
-const brandLinks = document.querySelectorAll(".mega-brand-link");
-const productImage = document.getElementById("megaProductImage");
-const productName = document.getElementById("megaProductName");
-const productLink = document.getElementById("megaProductLink");
-let fetchTimeout;
+document.addEventListener("DOMContentLoaded", function () {
+  console.log("DOM Content Loaded - Initializing mega menu");
 
-function updateProductPreview(slug, type) {
-  // Clear any pending requests
-  if (fetchTimeout) clearTimeout(fetchTimeout);
+  const categoryLinks = document.querySelectorAll(".mega-category-link");
+  const brandLinks = document.querySelectorAll(".mega-brand-link");
+  const productImage = document.getElementById("megaProductImage");
+  const productName = document.getElementById("megaProductName");
+  const productLink = document.getElementById("megaProductLink");
 
-  // Debounce the request
-  fetchTimeout = setTimeout(() => {
-    const url = `/api/latest-product/?${type}=${slug}`;
+  console.log("Category links found:", categoryLinks.length);
+  console.log("Brand links found:", brandLinks.length);
+  console.log("Product elements:", {
+    image: !!productImage,
+    name: !!productName,
+    link: !!productLink,
+  });
 
-    fetch(url)
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.success && data.variant) {
-          const variant = data.variant;
+  let fetchTimeout;
 
-          // Update image
-          if (variant.thumbnail) {
-            productImage.src = variant.thumbnail;
-            productImage.alt = variant.name;
+  function updateProductPreview(slug, type) {
+    console.log(`Updating preview for ${type}: ${slug}`);
+
+    // Clear any pending requests
+    if (fetchTimeout) clearTimeout(fetchTimeout);
+
+    // Debounce the request
+    fetchTimeout = setTimeout(() => {
+      const url = `/api/latest-product/?${type}=${slug}`;
+      console.log("Fetching from:", url);
+
+      fetch(url)
+        .then((response) => {
+          console.log("Response status:", response.status);
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then((data) => {
+          console.log("Data received:", data);
+
+          if (data.success && data.variant) {
+            const variant = data.variant;
+
+            // Update image
+            if (productImage) {
+              if (variant.thumbnail) {
+                productImage.src = variant.thumbnail;
+                productImage.alt = variant.name;
+              } else {
+                productImage.src =
+                  "https://via.placeholder.com/150x100?text=No+Image";
+              }
+
+              // Add fade-in animation
+              productImage.style.opacity = "0";
+              setTimeout(() => {
+                productImage.style.transition = "opacity 0.3s ease";
+                productImage.style.opacity = "1";
+              }, 50);
+            }
+
+            // Update name with variant details
+            if (productName) {
+              let priceHtml = "";
+              if (variant.discount_percentage > 0) {
+                priceHtml = ` <br><span style="color:red; font-size:12px;">${variant.discount_percentage}% OFF</span>`;
+              }
+              productName.innerHTML = `New: ${variant.name}${priceHtml}`;
+            }
+
+            // Update link
+            if (productLink && variant.slug) {
+              productLink.href = `/product/${variant.slug}/`;
+            }
           } else {
-            productImage.src =
-              "https://via.placeholder.com/150x100?text=No+Image";
+            console.warn("No variant data in response");
           }
+        })
+        .catch((error) => {
+          console.error("Error fetching variant:", error);
+        });
+    }, 200); // 200ms debounce
+  }
 
-          // Update name with variant details
-          let variantDetails = "";
-
-          // Format price display
-          let priceHtml = "";
-          if (variant.discount_percentage > 0) {
-            priceHtml = ` <br><span style="color:red; font-size:12px;">${variant.discount_percentage}% OFF</span>`;
-            // priceHtml += ` <span style="text-decoration:line-through; color:#999; font-size:12px;">₹${Math.round(variant.price)}</span>`;
-            // priceHtml += ` <span style="color:#333; font-weight:600;">₹${Math.round(variant.final_price)}</span>`;
-          }
-
-          productName.innerHTML = `New: ${variant.name}${variantDetails}${priceHtml}`;
-
-          // Update link
-          if (productLink) {
-            productLink.href = `/product/${variant.slug}/`;
-          }
-
-          // Add fade-in animation
-          productImage.style.opacity = "0";
-          setTimeout(() => {
-            productImage.style.transition = "opacity 0.3s ease";
-            productImage.style.opacity = "1";
-          }, 50);
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching variant:", error);
-      });
-  }, 200); // 200ms debounce
-}
-
-// Add hover listeners to category links
-categoryLinks.forEach((link) => {
-  link.addEventListener("mouseenter", function () {
-    const categorySlug = this.getAttribute("data-category-slug");
-    updateProductPreview(categorySlug, "category");
+  // Add hover listeners to category links
+  categoryLinks.forEach((link) => {
+    link.addEventListener("mouseenter", function () {
+      const categorySlug = this.getAttribute("data-category-slug");
+      if (categorySlug) {
+        updateProductPreview(categorySlug, "category");
+      }
+    });
   });
-});
 
-// Add hover listeners to brand links
-brandLinks.forEach((link) => {
-  link.addEventListener("mouseenter", function () {
-    const brandSlug = this.getAttribute("data-brand-slug");
-    updateProductPreview(brandSlug, "brand");
+  // Add hover listeners to brand links
+  brandLinks.forEach((link) => {
+    link.addEventListener("mouseenter", function () {
+      const brandSlug = this.getAttribute("data-brand-slug");
+      if (brandSlug) {
+        updateProductPreview(brandSlug, "brand");
+      }
+    });
   });
+
+  console.log("Mega menu initialization complete");
 });

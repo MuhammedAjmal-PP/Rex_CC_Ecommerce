@@ -2,306 +2,343 @@
 {% load cloudinary %}
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="REX CC - The Pinnacle of Horology. Exclusive collection of luxury timepieces.">
-    <title>
-        {% block head_title %}
-        REX CC | Beyond Precision
-        {% endblock head_title %}
-    </title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&family=Playfair+Display:wght@700&display=swap"
-        rel="stylesheet">
-    <!-- External Icons -->
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <!-- Bootstrap 5 Grid Only (Optional, mostly custom CSS used) -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Base User CSS -->
-    <link rel="stylesheet" href="{% static 'pages/user/css/base_user.css' %}">
-    <link rel="stylesheet" href="{% static 'pages/user/css/account_modal.css' %}">
-    {% block extra_css %}
-    {% endblock extra_css %}
-</head>
-
-<body>
-    <!-- Top Announcement Bar -->
-    <div class="top-bar">
-        <div class="text-container">
-            <span class="text-slide">EXPLORE GREAT OFFERS & HOT DEALS</span>
-            <span class="text-slide">OFFICIAL RETAILER FOR TISSOT & CASIO</span>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description"
+              content="REX CC - The Pinnacle of Horology. Exclusive collection of luxury timepieces.">
+        <title>
+            {% block head_title %}
+                REX CC | Beyond Precision
+            {% endblock head_title %}
+        </title>
+        <link rel="stylesheet"
+              href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&family=Playfair+Display:wght@700&display=swap"
+              rel="stylesheet">
+        <!-- External Icons -->
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+              rel="stylesheet">
+        <!-- Bootstrap 5 Grid Only (Optional, mostly custom CSS used) -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+              rel="stylesheet">
+        <!-- Base User CSS -->
+        <link rel="stylesheet" href="{% static 'pages/user/css/base_user.css' %}">
+        <link rel="stylesheet"
+              href="{% static 'pages/user/css/account_modal.css' %}">
+        {% block extra_css %}
+        {% endblock extra_css %}
+    </head>
+    <!-- FIX 1: Add body_class block to body tag -->
+    <body class="{% block body_class %}{% endblock body_class %}">
+        <!-- Top Announcement Bar -->
+        <div class="top-bar">
+            <div class="text-container">
+                <span class="text-slide">EXPLORE GREAT OFFERS & HOT DEALS</span>
+                <span class="text-slide">OFFICIAL RETAILER FOR TISSOT & CASIO</span>
+            </div>
         </div>
-    </div>
-    <!-- Intelligent Header -->
-    <header class="site-header" id="siteHeader">
-        <!-- Left: Navigation -->
-        <nav class="nav-left">
-            <ul class="nav-list">
-                <li>
-                    <a href="{% url 'home' %}" class="nav-link">Home</a>
-                </li>
-                <li>
-                    <a href="{% url 'product_list' %}" class="nav-link">Our Collection</a>
-                </li>
-                <li class="has-dropdown">
-                    <a href="" class="nav-link">Watches <span class="material-icons">expand_more</span></a>
-                    <div class="mega-menu">
-                        <div class="mega-column">
-                            <h4>By Category</h4>
-                            {% for category in categories|slice:":5" %}
-                            <a href="{% url 'product_list' %}?category={{ category.slug }}" class="mega-category-link"
-                                data-category-slug="{{ category.slug }}">{{ category.name }}</a>
-                            {% empty %}
-                            <a href="#">No categories available</a>
-                            {% endfor %}
-                        </div>
-                        <div class="mega-column">
-                            <h4>Top Brands</h4>
-                            <div class="brand-grid">
-                                {% for brand in brands|slice:":6" %}
-                                <span>
-                                    <a href="{% url 'product_list' %}?brand={{ brand.slug }}" class="mega-brand-link"
-                                        data-brand-slug="{{ brand.slug }}" style="color: inherit;
-                                                      text-decoration: none">{{ brand.name }}</a>
-                                </span>
-                                {% empty %}<span>No brands available</span>
+        <!-- Intelligent Header -->
+        <header class="site-header" id="siteHeader">
+            <!-- Left: Navigation -->
+            <nav class="nav-left">
+                <ul class="nav-list">
+                    <li>
+                        <a href="{% url 'home' %}" class="nav-link">Home</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'product_list' %}" class="nav-link">Our Collection</a>
+                    </li>
+                    <li class="has-dropdown">
+                        <a href="" class="nav-link">Watches <span class="material-icons">expand_more</span></a>
+                        <div class="mega-menu">
+                            <div class="mega-column">
+                                <h4>By Category</h4>
+                                {% for category in categories|slice:":5" %}
+                                    <a href="{% url 'product_list' %}?category={{ category.slug }}"
+                                       class="mega-category-link"
+                                       data-category-slug="{{ category.slug }}">{{ category.name }}</a>
+                                {% empty %}
+                                    <a href="#">No categories available</a>
                                 {% endfor %}
                             </div>
-                        </div>
-                        <div class="mega-column featured-img">
-                            <div id="megaProductPreview">
-                                {% if latest_variant %}
-                                <a href="{% url 'product_detail' latest_variant.product.slug %}" id="megaProductLink">
-                                    {% if latest_variant.images.first %}
-                                    <img src="{{ latest_variant.images.first.image.url }}"
-                                        alt="{{ latest_variant.product.name }}" id="megaProductImage"
-                                        class="mega-product-img">
-                                    {% elif latest_variant.product.thumbnail %}
-                                    <img src="{{ latest_variant.product.thumbnail.url }}"
-                                        alt="{{ latest_variant.product.name }}" id="megaProductImage"
-                                        class="mega-product-img">
+                            <div class="mega-column">
+                                <h4>Top Brands</h4>
+                                <div class="brand-grid">
+                                    {% for brand in brands|slice:":6" %}
+                                        <span>
+                                            <a href="{% url 'product_list' %}?brand={{ brand.slug }}"
+                                               class="mega-brand-link"
+                                               data-brand-slug="{{ brand.slug }}"
+                                               style="color: inherit;
+                                                      text-decoration: none">{{ brand.name }}</a>
+                                        </span>
+                                        {% empty %}<span>No brands available</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="mega-column featured-img">
+                                <div id="megaProductPreview">
+                                    {% if latest_variant %}
+                                        <a href="{% url 'product_detail' latest_variant.product.slug %}"
+                                           id="megaProductLink">
+                                            {% if latest_variant.images.first %}
+                                                <img src="{{ latest_variant.images.first.image.url }}"
+                                                     alt="{{ latest_variant.product.name }}"
+                                                     id="megaProductImage"
+                                                     class="mega-product-img">
+                                            {% elif latest_variant.product.thumbnail %}
+                                                <img src="{{ latest_variant.product.thumbnail.url }}"
+                                                     alt="{{ latest_variant.product.name }}"
+                                                     id="megaProductImage"
+                                                     class="mega-product-img">
+                                            {% else %}
+                                                <img src="https://via.placeholder.com/150x100?text=New+Arrival"
+                                                     alt="New Arrival"
+                                                     id="megaProductImage"
+                                                     class="mega-product-img">
+                                            {% endif %}
+                                            <span id="megaProductName">New: {{ latest_variant.product.name }}
+                                                {% if latest_variant.discount_percentage > 0 %}
+                                                    <br>
+                                                    <span style="color:red; font-size:12px;">{{ latest_variant.discount_percentage }}% OFF</span>
+                                                {% endif %}
+                                            </span>
+                                        </a>
                                     {% else %}
-                                    <img src="https://via.placeholder.com/150x100?text=New+Arrival" alt="New Arrival"
-                                        id="megaProductImage" class="mega-product-img">
+                                        <img src="https://via.placeholder.com/150x100?text=New+Arrival"
+                                             alt="New Arrival"
+                                             id="megaProductImage"
+                                             class="mega-product-img">
+                                        <span id="megaProductName">New Arrivals</span>
                                     {% endif %}
-                                    <span id="megaProductName">New: {{ latest_variant.product.name }}
-                                        {% if latest_variant.discount_percentage > 0 %}
-                                        <br>
-                                        <span style="color:red; font-size:12px;">{{ latest_variant.discount_percentage
-                                            }}% OFF</span>
-                                        {% endif %}
-                                    </span>
-                                </a>
-                                {% else %}
-                                <img src="https://via.placeholder.com/150x100?text=New+Arrival" alt="New Arrival"
-                                    id="megaProductImage" class="mega-product-img">
-                                <span id="megaProductName">New Arrivals</span>
-                                {% endif %}
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </li>
-            </ul>
-        </nav>
-        <!-- Center: Brand -->
-        <div class="brand-center">
-            <a href="{% url 'home' %}">REX CC</a>
-        </div>
-        <!-- Right: Icons -->
-        <div class="header-icons-right">
-            <div class="search-wrapper{% if search_query %} has-query{% endif %}">
-                <form class="search-form-inline" action="{% url 'product_list' %}" method="get">
-                    <!-- Preserve filters when searching -->
-                    {% if sort %}<input type="hidden" name="sort" value="{{ sort }}">{% endif %}
-                    {% if category %}<input type="hidden" name="category" value="{{ category }}">{% endif %}
-                    {% if brand %}<input type="hidden" name="brand" value="{{ brand }}">{% endif %}
-                    {% if min_price %}<input type="hidden" name="min_price" value="{{ min_price }}">{% endif %}
-                    {% if max_price %}<input type="hidden" name="max_price" value="{{ max_price }}">{% endif %}
-                    <span class="material-icons search-icon">search</span>
-                    <input type="text" name="search" class="search-input" placeholder="Search watches..."
-                        value="{{ search_query|default:'' }}">
-                    {% if search_query %}
-                    <!-- Clear search button -->
-                    <a href="{% url 'product_list' %} {% if sort or category or brand or min_price or max_price %}?{% endif %} {% if sort %}sort={{ sort }} &{% endif %} {% if category %}category={{ category }}&{% endif %} {% if brand %}brand={{ brand }}&{% endif %} {% if min_price %}min_price={{ min_price }}&{% endif %} {% if max_price %}max_price={{ max_price }}{% endif %}"
-                        class="search-clear-icon" title="Clear search">
-                        <span class="material-icons">close</span>
-                    </a>
-                    {% endif %}
-                </form>
+                    </li>
+                </ul>
+            </nav>
+            <!-- Center: Brand -->
+            <div class="brand-center">
+                <a href="{% url 'home' %}">REX CC</a>
             </div>
-            <div class="nav-links">
-                <a href="#" class="nav-icon" title="Wishlist">
-                    <span class="material-icons">favorite</span>
-                </a>
-                <a href="#" class="nav-icon" title="Cart">
-                    <span class="material-icons">shopping_bag</span>
-                </a>
-                {% if user.is_authenticated %}
-                <a href="{% url 'user_profile' %}" class="nav-icon" title="Account">
-                    {% if user.avatar %}
-                    <img src="{{ user.avatar.url }}" alt="Profile Picture" class="user-avatar" width="36" height="36">
-                    {% else %}
-                    <span class="user-initials-icon">{{ user.first_name|first|upper|default:"U" }}</span>
-                    {% endif %}
-                </a>
-                {% else %}
-                <a href="#" data-bs-toggle="modal" data-bs-target="#registerAccount" class="nav-icon" title="Account">
-                    <span class="material-icons">person</span>
-                </a>
-                {% endif %}
-            </div>
-        </div>
-    </header>
-    <!-- Premium Account Modal - Two Panel Design -->
-    <div class="modal fade" id="registerAccount" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-xl">
-            <div class="modal-content account-modal-premium">
-                <!-- Close Button -->
-                <button type="button" class="account-modal-close" data-bs-dismiss="modal" aria-label="Close">
-                    <span class="material-icons">close</span>
-                </button>
-                <div class="account-modal-grid">
-                    <!-- Left Panel - Promotional Content -->
-                    <div class="account-modal-promo">
-                        <span class="promo-tagline">EXCLUSIVITY AWAITS</span>
-                        <h2 class="promo-title">
-                            The Art of
-                            <br>
-                            <span class="promo-accent">Precision</span>
-                        </h2>
-                        <p class="promo-description">
-                            Join an elite circle of collectors and enthusiasts. Experience horology at its absolute
-                            peak.
-                        </p>
-                        <div class="promo-featured">
-                            <span class="featured-label">— FEATURED COLLECTION</span>
-                            <div class="featured-preview">
-                                <span class="material-icons featured-play">play_circle</span>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Right Panel - Auth Actions -->
-                    <div class="account-modal-auth">
-                        <h3 class="auth-title">Welcome Back</h3>
-                        <p class="auth-subtitle">Please sign in to your dashboard or create a new profile.</p>
-                        <div class="auth-actions">
-                            <a href="{% url 'account_login' %}" class="auth-btn auth-btn-primary">
-                                SIGN IN
-                                <span class="material-icons">arrow_forward</span>
+            <!-- Right: Icons -->
+            <div class="header-icons-right">
+                <!-- FIX 2: Add onclick handler to search icon -->
+                <div class="search-wrapper{% if search_query %} has-query{% endif %}">
+                    <form class="search-form-inline"
+                          action="{% url 'product_list' %}"
+                          method="get">
+                        <!-- Preserve filters when searching -->
+                        {% if sort %}<input type="hidden" name="sort" value="{{ sort }}">{% endif %}
+                        {% if category %}<input type="hidden" name="category" value="{{ category }}">{% endif %}
+                        {% if brand %}<input type="hidden" name="brand" value="{{ brand }}">{% endif %}
+                        {% if min_price %}<input type="hidden" name="min_price" value="{{ min_price }}">{% endif %}
+                        {% if max_price %}<input type="hidden" name="max_price" value="{{ max_price }}">{% endif %}
+                        <span class="material-icons search-icon"
+                              onclick="openSearch()"
+                              style="cursor: pointer">search</span>
+                        <input type="text"
+                               name="search"
+                               class="search-input"
+                               placeholder="Search watches..."
+                               value="{{ search_query|default:'' }}">
+                        {% if search_query %}
+                            <!-- Clear search button -->
+                            <a href="{% url 'product_list' %} {% if sort or category or brand or min_price or max_price %}?{% endif %} {% if sort %}sort={{ sort }} &{% endif %} {% if category %}category={{ category }}&{% endif %} {% if brand %}brand={{ brand }}&{% endif %} {% if min_price %}min_price={{ min_price }}&{% endif %} {% if max_price %}max_price={{ max_price }}{% endif %}"
+                               class="search-clear-icon"
+                               title="Clear search">
+                                <span class="material-icons">close</span>
                             </a>
-                            <a href="{% url 'account_signup' %}" class="auth-btn auth-btn-outline">JOIN US</a>
+                        {% endif %}
+                    </form>
+                </div>
+                <div class="nav-links">
+                    <a href="#" class="nav-icon" title="Wishlist">
+                        <span class="material-icons">favorite</span>
+                    </a>
+                    <a href="#" class="nav-icon" title="Cart">
+                        <span class="material-icons">shopping_bag</span>
+                    </a>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'user_profile' %}" class="nav-icon" title="Account">
+                            {% if user.avatar %}
+                                <img src="{{ user.avatar.url }}"
+                                     alt="Profile Picture"
+                                     class="user-avatar"
+                                     width="36"
+                                     height="36">
+                            {% else %}
+                                <span class="user-initials-icon">{{ user.first_name|first|upper|default:"U" }}</span>
+                            {% endif %}
+                        </a>
+                    {% else %}
+                        <a href="#"
+                           data-bs-toggle="modal"
+                           data-bs-target="#registerAccount"
+                           class="nav-icon"
+                           title="Account">
+                            <span class="material-icons">person</span>
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </header>
+        <!-- Premium Account Modal - Two Panel Design -->
+        <div class="modal fade"
+             id="registerAccount"
+             tabindex="-1"
+             aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-xl">
+                <div class="modal-content account-modal-premium">
+                    <!-- Close Button -->
+                    <button type="button"
+                            class="account-modal-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close">
+                        <span class="material-icons">close</span>
+                    </button>
+                    <div class="account-modal-grid">
+                        <!-- Left Panel - Promotional Content -->
+                        <div class="account-modal-promo">
+                            <span class="promo-tagline">EXCLUSIVITY AWAITS</span>
+                            <h2 class="promo-title">
+                                The Art of
+                                <br>
+                                <span class="promo-accent">Precision</span>
+                            </h2>
+                            <p class="promo-description">
+                                Join an elite circle of collectors and enthusiasts. Experience horology at its absolute
+                                peak.
+                            </p>
+                            <div class="promo-featured">
+                                <span class="featured-label">— FEATURED COLLECTION</span>
+                                <div class="featured-preview">
+                                    <span class="material-icons featured-play">play_circle</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="auth-partners">
-                            <span class="partners-label">PARTNERED WITH</span>
-                            <div class="partners-brands">
-                                <span class="partner-brand">GENÈVE</span>
-                                <span class="partner-brand">HERITAGE</span>
-                                <span class="partner-brand">CHRONOS</span>
+                        <!-- Right Panel - Auth Actions -->
+                        <div class="account-modal-auth">
+                            <h3 class="auth-title">Welcome Back</h3>
+                            <p class="auth-subtitle">Please sign in to your dashboard or create a new profile.</p>
+                            <div class="auth-actions">
+                                <a href="{% url 'account_login' %}" class="auth-btn auth-btn-primary">
+                                    SIGN IN
+                                    <span class="material-icons">arrow_forward</span>
+                                </a>
+                                <a href="{% url 'account_signup' %}" class="auth-btn auth-btn-outline">JOIN US</a>
+                            </div>
+                            <div class="auth-partners">
+                                <span class="partners-label">PARTNERED WITH</span>
+                                <div class="partners-brands">
+                                    <span class="partner-brand">GENÈVE</span>
+                                    <span class="partner-brand">HERITAGE</span>
+                                    <span class="partner-brand">CHRONOS</span>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    <!-- Search Overlay -->
-    <div class="search-overlay" id="searchOverlay">
-        <span class="material-icons search-close" onclick="closeSearch()">close</span>
-        <div class="search-container">
-            <form action="{% url 'product_list' %}" method="get">
-                <input type="text" name="search" class="search-input-lg" placeholder="Type to search..."
-                    autocomplete="off">
-            </form>
-            <p style="margin-top:20px;
+        <!-- Search Overlay -->
+        <div class="search-overlay" id="searchOverlay">
+            <span class="material-icons search-close" onclick="closeSearch()">close</span>
+            <div class="search-container">
+                <form action="{% url 'product_list' %}" method="get">
+                    <input type="text"
+                           name="search"
+                           class="search-input-lg"
+                           placeholder="Type to search..."
+                           autocomplete="off">
+                </form>
+                <p style="margin-top:20px;
                           color:#999;
                           text-transform:uppercase;
                           letter-spacing:2px;
                           font-size:0.75rem">Press Enter to Explore</p>
-        </div>
-    </div>
-    <!-- Flash Messages -->
-    {% if messages %}
-    <div class="toast-container">
-        {% for message in messages %}
-        <div class="toast-msg">
-            <span class="material-icons" style="color:var(--color-gold)">info</span>
-            {{ message }}
-        </div>
-        {% endfor %}
-    </div>
-    {% endif %}
-    <!-- Main Content -->
-    <main>
-        {% block content %}
-        {% endblock content %}
-    </main>
-    <!-- Footer -->
-    <footer class="site-footer">
-        <div class="footer-grid">
-            <div class="footer-brand">
-                <h2>
-                    REX CC<span style="color:var(--color-gold)">.</span>
-                </h2>
-                <p class="footer-quote">
-                    "Time is the only true luxury."
-                    <br>
-                    Curating the world's finest timepieces for the distinguished collector.
-                </p>
-            </div>
-            <div class="footer-col">
-                <h4>Collections</h4>
-                <ul>
-                    <li>
-                        <a href="#">New Arrivals</a>
-                    </li>
-                    <li>
-                        <a href="#">Best Sellers</a>
-                    </li>
-                    <li>
-                        <a href="#">Limited Edition</a>
-                    </li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>Client Care</h4>
-                <ul>
-                    <li>
-                        <a href="#">Contact Us</a>
-                    </li>
-                    <li>
-                        <a href="#">Shipping Service</a>
-                    </li>
-                    <li>
-                        <a href="#">Returns & Exchange</a>
-                    </li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>Legal</h4>
-                <ul>
-                    <li>
-                        <a href="#">Privacy Policy</a>
-                    </li>
-                    <li>
-                        <a href="#">Terms of Service</a>
-                    </li>
-                    <li>
-                        <a href="#">Authenticity</a>
-                    </li>
-                </ul>
             </div>
         </div>
-        <div class="footer-bottom">&copy; {% now "Y" %} REX CC. All rights reserved.</div>
-    </footer>
-    <!-- JS Bundle -->
-    <script src="{% static "pages/user/js/base_user.js" %}"></script>
-    <!-- Bootstrap 5 JS Bundle for Modal -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    {% block extra_js %}
-    {% endblock extra_js %}
-</body>
-
+        <!-- Flash Messages -->
+        {% if messages %}
+            <div class="toast-container">
+                {% for message in messages %}
+                    <div class="toast-msg">
+                        <span class="material-icons" style="color:var(--color-gold)">info</span>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        <!-- Main Content -->
+        <main>
+            {% block content %}
+            {% endblock content %}
+        </main>
+        <!-- Footer -->
+        <footer class="site-footer">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <h2>
+                        REX CC<span style="color:var(--color-gold)">.</span>
+                    </h2>
+                    <p class="footer-quote">
+                        "Time is the only true luxury."
+                        <br>
+                        Curating the world's finest timepieces for the distinguished collector.
+                    </p>
+                </div>
+                <div class="footer-col">
+                    <h4>Collections</h4>
+                    <ul>
+                        <li>
+                            <a href="#">New Arrivals</a>
+                        </li>
+                        <li>
+                            <a href="#">Best Sellers</a>
+                        </li>
+                        <li>
+                            <a href="#">Limited Edition</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Client Care</h4>
+                    <ul>
+                        <li>
+                            <a href="#">Contact Us</a>
+                        </li>
+                        <li>
+                            <a href="#">Shipping Service</a>
+                        </li>
+                        <li>
+                            <a href="#">Returns & Exchange</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li>
+                            <a href="#">Privacy Policy</a>
+                        </li>
+                        <li>
+                            <a href="#">Terms of Service</a>
+                        </li>
+                        <li>
+                            <a href="#">Authenticity</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">&copy; {% now "Y" %} REX CC. All rights reserved.</div>
+        </footer>
+        <!-- Bootstrap 5 JS Bundle for Modal - LOAD BEFORE custom JS -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- JS Bundle -->
+        <script src="{% static "pages/user/js/base_user.js" %}"></script>
+        {% block extra_js %}
+        {% endblock extra_js %}
+    </body>
 </html>

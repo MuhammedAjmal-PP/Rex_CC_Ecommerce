@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect
 from django.views.decorators.cache import never_cache
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
@@ -23,13 +23,13 @@ def profile(request):
     Renders the user profile dashboard with addresses and email management.
     """
     email_addresses = EmailAddress.objects.filter(user=request.user)
-    print(type(email_addresses))
     context = {
         "addresses": False,
         "email_addresses": email_addresses,
     }
-    
+
     return render(request, "user_profile/profile.html", context)
+
 
 @never_cache
 @login_required(login_url="account_login")
@@ -48,7 +48,6 @@ def edit_profile(request):
     return render(request, "user_profile/edit_profile.html", {"form": form})
 
 
-
 @login_required
 def change_password(request):
     if request.method != "POST":
@@ -64,4 +63,4 @@ def change_password(request):
             }
         )
 
-    return JsonResponse({"success": False,"errors": form.errors }, status=400)
+    return JsonResponse({"success": False, "errors": form.errors}, status=400)
