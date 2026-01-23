@@ -162,7 +162,7 @@ STORAGES = {
         "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
     },
 }
-# GLOBAL IMAGE SETTINGS 
+# GLOBAL IMAGE SETTINGS
 IMAGE_MAX_SIZE_MB = 5
 ALLOWED_IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "webp", "avif"]
 
@@ -234,3 +234,5 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 CSRF_TRUSTED_ORIGINS = env("CSRF_TRUSTED_ORIGINS").split(",")
+
+MAX_ADDRESSES_PER_USER = 5

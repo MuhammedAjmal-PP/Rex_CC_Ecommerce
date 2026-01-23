@@ -44,7 +44,7 @@
                         <span class="material-icons">favorite</span>
                         <span>Wishlist</span>
                     </a>
-                    <a href="#"
+                    <a href="{% url "user_address" %}"
                        class="nav-item {% if request.resolver_match.url_name == 'address_list' %}active{% endif %}">
                         <span class="material-icons">location_on</span>
                         <span>Addresses</span>
@@ -52,7 +52,7 @@
                     <a href="{% url 'account_logout' %}" class="nav-item nav-item-logout">
                         <span class="material-icons">logout</span>
                         <span>Logout</span>
-                    </a>        
+                    </a>
                 </nav>
             </aside>
             <!-- Main Content -->
@@ -65,12 +65,10 @@
                         </h1>
                         <p class="page-subtitle">
                             {% block page_subtitle %}
-                               
                             {% endblock page_subtitle %}
                         </p>
                     </div>
                     {% block page_nav_btn %}
-                        
                     {% endblock page_nav_btn %}
                 </div>
                 <!-- Profile Information Card -->

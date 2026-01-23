@@ -1,4 +1,4 @@
-from django.core.validators import RegexValidator
+from django.core.validators import RegexValidator, MinLengthValidator
 from django.core.validators import FileExtensionValidator
 from django.core.exceptions import ValidationError
 from django.conf import settings
@@ -9,11 +9,21 @@ name_validator = RegexValidator(
     code="invalid_alphabet",
 )
 
+full_name_validator = RegexValidator(
+    regex=r"^[A-Za-zÀ-ÿ]+([-'\s][A-Za-zÀ-ÿ]+)*$",
+    message="Name must start with a letter and can only contain letters, hyphens, apostrophes, and spaces.",
+    code="invalid_full_name",
+)
 
-def name_size_validator(name):
-    if len(name) < 3:
-        raise ValidationError("Name must contain at least 3 letters", code="min_length")
+min_len_name_validator = MinLengthValidator(
+    3, message="Name must contain at least 3 letters"
+)
 
+postal_code_validator = RegexValidator(
+    regex=r"^\d{6}$",
+    message="Postal code must be exactly 6 digits",
+    code="Invalid_code",
+)
 
 sku_validator = RegexValidator(
     regex=r"^[A-Z0-9_./-]+$",
@@ -27,14 +37,14 @@ formatted_name_validator = RegexValidator(
     message="Only letters, spaces, hyphens, and apostrophes are allowed.",
 )
 
-#========= Image Validator ========#
+# ========= Image Validator ========#
 
 image_file_extension_validator = FileExtensionValidator(
-    allowed_extensions=[ ext.lower() for ext in settings.ALLOWED_IMAGE_EXTENSIONS]
+    allowed_extensions=[ext.lower() for ext in settings.ALLOWED_IMAGE_EXTENSIONS]
 )
 
 
 def image_size_validator(image):
     max_size_mb = getattr(settings, "IMAGE_MAX_SIZE_MB", 3)
-    if image.size >  max_size_mb * 1024 * 1024:
+    if image.size > max_size_mb * 1024 * 1024:
         raise ValidationError(f"Image size must be less than {max_size_mb}MB")

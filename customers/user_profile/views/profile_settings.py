@@ -7,6 +7,8 @@ from django.contrib import messages
 from allauth.account.models import EmailAddress
 from django.contrib import messages
 from django.contrib.auth import get_user_model
+from django.views.decorators.http import require_POST
+from customers.user_profile.models import Address
 from ..forms import ProfileEditForm
 from django.http import JsonResponse
 
@@ -22,9 +24,10 @@ def profile(request):
     """
     Renders the user profile dashboard with addresses and email management.
     """
+    addresses = Address.active.filter(user=request.user)
     email_addresses = EmailAddress.objects.filter(user=request.user)
     context = {
-        "addresses": False,
+        "addresses": addresses,
         "email_addresses": email_addresses,
     }
 
@@ -49,9 +52,9 @@ def edit_profile(request):
 
 
 @login_required
+@require_POST
 def change_password(request):
-    if request.method != "POST":
-        return JsonResponse({"success": False}, status=400)
+
     form = PasswordChangeForm(user=request.user, data=request.POST)
     if form.is_valid():
         user = form.save()

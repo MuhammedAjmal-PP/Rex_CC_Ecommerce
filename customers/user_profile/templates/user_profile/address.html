@@ -1,0 +1,87 @@
+{% extends "user_profile/profile_base.html" %}
+{% load static %}
+{% block extra_page_css %}
+    <link rel="stylesheet" href="{% static "user_profile/css/address.css" %}">
+{% endblock extra_page_css %}
+{% block page_header %}
+    My Addresses
+{% endblock page_header %}
+{% block page_subtitle %}
+    Manage your shipping and billing addresses
+{% endblock page_subtitle %}
+{% block page_nav_btn %}
+    <a href="{% url 'add_address' %}" class="btn-primary">
+        <span class="material-icons">add</span>
+        Add New Address
+    </a>
+{% endblock page_nav_btn %}
+{% block page_content %}
+    <!-- CSRF TOKEN (used by JS) -->
+    <input type="hidden" id="csrf-token" value="{{ csrf_token }}">
+    <div class="addresses-grid">
+        {% if addresses %}
+            {% for address in addresses %}
+                <div class="address-card {% if address.is_default %}default-address{% endif %}"
+                     id="address-{{ address.id }}">
+                    {% if address.is_default %}
+                        <span class="default-badge">
+                            <span class="material-icons">verified</span>
+                            Default
+                        </span>
+                    {% endif %}
+                    <div class="address-content">
+                        <div class="address-type-icon">
+                            {% if address.label == "Home" %}
+                                <span class="material-icons">home</span>
+                            {% elif address.label == "Work" %}
+                                <span class="material-icons">work</span>
+                            {% else %}
+                                <span class="material-icons">place</span>
+                            {% endif %}
+                        </div>
+                        <div class="address-details">
+                            <h3 class="address-name">{{ address.full_name }}</h3>
+                            <p class="address-line">{{ address.address_line_1 }}</p>
+                            {% if address.address_line_2 %}<p class="address-line">{{ address.address_line_2 }}</p>{% endif %}
+                            <p class="address-line">{{ address.city }}, {{ address.state }} {{ address.postal_code }}</p>
+                            <p class="address-line">{{ address.country }}</p>
+                            <p class="address-phone">
+                                <span class="material-icons">phone</span>
+                                {{ address.phone_number }}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="address-actions">
+                        {% if not address.is_default %}
+                            <button class="btn-text"
+                                    onclick="setDefaultAddress(event, '{{ address.id }}')"
+                                    data-url="{% url 'set_default_address' address.id %}">
+                                <span class="material-icons">check_circle</span>
+                                Set as Default
+                            </button>
+                        {% endif %}
+                        <a href="{% url 'address_edit' address.id %}" class="btn-text">
+                            <span class="material-icons">edit</span>
+                            Edit
+                        </a>
+                        <button class="btn-text text-danger"
+                                onclick="deleteAddress(event, '{{ address.id }}')"
+                                data-url="{% url 'address_delete' address.id %}">
+                            <span class="material-icons">delete</span>
+                            Delete
+                        </button>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <span class="material-icons">location_off</span>
+                <h3>No Addresses Added</h3>
+                <p>Add your first address to make checkout faster</p>
+            </div>
+        {% endif %}
+    </div>
+{% endblock page_content %}
+{% block extra_page_js %}
+    <script src="{% static "user_profile/js/address.js" %}"></script>
+{% endblock extra_page_js %}

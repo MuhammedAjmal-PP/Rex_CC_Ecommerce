@@ -48,7 +48,7 @@
                 <span class="material-icons">location_on</span>
                 My Addresses
             </h3>
-            <a href="#" class="btn-secondary-sm">
+            <a href="{% url "user_address" %}" class="btn-secondary-sm">
                 <span class="material-icons">view_list</span>
                 Manage Addresses
             </a>
@@ -80,7 +80,7 @@
                     {% endfor %}
                 </div>
                 {% if addresses.count > 3 %}
-                    <a href="{% url 'address_list' %}" class="view-all-link">
+                    <a href="{% url 'user_address' %}" class="view-all-link">
                         View all {{ addresses.count }} addresses
                         <span class="material-icons">arrow_forward</span>
                     </a>
@@ -89,7 +89,6 @@
                 <div class="empty-state">
                     <span class="material-icons">location_off</span>
                     <p>No addresses added yet</p>
-                    <a href="#" class="btn-primary">Add Address</a>
                 </div>
             {% endif %}
         </div>
