@@ -36,8 +36,9 @@
                             {% elif address.label == "Work" %}
                                 <span class="material-icons">work</span>
                             {% else %}
-                                <span class="material-icons">place</span>
+                                <span class="material-icons">bookmark</span>
                             {% endif %}
+                            <p>{{ address.label }}</p>
                         </div>
                         <div class="address-details">
                             <h3 class="address-name">{{ address.full_name }}</h3>

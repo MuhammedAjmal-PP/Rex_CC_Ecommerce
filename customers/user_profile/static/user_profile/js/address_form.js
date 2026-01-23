@@ -10,15 +10,46 @@ document.addEventListener("DOMContentLoaded", function () {
       'input[name="label_choice"]:checked',
     );
 
-    if (selectedRadio.value === "Other") {
+    if (selectedRadio && selectedRadio.value === "Other") {
       customLabelGroup.style.display = "block";
       // If custom label has value, use it; otherwise use 'Other'
       hiddenLabelInput.value = customLabelInput.value.trim() || "Other";
-    } else {
+    } else if (selectedRadio) {
       customLabelGroup.style.display = "none";
       customLabelInput.value = "";
       hiddenLabelInput.value = selectedRadio.value;
     }
+  }
+
+  // Function to initialize form based on existing values
+  function initializeForm() {
+    const currentLabel = hiddenLabelInput.value;
+    const hasCustomLabel = customLabelInput.value.trim() !== "";
+
+    // Check if current label is a custom one (not Home or Work)
+    if (hasCustomLabel || (currentLabel && currentLabel !== "Home" && currentLabel !== "Work")) {
+      // Select the "Other" radio button
+      const otherRadio = document.getElementById("label_other");
+      if (otherRadio) {
+        otherRadio.checked = true;
+        customLabelGroup.style.display = "block";
+
+        // If custom label input is empty but hidden field has a custom value, populate it
+        if (!hasCustomLabel && currentLabel) {
+          customLabelInput.value = currentLabel;
+        }
+      }
+    } else if (currentLabel) {
+      // Select the matching radio button (Home or Work)
+      const matchingRadio = document.querySelector(
+        `input[name="label_choice"][value="${currentLabel}"]`,
+      );
+      if (matchingRadio) {
+        matchingRadio.checked = true;
+      }
+    }
+
+    updateLabel();
   }
 
   // Add event listeners to radio buttons
@@ -38,7 +69,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   // Initialize on page load
-  updateLabel();
+  initializeForm();
 
   // Form validation (optional)
   const form = document.querySelector(".address-form");

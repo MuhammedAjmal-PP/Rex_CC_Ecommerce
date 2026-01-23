@@ -160,7 +160,13 @@ class AddressForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
         if not self.instance.pk:
+            # New address: default to Home
             self.fields["label"].initial = "Home"
+        else:
+            # Editing existing address: check if it has a custom label
+            if self.instance.label not in ["Home", "Work"]:
+                # It's a custom label, populate the custom_label field
+                self.initial["custom_label"] = self.instance.label
 
         self.fields["address_line_2"].required = False
 
