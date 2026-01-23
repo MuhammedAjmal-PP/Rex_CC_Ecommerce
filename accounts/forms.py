@@ -3,6 +3,7 @@ from allauth.account.forms import SignupForm
 from phonenumber_field.formfields import PhoneNumberField
 from utils.validators import name_validator
 
+
 class CustomSignupForm(SignupForm):
     """Custom signup form for django-allauth with additional fields."""
 
@@ -38,7 +39,7 @@ class CustomSignupForm(SignupForm):
         required=False,
         widget=forms.TextInput(
             attrs={
-                "placeholder": "+91 98765 43210",
+                "placeholder": "09876543210",
                 "class": "form-input",
                 "type": "tel",
                 "autocomplete": "tel",

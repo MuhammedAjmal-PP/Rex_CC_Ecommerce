@@ -1,12 +1,12 @@
 from django.urls import path
-from .admin_views.admin_auth import (
+from .views.admin_views.admin_auth import (
     admin_login,
     admin_logout,
     forgot_password,
     password_reset_sent,
     reset_password,
 )
-from .admin_views.user_management import (
+from .views.admin_views.user_management import (
     user_list,
     user_profile,
     user_status_toggle,
