@@ -17,65 +17,85 @@
 {% endblock page_nav_btn %}
 {% block page_content %}
     <div class="profile-content">
-        <div class="profile-section">
-            <h2 class="section-title">
-                <span class="material-icons">person</span>
-                Personal Information
-            </h2>
+        <div class="profile-section personal-info-card">
             <form method="post" enctype="multipart/form-data" class="profile-form">
                 {% csrf_token %}
-                <!-- Avatar Upload -->
-                <div class="avatar-section">
-                    <div class="current-avatar">
-                        {% if user.avatar %}
-                            <img src="{{ user.avatar.url }}"
-                                 alt="{{ user.first_name }}"
-                                 id="avatar-preview">
-                        {% else %}
-                            <div class="avatar-placeholder" id="avatar-preview">{{ user.first_name|first|default:"U" }}</div>
-                        {% endif %}
-                    </div>
-                    <div class="avatar-controls">
-                        <label for="id_avatar" class="btn-upload">
+                <div class="personal-info-container">
+                    <!-- Left Side: Avatar -->
+                    <div class="avatar-column">
+                        <div class="avatar-display">
+                            {% if user.avatar %}
+                                <img src="{{ user.avatar.url }}"
+                                     alt="{{ user.first_name }}"
+                                     id="avatar-preview"
+                                     class="profile-avatar">
+                                <div class="avatar-info">
+                                    <h3 class="avatar-name">
+                                        {% if user.first_name %}
+                                            {{ user.first_name }} {{ user.last_name }}
+                                        {% else %}
+                                            User Account
+                                        {% endif %}
+                                    </h3>
+                                    <p class="avatar-meta">Member since {{ user.date_joined|date:"Y" }}</p>
+                                </div>
+                            {% else %}
+                                <div class="avatar-empty-state">
+                                    <div class="empty-avatar-icon">
+                                        <span class="material-icons">account_circle</span>
+                                    </div>
+                                    <h3 class="empty-avatar-text">No Profile Photo</h3>
+                                    <p class="empty-avatar-subtitle">Upload your photo to personalize your profile</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <label for="id_avatar" class="btn-change-photo">
                             <span class="material-icons">photo_camera</span>
-                            Change Photo
+                            {% if user.avatar %}
+                                Change Photo
+                            {% else %}
+                                Add Photo
+                            {% endif %}
                         </label>
                         {{ form.avatar }}
-                        <p class="help-text">JPG, PNG or GIF (max. 5MB)</p>
+                        <p class="photo-help">JPG, PNG or GIF (max. 5MB)</p>
                     </div>
-                </div>
-                <!-- Form Fields -->
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="id_first_name">
-                            <span class="material-icons">badge</span>
-                            First Name
-                        </label>
-                        {{ form.first_name }}
-                        {% if form.first_name.errors %}<div class="error-message">{{ form.first_name.errors.0 }}</div>{% endif %}
+                    <!-- Right Side: Form Fields -->
+                    <div class="form-column">
+                        <h2 class="form-section-title">
+                            Personal
+                            <span class="title-accent">Information</span>
+                        </h2>
+                        <div class="form-fields">
+                            <div class="field-row">
+                                <div class="field-group">
+                                    <label for="id_first_name">FIRST NAME</label>
+                                    {{ form.first_name }}
+                                    {% if form.first_name.errors %}<div class="error-message">{{ form.first_name.errors.0 }}</div>{% endif %}
+                                </div>
+                                <div class="field-group">
+                                    <label for="id_last_name">LAST NAME</label>
+                                    {{ form.last_name }}
+                                    {% if form.last_name.errors %}<div class="error-message">{{ form.last_name.errors.0 }}</div>{% endif %}
+                                </div>
+                            </div>
+                            <div class="field-group field-full">
+                                <label for="id_email">EMAIL ADDRESS</label>
+                                <input type="email" value="{{ user.email }}" class="field-input" readonly>
+                            </div>
+                            <div class="field-group field-full">
+                                <label for="id_phone_number">PHONE NUMBER</label>
+                                {{ form.phone_number }}
+                                {% if form.phone_number.errors %}<div class="error-message">{{ form.phone_number.errors.0 }}</div>{% endif %}
+                            </div>
+                        </div>
+                        <div class="form-actions-inline">
+                            <button type="submit" class="btn-save-changes">
+                                Save Changes
+                                <span class="material-icons">arrow_forward</span>
+                            </button>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="id_last_name">
-                            <span class="material-icons">badge</span>
-                            Last Name
-                        </label>
-                        {{ form.last_name }}
-                        {% if form.last_name.errors %}<div class="error-message">{{ form.last_name.errors.0 }}</div>{% endif %}
-                    </div>
-                    <div class="form-group full-width">
-                        <label for="id_phone_number">
-                            <span class="material-icons">phone</span>
-                            Phone Number
-                        </label>
-                        {{ form.phone_number }}
-                        {% if form.phone_number.errors %}<div class="error-message">{{ form.phone_number.errors.0 }}</div>{% endif %}
-                    </div>
-                </div>
-                <div class="form-actions">
-                    <button type="submit" class="btn-primary">
-                        <span class="material-icons">save</span>
-                        Save Changes
-                    </button>
                 </div>
             </form>
         </div>
@@ -104,9 +124,7 @@
                         </div>
                         <div class="email-actions">
                             {% if not email.primary and email.verified %}
-                                <form method="post"
-                                      action="{% url 'make_email_primary' email.id %}"
-                                      style="display: inline">
+                                <form method="post" action="" style="display: inline">
                                     {% csrf_token %}
                                     <button type="submit"
                                             class="btn-text"
@@ -116,9 +134,7 @@
                                 </form>
                             {% endif %}
                             {% if not email.primary %}
-                                <form method="post"
-                                      action="{% url 'remove_email' email.id %}"
-                                      style="display: inline">
+                                <form method="post" action="" style="display: inline">
                                     {% csrf_token %}
                                     <button type="submit"
                                             class="btn-text text-danger"

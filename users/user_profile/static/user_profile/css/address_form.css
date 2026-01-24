@@ -1,0 +1,272 @@
+/* Address Form Styles - REX CC Premium Theme */
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:wght@400;600;700&display=swap');
+
+:root {
+  --bg-main: #F2F2F2;
+  --bg-card: #FFFFFF;
+  --text-pri: #111111;
+  --text-muted: #666666;
+  --accent-bronze: #CD7F32;
+  --accent-gold: #BFA15F;
+  --border-light: #E0E0E0;
+  --shadow-sm: 0 4px 20px rgba(0, 0, 0, 0.06);
+  --radius-md: 12px;
+  --radius-sm: 8px;
+  --font-heading: 'Playfair Display', serif;
+  --font-body: 'Montserrat', sans-serif;
+}
+
+/* Address Form */
+.address-form {
+  max-width: 100%;
+}
+
+/* Form Row */
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+/* Form Group */
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: var(--text-pri);
+}
+
+.form-group .required {
+  color: #dc3545;
+  margin-left: 0.25rem;
+}
+
+/* Form Controls */
+.form-control,
+.address-form input[type="text"],
+.address-form input[type="tel"],
+.address-form select {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: #FFFFFF;
+  border: 2px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  color: var(--text-pri);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+}
+
+.form-control:hover,
+.address-form input[type="text"]:hover,
+.address-form input[type="tel"]:hover,
+.address-form select:hover {
+  border-color: #cccccc;
+}
+
+.form-control:focus,
+.address-form input[type="text"]:focus,
+.address-form input[type="tel"]:focus,
+.address-form select:focus {
+  outline: none;
+  border-color: var(--accent-bronze);
+  box-shadow: 0 0 0 3px rgba(205, 127, 50, 0.1);
+  background: #FFFFFF;
+}
+
+.form-control::placeholder,
+.address-form input::placeholder {
+  color: #bbb;
+  font-weight: 300;
+}
+
+/* Address Label Options */
+.label-options {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.label-option {
+  position: relative;
+}
+
+.label-option input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.label-option label {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.65rem 1.5rem;
+  background: #FFFFFF;
+  border: 2px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin: 0;
+}
+
+.label-option input[type="radio"]:checked+label {
+  background: linear-gradient(135deg, rgba(205, 127, 50, 0.1) 0%, rgba(191, 161, 95, 0.1) 100%);
+  border-color: var(--accent-bronze);
+  color: var(--accent-bronze);
+  font-weight: 600;
+}
+
+.label-option label:hover {
+  border-color: var(--accent-bronze);
+  transform: translateY(-1px);
+}
+
+/* Custom Label Input */
+.custom-label-group {
+  margin-top: 0.75rem;
+}
+
+.custom-label-group input[type="text"] {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: #FFFFFF;
+  border: 2px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  color: var(--text-pri);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+}
+
+.custom-label-group input[type="text"]:focus {
+  outline: none;
+  border-color: var(--accent-bronze);
+  box-shadow: 0 0 0 3px rgba(205, 127, 50, 0.1);
+}
+
+.form-help-text {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* Hidden Label Field */
+.address-form input[name="label"] {
+  display: none;
+}
+
+/* Checkbox Group */
+.checkbox-group {
+  background: rgba(205, 127, 50, 0.05);
+  border: 1px solid rgba(205, 127, 50, 0.2);
+  border-radius: var(--radius-sm);
+  padding: 1rem;
+  margin: 1.5rem 0;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  margin: 0;
+  font-weight: 400;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: var(--accent-bronze);
+  border-radius: 4px;
+}
+
+.checkbox-label span {
+  color: var(--text-pri);
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+/* Form Actions */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-light);
+}
+
+/* Buttons */
+.btn-submit {
+  background: linear-gradient(135deg, #CD7F32 0%, #b06825 100%);
+  color: #fff;
+  padding: 0.875rem 2.5rem;
+  border-radius: var(--radius-sm);
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-body);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.btn-submit:hover {
+  background: linear-gradient(135deg, #b06825 0%, #9a5a1f 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(205, 127, 50, 0.35);
+}
+
+.btn-submit .material-icons {
+  font-size: 18px;
+}
+
+/* Error Messages */
+.error-message {
+  color: #dc3545;
+  font-size: 0.8rem;
+  margin-top: 0.35rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .label-options {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .label-option label {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .btn-submit {
+    width: 100%;
+    justify-content: center;
+  }
+}

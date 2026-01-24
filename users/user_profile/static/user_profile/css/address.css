@@ -1,0 +1,212 @@
+/* Address Management Styles - REX CC Premium Theme */
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:wght@400;600;700&display=swap');
+
+:root {
+  --bg-main: #F2F2F2;
+  --bg-card: #FFFFFF;
+  --text-pri: #111111;
+  --text-muted: #666666;
+  --accent-bronze: #CD7F32;
+  --accent-gold: #BFA15F;
+  --border-light: #E0E0E0;
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.08);
+  --radius-md: 12px;
+  --radius-sm: 8px;
+  --font-heading: 'Playfair Display', serif;
+  --font-body: 'Montserrat', sans-serif;
+}
+
+/* Addresses Grid */
+.addresses-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.5rem;
+  padding: 0;
+}
+
+/* Address Card */
+.address-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  position: relative;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+.address-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
+  border-color: var(--accent-bronze);
+}
+
+.address-card.default-address {
+  border-color: var(--accent-bronze);
+  background: rgba(205, 127, 50, 0.02);
+}
+
+/* Default Badge */
+.default-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: linear-gradient(135deg, #CD7F32 0%, #b06825 100%);
+  color: white;
+  padding: 0.35rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.default-badge .material-icons {
+  font-size: 14px;
+}
+
+/* Address Content */
+.address-content {
+  margin-bottom: 1rem;
+}
+
+.address-type-icon {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.address-type-icon .material-icons {
+  font-size: 24px;
+  color: var(--accent-bronze);
+}
+
+.address-type-icon p {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0;
+}
+
+/* Address Details */
+.address-details {
+  color: var(--text-pri);
+}
+
+.address-name {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-pri);
+  margin-bottom: 0.5rem;
+}
+
+.address-line {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin: 0.25rem 0;
+  line-height: 1.5;
+}
+
+.address-phone {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--text-pri);
+  font-weight: 500;
+  margin-top: 0.75rem;
+}
+
+.address-phone .material-icons {
+  font-size: 18px;
+  color: var(--accent-bronze);
+}
+
+/* Address Actions */
+.address-actions {
+  display: flex;
+  gap: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-light);
+  flex-wrap: wrap;
+}
+
+.btn-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: none;
+  border: none;
+  color: var(--accent-bronze);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0.5rem;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  font-family: var(--font-body);
+}
+
+.btn-text:hover {
+  color: #b06825;
+  text-decoration: underline;
+}
+
+.btn-text.text-danger {
+  color: #dc3545;
+}
+
+.btn-text.text-danger:hover {
+  color: #c82333;
+}
+
+.btn-text .material-icons {
+  font-size: 18px;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+}
+
+.empty-state .material-icons {
+  font-size: 64px;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.empty-state h3 {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  color: var(--text-pri);
+  margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+  color: var(--text-muted);
+  font-size: 1rem;
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .addresses-grid {
+    grid-template-columns: 1fr;
+  }
+}

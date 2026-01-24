@@ -96,7 +96,7 @@ class AddressForm(forms.ModelForm):
             ),
             "phone_number": forms.TextInput(
                 attrs={
-                    "placeholder": "09090909090",
+                    "placeholder": "9090909090",
                     "id": "phone_number",
                     "type": "tel",
                     "class": "form-control",

@@ -8,8 +8,8 @@ from allauth.account.models import EmailAddress
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.views.decorators.http import require_POST
-from customers.user_profile.models import Address
-from ..forms import ProfileEditForm
+from users.user_profile.models import Address
+from users.user_profile.forms import ProfileEditForm
 from django.http import JsonResponse
 
 User = get_user_model()

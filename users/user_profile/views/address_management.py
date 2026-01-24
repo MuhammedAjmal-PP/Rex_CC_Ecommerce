@@ -6,8 +6,8 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_POST
-from customers.user_profile.forms import AddressForm
-from customers.user_profile.models import Address
+from users.user_profile.forms import AddressForm
+from users.user_profile.models import Address
 
 
 @never_cache

@@ -548,6 +548,7 @@ body:not(.home-page) .site-header {
     text-transform: uppercase;
     color: #BFA15F;
     margin-bottom: 20px;
+    margin-left: 30px;
 }
 
 .footer-col ul {
@@ -576,40 +577,46 @@ body:not(.home-page) .site-header {
 }
 
 /* ========================================
-   11. TOAST MESSAGES
+   11. TOAST MESSAGES (Centered - Match Auth Page)
    ======================================== */
 
 .toast-container {
     position: fixed;
     top: 120px;
-    right: 30px;
+    left: 50%;
+    transform: translateX(-50%);
     z-index: 9999;
+    width: 90%;
+    max-width: 500px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 9px;
 }
 
 .toast-msg {
     background: white;
-    padding: 16px 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    padding: 14px 18px;
+    border-radius: 3px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    border: 1px solid #E0E0E0;
     display: flex;
     align-items: center;
-    gap: 12px;
-    font-size: 14px;
-    animation: slideInRight 0.3s ease;
+    justify-content: center;
+    gap: 9px;
+    font-size: 0.88rem;
+    text-align: center;
+    animation: slideDown 0.3s ease;
 }
 
-@keyframes slideInRight {
+@keyframes slideDown {
     from {
         opacity: 0;
-        transform: translateX(100%);
+        transform: translateY(-10px);
     }
 
     to {
         opacity: 1;
-        transform: translateX(0);
+        transform: translateY(0);
     }
 }
 
