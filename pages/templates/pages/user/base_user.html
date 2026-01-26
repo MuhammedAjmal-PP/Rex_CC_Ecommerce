@@ -32,11 +32,8 @@
     <!-- FIX 1: Add body_class block to body tag -->
     <body class="{% block body_class %}{% endblock body_class %}">
         <!-- Top Announcement Bar -->
-        <div class="top-bar">
-            <div class="text-container">
-                <span class="text-slide">EXPLORE GREAT OFFERS & HOT DEALS</span>
-                <span class="text-slide">OFFICIAL RETAILER FOR TISSOT & CASIO</span>
-            </div>
+        <div class="top-bar is-rolling">
+            <div class="announcement">OFFICIAL RETAILER · AUTHENTICITY GUARANTEED · FREE SHIPPING</div>
         </div>
         <!-- Intelligent Header -->
         <header class="site-header" id="siteHeader">
@@ -64,7 +61,7 @@
                             </div>
                             <div class="mega-column">
                                 <h4>Top Brands</h4>
-                                <div class="brand-grid">
+                                <div class="mega-brand-list">
                                     {% for brand in brands|slice:":6" %}
                                         <span>
                                             <a href="{% url 'product_list' %}?brand={{ brand.slug }}"
@@ -77,41 +74,21 @@
                                     {% endfor %}
                                 </div>
                             </div>
-                            <div class="mega-column featured-img">
-                                <div id="megaProductPreview">
-                                    {% if latest_variant %}
-                                        <a href="{% url 'product_detail' latest_variant.product.slug %}"
-                                           id="megaProductLink">
-                                            {% if latest_variant.images.first %}
-                                                <img src="{{ latest_variant.images.first.image.url }}"
-                                                     alt="{{ latest_variant.product.name }}"
-                                                     id="megaProductImage"
-                                                     class="mega-product-img">
-                                            {% elif latest_variant.product.thumbnail %}
-                                                <img src="{{ latest_variant.product.thumbnail.url }}"
-                                                     alt="{{ latest_variant.product.name }}"
-                                                     id="megaProductImage"
-                                                     class="mega-product-img">
-                                            {% else %}
-                                                <img src="https://via.placeholder.com/150x100?text=New+Arrival"
-                                                     alt="New Arrival"
-                                                     id="megaProductImage"
-                                                     class="mega-product-img">
-                                            {% endif %}
-                                            <span id="megaProductName">New: {{ latest_variant.product.name }}
-                                                {% if latest_variant.discount_percentage > 0 %}
-                                                    <br>
-                                                    <span style="color:red; font-size:12px;">{{ latest_variant.discount_percentage }}% OFF</span>
-                                                {% endif %}
-                                            </span>
-                                        </a>
-                                    {% else %}
-                                        <img src="https://via.placeholder.com/150x100?text=New+Arrival"
-                                             alt="New Arrival"
-                                             id="megaProductImage"
+                            <div class="mega-column featured-img" id="ProductCard">
+                                <div id="ProductPreview" class="mega-product-preview">
+                                    <span class="mega-featured-label">Latest Arrival</span>
+                                    <a href="#" class="ProductLink mega-product-link">
+                                        <img src=""
+                                             alt="Latest Product"
+                                             id="ProductImage"
                                              class="mega-product-img">
-                                        <span id="megaProductName">New Arrivals</span>
-                                    {% endif %}
+                                    </a>
+                                    <div class="mega-product-meta">
+                                        <span class="mega-product-brand" id="megaProductBrand"></span>
+                                        <span id="ProductName" class="mega-product-name"></span>
+                                        <span class="mega-product-spec" id="productCategory"></span>
+                                        <a href="#" class="ProductLink mega-product-cta">View Product →</a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -184,7 +161,7 @@
                 </div>
             </div>
         </header>
-        <!-- Premium Account Modal - Two Panel Design -->
+        <!-- Premium Account Modal - Luxury Two Panel -->
         <div class="modal fade"
              id="registerAccount"
              tabindex="-1"
@@ -199,7 +176,7 @@
                         <span class="material-icons">close</span>
                     </button>
                     <div class="account-modal-grid">
-                        <!-- Left Panel - Promotional Content -->
+                        <!-- LEFT PANEL -->
                         <div class="account-modal-promo">
                             <span class="promo-tagline">EXCLUSIVITY AWAITS</span>
                             <h2 class="promo-title">
@@ -208,20 +185,14 @@
                                 <span class="promo-accent">Precision</span>
                             </h2>
                             <p class="promo-description">
-                                Join an elite circle of collectors and enthusiasts. Experience horology at its absolute
-                                peak.
+                                Join an elite circle of collectors and enthusiasts.
+                                Experience horology at its absolute peak.
                             </p>
-                            <div class="promo-featured">
-                                <span class="featured-label">— FEATURED COLLECTION</span>
-                                <div class="featured-preview">
-                                    <span class="material-icons featured-play">play_circle</span>
-                                </div>
-                            </div>
                         </div>
-                        <!-- Right Panel - Auth Actions -->
+                        <!-- RIGHT PANEL -->
                         <div class="account-modal-auth">
                             <h3 class="auth-title">Welcome Back</h3>
-                            <p class="auth-subtitle">Please sign in to your dashboard or create a new profile.</p>
+                            <p class="auth-subtitle">Sign in to your dashboard or create a new profile to continue your journey.</p>
                             <div class="auth-actions">
                                 <a href="{% url 'account_login' %}" class="auth-btn auth-btn-primary">
                                     SIGN IN

@@ -1,15 +1,21 @@
 /* ===================================================================
-   PRODUCT CARD COMPONENT - Reusable across homepage, list, detail
-   User Auth Theme Compatible
+   PRODUCT CARD COMPONENT — LUXURY EDITION
+   Aligned with REX CC Brand System
    =================================================================== */
 
 .product-card {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    width: 280px;
-    flex-shrink: 0;
-    transition: transform 0.3s ease;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 280px;
+  flex-shrink: 0;
+  transition:
+    transform 0.4s ease,
+    box-shadow 0.4s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-6px);
 }
 
 /* ========================================
@@ -17,69 +23,69 @@
    ======================================== */
 
 .product-card__image-box {
-    position: relative;
-    aspect-ratio: 3/4;
-    background: #FAFAFA;
-    overflow: hidden;
-    margin-bottom: 20px;
-    display: block;
-    border-radius: 3px;
-    border: 1px solid #E0E0E0;
+  position: relative;
+  aspect-ratio: 3 / 4;
+  background: #fafafa;
+  overflow: hidden;
+  margin-bottom: 20px;
+  display: block;
+  border-radius: 3px;
+  border: 1px solid #e0e0e0;
 }
 
 .product-card__image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .product-card:hover .product-card__image {
-    transform: scale(1.05);
+  transform: scale(1.06);
 }
 
 /* ========================================
-   DISCOUNT BADGE
+   DISCOUNT BADGE — LUXURY TONE
    ======================================== */
 
 .product-card__discount-badge {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    background: #D32F2F;
-    color: #FFF;
-    font-size: 0.72rem;
-    font-weight: 700;
-    padding: 5px 11px;
-    border-radius: 3px;
-    z-index: 2;
-    letter-spacing: 0.5px;
-    box-shadow: 0 2px 8px rgba(211, 47, 47, 0.3);
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: linear-gradient(135deg, #cd7f32 0%, #b06825 100%);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 5px 11px;
+  border-radius: 3px;
+  z-index: 2;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 14px rgba(205, 127, 50, 0.35);
 }
 
 /* ========================================
-   OVERLAY (View Details)
+   OVERLAY CTA — EDITORIAL
    ======================================== */
 
 .product-card__overlay {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    background: linear-gradient(135deg, #CD7F32 0%, #b06825 100%);
-    color: #FFF;
-    text-transform: uppercase;
-    font-size: 0.72rem;
-    font-weight: 600;
-    letter-spacing: 1.5px;
-    padding: 16px;
-    text-align: center;
-    transform: translateY(100%);
-    transition: transform 0.3s ease;
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(2px);
+  color: #fff;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.4s ease;
 }
 
 .product-card:hover .product-card__overlay {
-    transform: translateY(0);
+  opacity: 1;
 }
 
 /* ========================================
@@ -87,55 +93,58 @@
    ======================================== */
 
 .product-card__info {
-    text-align: center;
-    padding: 0 8px;
+  text-align: center;
+  padding: 0 8px;
 }
 
 .product-card__brand {
-    display: block;
-    font-size: 0.7rem;
-    color: #666666;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    margin-bottom: 8px;
-    font-weight: 500;
+  display: block;
+  font-size: 0.65rem;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+  font-weight: 500;
 }
 
 .product-card__name {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.05rem;
-    color: #111111;
-    margin-bottom: 10px;
-    line-height: 1.3;
-    min-height: 2.6rem;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    font-weight: 400;
+  font-family: "Playfair Display", serif;
+  font-size: 1.05rem;
+  color: #111111;
+  margin-bottom: 10px;
+  line-height: 1.3;
+  min-height: 2.6rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-weight: 400;
 }
 
 /* ===================================== 
-   VARIANT ATTRIBUTES
+   VARIANT MICRO-SPECS
    ======================================== */
 
 .product-card__variant-info {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 12px;
-    flex-wrap: wrap;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  font-size: 0.65rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #777;
 }
 
-.product-card__variant-info .variant-attr {
-    font-size: 0.7rem;
-    color: #666666;
-    padding: 4px 10px;
-    background: #F2F2F2;
-    border-radius: 3px;
-    letter-spacing: 0.5px;
-    border: 1px solid #E0E0E0;
+.variant-attr::after {
+  content: "•";
+  margin-left: 8px;
+  color: #bbb;
+}
+
+.variant-attr:last-child::after {
+  display: none;
 }
 
 /* ========================================
@@ -143,60 +152,54 @@
    ======================================== */
 
 .product-card__pricing {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 12px;
-    margin-top: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
 }
 
 .product-card__price {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #111111;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #111111;
 }
 
 .product-card__original-price {
-    font-size: 0.9rem;
-    color: #999;
-    text-decoration: line-through;
-    font-weight: 400;
+  font-size: 0.85rem;
+  color: #999;
+  text-decoration: line-through;
+  font-weight: 400;
 }
 
 /* ========================================
-   RESPONSIVE ADJUSTMENTS
+   GRID ENHANCEMENT
+   ======================================== */
+
+.product-grid .product-card:hover {
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.08);
+}
+
+/* ========================================
+   RESPONSIVE
    ======================================== */
 
 @media (max-width: 768px) {
-    .product-card {
-        min-width: 220px;
-    }
+  .product-card {
+    min-width: 220px;
+  }
 
-    .product-card__name {
-        font-size: 1rem;
-        min-height: 2.4rem;
-    }
-
-    .product-card__discount-badge {
-        font-size: 0.68rem;
-        padding: 4px 9px;
-    }
+  .product-card__name {
+    font-size: 1rem;
+    min-height: 2.4rem;
+  }
 }
 
 /* ========================================
-   CAROUSEL SPECIFIC STYLES
+   CAROUSEL SUPPORT
    ======================================== */
 
 .carousel-container .product-card {
-    scroll-snap-align: start;
-    flex-shrink: 0;
-}
-
-/* ========================================
-   GRID SPECIFIC STYLES
-   ======================================== */
-
-.product-grid .product-card {
-    width: 100%;
-    max-width: 100%;
+  scroll-snap-align: start;
+  flex-shrink: 0;
 }

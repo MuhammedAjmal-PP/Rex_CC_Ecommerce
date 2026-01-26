@@ -107,110 +107,94 @@ setTimeout(() => {
 }, 4000);
 
 // Dynamic Mega Menu Product Preview
-document.addEventListener("DOMContentLoaded", function () {
-  console.log("DOM Content Loaded - Initializing mega menu");
+document.addEventListener("DOMContentLoaded", () => {
+  const megaMenu = document.querySelector(".mega-menu");
+  const card = document.getElementById("ProductCard");
 
-  const categoryLinks = document.querySelectorAll(".mega-category-link");
-  const brandLinks = document.querySelectorAll(".mega-brand-link");
-  const productImage = document.getElementById("megaProductImage");
-  const productName = document.getElementById("megaProductName");
-  const productLink = document.getElementById("megaProductLink");
+  const image = document.getElementById("ProductImage");
+  const name = document.getElementById("ProductName");
+  const brand = document.getElementById("megaProductBrand");
+  const category = document.getElementById("productCategory");
+  const links = document.querySelectorAll(".ProductLink");
 
-  console.log("Category links found:", categoryLinks.length);
-  console.log("Brand links found:", brandLinks.length);
-  console.log("Product elements:", {
-    image: !!productImage,
-    name: !!productName,
-    link: !!productLink,
-  });
+  let hoverTimeout = null;
+  let activeController = null;
 
-  let fetchTimeout;
+  // Hide featured column initially
+  if (card) card.style.display = "none";
 
-  function updateProductPreview(slug, type) {
-    console.log(`Updating preview for ${type}: ${slug}`);
+  async function fetchLatestVariant(query) {
+    // Cancel previous request
+    if (activeController) {
+      activeController.abort();
+    }
 
-    // Clear any pending requests
-    if (fetchTimeout) clearTimeout(fetchTimeout);
+    activeController = new AbortController();
 
-    // Debounce the request
-    fetchTimeout = setTimeout(() => {
-      const url = `/api/latest-product/?${type}=${slug}`;
-      console.log("Fetching from:", url);
+    try {
+      const res = await fetch(`/api/latest-product/?${query}`, {
+        signal: activeController.signal,
+      });
 
-      fetch(url)
-        .then((response) => {
-          console.log("Response status:", response.status);
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          return response.json();
-        })
-        .then((data) => {
-          console.log("Data received:", data);
+      const data = await res.json();
 
-          if (data.success && data.variant) {
-            const variant = data.variant;
+      // ❌ No variant → remove featured column & collapse layout
+      if (!data.success || !data.variant) {
+        if (card) card.style.display = "none";
+        if (megaMenu) megaMenu.classList.add("no-featured");
+        return;
+      }
 
-            // Update image
-            if (productImage) {
-              if (variant.thumbnail) {
-                productImage.src = variant.thumbnail;
-                productImage.alt = variant.name;
-              } else {
-                productImage.src =
-                  "https://via.placeholder.com/150x100?text=No+Image";
-              }
+      const v = data.variant;
 
-              // Add fade-in animation
-              productImage.style.opacity = "0";
-              setTimeout(() => {
-                productImage.style.transition = "opacity 0.3s ease";
-                productImage.style.opacity = "1";
-              }, 50);
-            }
+      // ✅ Variant exists → populate data
+      image.src = v.image;
+      image.alt = v.name;
 
-            // Update name with variant details
-            if (productName) {
-              let priceHtml = "";
-              if (variant.discount_percentage > 0) {
-                priceHtml = ` <br><span style="color:red; font-size:12px;">${variant.discount_percentage}% OFF</span>`;
-              }
-              productName.innerHTML = `New: ${variant.name}${priceHtml}`;
-            }
+      name.textContent = v.name;
+      brand.textContent = v.brand;
+      category.textContent = v.category;
 
-            // Update link
-            if (productLink && variant.slug) {
-              productLink.href = `/product/${variant.slug}/`;
-            }
-          } else {
-            console.warn("No variant data in response");
-          }
-        })
-        .catch((error) => {
-          console.error("Error fetching variant:", error);
-        });
-    }, 200); // 200ms debounce
+      links.forEach((link) => {
+        link.href = `/product/${v.slug}/`;
+      });
+
+      // ✅ Show featured column & restore layout
+      if (card) card.style.display = "flex";
+      if (megaMenu) megaMenu.classList.remove("no-featured");
+    } catch (err) {
+      if (err.name !== "AbortError") {
+        console.error("Mega menu preview error:", err);
+        if (card) card.style.display = "none";
+        if (megaMenu) megaMenu.classList.add("no-featured");
+      }
+    }
   }
 
-  // Add hover listeners to category links
-  categoryLinks.forEach((link) => {
-    link.addEventListener("mouseenter", function () {
-      const categorySlug = this.getAttribute("data-category-slug");
-      if (categorySlug) {
-        updateProductPreview(categorySlug, "category");
+  function delayedFetch(query) {
+    clearTimeout(hoverTimeout);
+    hoverTimeout = setTimeout(() => {
+      fetchLatestVariant(query);
+    }, 140); // luxury hover delay
+  }
+
+  // CATEGORY HOVER
+  document.querySelectorAll(".mega-category-link").forEach((el) => {
+    el.addEventListener("mouseenter", () => {
+      const slug = el.dataset.categorySlug;
+      if (slug) {
+        delayedFetch(`category=${slug}`);
       }
     });
   });
 
-  // Add hover listeners to brand links
-  brandLinks.forEach((link) => {
-    link.addEventListener("mouseenter", function () {
-      const brandSlug = this.getAttribute("data-brand-slug");
-      if (brandSlug) {
-        updateProductPreview(brandSlug, "brand");
+  // BRAND HOVER
+  document.querySelectorAll(".mega-brand-link").forEach((el) => {
+    el.addEventListener("mouseenter", () => {
+      const slug = el.dataset.brandSlug;
+      if (slug) {
+        delayedFetch(`brand=${slug}`);
       }
     });
   });
-
-  console.log("Mega menu initialization complete");
 });

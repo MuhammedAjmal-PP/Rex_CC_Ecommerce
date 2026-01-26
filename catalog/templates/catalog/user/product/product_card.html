@@ -1,46 +1,44 @@
 <!-- Product Card Component for Variants -->
 <!-- Usage: Include this template with context: variant -->
 <div class="product-card">
-    <a href="{% url 'product_detail' variant.product.slug %}" class="product-card__image-box">
+    <a href="{% url 'product_detail' variant.product.slug %}"
+       class="product-card__image-box">
         {% if variant.images.exists %}
-        {% with primary_image=variant.images.first %}
-        <img src="{{ primary_image.image.url }}" alt="{{ variant.product.name }}" class="product-card__image"
-            loading="lazy">
-        {% endwith %}
+            {% with primary_image=variant.images.first %}
+                <img src="{{ primary_image.image.url }}"
+                     alt="{{ variant.product.name }}"
+                     class="product-card__image"
+                     loading="lazy">
+            {% endwith %}
         {% elif variant.product.thumbnail %}
-        <img src="{{ variant.product.thumbnail.url }}" alt="{{ variant.product.name }}" class="product-card__image"
-            loading="lazy">
+            <img src="{{ variant.product.thumbnail.url }}"
+                 alt="{{ variant.product.name }}"
+                 class="product-card__image"
+                 loading="lazy">
         {% else %}
-        <img src="https://via.placeholder.com/600x800?text=No+Image" alt="{{ variant.product.name }}"
-            class="product-card__image" loading="lazy">
+            <img src="https://via.placeholder.com/600x800?text=No+Image"
+                 alt="{{ variant.product.name }}"
+                 class="product-card__image"
+                 loading="lazy">
         {% endif %}
-
         {% if variant.discount_percentage and variant.discount_percentage > 0 %}
-        <span class="product-card__discount-badge">-{{ variant.discount_percentage }}%</span>
+            <span class="product-card__discount-badge">-{{ variant.discount_percentage }}%</span>
         {% endif %}
-
-        <div class="product-card__overlay">View Details</div>
+        <div class="product-card__overlay">Discover</div>
     </a>
-
     <div class="product-card__info">
         <span class="product-card__brand">{{ variant.product.brand.name }}</span>
         <h3 class="product-card__name">{{ variant.product.name }}</h3>
-
         <div class="product-card__variant-info">
-            {% if variant.dial_color %}
-            <span class="variant-attr">{{ variant.dial_color }} Dial</span>
-            {% endif %}
-            {% if variant.case_size_mm %}
-            <span class="variant-attr">{{ variant.case_size_mm }}mm</span>
-            {% endif %}
+            {% if variant.dial_color %}<span class="variant-attr">{{ variant.dial_color }} Dial</span>{% endif %}
+            {% if variant.case_size_mm %}<span class="variant-attr">{{ variant.case_size_mm }}mm</span>{% endif %}
         </div>
-
         <div class="product-card__pricing">
             {% if variant.discount_percentage and variant.discount_percentage > 0 %}
-            <span class="product-card__price">₹{{ variant.final_price|floatformat:0 }}</span>
-            <span class="product-card__original-price">₹{{ variant.price|floatformat:0 }}</span>
+                <span class="product-card__price">₹{{ variant.final_price|floatformat:0 }}</span>
+                <span class="product-card__original-price">₹{{ variant.price|floatformat:0 }}</span>
             {% else %}
-            <span class="product-card__price">₹{{ variant.price|floatformat:0 }}</span>
+                <span class="product-card__price">₹{{ variant.price|floatformat:0 }}</span>
             {% endif %}
         </div>
     </div>
