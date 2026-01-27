@@ -34,19 +34,19 @@ class ProfileEditForm(forms.ModelForm):
         fields = ["first_name", "last_name", "phone_number", "avatar"]
         widgets = {
             "first_name": forms.TextInput(
-                attrs={"class": "form-control", "placeholder": "First Name"}
+                attrs={"class": "premium-input", "placeholder": "e.g. John"}
             ),
             "last_name": forms.TextInput(
-                attrs={"class": "form-control", "placeholder": "Last Name"}
+                attrs={"class": "premium-input", "placeholder": "e.g. Doe"}
             ),
             "phone_number": forms.TextInput(
-                attrs={"class": "form-control", "placeholder": "0XXXXXXXXXX"}
+                attrs={"class": "premium-input", "placeholder": "7034232948"}
             ),
             "avatar": forms.FileInput(
                 attrs={
-                    "class": "form-control",
+                    "class": "d-none",
                     "accept": "image/*",
-                    "id": "avatar-input",
+                    "id": "id_avatar",
                 }
             ),
         }

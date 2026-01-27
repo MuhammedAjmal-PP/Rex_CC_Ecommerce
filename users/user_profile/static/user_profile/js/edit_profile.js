@@ -17,7 +17,7 @@ function togglePassword(inputElement, button) {
 
 // Avatar Cropping Functionality
 function initAvatarCropping() {
-    const avatarInput = document.getElementById('avatar-input');
+    const avatarInput = document.getElementById('id_avatar');
     const avatarPreview = document.getElementById('avatar-preview');
     const cropModal = document.getElementById('avatarCropModal');
     const cropImage = document.getElementById('cropImage');
@@ -69,7 +69,7 @@ function initAvatarCropping() {
         cropper = new Cropper(cropImage, {
             viewMode: 2,
             dragMode: 'crop',
-            aspectRatio: NaN, // Free-form cropping - no aspect ratio restriction
+            aspectRatio: NaN, // Free-form cropping (Free Size) - as requested
             autoCropArea: 1,
             autoCrop: true,
             restore: true,
@@ -195,10 +195,14 @@ function initPasswordChange() {
     // Toggle button text when collapse shows/hides
     collapseElement.addEventListener('shown.bs.collapse', function () {
         toggleBtnText.textContent = 'Cancel';
+        const icon = document.getElementById('toggleBtnIcon');
+        if (icon) icon.style.display = 'none';
     });
 
     collapseElement.addEventListener('hidden.bs.collapse', function () {
         toggleBtnText.textContent = 'Change Password';
+        const icon = document.getElementById('toggleBtnIcon');
+        if (icon) icon.style.display = 'inline';
     });
 
     // Password change form submission

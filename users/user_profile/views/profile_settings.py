@@ -24,7 +24,9 @@ def profile(request):
     """
     Renders the user profile dashboard with addresses and email management.
     """
-    addresses = Address.active.filter(user=request.user)
+    addresses = Address.active.filter(user=request.user).order_by(
+        "-is_default", "-created_at"
+    )
     email_addresses = EmailAddress.objects.filter(user=request.user)
     context = {
         "addresses": addresses,

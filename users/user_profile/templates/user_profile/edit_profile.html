@@ -1,284 +1,202 @@
 {% extends "user_profile/profile_base.html" %}
 {% load static %}
 {% block extra_page_css %}
-    <link rel="stylesheet"
-          href="{% static 'user_profile/css/edit_profile.css' %}">
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
 {% endblock extra_page_css %}
-{% block page_header %}
-    Edit Profile
-{% endblock page_header %}
-{% block page_subtitle %}
-    Update your personal information
-{% endblock page_subtitle %}
-{% block page_nav_btn %}
-    <a href="{% url 'user_profile' %}" class="btn-primary">Cancel</a>
-{% endblock page_nav_btn %}
+
 {% block page_content %}
-    <div class="profile-content">
-        <div class="profile-section personal-info-card">
+<div class="profile-page-header">
+    <h1 class="main-title">Edit Profile</h1>
+    <p class="main-subtitle">Manage your personal information and security settings.</p>
+</div>
+
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+
+        <!-- SECTION 1: Personal Details -->
+        <div class="mb-5">
+            <h3 class="section-title">Personal Details</h3>
+
             <form method="post" enctype="multipart/form-data" class="profile-form">
                 {% csrf_token %}
-                <div class="personal-info-container">
-                    <!-- Left Side: Avatar -->
-                    <div class="avatar-column">
-                        <div class="avatar-display">
+
+                <div class="row align-items-center mb-4">
+                    <!-- Avatar Column -->
+                    <div class="col-md-3 text-center">
+                        <div class="avatar-wrapper mb-2">
                             {% if user.avatar %}
-                                <img src="{{ user.avatar.url }}"
-                                     alt="{{ user.first_name }}"
-                                     id="avatar-preview"
-                                     class="profile-avatar">
-                                <div class="avatar-info">
-                                    <h3 class="avatar-name">
-                                        {% if user.first_name %}
-                                            {{ user.first_name }} {{ user.last_name }}
-                                        {% else %}
-                                            User Account
-                                        {% endif %}
-                                    </h3>
-                                    <p class="avatar-meta">Member since {{ user.date_joined|date:"Y" }}</p>
-                                </div>
+                            <img src="{{ user.avatar.url }}" alt="Avatar" id="avatar-preview">
                             {% else %}
-                                <div class="avatar-empty-state">
-                                    <div class="empty-avatar-icon">
-                                        <span class="material-icons">account_circle</span>
-                                    </div>
-                                    <h3 class="empty-avatar-text">No Profile Photo</h3>
-                                    <p class="empty-avatar-subtitle">Upload your photo to personalize your profile</p>
-                                </div>
+                            <div class="avatar-placeholder-circle" id="avatar-preview">
+                                <span class="material-icons text-muted" style="font-size: 3rem;">person</span>
+                            </div>
                             {% endif %}
+                            <label for="id_avatar" class="btn-avatar-edit">
+                                <span class="material-icons">edit</span>
+                            </label>
+                            <input type="file" name="avatar" id="id_avatar" accept="image/*" class="d-none">
                         </div>
-                        <label for="id_avatar" class="btn-change-photo">
-                            <span class="material-icons">photo_camera</span>
-                            {% if user.avatar %}
-                                Change Photo
-                            {% else %}
-                                Add Photo
-                            {% endif %}
-                        </label>
-                        {{ form.avatar }}
-                        <p class="photo-help">JPG, PNG or GIF (max. 5MB)</p>
+                        <span class="avatar-help-text">Tap to change</span>
                     </div>
-                    <!-- Right Side: Form Fields -->
-                    <div class="form-column">
-                        <h2 class="form-section-title">
-                            Personal
-                            <span class="title-accent">Information</span>
-                        </h2>
-                        <div class="form-fields">
-                            <div class="field-row">
-                                <div class="field-group">
-                                    <label for="id_first_name">FIRST NAME</label>
-                                    {{ form.first_name }}
-                                    {% if form.first_name.errors %}<div class="error-message">{{ form.first_name.errors.0 }}</div>{% endif %}
-                                </div>
-                                <div class="field-group">
-                                    <label for="id_last_name">LAST NAME</label>
-                                    {{ form.last_name }}
-                                    {% if form.last_name.errors %}<div class="error-message">{{ form.last_name.errors.0 }}</div>{% endif %}
-                                </div>
+
+                    <!-- Inputs Column -->
+                    <div class="col-md-9">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="premium-label">First Name</label>
+                                {{ form.first_name }}
                             </div>
-                            <div class="field-group field-full">
-                                <label for="id_email">EMAIL ADDRESS</label>
-                                <input type="email" value="{{ user.email }}" class="field-input" readonly>
+                            <div class="col-md-6 mb-3">
+                                <label class="premium-label">Last Name</label>
+                                {{ form.last_name }}
                             </div>
-                            <div class="field-group field-full">
-                                <label for="id_phone_number">PHONE NUMBER</label>
+                            <div class="col-md-12">
+                                <label class="premium-label">Phone Number</label>
                                 {{ form.phone_number }}
-                                {% if form.phone_number.errors %}<div class="error-message">{{ form.phone_number.errors.0 }}</div>{% endif %}
                             </div>
                         </div>
-                        <div class="form-actions-inline">
-                            <button type="submit" class="btn-save-changes">
-                                Save Changes
-                                <span class="material-icons">arrow_forward</span>
-                            </button>
-                        </div>
                     </div>
+                </div>
+
+                <div class="text-end">
+                    <button type="submit" class="btn-premium">Save Personal Details</button>
                 </div>
             </form>
         </div>
-        <!-- Email Management Section -->
-        <div class="profile-section">
-            <h2 class="section-title">
-                <span class="material-icons">email</span>
-                Email Addresses
-            </h2>
-            <div class="email-list">
-                {% for email in request.user.emailaddress_set.all %}
-                    <div class="email-item {% if email.primary %}primary{% endif %}">
-                        <div class="email-info">
-                            <span class="email-address">{{ email.email }}</span>
-                            <div class="email-badges">
-                                {% if email.primary %}<span class="badge badge-primary">Primary</span>{% endif %}
-                                {% if email.verified %}
-                                    <span class="badge badge-verified">
-                                        <span class="material-icons">verified</span>
-                                        Verified
-                                    </span>
-                                {% else %}
-                                    <span class="badge badge-unverified">Unverified</span>
-                                {% endif %}
-                            </div>
-                        </div>
-                        <div class="email-actions">
-                            {% if not email.primary and email.verified %}
-                                <form method="post" action="" style="display: inline">
-                                    {% csrf_token %}
-                                    <button type="submit"
-                                            class="btn-text"
-                                            onclick="return confirm('This will change your primary email and block the old email. Continue?');">
-                                        Make Primary
-                                    </button>
-                                </form>
+
+        <!-- SECTION 2: Email Addresses -->
+        <div class="mb-5">
+            <h3 class="section-title">Email Addresses</h3>
+
+            <!-- Existing Emails List -->
+            <div class="email-list mb-4">
+                {% for email in user.emailaddress_set.all %}
+                <div class="email-item">
+                    <div>
+                        <span class="email-address">{{ email.email }}</span>
+                        <div class="mt-1">
+                            {% if email.primary %}
+                            <span class="email-badge primary">Primary</span>
                             {% endif %}
-                            {% if not email.primary %}
-                                <form method="post" action="" style="display: inline">
-                                    {% csrf_token %}
-                                    <button type="submit"
-                                            class="btn-text text-danger"
-                                            onclick="return confirm('Remove this email?');">Remove</button>
-                                </form>
+                            {% if email.verified %}
+                            <span class="email-badge verified">Verified</span>
+                            {% else %}
+                            <span class="email-badge unverified">Unverified</span>
                             {% endif %}
                         </div>
                     </div>
+                    <div>
+                        {% if not email.primary and email.verified %}
+                        <form action="" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name="email" value="{{ email.email }}">
+                            <button type="submit" name="action_make_primary" class="btn-upload-trigger">
+                                Make Primary
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-muted">No email addresses added yet.</p>
                 {% endfor %}
             </div>
-            <!-- Add Email Form -->
-            <div class="add-email-section">
-                <h3 class="subsection-title">Add New Email</h3>
-                <form method="post" action="#" class="add-email-form">
-                    {% csrf_token %}
-                    <div class="form-group">
-                        <label for="email">
-                            <span class="material-icons">add_circle</span>
-                            New Email Address
-                        </label>
-                        <div class="input-with-button">
-                            <input type="email"
-                                   name="email"
-                                   id="email"
-                                   class="form-control"
-                                   placeholder="your.new@email.com"
-                                   required>
-                            <button type="submit" class="btn-primary">Add Email</button>
-                        </div>
-                        <p class="help-text">
-                            <span>You'll receive a verification email to confirm this address.</span>
-                            <br>
-                            <span>NB:it's pending</span>
-                        </p>
-                    </div>
-                </form>
+
+            <!-- Add Email Input (Static / Pending Implementation) -->
+            <div class="add-email-wrapper">
+                <label class="premium-label mb-2">Add New Email</label>
+                <div class="input-group">
+                    <input type="email" class="premium-input" placeholder="Enter new email address">
+                    <button class="btn-add" type="button">Add</button>
+                </div>
             </div>
         </div>
-        <!-- Security Section -->
-        <div class="profile-section" id="passwordSection">
-            <h2 class="section-title">
-                <span class="material-icons">security</span>
-                Security
-            </h2>
-            <div class="card p-4">
-                <!-- Password Row -->
-                <div class="d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Password</h5>
-                    <button class="btn-secondary"
-                            type="button"
-                            id="togglePasswordBtn"
-                            data-bs-toggle="collapse"
-                            data-bs-target="#changePasswordCollapse"
-                            aria-expanded="false"
-                            aria-controls="changePasswordCollapse">
-                        <span id="toggleBtnText">Change Password</span>
-                    </button>
-                </div>
-                <!-- Collapse -->
-                <div id="changePasswordCollapse" class="collapse mt-4">
-                    <div class="border-top pt-4">
-                        <form id="changePasswordForm"
-                              class="mx-auto"
-                              style="max-width: 420px"
-                              data-change-password-url="{% url 'change_password' %}">
-                            {% csrf_token %}
-                            <div class="d-flex flex-column">
-                                <!-- Alert Box (Always Present) -->
-                                <div id="passwordAlert"></div>
-                                <!-- Current Password -->
-                                <div class="mb-3">
-                                    <label class="form-label">Current Password</label>
-                                    <div class="password-input-wrapper">
-                                        <input type="password" name="old_password" class="form-control" required>
-                                        <button type="button"
-                                                class="password-toggle"
-                                                onclick="togglePassword(this.previousElementSibling, this)">
-                                            <span class="material-icons">visibility</span>
-                                        </button>
-                                    </div>
-                                </div>
-                                <!-- New Password -->
-                                <div class="mb-3">
-                                    <label class="form-label">New Password</label>
-                                    <div class="password-input-wrapper">
-                                        <input type="password" name="new_password1" class="form-control" required>
-                                        <button type="button"
-                                                class="password-toggle"
-                                                onclick="togglePassword(this.previousElementSibling, this)">
-                                            <span class="material-icons">visibility</span>
-                                        </button>
-                                    </div>
-                                    <small class="text-muted">Must be at least 8 characters</small>
-                                </div>
-                                <!-- Confirm Password -->
-                                <div class="mb-4">
-                                    <label class="form-label">Confirm New Password</label>
-                                    <div class="password-input-wrapper">
-                                        <input type="password" name="new_password2" class="form-control" required>
-                                        <button type="button"
-                                                class="password-toggle"
-                                                onclick="togglePassword(this.previousElementSibling, this)">
-                                            <span class="material-icons">visibility</span>
-                                        </button>
-                                    </div>
-                                </div>
-                                <!-- Actions -->
-                                <button type="submit" class="btn-primary justify-content-center">
-                                    ✓ Update
-                                    Password
+
+        <!-- SECTION 3: Security -->
+        <div class="mb-5">
+            <div class="d-flex justify-content-between align-items-center section-title" style="margin-bottom: 0;">
+                <span style="border: none; padding: 0; margin: 0;">Security</span>
+                <a class="password-toggle-link" data-bs-toggle="collapse" href="#changePasswordCollapse" role="button"
+                    aria-expanded="false" aria-controls="changePasswordCollapse" id="togglePasswordBtn">
+                    <span id="toggleBtnText">Change Password</span>
+                    <span class="material-icons fs-5 ms-1" id="toggleBtnIcon">lock</span>
+                </a>
+            </div>
+
+            <div class="collapse" id="changePasswordCollapse">
+                <div class="password-form-wrapper">
+                    <div id="passwordAlert"></div>
+                    <form id="changePasswordForm" method="post" data-change-password-url="{% url 'change_password' %}">
+                        {% csrf_token %}
+
+                        <div class="mb-3 premium-form-group">
+                            <label class="premium-label">Current Password</label>
+                            <div class="password-input-wrapper">
+                                <input type="password" name="old_password" class="premium-input" required>
+                                <button class="btn-password-toggle" type="button"
+                                    onclick="togglePassword(this.previousElementSibling, this)">
+                                    <span class="material-icons">visibility</span>
                                 </button>
                             </div>
-                        </form>
-                    </div>
+                        </div>
+
+                        <div class="mb-3 premium-form-group">
+                            <label class="premium-label">New Password</label>
+                            <div class="password-input-wrapper">
+                                <input type="password" name="new_password1" class="premium-input" required>
+                                <button class="btn-password-toggle" type="button"
+                                    onclick="togglePassword(this.previousElementSibling, this)">
+                                    <span class="material-icons">visibility</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="mb-3 premium-form-group">
+                            <label class="premium-label">Confirm Password</label>
+                            <div class="password-input-wrapper">
+                                <input type="password" name="new_password2" class="premium-input" required>
+                                <button class="btn-password-toggle" type="button"
+                                    onclick="togglePassword(this.previousElementSibling, this)">
+                                    <span class="material-icons">visibility</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="text-end">
+                            <button type="submit" class="btn-premium">Update Password</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
+
     </div>
+</div>
 {% endblock page_content %}
+
 {% block add_extra %}
-    <div class="modal fade" id="avatarCropModal" tabindex="-1">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Crop Avatar</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+<div class="modal fade" id="avatarCropModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Adjust Image</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="crop-container">
+                    <img id="cropImage" src="" alt="Crop">
                 </div>
-                <div class="modal-body">
-                    <div class="crop-container">
-                        <img id="cropImage" src="" alt="Crop" style="max-width: 100%;">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button"
-                            id="cancelCropBtn"
-                            class="btn-secondary"
-                            data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" id="cropBtn" class="btn-primary">Apply Crop</button>
-                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-upload-trigger" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" id="cropBtn" class="btn-premium" style="min-width: 150px;">Apply</button>
             </div>
         </div>
     </div>
+</div>
 {% endblock add_extra %}
+
 {% block extra_page_js %}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
-    <script src="{% static 'user_profile/js/edit_profile.js' %}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+<script src="{% static 'user_profile/js/edit_profile.js' %}"></script>
 {% endblock extra_page_js %}

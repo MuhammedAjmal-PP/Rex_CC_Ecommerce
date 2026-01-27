@@ -1,7 +1,7 @@
 from django.urls import path
 from .views.address_management import (
     add_address,
-    address_list,
+    user_address,
     delete_address,
     edit_address,
     toggle_default_address,
@@ -15,7 +15,7 @@ urlpatterns = [
     path("profile/edit/", edit_profile, name="edit_profile"),
     path("change-password/", change_password, name="change_password"),
     # Address
-    path("addresses/", address_list, name="user_address"),
+    path("addresses/", user_address, name="user_address"),
     path("address/add/", add_address, name="add_address"),
     path("address/<uuid:address_id>/edit/", edit_address, name="address_edit"),
     path(

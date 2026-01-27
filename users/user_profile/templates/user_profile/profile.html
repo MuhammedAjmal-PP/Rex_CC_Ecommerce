@@ -1,96 +1,151 @@
 {% extends "user_profile/profile_base.html" %}
-{% block page_header %}
-    My Profile
-{% endblock page_header %}
-{% block page_subtitle %}
-    Manage your account settings and preferences
-{% endblock page_subtitle %}
-{% block page_nav_btn %}
-    <a href="{% url 'edit_profile' %}" class="btn-primary">
-        <span class="material-icons">edit</span>
-        Edit Profile
-    </a>
-{% endblock page_nav_btn %}
-<!-- Profile Information Card -->
 {% block page_content %}
-    <div class="info-card">
-        <div class="card-header">
-            <h3 class="card-title">
-                <span class="material-icons">account_circle</span>
-                Personal Information
-            </h3>
+    <div class="profile-page-header">
+        <div class="d-flex justify-content-between align-items-end">
+            <div>
+                <h1 class="main-title">Overview</h1>
+                <p class="main-subtitle">Welcome to your personal dashboard.</p>
+            </div>
+            <a href="{% url 'edit_profile' %}"
+               class="btn-premium"
+               style="min-width: auto;
+                      padding: 0.8rem 1.5rem">Edit Profile</a>
         </div>
-        <div class="card-body">
-            <div class="info-grid">
-                <div class="info-item">
-                    <label>First Name</label>
-                    <p>{{ user.first_name|default:"Not provided" }}</p>
+    </div>
+    <!-- Personal Info Section -->
+    <div class="mb-5">
+        <h3 style="font-family: var(--font-heading);
+                   font-size: 1.5rem;
+                   margin-bottom: 1.5rem;
+                   color: var(--text-pri)">Personal Details</h3>
+        <div class="row align-items-center">
+            <div class="col-md-2 mb-4 text-center">
+                <div style="width: 100px;
+                            height: 100px;
+                            border-radius: 50%;
+                            overflow: hidden;
+                            margin: 0 auto;
+                            border: 2px solid var(--color-gold)">
+                    {% if user.avatar %}
+                        <img src="{{ user.avatar.url }}"
+                             alt="Profile"
+                             style="width: 100%;
+                                    height: 100%;
+                                    object-fit: cover">
+                    {% else %}
+                        <div style="width: 100%;
+                                    height: 100%;
+                                    background: #f0f0f0;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    font-family: var(--font-heading);
+                                    font-size: 2rem;
+                                    color: #999">{{ user.first_name|first|upper|default:"U" }}</div>
+                    {% endif %}
                 </div>
-                <div class="info-item">
-                    <label>Last Name</label>
-                    <p>{{ user.last_name|default:"Not provided" }}</p>
-                </div>
-                <div class="info-item">
-                    <label>Email</label>
-                    <p>{{ user.email }}</p>
-                </div>
-                <div class="info-item">
-                    <label>Phone Number</label>
-                    <p>{{ user.phone_number|default:"Not provided" }}</p>
+            </div>
+            <div class="col-md-10">
+                <div class="row">
+                    <div class="col-md-4 mb-4">
+                        <label class="premium-label">Full Name</label>
+                        <div class="premium-input"
+                             style="border-bottom: 1px solid #eee;
+                                    padding-bottom: 0.5rem">
+                            {{ user.first_name|default:"-" }} {{ user.last_name|default:"" }}
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <label class="premium-label">Email Address</label>
+                        <div class="premium-input"
+                             style="border-bottom: 1px solid #eee;
+                                    padding-bottom: 0.5rem">{{ user.email }}</div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <label class="premium-label">Phone</label>
+                        <div class="premium-input"
+                             style="border-bottom: 1px solid #eee;
+                                    padding-bottom: 0.5rem">{{ user.phone_number|default:"Not provided" }}</div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    <!-- Addresses Card -->
-    <div class="info-card">
-        <div class="card-header">
-            <h3 class="card-title">
-                <span class="material-icons">location_on</span>
-                My Addresses
+    <!-- Quick Stats / Actions Placeholder (Future Proofing) -->
+    <div class="row mb-5">
+        <div class="col-md-4">
+            <div style="padding: 1.5rem;
+                        border: 1px solid var(--border-light);
+                        text-align: center">
+                <h4 style="font-size: 2rem;
+                           color: var(--color-gold);
+                           font-family: var(--font-heading)">0</h4>
+                <p class="premium-label" style="margin: 0;">Active Orders</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div style="padding: 1.5rem;
+                        border: 1px solid var(--border-light);
+                        text-align: center">
+                <h4 style="font-size: 2rem;
+                           color: var(--color-gold);
+                           font-family: var(--font-heading)">0</h4>
+                <p class="premium-label" style="margin: 0;">Wishlist Items</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div style="padding: 1.5rem;
+                        border: 1px solid var(--border-light);
+                        text-align: center">
+                <h4 style="font-size: 2rem;
+                           color: var(--color-gold);
+                           font-family: var(--font-heading)">{{ user.cart.items.count|default:"0" }}</h4>
+                <p class="premium-label" style="margin: 0;">My Cart</p>
+            </div>
+        </div>
+    </div>
+    <!-- Addresses Preview -->
+    <div>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 style="font-family: var(--font-heading);
+                       font-size: 1.5rem;
+                       color: var(--text-pri);
+                       margin: 0">
+                Default
+                Address
             </h3>
-            <a href="{% url "user_address" %}" class="btn-secondary-sm">
-                <span class="material-icons">view_list</span>
-                Manage Addresses
-            </a>
+            <a href="{% url 'user_address' %}" class="btn-upload-trigger">Manage Addresses</a>
         </div>
-        <div class="card-body">
-            {% if addresses %}
-                <div class="address-list">
-                    {% for address in addresses|slice:":3" %}
-                        <div class="address-item {% if address.is_default %}default{% endif %}">
-                            <div class="address-icon">
-                                {% if address.address_type == 'home' %}
-                                    <span class="material-icons">home</span>
-                                {% elif address.address_type == 'work' %}
-                                    <span class="material-icons">work</span>
-                                {% else %}
-                                    <span class="material-icons">place</span>
-                                {% endif %}
-                            </div>
-                            <div class="address-details">
-                                <div class="address-header">
-                                    <h4>{{ address.full_name }}</h4>
-                                    {% if address.is_default %}<span class="default-badge">Default</span>{% endif %}
-                                </div>
-                                <p>{{ address.address_line_1 }}</p>
-                                <p>{{ address.city }}, {{ address.state }} {{ address.postal_code }}</p>
-                                <p class="address-phone">{{ address.phone_number }}</p>
-                            </div>
-                        </div>
-                    {% endfor %}
+        {% if addresses %}
+            {% with default_address=addresses.first %}
+                <div style="border: 1px solid var(--border-light);
+                            padding: 2rem;
+                            position: relative">
+                    <h4 style="font-family: var(--font-heading);
+                               font-size: 1.25rem;
+                               margin-bottom: 0.5rem">{{ default_address.full_name }}</h4>
+                    <p style="color: var(--text-sec); line-height: 1.6;">
+                        {{ default_address.address_line_1 }}
+                        <br>
+                        {{ default_address.city }}, {{ default_address.state }} {{ default_address.postal_code }}
+                        <br>
+                        {{ default_address.country.name }}
+                    </p>
+                    <div style="margin-top: 1rem;">
+                        <span class="premium-label"
+                              style="display: inline-block;
+                                     margin-right: 1rem">Phone:</span>
+                        <span style="color: var(--text-pri);">{{ default_address.phone_number }}</span>
+                    </div>
                 </div>
-                {% if addresses.count > 3 %}
-                    <a href="{% url 'user_address' %}" class="view-all-link">
-                        View all {{ addresses.count }} addresses
-                        <span class="material-icons">arrow_forward</span>
-                    </a>
-                {% endif %}
-            {% else %}
-                <div class="empty-state">
-                    <span class="material-icons">location_off</span>
-                    <p>No addresses added yet</p>
-                </div>
-            {% endif %}
-        </div>
+            {% endwith %}
+        {% else %}
+            <div style="border: 1px solid var(--border-light);
+                        padding: 3rem;
+                        text-align: center">
+                <p style="color: var(--text-sec); margin-bottom: 1rem;">You haven't saved any addresses yet.</p>
+                <a href="{% url 'add_address' %}" class="btn-premium">Add Address</a>
+            </div>
+        {% endif %}
     </div>
 {% endblock page_content %}

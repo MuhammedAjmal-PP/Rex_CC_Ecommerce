@@ -12,7 +12,7 @@ from users.user_profile.models import Address
 
 @never_cache
 @login_required
-def address_list(request):
+def user_address(request):
     """list addresses of user"""
 
     addresses = Address.active.filter(user=request.user)

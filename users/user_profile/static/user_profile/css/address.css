@@ -1,21 +1,21 @@
 /* Address Management Styles - REX CC Premium Theme */
 
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:wght@400;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:wght@400;600;700&display=swap");
 
 :root {
-  --bg-main: #F2F2F2;
-  --bg-card: #FFFFFF;
+  --bg-main: #f2f2f2;
+  --bg-card: #ffffff;
   --text-pri: #111111;
   --text-muted: #666666;
-  --accent-bronze: #CD7F32;
-  --accent-gold: #BFA15F;
-  --border-light: #E0E0E0;
+  --accent-bronze: #cd7f32;
+  --accent-gold: #bfa15f;
+  --border-light: #e0e0e0;
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
   --shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.08);
-  --radius-md: 12px;
-  --radius-sm: 8px;
-  --font-heading: 'Playfair Display', serif;
-  --font-body: 'Montserrat', sans-serif;
+  --radius-md: 3px;
+  --radius-sm: 3px;
+  --font-heading: "Playfair Display", serif;
+  --font-body: "Montserrat", sans-serif;
 }
 
 /* Addresses Grid */
@@ -53,7 +53,7 @@
   position: absolute;
   top: 1rem;
   right: 1rem;
-  background: linear-gradient(135deg, #CD7F32 0%, #b06825 100%);
+  background: linear-gradient(135deg, #cd7f32 0%, #b06825 100%);
   color: white;
   padding: 0.35rem 0.75rem;
   border-radius: 20px;
