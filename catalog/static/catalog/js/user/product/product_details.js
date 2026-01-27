@@ -1,152 +1,90 @@
-/**
- * REX CC Product Details Page - JavaScript
- * File: catalog/static/catalog/js/user/product/product_details.js
- * 
- * Features:
- * - Internal Image Zoom
- * - Thumbnail gallery navigation
- * - Quantity selector with stock limits
- * - Variant hover effects (if needed beyond CSS)
- */
+document.addEventListener('DOMContentLoaded', () => {
+  /* =========================================
+     Quantity Selector
+     ========================================= */
+  const qtyInputs = document.querySelectorAll('.pdp-qty-input');
 
-document.addEventListener('DOMContentLoaded', function () {
-    // ===========================================
-    // INTERNAL IMAGE ZOOM FUNCTIONALITY
-    // ===========================================
-    const mainImageContainer = document.getElementById('mainImageContainer');
-    const mainImage = document.getElementById('mainImage');
+  qtyInputs.forEach(input => {
+    const btnMinus = input.parentElement.querySelector('[data-action="decrease"]');
+    const btnPlus = input.parentElement.querySelector('[data-action="increase"]');
 
-    if (mainImageContainer && mainImage) {
+    // Helper to update value
+    const updateValue = (newVal) => {
+      if (newVal < 1) newVal = 1;
+      // You might add max stock check here if data attribute exists
+      input.value = newVal;
+    };
 
-        mainImageContainer.addEventListener('mousemove', function (e) {
-            const { left, top, width, height } = mainImageContainer.getBoundingClientRect();
-            const x = e.clientX - left;
-            const y = e.clientY - top;
-
-            // Calculate percentage position
-            const xPercent = (x / width) * 100;
-            const yPercent = (y / height) * 100;
-
-            // Set transform origin to the cursor position
-            mainImage.style.transformOrigin = `${xPercent}% ${yPercent}%`;
-            mainImage.style.transform = 'scale(2)'; // Zoom level
-        });
-
-        mainImageContainer.addEventListener('mouseleave', function () {
-            // Reset zoom
-            mainImage.style.transform = 'scale(1)';
-            setTimeout(() => {
-                mainImage.style.transformOrigin = 'center center';
-            }, 300); // Reset origin after transition
-        });
-    }
-
-    // ===========================================
-    // THUMBNAIL GALLERY
-    // ===========================================
-    const thumbnailBtns = document.querySelectorAll('.thumbnail-btn');
-
-    thumbnailBtns.forEach(btn => {
-        btn.addEventListener('click', function () {
-            const newImageUrl = this.getAttribute('data-image-url');
-
-            // Update main image
-            if (mainImage && newImageUrl) {
-                // Fade out
-                mainImage.style.opacity = '0';
-
-                setTimeout(() => {
-                    mainImage.src = newImageUrl;
-                    // Fade in
-                    mainImage.style.opacity = '1';
-                }, 200);
-            }
-
-            // Update active state
-            thumbnailBtns.forEach(t => t.classList.remove('active'));
-            this.classList.add('active');
-        });
+    btnMinus.addEventListener('click', () => {
+      updateValue(parseInt(input.value) - 1);
     });
 
-    // ===========================================
-    // QUANTITY SELECTOR
-    // ===========================================
-    const qtyInput = document.getElementById('qtyInput');
-    const qtyMinus = document.getElementById('qtyMinus');
-    const qtyPlus = document.getElementById('qtyPlus');
+    btnPlus.addEventListener('click', () => {
+      updateValue(parseInt(input.value) + 1);
+    });
 
-    if (qtyInput && qtyMinus && qtyPlus) {
-        const maxQty = parseInt(qtyInput.getAttribute('max')) || 999;
-        const minQty = parseInt(qtyInput.getAttribute('min')) || 1;
+    // Prevent non-numeric input
+    input.addEventListener('change', () => {
+      const val = parseInt(input.value);
+      if (isNaN(val) || val < 1) {
+        input.value = 1;
+      }
+    });
+  });
 
-        qtyMinus.addEventListener('click', function () {
-            let currentVal = parseInt(qtyInput.value) || 1;
-            if (currentVal > minQty) {
-                qtyInput.value = currentVal - 1;
-            }
-        });
+  /* =========================================
+     Image Gallery
+     ========================================= */
+  const mainImage = document.querySelector('.pdp-main-image');
+  const thumbBtns = document.querySelectorAll('.pdp-thumb-btn');
 
-        qtyPlus.addEventListener('click', function () {
-            let currentVal = parseInt(qtyInput.value) || 1;
-            if (currentVal < maxQty) {
-                qtyInput.value = currentVal + 1;
-            }
-        });
+  if (mainImage && thumbBtns.length > 0) {
+    thumbBtns.forEach(btn => {
+      btn.addEventListener('click', function () {
+        // Remove active class from all
+        thumbBtns.forEach(b => b.classList.remove('active'));
+        // Add to clicked
+        this.classList.add('active');
 
-        // Validate on manual input
-        qtyInput.addEventListener('change', function () {
-            let val = parseInt(this.value);
-            if (isNaN(val) || val < minQty) {
-                this.value = minQty;
-            } else if (val > maxQty) {
-                this.value = maxQty;
-            }
-        });
-    }
+        // Update main image
+        const newSrc = this.querySelector('img').getAttribute('src');
+        // Optional: Fade effect could be added here
+        mainImage.style.opacity = '0.8';
+        setTimeout(() => {
+          mainImage.src = newSrc;
+          mainImage.style.opacity = '1';
+        }, 100);
+      });
+    });
+  }
 
-    // ===========================================
-    // WISHLIST BUTTON TOGGLE
-    // ===========================================
-    const wishlistBtn = document.getElementById('wishlistBtn');
+  /* =========================================
+     Zoom Effect (Simple Lens/Pan)
+     ========================================= */
+  const imageContainer = document.querySelector('.pdp-main-image-container');
 
-    if (wishlistBtn) {
-        wishlistBtn.addEventListener('click', function () {
-            const icon = this.querySelector('.material-icons');
-            if (icon.textContent === 'favorite_border') {
-                icon.textContent = 'favorite';
-                icon.style.color = '#D32F2F';
-                this.style.borderColor = '#D32F2F';
+  if (imageContainer && mainImage) {
+    imageContainer.addEventListener('mousemove', function (e) {
+      const { left, top, width, height } = this.getBoundingClientRect();
+      const x = e.clientX - left;
+      const y = e.clientY - top;
 
-                // Optional: Add a pulse animation
-                this.style.transform = 'scale(1.1)';
-                setTimeout(() => { this.style.transform = 'scale(1)'; }, 200);
-            } else {
-                icon.textContent = 'favorite_border';
-                icon.style.color = '';
-                this.style.borderColor = '';
-            }
-        });
-    }
+      // Calculate percentage position
+      const xPercent = (x / width) * 100;
+      const yPercent = (y / height) * 100;
 
-    // ===========================================
-    // ADD TO CART BUTTON (Placeholder)
-    // ===========================================
-    const addToCartBtn = document.getElementById('addToCartBtn');
+      // Apply transform to zoom and pan
+      // Scale 1.5x (150%)
+      mainImage.style.transformOrigin = `${xPercent}% ${yPercent}%`;
+      mainImage.style.transform = 'scale(1.5)';
+    });
 
-    if (addToCartBtn && !addToCartBtn.disabled) {
-        addToCartBtn.addEventListener('click', function () {
-            const originalText = this.innerHTML;
-            const originalBg = this.style.background;
-
-            this.innerHTML = '<span class="material-icons">check</span> Added to Cart';
-            this.style.background = 'linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%)';
-            this.disabled = true;
-
-            setTimeout(() => {
-                this.innerHTML = originalText;
-                this.style.background = originalBg;
-                this.disabled = false;
-            }, 2000);
-        });
-    }
+    imageContainer.addEventListener('mouseleave', function () {
+      // Reset
+      mainImage.style.transform = 'scale(1)';
+      setTimeout(() => {
+        mainImage.style.transformOrigin = 'center center';
+      }, 300);
+    });
+  }
 });

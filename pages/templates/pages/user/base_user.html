@@ -146,7 +146,7 @@
                                      width="36"
                                      height="36">
                             {% else %}
-                                <span class="user-initials-icon">{{ user.first_name|first|upper|default:"U" }}</span>
+                                <span class="user-initials-icon">{{ user.first_name|default:"U"|slice:":1"|upper }}</span>
                             {% endif %}
                         </a>
                     {% else %}

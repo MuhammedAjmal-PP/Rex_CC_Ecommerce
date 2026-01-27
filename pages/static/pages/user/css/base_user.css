@@ -71,6 +71,7 @@ a {
   from {
     transform: translateX(0);
   }
+
   to {
     transform: translateX(-100%);
   }
@@ -236,9 +237,13 @@ body:not(.home-page) .site-header {
 
 /* User Avatar */
 .user-avatar {
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid #eee;
+  display: block;
+  /* Removes inline gap */
 }
 
 .user-initials-icon {
@@ -459,6 +464,7 @@ body:not(.home-page) .site-header {
 .mega-brand-link:hover::after {
   width: 24px;
 }
+
 /* Collapse to 2 columns when no featured product */
 .mega-menu.no-featured {
   grid-template-columns: 1.1fr 1fr;
@@ -737,11 +743,9 @@ body:not(.home-page) .site-header {
    ======================================== */
 
 body.home-page .site-header {
-  background: linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0.7) 0%,
-    rgba(0, 0, 0, 0.3) 100%
-  );
+  background: linear-gradient(to bottom,
+      rgba(0, 0, 0, 0.7) 0%,
+      rgba(0, 0, 0, 0.3) 100%);
   box-shadow: none;
   backdrop-filter: blur(10px);
 }
