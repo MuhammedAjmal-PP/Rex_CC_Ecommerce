@@ -1,6 +1,18 @@
 <!-- Product Card Component for Variants -->
 <!-- Usage: Include this template with context: variant -->
 <div class="product-card">
+    <button class="product-card__wishlist-btn add-to-wishlist {% if variant.id in wishlist_ids %}is-active{% endif %}"
+            data-variant-id="{{ variant.id }}"
+            data-add-url="{% url 'add_wishlist' variant.id %}"
+            aria-label="Add to wishlist">
+        <span class="material-icons">
+            {% if variant.id in wishlist_ids %}
+                favorite
+            {% else %}
+                favorite_border
+            {% endif %}
+        </span>
+    </button>
     <a href="{% url 'product_detail' variant.product.slug %}"
        class="product-card__image-box">
         {% if variant.images.exists %}

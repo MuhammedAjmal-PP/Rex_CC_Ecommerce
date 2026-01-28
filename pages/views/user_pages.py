@@ -8,6 +8,9 @@ from django.views.decorators.http import require_GET
 # Create your views here.
 
 
+from users.wishlist.utils import get_session_wishlist
+
+
 @never_cache
 def home(request):
     """
@@ -62,12 +65,21 @@ def home(request):
         .order_by("-discount_percentage")[:8]
     )
 
+    wishlist_ids = []
+    if request.user.is_authenticated:
+        wishlist_ids = list(
+            request.user.wishlist_set.values_list("variant_id", flat=True)
+        )
+    else:
+        wishlist_ids = get_session_wishlist(request)
+
     context = {
         "categories": categories,
         "brands": brands,
         "new_arrivals": new_arrivals,
         "featured_variants": featured_variants,
         "offer_variants": offer_variants,
+        "wishlist_ids": wishlist_ids,
     }
 
     return render(request, "pages/user/homepage.html", context)

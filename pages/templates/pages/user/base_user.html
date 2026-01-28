@@ -137,9 +137,11 @@
                        href="#offcanvasWishlist"
                        role="button"
                        aria-controls="offcanvasWishlist"
-                       class="nav-icon"
+                       class="nav-icon wishlist-icon-wrapper"
                        title="Wishlist">
                         <span class="material-icons">favorite</span>
+                        <!-- Wishlist Count Badge -->
+                        <span id="wishlistBadge" class="wishlist-badge" style="display:none;">0</span>
                     </a>
                     <a href="#" class="nav-icon" title="Cart">
                         <span class="material-icons">shopping_bag</span>
@@ -318,6 +320,7 @@
         <!-- JS Bundle -->
         <script src="{% static "pages/user/js/base_user.js" %}"></script>
         <script src="{% static "wishlist/js/wishlist_offcanvas.js" %}"></script>
+        <script src="{% static "wishlist/js/add_wishlist.js" %}"></script>
         {% block extra_js %}
         {% endblock extra_js %}
     </body>

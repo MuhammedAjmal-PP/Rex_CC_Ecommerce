@@ -198,3 +198,17 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 });
+
+// Dynamic Wishlist Badge Border
+document.addEventListener("DOMContentLoaded", () => {
+  const isHome = document.body.classList.contains("home-page");
+  const badge = document.querySelector(".wishlist-badge");
+
+  if (badge) {
+    if (isHome) {
+      badge.style.border = "none";
+    } else {
+      badge.style.border = "2px solid #fff";
+    }
+  }
+});
