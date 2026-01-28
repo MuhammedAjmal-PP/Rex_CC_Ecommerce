@@ -27,4 +27,5 @@ urlpatterns = [
     path("adminpanel/accounts/", include("accounts.admin_urls")),
     path("adminpanel/", include("pages.urls.admin_urls")),
     path("adminpanel/catalog/", include("catalog.urls.admin_urls")),
+    path("", include("users.wishlist.urls")),
 ]

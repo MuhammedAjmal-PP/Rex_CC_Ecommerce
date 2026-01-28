@@ -1,0 +1,525 @@
+/* ========================================
+   WISHLIST OFFCANVAS — LUXURY THEME
+   Consistent with REX CC Design System
+   ======================================== */
+
+/* ========================================
+   1. OFFCANVAS CONTAINER
+   ======================================== */
+
+.wishlist-offcanvas {
+  width: 420px !important;
+  max-width: 100%;
+  background: #ffffff;
+  border-left: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: -10px 0 60px rgba(0, 0, 0, 0.15);
+}
+
+.wishlist-offcanvas .offcanvas-backdrop {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+/* ========================================
+   2. OFFCANVAS HEADER
+   ======================================== */
+
+.wishlist-offcanvas-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 28px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  background: linear-gradient(180deg, #fafafa 0%, #ffffff 100%);
+}
+
+.wishlist-title-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.wishlist-icon {
+  font-size: 24px;
+  color: #cd7f32;
+}
+
+.wishlist-title {
+  font-family: "Playfair Display", serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0;
+  letter-spacing: 0.5px;
+}
+
+.wishlist-count {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #999;
+  margin-left: auto;
+  margin-right: 16px;
+}
+
+.wishlist-close-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #666;
+  transition: all 0.3s ease;
+  padding: 8px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wishlist-close-btn:hover {
+  color: #1a1a1a;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.wishlist-close-btn .material-icons {
+  font-size: 24px;
+}
+
+/* ========================================
+   3. OFFCANVAS BODY
+   ======================================== */
+
+.wishlist-offcanvas-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0;
+  background: #fafafa;
+}
+
+/* Custom Scrollbar */
+.wishlist-offcanvas-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.wishlist-offcanvas-body::-webkit-scrollbar-track {
+  background: #f0f0f0;
+}
+
+.wishlist-offcanvas-body::-webkit-scrollbar-thumb {
+  background: #cd7f32;
+  border-radius: 3px;
+}
+
+.wishlist-offcanvas-body::-webkit-scrollbar-thumb:hover {
+  background: #b06825;
+}
+
+/* ========================================
+   4. LOADING STATE
+   ======================================== */
+
+.wishlist-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 40px;
+  text-align: center;
+}
+
+.wishlist-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(205, 127, 50, 0.2);
+  border-top-color: #cd7f32;
+  border-radius: 50%;
+  animation: wishlistSpin 0.8s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes wishlistSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.wishlist-loading p {
+  font-size: 13px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #999;
+  margin: 0;
+}
+
+/* ========================================
+   5. EMPTY STATE
+   ======================================== */
+
+.wishlist-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 40px;
+  text-align: center;
+}
+
+.wishlist-empty-icon {
+  font-size: 64px;
+  color: #ddd;
+  margin-bottom: 20px;
+}
+
+.wishlist-empty h4 {
+  font-family: "Playfair Display", serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 12px;
+}
+
+.wishlist-empty p {
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 28px;
+  line-height: 1.6;
+}
+
+.wishlist-browse-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 28px;
+  background: linear-gradient(135deg, #cd7f32 0%, #b06825 100%);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(205, 127, 50, 0.3);
+}
+
+.wishlist-browse-btn:hover {
+  background: linear-gradient(135deg, #b06825 0%, #9a5a1e 100%);
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(205, 127, 50, 0.4);
+}
+
+.wishlist-browse-btn .material-icons {
+  font-size: 18px;
+  transition: transform 0.3s ease;
+}
+
+.wishlist-browse-btn:hover .material-icons {
+  transform: translateX(4px);
+}
+
+/* ========================================
+   6. WISHLIST ITEMS CONTAINER
+   ======================================== */
+
+.wishlist-items {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ========================================
+   7. WISHLIST ITEM CARD
+   ======================================== */
+
+.wishlist-item {
+  display: flex;
+  gap: 16px;
+  padding: 16px;
+  background: #ffffff;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.wishlist-item:hover {
+  border-color: rgba(205, 127, 50, 0.2);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* Item Image */
+.wishlist-item-image {
+  position: relative;
+  width: 90px;
+  height: 90px;
+  flex-shrink: 0;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #f5f5f5;
+}
+
+.wishlist-product-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.wishlist-item:hover .wishlist-product-img {
+  transform: scale(1.05);
+}
+
+.wishlist-stock-badge {
+  position: absolute;
+  bottom: 6px;
+  left: 6px;
+  padding: 3px 8px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  border-radius: 3px;
+}
+
+.wishlist-stock-badge.in-stock {
+  background: rgba(46, 204, 113, 0.9);
+  color: #fff;
+}
+
+.wishlist-stock-badge.out-of-stock {
+  background: rgba(231, 76, 60, 0.9);
+  color: #fff;
+}
+
+/* Item Details */
+.wishlist-item-details {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.wishlist-item-brand {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #999;
+}
+
+.wishlist-item-name {
+  margin: 0;
+  font-family: "Playfair Display", serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a1a;
+  line-height: 1.3;
+}
+
+.wishlist-item-name a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.wishlist-item-name a:hover {
+  color: #cd7f32;
+}
+
+.wishlist-item-sku {
+  font-size: 11px;
+  color: #999;
+  font-family: monospace;
+}
+
+.wishlist-item-price {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.wishlist-price-current {
+  font-size: 15px;
+  font-weight: 700;
+  color: #cd7f32;
+}
+
+.wishlist-price-original {
+  font-size: 12px;
+  color: #999;
+  text-decoration: line-through;
+}
+
+/* Item Actions */
+.wishlist-item-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-self: center;
+}
+
+.wishlist-add-cart-btn,
+.wishlist-remove-btn {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.wishlist-add-cart-btn {
+  background: linear-gradient(135deg, #cd7f32 0%, #b06825 100%);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(205, 127, 50, 0.3);
+}
+
+.wishlist-add-cart-btn:hover {
+  background: linear-gradient(135deg, #b06825 0%, #9a5a1e 100%);
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(205, 127, 50, 0.4);
+}
+
+.wishlist-add-cart-btn .material-icons {
+  font-size: 18px;
+}
+
+.wishlist-remove-btn {
+  background: #f5f5f5;
+  color: #999;
+}
+
+.wishlist-remove-btn:hover {
+  background: #fee2e2;
+  color: #e74c3c;
+  transform: scale(1.1);
+}
+
+.wishlist-remove-btn .material-icons {
+  font-size: 18px;
+}
+
+/* Disabled state for out of stock */
+.wishlist-add-cart-btn:disabled {
+  background: #e0e0e0;
+  color: #999;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.wishlist-add-cart-btn:disabled:hover {
+  transform: none;
+}
+
+/* ========================================
+   8. OFFCANVAS FOOTER
+   ======================================== */
+
+.wishlist-offcanvas-footer {
+  padding: 20px 28px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  background: #ffffff;
+}
+
+.wishlist-view-all-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 14px 24px;
+  background: #1a1a1a;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.wishlist-view-all-btn:hover {
+  background: #333;
+  color: #fff;
+}
+
+.wishlist-view-all-btn .material-icons {
+  font-size: 18px;
+  transition: transform 0.3s ease;
+}
+
+.wishlist-view-all-btn:hover .material-icons {
+  transform: translateX(4px);
+}
+
+/* ========================================
+   9. ANIMATIONS
+   ======================================== */
+
+@keyframes wishlistSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.wishlist-item {
+  animation: wishlistSlideIn 0.3s ease forwards;
+}
+
+.wishlist-item:nth-child(1) { animation-delay: 0.05s; }
+.wishlist-item:nth-child(2) { animation-delay: 0.1s; }
+.wishlist-item:nth-child(3) { animation-delay: 0.15s; }
+.wishlist-item:nth-child(4) { animation-delay: 0.2s; }
+.wishlist-item:nth-child(5) { animation-delay: 0.25s; }
+
+/* Remove animation */
+@keyframes wishlistRemove {
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+    height: 0;
+    padding: 0;
+    margin: 0;
+    border: 0;
+  }
+}
+
+.wishlist-item.removing {
+  animation: wishlistRemove 0.4s ease forwards;
+}
+
+/* ========================================
+   10. RESPONSIVE (for smaller screens)
+   ======================================== */
+
+@media (max-width: 480px) {
+  .wishlist-offcanvas {
+    width: 100% !important;
+  }
+
+  .wishlist-item {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .wishlist-item-image {
+    width: 70px;
+    height: 70px;
+  }
+
+  .wishlist-item-name {
+    font-size: 13px;
+  }
+}

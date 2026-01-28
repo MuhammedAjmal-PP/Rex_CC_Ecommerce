@@ -73,6 +73,7 @@ INSTALLED_APPS = [
     "pages",
     "catalog",
     "users.user_profile",
+    "users.wishlist",
 ]
 
 MIDDLEWARE = [
