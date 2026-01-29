@@ -76,7 +76,14 @@ def list_wishlist(request):
 @require_POST
 def wishlist_toggle(request, variant_id):
     """Toggle wishlist item for user or guest (remove or add items into wishlist)"""
-    variant = get_object_or_404(ProductVariant, id=variant_id)
+    variant = get_object_or_404(
+        ProductVariant,
+        id=variant_id,
+        is_deleted=False,
+        is_drafted=False,
+        product__is_deleted=False,
+        product__is_drafted=False,
+    )
 
     # AUTHENTICATED USER
     if request.user.is_authenticated:

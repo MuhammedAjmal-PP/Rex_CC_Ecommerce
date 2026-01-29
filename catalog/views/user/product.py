@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.views.decorators.cache import never_cache
 from catalog.helper import get_category_from_referer
 from catalog.models import Product, ProductVariant, Category, Brand
-
+from users.wishlist.utils import get_wishlist_variant_ids
 
 from users.wishlist.utils import get_session_wishlist
 
@@ -116,11 +116,7 @@ def product_list(request):
         "has_filters": bool(
             selected_categories or selected_brands or min_price or max_price
         ),
-        "wishlist_ids": (
-            list(request.user.wishlist_set.values_list("variant_id", flat=True))
-            if request.user.is_authenticated
-            else get_session_wishlist(request)
-        ),
+        "wishlist_ids": get_wishlist_variant_ids(request),
     }
 
     return render(
@@ -307,11 +303,7 @@ def product_detail(request, slug, sku):
         "related_products": related_products,
         "specifications": specifications,
         "categories": active_categories,
-        "wishlist_ids": (
-            list(request.user.wishlist_set.values_list("variant_id", flat=True))
-            if request.user.is_authenticated
-            else get_session_wishlist(request)
-        ),
+        "wishlist_ids": get_wishlist_variant_ids(request),
     }
 
     return render(
