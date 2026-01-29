@@ -3,6 +3,7 @@
  * Handles loading, displaying, and managing wishlist items
  * Supports guest + logged-in users
  * Updates header wishlist badge
+ * Implements Global Event Synchronization
  */
 
 (function () {
@@ -25,7 +26,7 @@
   // ===============================
   const WISHLIST_API_URL = "/api/wishlist/";
   const REMOVE_WISHLIST_URL = (variantId) =>
-    `/api/wishlist/${variantId}/remove/`;
+    `/api/wishlist/${variantId}/toggle/`;
 
   // ===============================
   // STATE
@@ -33,6 +34,16 @@
   let isLoading = false;
   let wishlistData = [];
   let hasLoadedOnce = false;
+
+  // ===============================
+  // GLOBAL HELPERS
+  // ===============================
+  window.emitWishlistChange = function ({ variantId, added }) {
+    const event = new CustomEvent("wishlist:changed", {
+      detail: { variantId, added },
+    });
+    window.dispatchEvent(event);
+  };
 
   // ===============================
   // INIT
@@ -51,6 +62,34 @@
 
     // Initial badge sync (page load)
     syncWishlistBadge();
+
+    // Listen for global wishlist changes
+    window.addEventListener("wishlist:changed", handleGlobalWishlistChange);
+  }
+
+  // ===============================
+  // GLOBAL EVENT LISTENER
+  // ===============================
+  function handleGlobalWishlistChange(event) {
+    const { added } = event.detail;
+
+    // If added, we must refresh to show the new item
+    // If removed (and not from this offcanvas), we should also refresh
+    // We can just always refresh the badge and data
+
+    // Note: If the event was emitted by *this* file (removal), 
+    // we might be double-refreshing if we are not careful. 
+    // But syncWishlistBadge is cheap. loadWishlist is heavier.
+
+    // If the offcanvas is open, reload the list
+    if (wishlistOffcanvas.classList.contains("show")) {
+      loadWishlist();
+    } else {
+      // Just sync badge if offcanvas is closed
+      syncWishlistBadge();
+      // Invalidate cache so next open fetches fresh data
+      hasLoadedOnce = false;
+    }
   }
 
   // ===============================
@@ -221,6 +260,12 @@
         throw new Error("Failed to remove wishlist item");
       }
 
+      const data = await response.json();
+
+      if (!data.success) {
+        throw new Error(data.message || "Failed to remove item");
+      }
+
       itemElement.classList.add("removing");
 
       setTimeout(() => {
@@ -237,6 +282,12 @@
           showEmpty();
           hasLoadedOnce = false;
         }
+
+        // EMIT GLOBAL EVENT
+        if (window.emitWishlistChange) {
+          window.emitWishlistChange({ variantId, added: false });
+        }
+
       }, 400);
     } catch (error) {
       console.error(error);

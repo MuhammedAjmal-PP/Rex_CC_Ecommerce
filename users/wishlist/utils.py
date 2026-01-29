@@ -2,24 +2,19 @@ def get_session_wishlist(request):
     return request.session.get("wishlist", [])
 
 
-def add_to_session_wishlist(request, variant_id):
-    wishlist = get_session_wishlist(request)
+def toggle_session_wishlist(request, variant_id):
+    wishlist = request.session.get("wishlist", [])
 
-    if variant_id not in wishlist:
+    if variant_id in wishlist:
+        wishlist.remove(variant_id)
+        message = "Removed from your wishlist"
+        added = False
+    else:
         wishlist.append(variant_id)
         message = "Added to wishlist ❤️"
-    else:
-        message = "Already in your wishlist"
+        added = True
 
     request.session["wishlist"] = wishlist
     request.session.modified = True
-    return message
 
-
-def remove_from_session_wishlist(request, variant_id):
-    wishlist = get_session_wishlist(request)
-
-    wishlist = [vid for vid in wishlist if vid != variant_id]
-
-    request.session["wishlist"] = wishlist
-    request.session.modified = True
+    return message, added

@@ -1,17 +1,18 @@
+from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
+from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_GET, require_POST
 from catalog.models import ProductVariant
 from users.wishlist.models import Wishlist, WishlistItem
 from users.wishlist.utils import (
-    add_to_session_wishlist,
     get_session_wishlist,
-    remove_from_session_wishlist,
+    toggle_session_wishlist,
 )
 
 
 @require_GET
-def view_wishlist(request):
+def list_wishlist(request):
     # Get or create wishlist for the user
     if request.user.is_authenticated:
         wishlist, _ = Wishlist.objects.get_or_create(user=request.user)
@@ -73,48 +74,53 @@ def view_wishlist(request):
 
 
 @require_POST
-def add_wishlist(request, variant_id):
-    """Add items into wishlist"""
+def wishlist_toggle(request, variant_id):
+    """Toggle wishlist item for user or guest (remove or add items into wishlist)"""
     variant = get_object_or_404(ProductVariant, id=variant_id)
 
+    # AUTHENTICATED USER
     if request.user.is_authenticated:
         wishlist, _ = Wishlist.objects.get_or_create(user=request.user)
-        wishlist_item, created = WishlistItem.objects.get_or_create(
-            wishlist=wishlist, product_variant=variant
-        )
 
-        if created:
-            message = "Added to wishlist ❤️"
+        wishlist_item = WishlistItem.objects.filter(
+            wishlist=wishlist,
+            product_variant=variant,
+        ).first()
+
+        if wishlist_item:
+            wishlist_item.delete()
+            message = "Removed from your wishlist"
+            added = False
         else:
-            message = "Already in your wishlist"
+            WishlistItem.objects.create(
+                wishlist=wishlist,
+                product_variant=variant,
+            )
+            message = "Added to wishlist ❤️"
+            added = True
 
         return JsonResponse(
             {
                 "success": True,
                 "message": message,
+                "added": added,
             }
         )
-    # GUEST USER → SESSION
-    message = add_to_session_wishlist(request, variant.id)
+
+    # GUEST USER
+    message, added = toggle_session_wishlist(request, variant.id)
 
     return JsonResponse(
         {
             "success": True,
             "message": message,
+            "added": added,
             "guest": True,
         }
     )
 
 
-@require_POST
-def remove_wishlist(request, variant_id):
-    """Remove items from wishlist"""
-    variant = get_object_or_404(ProductVariant, id=variant_id)
-
-    if request.user.is_authenticated:
-        wishlist = get_object_or_404(Wishlist, user=request.user)
-        WishlistItem.objects.filter(wishlist=wishlist, product_variant=variant).delete()
-        return JsonResponse({"success": True})
-
-    remove_from_session_wishlist(request, variant.id)
-    return JsonResponse({"success": True})
+@never_cache
+@login_required
+def view_wishlist(request):
+    return render(request, "wishlist/wishlist.html")

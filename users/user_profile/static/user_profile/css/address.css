@@ -1,69 +1,55 @@
 /* Address Management Styles - REX CC Premium Theme */
 
-@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:wght@400;600;700&display=swap");
-
-:root {
-  --bg-main: #f2f2f2;
-  --bg-card: #ffffff;
-  --text-pri: #111111;
-  --text-muted: #666666;
-  --accent-bronze: #cd7f32;
-  --accent-gold: #bfa15f;
-  --border-light: #e0e0e0;
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
-  --shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.08);
-  --radius-md: 3px;
-  --radius-sm: 3px;
-  --font-heading: "Playfair Display", serif;
-  --font-body: "Montserrat", sans-serif;
-}
+/* Note: Variables are inherited from profile.css */
 
 /* Addresses Grid */
 .addresses-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 1.5rem;
-  padding: 0;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 2rem;
+  padding: 1rem 0;
 }
 
 /* Address Card */
 .address-card {
-  background: var(--bg-card);
+  background: #fff;
   border: 1px solid var(--border-light);
-  border-radius: var(--radius-md);
-  padding: 1.5rem;
+  padding: 2rem;
   position: relative;
-  transition: all 0.3s ease;
-  box-shadow: var(--shadow-sm);
+  transition: all 0.4s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 280px;
 }
 
 .address-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-hover);
-  border-color: var(--accent-bronze);
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.05);
+  border-color: var(--color-gold);
 }
 
 .address-card.default-address {
-  border-color: var(--accent-bronze);
-  background: rgba(205, 127, 50, 0.02);
+  border-color: var(--color-gold);
+  background: linear-gradient(to bottom right, #fff, #fffae6);
 }
 
 /* Default Badge */
 .default-badge {
   position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background: linear-gradient(135deg, #cd7f32 0%, #b06825 100%);
-  color: white;
-  padding: 0.35rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.75rem;
+  top: 1.5rem;
+  right: 1.5rem;
+  color: var(--color-gold);
+  font-family: var(--font-body);
+  font-size: 0.7rem;
   font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
   display: flex;
   align-items: center;
-  gap: 0.25rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  gap: 5px;
+  border: 1px solid var(--color-gold);
+  padding: 4px 10px;
 }
 
 .default-badge .material-icons {
@@ -72,141 +58,139 @@
 
 /* Address Content */
 .address-content {
-  margin-bottom: 1rem;
+  margin-bottom: 2rem;
 }
 
+/* Type Icon */
 .address-type-icon {
+  margin-bottom: 1.5rem;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid var(--border-light);
+  gap: 10px;
 }
 
 .address-type-icon .material-icons {
-  font-size: 24px;
-  color: var(--accent-bronze);
+  font-size: 20px;
+  color: var(--color-gold);
 }
 
 .address-type-icon p {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
   margin: 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #999;
 }
 
 /* Address Details */
-.address-details {
-  color: var(--text-pri);
-}
-
 .address-name {
   font-family: var(--font-heading);
-  font-size: 1.1rem;
-  font-weight: 600;
+  font-size: 1.25rem;
   color: var(--text-pri);
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
+  font-weight: 700;
 }
 
 .address-line {
-  font-size: 0.9rem;
-  color: var(--text-muted);
-  margin: 0.25rem 0;
-  line-height: 1.5;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: var(--text-sec);
+  margin-bottom: 0.35rem;
+  line-height: 1.6;
 }
 
 .address-phone {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  margin-top: 1.5rem;
   font-size: 0.9rem;
   color: var(--text-pri);
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-weight: 500;
-  margin-top: 0.75rem;
 }
 
 .address-phone .material-icons {
-  font-size: 18px;
-  color: var(--accent-bronze);
+  font-size: 16px;
+  color: var(--color-gold);
 }
 
 /* Address Actions */
 .address-actions {
   display: flex;
-  gap: 1rem;
-  padding-top: 1rem;
+  align-items: center;
+  gap: 1.5rem;
+  padding-top: 1.5rem;
   border-top: 1px solid var(--border-light);
-  flex-wrap: wrap;
+  margin-top: auto;
 }
 
 .btn-text {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
   background: none;
   border: none;
-  color: var(--accent-bronze);
-  font-size: 0.85rem;
-  font-weight: 500;
   cursor: pointer;
-  padding: 0.5rem;
-  transition: all 0.2s ease;
-  text-decoration: none;
+  padding: 0;
   font-family: var(--font-body);
-}
-
-.btn-text:hover {
-  color: #b06825;
-  text-decoration: underline;
-}
-
-.btn-text.text-danger {
-  color: #dc3545;
-}
-
-.btn-text.text-danger:hover {
-  color: #c82333;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-sec);
+  /* Default gray */
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
 }
 
 .btn-text .material-icons {
-  font-size: 18px;
+  font-size: 16px;
+  transition: color 0.3s;
+}
+
+.btn-text:hover {
+  color: var(--color-gold);
+}
+
+.btn-text:hover .material-icons {
+  color: var(--color-gold);
+}
+
+/* Default Action Button Specifics */
+.btn-text-default {
+  color: var(--text-pri);
+}
+
+.btn-text.text-danger:hover {
+  color: var(--color-error);
+}
+
+.btn-text.text-danger:hover .material-icons {
+  color: var(--color-error);
 }
 
 /* Empty State */
 .empty-state {
   text-align: center;
   padding: 4rem 2rem;
-  background: var(--bg-card);
-  border-radius: var(--radius-md);
   border: 1px solid var(--border-light);
+  background: #f9f9f9;
 }
 
 .empty-state .material-icons {
-  font-size: 64px;
-  color: var(--text-muted);
+  font-size: 48px;
+  color: #ddd;
   margin-bottom: 1rem;
-  opacity: 0.5;
 }
 
 .empty-state h3 {
   font-family: var(--font-heading);
   font-size: 1.5rem;
-  color: var(--text-pri);
   margin-bottom: 0.5rem;
 }
 
 .empty-state p {
-  color: var(--text-muted);
-  font-size: 1rem;
-  margin: 0;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .addresses-grid {
-    grid-template-columns: 1fr;
-  }
+  color: var(--text-sec);
+  margin-bottom: 2rem;
 }

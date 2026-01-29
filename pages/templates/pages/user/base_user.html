@@ -27,12 +27,12 @@
         <link rel="stylesheet"
               href="{% static 'pages/user/css/account_modal.css' %}">
         <link rel="stylesheet"
-              href=" {% static "wishlist/css/wishlist_offcanvas.css" %} ">
+              href=" {% static 'wishlist/css/wishlist_offcanvas.css' %} ">
         {% block extra_css %}
         {% endblock extra_css %}
     </head>
     <!-- FIX 1: Add body_class block to body tag -->
-    <body class="{% block body_class %}{% endblock body_class %}">
+    <body class=" {% block body_class %}{% endblock body_class %}">
         <!-- Top Announcement Bar -->
         <div class="top-bar is-rolling">
             <div class="announcement">OFFICIAL RETAILER · AUTHENTICITY GUARANTEED · FREE SHIPPING</div>
@@ -201,7 +201,10 @@
                         <!-- RIGHT PANEL -->
                         <div class="account-modal-auth">
                             <h3 class="auth-title">Welcome Back</h3>
-                            <p class="auth-subtitle">Sign in to your dashboard or create a new profile to continue your journey.</p>
+                            <p class="auth-subtitle">
+                                Sign in to your dashboard or create a new profile to continue your
+                                journey.
+                            </p>
                             <div class="auth-actions">
                                 <a href="{% url 'account_login' %}" class="auth-btn auth-btn-primary">
                                     SIGN IN
@@ -320,7 +323,7 @@
         <!-- JS Bundle -->
         <script src="{% static "pages/user/js/base_user.js" %}"></script>
         <script src="{% static "wishlist/js/wishlist_offcanvas.js" %}"></script>
-        <script src="{% static "wishlist/js/add_wishlist.js" %}"></script>
+        <script src="{% static "wishlist/js/toggle_wishlist.js" %}"></script>
         {% block extra_js %}
         {% endblock extra_js %}
     </body>

@@ -117,11 +117,11 @@ def product_list(request):
         "has_filters": bool(
             selected_categories or selected_brands or min_price or max_price
         ),
-        "wishlist_ids": list(
-            request.user.wishlist_set.values_list("variant_id", flat=True)
-        )
-        if request.user.is_authenticated
-        else get_session_wishlist(request),
+        "wishlist_ids": (
+            list(request.user.wishlist_set.values_list("variant_id", flat=True))
+            if request.user.is_authenticated
+            else get_session_wishlist(request)
+        ),
     }
 
     return render(
@@ -132,7 +132,7 @@ def product_list(request):
 
 
 @never_cache
-def product_detail(request, slug):
+def product_detail(request, slug, sku):
     """
     Product detail page.
     """
@@ -307,11 +307,11 @@ def product_detail(request, slug):
         "related_products": related_products,
         "specifications": specifications,
         "categories": active_categories,
-        "wishlist_ids": list(
-            request.user.wishlist_set.values_list("variant_id", flat=True)
-        )
-        if request.user.is_authenticated
-        else get_session_wishlist(request),
+        "wishlist_ids": (
+            list(request.user.wishlist_set.values_list("variant_id", flat=True))
+            if request.user.is_authenticated
+            else get_session_wishlist(request)
+        ),
     }
 
     return render(

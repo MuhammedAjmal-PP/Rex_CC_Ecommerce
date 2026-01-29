@@ -3,12 +3,11 @@ from django.views.decorators.cache import never_cache
 from catalog.models import Category, Brand, ProductVariant
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
-
+from users.wishlist.utils import get_session_wishlist
+from users.wishlist.models import WishlistItem
 
 # Create your views here.
 
-
-from users.wishlist.utils import get_session_wishlist
 
 
 @never_cache
@@ -68,7 +67,9 @@ def home(request):
     wishlist_ids = []
     if request.user.is_authenticated:
         wishlist_ids = list(
-            request.user.wishlist_set.values_list("variant_id", flat=True)
+            WishlistItem.objects.filter(wishlist__user=request.user).values_list(
+                "product_variant_id", flat=True
+            )
         )
     else:
         wishlist_ids = get_session_wishlist(request)

@@ -2,39 +2,31 @@
 <!-- Usage: Include this template with context: variant -->
 <div class="product-card">
     <button class="product-card__wishlist-btn add-to-wishlist {% if variant.id in wishlist_ids %}is-active{% endif %}"
-            data-variant-id="{{ variant.id }}"
-            data-add-url="{% url 'add_wishlist' variant.id %}"
-            aria-label="Add to wishlist">
+        data-variant-id="{{ variant.id }}" data-toggle-url="{% url 'wishlist_toggle' variant.id %}"
+        aria-label="Add to wishlist">
         <span class="material-icons">
             {% if variant.id in wishlist_ids %}
-                favorite
+            favorite
             {% else %}
-                favorite_border
+            favorite_border
             {% endif %}
         </span>
     </button>
-    <a href="{% url 'product_detail' variant.product.slug %}"
-       class="product-card__image-box">
+    <a href="{% url 'product_detail' variant.product.slug %}" class="product-card__image-box">
         {% if variant.images.exists %}
-            {% with primary_image=variant.images.first %}
-                <img src="{{ primary_image.image.url }}"
-                     alt="{{ variant.product.name }}"
-                     class="product-card__image"
-                     loading="lazy">
-            {% endwith %}
+        {% with primary_image=variant.images.first %}
+        <img src="{{ primary_image.image.url }}" alt="{{ variant.product.name }}" class="product-card__image"
+            loading="lazy">
+        {% endwith %}
         {% elif variant.product.thumbnail %}
-            <img src="{{ variant.product.thumbnail.url }}"
-                 alt="{{ variant.product.name }}"
-                 class="product-card__image"
-                 loading="lazy">
+        <img src="{{ variant.product.thumbnail.url }}" alt="{{ variant.product.name }}" class="product-card__image"
+            loading="lazy">
         {% else %}
-            <img src="https://via.placeholder.com/600x800?text=No+Image"
-                 alt="{{ variant.product.name }}"
-                 class="product-card__image"
-                 loading="lazy">
+        <img src="https://via.placeholder.com/600x800?text=No+Image" alt="{{ variant.product.name }}"
+            class="product-card__image" loading="lazy">
         {% endif %}
         {% if variant.discount_percentage and variant.discount_percentage > 0 %}
-            <span class="product-card__discount-badge">-{{ variant.discount_percentage }}%</span>
+        <span class="product-card__discount-badge">-{{ variant.discount_percentage }}%</span>
         {% endif %}
         <div class="product-card__overlay">Discover</div>
     </a>
@@ -47,10 +39,10 @@
         </div>
         <div class="product-card__pricing">
             {% if variant.discount_percentage and variant.discount_percentage > 0 %}
-                <span class="product-card__price">₹{{ variant.final_price|floatformat:0 }}</span>
-                <span class="product-card__original-price">₹{{ variant.price|floatformat:0 }}</span>
+            <span class="product-card__price">₹{{ variant.final_price|floatformat:0 }}</span>
+            <span class="product-card__original-price">₹{{ variant.price|floatformat:0 }}</span>
             {% else %}
-                <span class="product-card__price">₹{{ variant.price|floatformat:0 }}</span>
+            <span class="product-card__price">₹{{ variant.price|floatformat:0 }}</span>
             {% endif %}
         </div>
     </div>

@@ -1,0 +1,65 @@
+{% extends "user_profile/profile_base.html" %}
+{% load static %}
+{% block head_title %}
+    My Wishlist | REX CC
+{% endblock head_title %}
+{% block extra_page_css %}
+    <link rel="stylesheet" href="{% static 'wishlist/css/wishlist.css' %}">
+{% endblock extra_page_css %}
+{% block page_content %}
+    <div class="wishlist-page">
+        <div class="profile-page-header">
+            <h1 class="main-title">My Wishlist</h1>
+            <p class="main-subtitle">Curated collection of your most desired timepieces.</p>
+        </div>
+        <!-- Loading State -->
+        <div id="wishlist-loading" class="wishlist-loading">
+            <div class="spinner-border text-gold" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+        <!-- Empty State -->
+        <div id="wishlist-empty" class="wishlist-empty" style="display: none;">
+            <div class="empty-icon-wrapper">
+                <span class="material-icons">favorite_border</span>
+            </div>
+            <h2>Your wishlist is empty</h2>
+            <p>Explore our exclusive collection and save your favorites.</p>
+            <a href="{% url 'product_list' %}" class="btn-premium">Explore Collection</a>
+        </div>
+        <!-- Wishlist Grid -->
+        <div id="wishlist-grid" class="wishlist-grid">
+            <!-- Items injection -->
+        </div>
+    </div>
+    <!-- Item Template -->
+    <template id="wishlist-page-item-template">
+        <div class="wishlist-card">
+            <div class="wishlist-card-img-wrapper">
+                <a href="#" class="wishlist-card-link">
+                    <img src="" alt="" class="wishlist-card-img">
+                </a>
+                <!-- Remove Button -->
+                <button class="wishlist-remove-action" aria-label="Remove from wishlist">
+                    <span class="material-icons">close</span>
+                </button>
+                <span class="stock-badge"></span>
+            </div>
+            <div class="wishlist-card-content">
+                <span class="wishlist-card-brand"></span>
+                <h3 class="wishlist-card-name">
+                    <a href="#"></a>
+                </h3>
+                <div class="wishlist-card-price">
+                    <span class="current-price"></span>
+                    <span class="original-price"></span>
+                </div>
+                <!-- Using add-to-cart logic (if available globally) or direct link -->
+                <a href="#" class="btn-view-product">VIEW TIMEPIECE</a>
+            </div>
+        </div>
+    </template>
+{% endblock page_content %}
+{% block extra_page_js %}
+    <script src="{% static 'wishlist/js/wishlist.js' %}"></script>
+{% endblock extra_page_js %}

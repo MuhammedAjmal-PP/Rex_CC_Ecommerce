@@ -1,12 +1,12 @@
 from django.urls import path
-from users.wishlist.views import add_wishlist, remove_wishlist, view_wishlist
+from users.wishlist.views import list_wishlist, view_wishlist, wishlist_toggle
 
 urlpatterns = [
-    path("api/wishlist/", view_wishlist, name="user_wishlist"),
-    path("api/wishlist/<int:variant_id>/add/", add_wishlist, name="add_wishlist"),
+    path("api/wishlist/", list_wishlist, name="wishlist_list"),
     path(
-        "api/wishlist/<int:variant_id>/remove/",
-        remove_wishlist,
-        name="remove_wishlist",
+        "api/wishlist/<int:variant_id>/toggle/",
+        wishlist_toggle,
+        name="wishlist_toggle",
     ),
+    path("profile/wishlist/", view_wishlist, name="user_wishlist"),
 ]
