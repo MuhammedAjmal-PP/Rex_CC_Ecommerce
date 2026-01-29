@@ -60,6 +60,7 @@ def list_wishlist(request):
             {
                 "variant": variant.id,
                 "sku": variant.sku,
+                "slug": variant.product.slug,
                 "product_name": variant.product.name,
                 "brand": variant.product.brand.name,
                 "price": str(variant.price),

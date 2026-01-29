@@ -18,11 +18,17 @@ class ProfileEditForm(forms.ModelForm):
         validators=[min_len_name_validator, name_validator],
         max_length=100,
         required=True,
+        widget=forms.TextInput(
+            attrs={"class": "premium-input", "placeholder": "e.g. John"}
+        ),
     )
     last_name = forms.CharField(
         validators=[min_len_name_validator, name_validator],
         max_length=100,
         required=False,
+        widget=forms.TextInput(
+            attrs={"class": "premium-input", "placeholder": "e.g. Doe"}
+        ),
     )
     avatar = forms.ImageField(
         validators=[image_size_validator, image_file_extension_validator],

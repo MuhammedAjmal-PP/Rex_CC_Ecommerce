@@ -35,19 +35,6 @@
                     <img src="{{ primary_image.image.url }}"
                          alt="{{ product.name }} - Main View"
                          class="pdp-main-image">
-                    <!-- WISHLIST OVERLAY BUTTON -->
-                    <button class="pdp-wishlist-overlay add-to-wishlist {% if selected_variant.id in wishlist_ids %}is-active{% endif %}"
-                            data-variant-id="{{ selected_variant.id }}"
-                            data-toggle-url="{% url 'wishlist_toggle' selected_variant.id %}"
-                            aria-label="Add to wishlist">
-                        <span class="material-icons">
-                            {% if selected_variant.id in wishlist_ids %}
-                                favorite
-                            {% else %}
-                                favorite_border
-                            {% endif %}
-                        </span>
-                    </button>
                 </div>
                 {% if variant_images %}
                     <div class="pdp-thumbnails">
@@ -65,6 +52,19 @@
              RIGHT COLUMN: DETAILS
              ========================= -->
             <div class="pdp-details">
+                <!-- WISHLIST BUTTON (Top Right) -->
+                <button class="pdp-wishlist-btn add-to-wishlist {% if selected_variant.id in wishlist_ids %}is-active{% endif %}"
+                        data-variant-id="{{ selected_variant.id }}"
+                        data-toggle-url="{% url 'wishlist_toggle' selected_variant.id %}"
+                        aria-label="Add to wishlist">
+                    <span class="material-icons">
+                        {% if selected_variant.id in wishlist_ids %}
+                            favorite
+                        {% else %}
+                            favorite_border
+                        {% endif %}
+                    </span>
+                </button>
                 <div class="pdp-header-group">
                     <a href="{% url 'product_list' %}?brand={{ product.brand.slug }}"
                        class="pdp-brand width-fit">{{ product.brand.name }}</a>

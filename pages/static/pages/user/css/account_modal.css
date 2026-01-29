@@ -4,7 +4,7 @@
 
 .account-modal-premium {
   border: none;
-  border-radius: 18px;
+  border-radius: 0;
   overflow: hidden;
   background: transparent;
   box-shadow: 0 40px 120px rgba(0, 0, 0, 0.55);

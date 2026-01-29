@@ -137,30 +137,46 @@
   transition: transform 0.3s ease;
 }
 
-/* WISHLIST OVERLAY BUTTON */
-.pdp-wishlist-overlay {
+/* WISHLIST BUTTON (Top Right in Details) */
+.pdp-wishlist-btn {
   position: absolute;
-  top: 20px;
-  right: 20px;
+  top: 0;
+  right: 0;
   width: 44px;
   height: 44px;
-  background: rgba(255, 255, 255, 0.9);
-  border: none;
+  background: transparent;
+  border: 1px solid var(--pdp-border);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   z-index: 10;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  opacity: 0;
-  transform: translateY(-10px);
+  transition: all 0.3s ease;
+  color: var(--pdp-text-light);
 }
 
-.pdp-main-image-container:hover .pdp-wishlist-overlay {
-  opacity: 1;
-  transform: translateY(0);
+.pdp-wishlist-btn:hover {
+  background: var(--pdp-secondary);
+  border-color: #e74c3c;
+  color: #e74c3c;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.pdp-wishlist-btn .material-icons {
+  font-size: 24px;
+  transition: color 0.3s;
+}
+
+.pdp-wishlist-btn.is-active {
+  background: #fff;
+  border-color: #e74c3c;
+  color: #e74c3c;
+}
+
+.pdp-wishlist-btn.is-active .material-icons {
+  color: #e74c3c;
 }
 
 /* On mobile, usually show it always or handle tap */
@@ -229,6 +245,7 @@
    ========================================= */
 
 .pdp-details {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: var(--pdp-spacing-md);

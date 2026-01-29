@@ -130,6 +130,30 @@ def get_latest_product(request):
                 "brand": latest_variant.product.brand.name,
                 "image": image_url,
                 "category": latest_variant.product.category.name,
+                "sku": latest_variant.sku,
             },
         }
     )
+
+
+@require_GET
+def get_mega_menu_data(request):
+    """
+    API to fetch Categories and Top Brands for the Mega Menu.
+    Used for global access across all pages.
+    """
+    categories = list(
+        Category.objects.filter(is_active=True)
+        .values("name", "slug")[:5]
+    )
+
+    brands = list(
+        Brand.objects.filter(is_active=True, logo__isnull=False)
+        .values("name", "slug")[:6]
+    )
+
+    return JsonResponse({
+        "success": True,
+        "categories": categories,
+        "brands": brands
+    })

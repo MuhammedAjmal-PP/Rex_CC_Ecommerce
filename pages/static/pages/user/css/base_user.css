@@ -145,7 +145,7 @@ body:not(.home-page) .site-header {
 }
 
 .nav-link:hover {
-  color: var(--color-gold);
+  color: var(--color-bronze);
 }
 
 .nav-link::after {
@@ -155,7 +155,7 @@ body:not(.home-page) .site-header {
   left: 0;
   width: 0;
   height: 2px;
-  background-color: #bfa15f;
+  background-color: var(--color-bronze);
   transition: width 0.3s var(--ease-out-expo);
 }
 
@@ -187,10 +187,6 @@ body:not(.home-page) .site-header {
   transition: color 0.3s;
 }
 
-.brand-center a:hover {
-  color: #bfa15f;
-}
-
 /* ========================================
    6. RIGHT ICONS
    ======================================== */
@@ -206,7 +202,7 @@ body:not(.home-page) .site-header {
 }
 
 .search-icon {
-  font-size: 22px;
+  font-size: 26px;
   cursor: pointer;
 }
 
@@ -225,13 +221,14 @@ body:not(.home-page) .site-header {
   justify-content: center;
   width: 40px;
   height: 40px;
+  transition: transform 0.3s ease;
 }
 
 .nav-icon:hover {
-  color: var(--color-gold);
+  color: var(--color-bronze);
+  transform: scale(1.05);
 }
-
-.nav-icon .material-icons {
+.nav-icon-wishlist .nav-icon .material-icons {
   font-size: 26px;
 }
 
@@ -241,6 +238,9 @@ body:not(.home-page) .site-header {
 
 .wishlist-icon-wrapper {
   position: relative;
+}
+.wishlist-icon-wrapper:hover {
+  color: red;
 }
 
 .wishlist-badge {
@@ -297,31 +297,43 @@ body:not(.home-page) .site-header {
 }
 
 /* User Avatar */
+/* User Avatar Image */
 .user-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #eee;
-  display: block;
-  /* Removes inline gap */
+  border-radius: 50%;
+  border: 1px solid var(--color-gold);
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
+.user-avatar:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(191, 161, 95, 0.4);
+}
+
+/* User Initials Icon (No Image) */
 .user-initials-icon {
-  width: 36px;
-  height: 36px;
+  width: 33px;
+  height: 33px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #cd7f32 0%, #b06825 100%);
-  color: white;
+  background: linear-gradient(135deg, #bfa15f 0%, #b06825 100%);
+  /* Bronze Gradient */
+  color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
-  font-weight: 700;
   text-transform: uppercase;
+  font-size: 15px;
+  font-weight: 600;
   letter-spacing: 0.5px;
   border: 2px solid #fff;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease;
+}
+
+.user-initials-icon:hover {
+  transform: scale(1.05);
 }
 
 /* ========================================
@@ -367,6 +379,10 @@ body:not(.home-page) .site-header {
   margin-left: 10px;
 }
 
+.search-wrapper:hover .search-icon {
+  color: #333;
+}
+
 .search-wrapper.has-query {
   border-color: #ddd;
   background: #fff;
@@ -377,6 +393,10 @@ body:not(.home-page) .site-header {
   width: 180px;
   opacity: 1;
   margin-left: 10px;
+}
+
+.search-wrapper.has-query .search-icon {
+  color: #333;
 }
 
 .search-wrapper.has-query .search-clear-icon {
@@ -482,7 +502,7 @@ body:not(.home-page) .site-header {
 }
 
 .mega-column a:hover {
-  color: var(--color-gold);
+  color: var(--color-bronze);
   padding-left: 6px;
 }
 
@@ -725,7 +745,7 @@ body:not(.home-page) .site-header {
   font-weight: 700;
   letter-spacing: 2px;
   text-transform: uppercase;
-  color: #bfa15f;
+  color: var(--color-bronze);
   margin-bottom: 20px;
   margin-left: 30px;
 }
@@ -744,7 +764,7 @@ body:not(.home-page) .site-header {
 }
 
 .footer-col ul li a:hover {
-  color: #bfa15f;
+  color: var(--color-bronze);
 }
 
 .footer-bottom {
@@ -804,9 +824,11 @@ body:not(.home-page) .site-header {
    ======================================== */
 
 body.home-page .site-header {
-  background: linear-gradient(to bottom,
-      rgba(0, 0, 0, 0.7) 0%,
-      rgba(0, 0, 0, 0.3) 100%);
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.7) 0%,
+    rgba(0, 0, 0, 0.3) 100%
+  );
   box-shadow: none;
   backdrop-filter: blur(10px);
 }
@@ -824,11 +846,11 @@ body.home-page .nav-link {
 }
 
 body.home-page .nav-link:hover {
-  color: #bfa15f;
+  color: var(--color-bronze);
 }
 
 body.home-page .nav-link::after {
-  background-color: #bfa15f;
+  background-color: var(--color-bronze);
 }
 
 body.home-page .brand-center a {
@@ -842,7 +864,11 @@ body.home-page .search-icon {
 }
 
 body.home-page .nav-icon:hover {
-  color: #bfa15f;
+  color: var(--color-bronze);
+}
+
+body.home-page .wishlist-icon-wrapper:hover {
+  color: red;
 }
 
 body.home-page .search-input {

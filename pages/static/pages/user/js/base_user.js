@@ -106,7 +106,7 @@ setTimeout(() => {
   }
 }, 4000);
 
-// Dynamic Mega Menu Product Preview
+// Dynamic Mega Menu Product Preview & Data Fetch
 document.addEventListener("DOMContentLoaded", () => {
   const megaMenu = document.querySelector(".mega-menu");
   const card = document.getElementById("ProductCard");
@@ -123,6 +123,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Hide featured column initially
   if (card) card.style.display = "none";
 
+  // --- 1. Fetch Latest Variant for Preview ---
   async function fetchLatestVariant(query) {
     // Cancel previous request
     if (activeController) {
@@ -148,15 +149,17 @@ document.addEventListener("DOMContentLoaded", () => {
       const v = data.variant;
 
       // ✅ Variant exists → populate data
-      image.src = v.image;
-      image.alt = v.name;
+      if (image) {
+        image.src = v.image;
+        image.alt = v.name;
+      }
 
-      name.textContent = v.name;
-      brand.textContent = v.brand;
-      category.textContent = v.category;
+      if (name) name.textContent = v.name;
+      if (brand) brand.textContent = v.brand;
+      if (category) category.textContent = v.category;
 
       links.forEach((link) => {
-        link.href = `/product/${v.slug}/`;
+        link.href = `/product/${v.slug}/v/${v.sku}/`;
       });
 
       // ✅ Show featured column & restore layout
@@ -178,25 +181,78 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 140); // luxury hover delay
   }
 
-  // CATEGORY HOVER
-  document.querySelectorAll(".mega-category-link").forEach((el) => {
-    el.addEventListener("mouseenter", () => {
-      const slug = el.dataset.categorySlug;
-      if (slug) {
-        delayedFetch(`category=${slug}`);
-      }
-    });
-  });
+  // --- 2. Fetch Mega Menu Categories & Brands (Global) ---
+  async function fetchMegaMenuData() {
+    try {
+      const res = await fetch("/api/mega-menu/");
+      const data = await res.json();
 
-  // BRAND HOVER
-  document.querySelectorAll(".mega-brand-link").forEach((el) => {
-    el.addEventListener("mouseenter", () => {
-      const slug = el.dataset.brandSlug;
-      if (slug) {
-        delayedFetch(`brand=${slug}`);
+      if (!data.success) return;
+
+      // Populate Categories
+      const catContainer = document.querySelector(
+        ".mega-menu .mega-column:nth-child(1)",
+      );
+      if (catContainer) {
+        catContainer.innerHTML = "<h4>By Category</h4>"; // Reset
+
+        if (data.categories.length > 0) {
+          data.categories.forEach((cat) => {
+            const a = document.createElement("a");
+            a.href = `/products/?category=${cat.slug}`;
+            a.className = "mega-category-link";
+            a.dataset.categorySlug = cat.slug;
+            a.textContent = cat.name;
+
+            // Attach Event Listener Directly
+            a.addEventListener("mouseenter", () => {
+              delayedFetch(`category=${cat.slug}`);
+            });
+
+            catContainer.appendChild(a);
+          });
+        } else {
+          catContainer.innerHTML += '<a href="#">No categories available</a>';
+        }
       }
-    });
-  });
+
+      // Populate Brands
+      const brandListContainer = document.querySelector(".mega-brand-list");
+      if (brandListContainer) {
+        brandListContainer.innerHTML = ""; // Clear existing
+
+        if (data.brands.length > 0) {
+          data.brands.forEach((b) => {
+            const span = document.createElement("span");
+            const a = document.createElement("a");
+            a.href = `/products/?brand=${b.slug}`;
+            a.className = "mega-brand-link";
+            a.dataset.brandSlug = b.slug;
+            a.style.color = "inherit";
+            a.style.textDecoration = "none";
+            a.textContent = b.name;
+
+            // Attach Event Listener Directly
+            a.addEventListener("mouseenter", () => {
+              delayedFetch(`brand=${b.slug}`);
+            });
+
+            span.appendChild(a);
+            brandListContainer.appendChild(span);
+          });
+        } else {
+          brandListContainer.innerHTML = "<span>No brands available</span>";
+        }
+      }
+    } catch (err) {
+      console.error("Failed to fetch mega menu data:", err);
+    }
+  }
+
+  // Initialize
+  if (megaMenu) {
+    fetchMegaMenuData();
+  }
 });
 
 // Dynamic Wishlist Badge Border

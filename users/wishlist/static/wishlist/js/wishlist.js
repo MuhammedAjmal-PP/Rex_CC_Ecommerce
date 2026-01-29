@@ -35,10 +35,10 @@
             // Remove item from grid if it exists
             removeItemFromGrid(variantId);
         }
-        // If added, we might want to reload or append, but typically 
-        // user adds from other pages. If they are on wishlist page, 
-        // they probably aren't adding items unless we have a "Quick Add" 
-        // which we don't right now. 
+        // If added, we might want to reload or append, but typically
+        // user adds from other pages. If they are on wishlist page,
+        // they probably aren't adding items unless we have a "Quick Add"
+        // which we don't right now.
         // Re-fetching is safest to maintain order.
         // However, usually you are removing items on this page.
     }
@@ -95,7 +95,7 @@
 
         // Link
         const link = card.querySelector(".wishlist-card-link");
-        link.href = `/products/${product.variant}/`;
+        link.href = `/product/${product.slug}/v/${product.sku}/`;
 
         // Remove Button
         const removeBtn = card.querySelector(".wishlist-remove-action");
@@ -107,21 +107,23 @@
         card.querySelector(".wishlist-card-brand").textContent = product.brand;
         const nameLink = card.querySelector(".wishlist-card-name a");
         nameLink.textContent = product.product_name;
-        nameLink.href = `/products/${product.variant}/`;
+        nameLink.href = `/product/${product.slug}/v/${product.sku}/`;
 
         // Price
-        card.querySelector(".current-price").textContent = formatPrice(product.final_price);
+        card.querySelector(".current-price").textContent = formatPrice(
+            product.final_price,
+        );
         const originalPrice = card.querySelector(".original-price");
 
         if (parseFloat(product.final_price) < parseFloat(product.price)) {
             originalPrice.textContent = formatPrice(product.price);
         } else {
-            originalPrice.style.display = 'none';
+            originalPrice.style.display = "none";
         }
 
         // View Button
         const viewBtn = card.querySelector(".btn-view-product");
-        viewBtn.href = `/products/${product.variant}/`;
+        viewBtn.href = `/product/${product.slug}/v/${product.sku}/`;
 
         // Stock
         const stockBadge = card.querySelector(".stock-badge");
@@ -160,7 +162,6 @@
             } else {
                 alert(data.message || "Failed to remove item");
             }
-
         } catch (error) {
             console.error(error);
         }
@@ -168,7 +169,9 @@
 
     // UI HELPERS
     function removeItemFromGrid(variantId) {
-        const card = wishlistGrid.querySelector(`.wishlist-card[data-variant-id="${variantId}"]`);
+        const card = wishlistGrid.querySelector(
+            `.wishlist-card[data-variant-id="${variantId}"]`,
+        );
         if (card) {
             // Animate out
             card.style.opacity = "0";
