@@ -35,6 +35,19 @@
                     <img src="{{ primary_image.image.url }}"
                          alt="{{ product.name }} - Main View"
                          class="pdp-main-image">
+                    <!-- WISHLIST OVERLAY BUTTON -->
+                    <button class="pdp-wishlist-overlay add-to-wishlist {% if selected_variant.id in wishlist_ids %}is-active{% endif %}"
+                            data-variant-id="{{ selected_variant.id }}"
+                            data-toggle-url="{% url 'wishlist_toggle' selected_variant.id %}"
+                            aria-label="Add to wishlist">
+                        <span class="material-icons">
+                            {% if selected_variant.id in wishlist_ids %}
+                                favorite
+                            {% else %}
+                                favorite_border
+                            {% endif %}
+                        </span>
+                    </button>
                 </div>
                 {% if variant_images %}
                     <div class="pdp-thumbnails">
@@ -54,10 +67,10 @@
             <div class="pdp-details">
                 <div class="pdp-header-group">
                     <a href="{% url 'product_list' %}?brand={{ product.brand.slug }}"
-                       class="pdp-brand">{{ product.brand.name }}</a>
-                    <h1 class="pdp-title">{{ product.name }}</h1>
+                       class="pdp-brand width-fit">{{ product.brand.name }}</a>
+                    <h1 class="pdp-title width-fit">{{ product.name }}</h1>
                     <!-- RATINGS -->
-                    <div class="pdp-rating-summary">
+                    <div class="pdp-rating-summary width-fit">
                         <div class="pdp-rating-stars"
                              aria-label="Rated {{ ratings_data.average }} out of 5 stars">
                             {% for i in "12345" %}
@@ -74,15 +87,15 @@
                     </div>
                 </div>
                 <!-- PRICE -->
-                <div class="pdp-price-box">
-                    <span class="pdp-price-final">₹{{ price|floatformat:0|intcomma }}</span>
+                <div class="pdp-price-box width-fit">
+                    <span class="pdp-price-final width-fit">₹{{ price|floatformat:0|intcomma }}</span>
                     {% if discount_percentage > 0 %}
-                        <span class="pdp-price-original">₹{{ original_price|floatformat:0|intcomma }}</span>
-                        <span class="pdp-discount-badge">-{{ discount_percentage }}% OFF</span>
+                        <span class="pdp-price-original width-fit">₹{{ original_price|floatformat:0|intcomma }}</span>
+                        <span class="pdp-discount-badge width-fit">-{{ discount_percentage }}% OFF</span>
                     {% endif %}
                 </div>
                 <!-- STOCK MESSAGE -->
-                <div class="pdp-stock-status {{ stock_status }}">
+                <div class="pdp-stock-status width-fit {{ stock_status }}">
                     {% if stock_status == 'in_stock' %}
                         <span class="material-icons" style="font-size: 1.2em;">check_circle</span>
                     {% elif stock_status == 'low_stock' %}
@@ -101,11 +114,11 @@
                               font-size: 0.9em">Read More</a>
                 </div>
                 <!-- VARIANTS -->
-                <div class="pdp-variants-section">
+                <div class="pdp-variants-section width-fit">
                     <span class="pdp-variant-label">Select Version: <span style="color: var(--pdp-text-light); font-weight: 400">{{ selected_variant.sku }}</span></span>
-                    <div class="pdp-variant-grid">
+                    <div class="pdp-variant-grid width-fit">
                         {% for v in variants %}
-                            <a href="?variant={{ v.sku }}"
+                            <a href="{% url 'product_detail' v.product.slug v.sku %}"
                                class="pdp-variant-option {% if v == selected_variant %}active{% endif %} {% if v.stock == 0 %}out-of-stock{% endif %}"
                                title="{{ v.sku }} - {% if v.stock == 0 %}Out of Stock{% else %}In Stock{% endif %}">
                                 {% if v.images.first %}
@@ -136,6 +149,7 @@
                                    name="quantity"
                                    value="1"
                                    min="1"
+                                   max="{{ selected_variant.stock }}"
                                    class="pdp-qty-input"
                                    aria-label="Quantity">
                             <button type="button" class="pdp-qty-btn" data-action="increase">+</button>
@@ -149,10 +163,6 @@
                             {% else %}
                                 Add to Cart
                             {% endif %}
-                        </button>
-                        <!-- WISHLIST -->
-                        <button type="button" class="pdp-btn-wishlist" aria-label="Add to Wishlist">
-                            <span class="material-icons">favorite_border</span>
                         </button>
                     </div>
                 </form>

@@ -11,7 +11,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Helper to update value
     const updateValue = (newVal) => {
       if (newVal < 1) newVal = 1;
-      // You might add max stock check here if data attribute exists
+
+      // Check max limit (stock)
+      const maxStock = parseInt(input.getAttribute('max'));
+      if (!isNaN(maxStock) && newVal > maxStock) {
+        newVal = maxStock;
+      }
+
       input.value = newVal;
     };
 
@@ -23,12 +29,18 @@ document.addEventListener('DOMContentLoaded', () => {
       updateValue(parseInt(input.value) + 1);
     });
 
-    // Prevent non-numeric input
+    // Prevent non-numeric input and respect limits
     input.addEventListener('change', () => {
-      const val = parseInt(input.value);
+      let val = parseInt(input.value);
+      const maxStock = parseInt(input.getAttribute('max'));
+
       if (isNaN(val) || val < 1) {
-        input.value = 1;
+        val = 1;
+      } else if (!isNaN(maxStock) && val > maxStock) {
+        val = maxStock;
       }
+
+      input.value = val;
     });
   });
 

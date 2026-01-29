@@ -1,8 +1,9 @@
 from django.core.paginator import Paginator
-from django.db.models import Q, Min, Max
+from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.views.decorators.cache import never_cache
+from catalog.helper import get_category_from_referer
 from catalog.models import Product, ProductVariant, Category, Brand
 
 
@@ -18,12 +19,10 @@ def product_list(request):
     # GET PARAMETERS
     search = request.GET.get("search", "").strip()
     sort = request.GET.get("sort", "")
-    selected_categories = request.GET.getlist(
-        "category"
-    )  # List of                slugs
-    selected_brands = request.GET.getlist("brand")  # List of slugs
-    min_price = request.GET.get("min_price")
-    max_price = request.GET.get("max_price")
+    selected_categories = request.GET.getlist("category")
+    selected_brands = request.GET.getlist("brand")
+    min_price = request.GET.get("min")
+    max_price = request.GET.get("max")
     page_number = request.GET.get("page", 1)
 
     # QUERYSET
@@ -110,8 +109,8 @@ def product_list(request):
         "search_query": search,
         "selected_categories": selected_categories,
         "selected_brands": selected_brands,
-        "min_price": min_price,
-        "max_price": max_price,
+        "min": min_price,
+        "max": max_price,
         "sort": sort,
         "sort_options": sort_options,
         "has_filters": bool(
@@ -150,8 +149,7 @@ def product_detail(request, slug, sku):
         messages.error(request, "This product is currently unavailable.")
         return redirect("product_list")
 
-    # FETCH VARIANTS
-    variants = list(
+    variants = (
         ProductVariant.objects.filter(
             product=product,
             is_deleted=False,
@@ -165,22 +163,14 @@ def product_detail(request, slug, sku):
         messages.error(request, "This product is currently unavailable.")
         return redirect("product_list")
 
-    # SELECTED VARIANT
-    variant_sku = request.GET.get("variant")
+    # VARIANT
 
-    if variant_sku:
-        selected_variant = next(
-            (v for v in variants if v.sku == variant_sku),
-            variants[0],
-        )
-    else:
-        selected_variant = next(
-            (v for v in variants if v.is_featured),
-            variants[0],
-        )
+    variant = get_object_or_404(variants, sku=sku)
+
+    variants = list(variants)
 
     # VARIANT IMAGES
-    variant_images = selected_variant.images.all()
+    variant_images = variant.images.all()
 
     primary_image = next(
         (img for img in variant_images if img.is_primary),
@@ -188,7 +178,7 @@ def product_detail(request, slug, sku):
     )
 
     # STOCK STATUS
-    stock = selected_variant.stock
+    stock = variant.stock
 
     if stock == 0:
         stock_status = "out_of_stock"
@@ -201,14 +191,24 @@ def product_detail(request, slug, sku):
         stock_message = "In Stock"
 
     # PRICING (MODEL-DRIVEN)
-    discount_percentage = selected_variant.discount_percentage or 0
+    discount_percentage = variant.discount_percentage or 0
 
-    final_price = selected_variant.final_price
+    final_price = variant.final_price
 
-    original_price = selected_variant.price if discount_percentage > 0 else None
+    original_price = variant.price if discount_percentage > 0 else None
 
     # BREADCRUMBS
-    primary_category = active_categories.first()
+    # Try to get category from referrer
+    referer_category_slug = get_category_from_referer(request)
+
+    primary_category = None
+
+    if referer_category_slug:
+        primary_category = active_categories.filter(slug=referer_category_slug).first()
+
+    # Fallback (important!)
+    if not primary_category:
+        primary_category = active_categories.first()
 
     breadcrumbs = [
         {"name": "Home", "url": "/"},
@@ -274,26 +274,26 @@ def product_detail(request, slug, sku):
     # SPECIFICATIONS
     specifications = []
 
-    if selected_variant.movement_type:
-        specifications.append(("Movement Type", selected_variant.movement_type))
-    if selected_variant.case_material:
-        specifications.append(("Case Material", selected_variant.case_material))
-    if selected_variant.case_size_mm:
-        specifications.append(("Case Size", f"{selected_variant.case_size_mm}mm"))
-    if selected_variant.dial_color:
-        specifications.append(("Dial Color", selected_variant.dial_color))
-    if selected_variant.strap_material:
-        specifications.append(("Strap Material", selected_variant.strap_material))
-    if selected_variant.strap_color:
-        specifications.append(("Strap Color", selected_variant.strap_color))
+    if variant.movement_type:
+        specifications.append(("Movement Type", variant.movement_type))
+    if variant.case_material:
+        specifications.append(("Case Material", variant.case_material))
+    if variant.case_size_mm:
+        specifications.append(("Case Size", f"{variant.case_size_mm}mm"))
+    if variant.dial_color:
+        specifications.append(("Dial Color", variant.dial_color))
+    if variant.strap_material:
+        specifications.append(("Strap Material", variant.strap_material))
+    if variant.strap_color:
+        specifications.append(("Strap Color", variant.strap_color))
 
-    specifications.append(("SKU", selected_variant.sku))
+    specifications.append(("SKU", variant.sku))
 
     # CONTEXT
     context = {
         "product": product,
         "variants": variants,
-        "selected_variant": selected_variant,
+        "selected_variant": variant,
         "variant_images": variant_images,
         "primary_image": primary_image,
         "stock_status": stock_status,
