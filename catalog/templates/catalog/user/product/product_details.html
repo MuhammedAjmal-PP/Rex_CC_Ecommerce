@@ -55,7 +55,7 @@
                 <!-- WISHLIST BUTTON (Top Right) -->
                 <button class="pdp-wishlist-btn add-to-wishlist {% if selected_variant.id in wishlist_ids %}is-active{% endif %}"
                         data-variant-id="{{ selected_variant.id }}"
-                        data-toggle-url="{% url 'wishlist_toggle' selected_variant.id %}"
+                        data-toggle-url="{% url 'wishlist_toggle' selected_variant.product.slug selected_variant.sku %}"
                         aria-label="Add to wishlist">
                     <span class="material-icons">
                         {% if selected_variant.id in wishlist_ids %}

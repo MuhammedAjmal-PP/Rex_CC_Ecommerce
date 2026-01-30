@@ -3,7 +3,7 @@
 <div class="product-card">
     <button class="product-card__wishlist-btn add-to-wishlist {% if variant.id in wishlist_ids %}is-active{% endif %}"
             data-variant-id="{{ variant.id }}"
-            data-toggle-url="{% url 'wishlist_toggle' variant.id %}"
+            data-toggle-url="{% url 'wishlist_toggle' variant.product.slug variant.sku %}"
             aria-label="Add to wishlist">
         <span class="material-icons">
             {% if variant.id in wishlist_ids %}

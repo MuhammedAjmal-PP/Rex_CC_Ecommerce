@@ -22,7 +22,9 @@ def view_cart(request):
         CartItem.objects.filter(
             cart=cart,
             product_variant__is_deleted=False,
+            product_variant__is_drafted=False,
             product_variant__product__is_deleted=False,
+            product_variant__product__is_drafted=False,
         )
         .select_related(
             "product_variant",
@@ -51,7 +53,6 @@ def view_cart(request):
                     "brand": variant.product.brand.name,
                     "price": variant.price,
                     "final_price": variant.final_price,
-                    "available": available,
                     "stock": variant.stock,
                     "is_in_stock": variant.stock > 0,
                     "image": image.image.url,
