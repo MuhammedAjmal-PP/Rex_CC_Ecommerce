@@ -3,7 +3,8 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_GET, require_POST
-from catalog.models import ProductVariant
+from catalog.models import Product, ProductVariant
+from users.cart.models import Cart, CartItem
 from users.wishlist.models import Wishlist, WishlistItem
 from users.wishlist.utils import (
     get_session_wishlist,
@@ -75,15 +76,11 @@ def list_wishlist(request):
 
 
 @require_POST
-def wishlist_toggle(request, variant_id):
+def wishlist_toggle(request, slug, sku):
     """Toggle wishlist item for user or guest (remove or add items into wishlist)"""
+    product = get_object_or_404(Product, slug=slug, is_drafted=False, is_deleted=False)
     variant = get_object_or_404(
-        ProductVariant,
-        id=variant_id,
-        is_deleted=False,
-        is_drafted=False,
-        product__is_deleted=False,
-        product__is_drafted=False,
+        ProductVariant, product=product, sku=sku, is_drafted=False, is_deleted=False
     )
 
     # AUTHENTICATED USER
@@ -100,12 +97,20 @@ def wishlist_toggle(request, variant_id):
             message = "Removed from your wishlist"
             added = False
         else:
-            WishlistItem.objects.create(
-                wishlist=wishlist,
-                product_variant=variant,
-            )
-            message = "Added to wishlist ❤️"
-            added = True
+            cart = Cart.objects.get_or_create(user=request.user)
+            cart_item = CartItem.objects.filter(
+                cart=cart, product_variant=variant
+            ).first()
+            if cart_item:
+                message = "This item is already in your cart"
+                added = False
+            else:
+                WishlistItem.objects.create(
+                    wishlist=wishlist,
+                    product_variant=variant,
+                )
+                message = "Added to wishlist ❤️"
+                added = True
 
         return JsonResponse(
             {
