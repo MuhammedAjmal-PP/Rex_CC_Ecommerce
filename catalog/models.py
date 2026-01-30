@@ -140,7 +140,7 @@ class ProductVariant(models.Model):
     movement_type = models.CharField(max_length=100, blank=True)
     case_size_mm = models.PositiveIntegerField(null=True, blank=True)
 
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    price = models.DecimalField(max_digits=12, decimal_places=2)
     discount_percentage = models.PositiveIntegerField(
         default=0,
         validators=[MaxValueValidator(100), MinValueValidator(0)],
@@ -168,13 +168,14 @@ class ProductVariant(models.Model):
         ordering = ["product", "sku"]
 
     @property
-    def final_price(self):
+    def discount_amount(self):
         if self.discount_percentage > 0:
-            discount_amount = (
-                self.price * Decimal(self.discount_percentage)
-            ) / Decimal(100)
-            return self.price - discount_amount
-        return self.price
+            return self.price * Decimal(self.discount_percentage) / Decimal(100)
+        return Decimal("0.00")
+
+    @property
+    def final_price(self):
+        return self.price - self.discount_amount
 
     def __str__(self):
         return f"{self.product.name} ({self.sku})"
