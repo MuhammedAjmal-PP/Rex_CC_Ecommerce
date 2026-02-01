@@ -95,7 +95,9 @@
                     {% endif %}
                 </div>
                 <!-- STOCK MESSAGE -->
-                <div class="pdp-stock-status width-fit {{ stock_status }}">
+                <div id="pdp-stock-container"
+                     class="pdp-stock-status width-fit {{ stock_status }}"
+                     data-stock-url="{% url 'api_stock_fetch' product.slug selected_variant.sku %}">
                     {% if stock_status == 'in_stock' %}
                         <span class="material-icons" style="font-size: 1.2em;">check_circle</span>
                     {% elif stock_status == 'low_stock' %}
@@ -139,7 +141,8 @@
                 </div>
                 <!-- ACTIONS (Qty / Add / Wish) -->
                 <form method="POST"
-                      action="{% comment %} Add to Cart URL here later {% endcomment %}">
+                      id="addToCartForm"
+                      action="{% url 'add_cart' selected_variant.product.slug selected_variant.sku %}">
                     {% csrf_token %}
                     <div class="pdp-actions">
                         <!-- QTY -->
@@ -156,6 +159,7 @@
                         </div>
                         <!-- ADD TO CART -->
                         <button type="submit"
+                                id="pdp-add-to-cart-btn"
                                 class="pdp-btn-add"
                                 {% if stock_status == 'out_of_stock' %}disabled{% endif %}>
                             {% if stock_status == 'out_of_stock' %}

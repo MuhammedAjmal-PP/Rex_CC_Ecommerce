@@ -1,65 +1,101 @@
-{% extends "user_profile/profile_base.html" %}
+{% extends "pages/user/base_user.html" %}
 {% load static %}
-{% block head_title %}
-    My Wishlist | REX CC
-{% endblock head_title %}
-{% block extra_page_css %}
-    <link rel="stylesheet" href="{% static 'wishlist/css/wishlist.css' %}">
-{% endblock extra_page_css %}
-{% block page_content %}
-    <div class="wishlist-page">
-        <div class="profile-page-header">
-            <h1 class="main-title">My Wishlist</h1>
-            <p class="main-subtitle">Curated collection of your most desired timepieces.</p>
+
+{% block head_title %}My Wishlist | REX CC{% endblock head_title %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'wishlist/css/wishlist.css' %}">
+<link rel="stylesheet" href="{% static 'catalog/css/user/product/product_card.css' %}">
+{% endblock extra_css %}
+
+{% block content %}
+<div class="wishlist-page">
+
+    <!-- BREADCRUMBS -->
+    <nav class="breadcrumb-nav">
+        <a href="{% url 'home' %}" class="breadcrumb-link">Home</a>
+        <span class="breadcrumb-separator">›</span>
+        <a href="{% url 'user_profile' %}" class="breadcrumb-link">My Account</a>
+        <span class="breadcrumb-separator">›</span>
+        <span class="breadcrumb-current">Wishlist</span>
+    </nav>
+
+    <!-- PAGE HEADER -->
+    <header class="page-header">
+        <div class="header-content">
+            <h1 class="page-title">My Wishlist</h1>
+            <p class="page-subtitle">A curated collection of your favorite timepieces</p>
         </div>
-        <!-- Loading State -->
-        <div id="wishlist-loading" class="wishlist-loading">
-            <div class="spinner-border text-gold" role="status">
-                <span class="visually-hidden">Loading...</span>
-            </div>
+        <!-- <div class="header-stats">
+            <span class="wishlist-count">
+                <span class="material-icons">favorite</span>
+                <span id="wishlist-count-display">0</span>
+                <span class="count-label">Items</span>
+            </span>
+        </div> -->
+    </header>
+
+    <!-- LOADING STATE -->
+    <div id="wishlist-loading" class="wishlist-state">
+        <div class="state-icon">
+            <span class="material-icons rotating">watch_later</span>
         </div>
-        <!-- Empty State -->
-        <div id="wishlist-empty" class="wishlist-empty" style="display: none;">
-            <div class="empty-icon-wrapper">
-                <span class="material-icons">favorite_border</span>
-            </div>
-            <h2>Your wishlist is empty</h2>
-            <p>Explore our exclusive collection and save your favorites.</p>
-            <a href="{% url 'product_list' %}" class="btn-premium">Explore Collection</a>
+        <p class="state-text">Loading your collection...</p>
+    </div>
+
+    <!-- EMPTY STATE -->
+    <div id="wishlist-empty" class="wishlist-state">
+        <div class="state-icon-large">
+            <span class="material-icons">favorite_border</span>
         </div>
-        <!-- Wishlist Grid -->
-        <div id="wishlist-grid" class="wishlist-grid">
-            <!-- Items injection -->
+        <h3 class="state-title">Your Wishlist is Empty</h3>
+        <p class="state-text">Start building your collection of exquisite timepieces</p>
+        <a href="{% url 'product_list' %}" class="btn-primary">
+            <span class="material-icons">explore</span>
+            <span>Explore Watches</span>
+        </a>
+    </div>
+
+    <!-- WISHLIST GRID -->
+    <div id="wishlist-grid" class="wishlist-collection">
+        <!-- Items will be injected by JavaScript -->
+    </div>
+
+</div>
+
+<!-- TEMPLATE FOR WISHLIST ITEMS -->
+<template id="wishlist-page-item-template">
+    <div data-variant-id="">
+        <div class="product-card product-card-simple">
+            <button type="button" class="wishlist-remove-btn btn-remove-icon">
+                <span class="material-icons">close</span>
+            </button>
+            <a href="" class="card-link-wrapper">
+                <div class="product-visual">
+                    <div class="product-image-wrapper">
+                        <img src="" alt="" class="product-image card-img-top">
+                    </div>
+                </div>
+                <div class="product-info">
+                    <p class="product-brand brand-name"></p>
+                    <a href="" class="title-link" style="display: none;"></a>
+                    <h3 class="product-name product-title"></h3>
+                    <div class="product-variant-info variant-details-container">
+                        <!-- Variant  details will be added here by JS -->
+                    </div>
+                    <div class="product-pricing">
+                        <span class="product-price current-price"></span>
+                        <span class="product-price-old original-price"></span>
+                    </div>
+                    <div class="product-stock stock-badge"></div>
+                </div>
+            </a>
         </div>
     </div>
-    <!-- Item Template -->
-    <template id="wishlist-page-item-template">
-        <div class="wishlist-card">
-            <div class="wishlist-card-img-wrapper">
-                <a href="#" class="wishlist-card-link">
-                    <img src="" alt="" class="wishlist-card-img">
-                </a>
-                <!-- Remove Button -->
-                <button class="wishlist-remove-action" aria-label="Remove from wishlist">
-                    <span class="material-icons">close</span>
-                </button>
-                <span class="stock-badge"></span>
-            </div>
-            <div class="wishlist-card-content">
-                <span class="wishlist-card-brand"></span>
-                <h3 class="wishlist-card-name">
-                    <a href="#"></a>
-                </h3>
-                <div class="wishlist-card-price">
-                    <span class="current-price"></span>
-                    <span class="original-price"></span>
-                </div>
-                <!-- Using add-to-cart logic (if available globally) or direct link -->
-                <a href="#" class="btn-view-product">VIEW TIMEPIECE</a>
-            </div>
-        </div>
-    </template>
-{% endblock page_content %}
-{% block extra_page_js %}
-    <script src="{% static 'wishlist/js/wishlist.js' %}"></script>
-{% endblock extra_page_js %}
+</template>
+
+{% endblock content %}
+
+{% block extra_js %}
+<script src="{% static 'wishlist/js/wishlist.js' %}"></script>
+{% endblock extra_js %}

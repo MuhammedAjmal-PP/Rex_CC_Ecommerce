@@ -25,8 +25,8 @@
   // API ENDPOINTS
   // ===============================
   const WISHLIST_API_URL = "/api/wishlist/";
-  const REMOVE_WISHLIST_URL = (variantId) =>
-    `/api/wishlist/${variantId}/toggle/`;
+  const REMOVE_WISHLIST_URL = (slug, sku) =>
+    `/api/wishlist/${slug}/v/${sku}/toggle/`;
 
   // ===============================
   // STATE
@@ -175,6 +175,8 @@
     const itemElement = template.querySelector(".wishlist-item");
 
     itemElement.dataset.variantId = item.variant;
+    itemElement.dataset.slug = item.slug;
+    itemElement.dataset.sku = item.sku;
 
     // Image
     const img = itemElement.querySelector(".wishlist-product-img");
@@ -219,6 +221,21 @@
       badge.classList.add("out-of-stock");
     }
 
+    // Add to Cart Button Data
+    const addToCartBtn = itemElement.querySelector(".wishlist-add-cart-btn");
+    if (addToCartBtn) {
+      addToCartBtn.dataset.slug = item.slug;
+      addToCartBtn.dataset.sku = item.sku;
+      // Inject variant ID for event propagation
+      addToCartBtn.dataset.variantId = item.variant;
+      // Optionally disable if out of stock
+      if (!item.is_in_stock) {
+        addToCartBtn.disabled = true;
+        addToCartBtn.style.opacity = "0.5";
+        addToCartBtn.style.cursor = "not-allowed";
+      }
+    }
+
     return itemElement;
   }
 
@@ -233,22 +250,24 @@
     if (!itemElement) return;
 
     const variantId = itemElement.dataset.variantId;
+    const slug = itemElement.dataset.slug;
+    const sku = itemElement.dataset.sku;
 
     if (button.classList.contains("wishlist-remove-btn")) {
-      removeWishlistItem(variantId, itemElement);
+      removeWishlistItem(variantId, slug, sku, itemElement);
     }
   }
 
   // ===============================
   // REMOVE ITEM
   // ===============================
-  async function removeWishlistItem(variantId, itemElement) {
+  async function removeWishlistItem(variantId, slug, sku, itemElement) {
     const button = itemElement.querySelector(".wishlist-remove-btn");
     button.disabled = true;
     button.style.pointerEvents = "none";
 
     try {
-      const response = await fetch(REMOVE_WISHLIST_URL(variantId), {
+      const response = await fetch(REMOVE_WISHLIST_URL(slug, sku), {
         method: "POST",
         headers: {
           "X-CSRFToken": getCSRFToken(),

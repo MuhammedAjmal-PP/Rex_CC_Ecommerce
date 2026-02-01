@@ -56,6 +56,17 @@ def list_wishlist(request):
 
     for variant in items:
         image = variant.images.filter(is_primary=True).first()
+        
+        # Build variant details
+        variant_details = []
+        if variant.dial_color:
+            variant_details.append(f"{variant.dial_color} Dial")
+        if variant.case_size_mm:
+            variant_details.append(f"{variant.case_size_mm}mm")
+        if variant.strap_material:
+            variant_details.append(variant.strap_material)
+        if variant.movement_type:
+            variant_details.append(variant.movement_type)
 
         products.append(
             {
@@ -69,10 +80,12 @@ def list_wishlist(request):
                 "stock": variant.stock,
                 "is_in_stock": variant.stock > 0,
                 "image": image.image.url,
+                "variant_details": variant_details,
             }
         )
 
     return JsonResponse({"success": True, "count": len(products), "products": products})
+
 
 
 @require_POST
@@ -97,7 +110,7 @@ def wishlist_toggle(request, slug, sku):
             message = "Removed from your wishlist"
             added = False
         else:
-            cart = Cart.objects.get_or_create(user=request.user)
+            cart, _ = Cart.objects.get_or_create(user=request.user)
             cart_item = CartItem.objects.filter(
                 cart=cart, product_variant=variant
             ).first()

@@ -1,196 +1,457 @@
-/* Address Management Styles - REX CC Premium Theme */
+/* ============================================================
+   REX CC - MY ADDRESSES PAGE
+   Luxury Delivery Destinations
+   ============================================================ */
 
-/* Note: Variables are inherited from profile.css */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:wght@400;600;700&display=swap');
 
-/* Addresses Grid */
-.addresses-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 2rem;
-  padding: 1rem 0;
+:root {
+  --addr-bg: #faf9f7;
+  --addr-card: #ffffff;
+  --addr-text: #2c2c2c;
+  --addr-text-muted: #666666;
+  --addr-gold: #cd7f32;
+  --addr-gold-dark: #b06825;
+  --addr-border: #e5e1da;
+
+  --font-serif: 'Playfair Display', serif;
+  --font-sans: 'Montserrat', sans-serif;
 }
 
-/* Address Card */
-.address-card {
-  background: #fff;
-  border: 1px solid var(--border-light);
-  padding: 2rem;
-  position: relative;
-  transition: all 0.4s ease;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  min-height: 280px;
+/* ============================================================
+   PAGE CONTAINER
+   ============================================================ */
+
+.addresses-page {
+  background: var(--addr-bg);
+  min-height: 100vh;
+  padding: 40px 20px 80px;
 }
 
-.address-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.05);
-  border-color: var(--color-gold);
-}
+/* ============================================================
+   BREADCRUMB
+   ============================================================ */
 
-.address-card.default-address {
-  border-color: var(--color-gold);
-  background: linear-gradient(to bottom right, #fff, #fffae6);
-}
-
-/* Default Badge */
-.default-badge {
-  position: absolute;
-  top: 1.5rem;
-  right: 1.5rem;
-  color: var(--color-gold);
-  font-family: var(--font-body);
-  font-size: 0.7rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  border: 1px solid var(--color-gold);
-  padding: 4px 10px;
-}
-
-.default-badge .material-icons {
-  font-size: 14px;
-}
-
-/* Address Content */
-.address-content {
-  margin-bottom: 2rem;
-}
-
-/* Type Icon */
-.address-type-icon {
-  margin-bottom: 1.5rem;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.address-type-icon .material-icons {
-  font-size: 20px;
-  color: var(--color-gold);
-}
-
-.address-type-icon p {
-  margin: 0;
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  color: #999;
-}
-
-/* Address Details */
-.address-name {
-  font-family: var(--font-heading);
-  font-size: 1.25rem;
-  color: var(--text-pri);
-  margin-bottom: 1rem;
-  font-weight: 700;
-}
-
-.address-line {
-  font-family: var(--font-body);
-  font-size: 0.95rem;
-  color: var(--text-sec);
-  margin-bottom: 0.35rem;
-  line-height: 1.6;
-}
-
-.address-phone {
-  margin-top: 1.5rem;
-  font-size: 0.9rem;
-  color: var(--text-pri);
+.breadcrumb-nav {
+  max-width: 1200px;
+  margin: 0 auto 20px;
   display: flex;
   align-items: center;
   gap: 8px;
+  font-size: 0.85rem;
+  color: var(--addr-text-muted);
+}
+
+.breadcrumb-link {
+  color: var(--addr-text-muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.breadcrumb-link:hover {
+  color: var(--addr-gold);
+}
+
+.breadcrumb-separator {
+  color: var(--addr-border);
+}
+
+.breadcrumb-current {
+  color: var(--addr-text);
   font-weight: 500;
 }
 
-.address-phone .material-icons {
-  font-size: 16px;
-  color: var(--color-gold);
-}
+/* ============================================================
+   BACK BUTTON
+   ============================================================ */
 
-/* Address Actions */
-.address-actions {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid var(--border-light);
-  margin-top: auto;
-}
-
-.btn-text {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  font-family: var(--font-body);
-  font-size: 0.8rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--text-sec);
-  /* Default gray */
-  transition: all 0.3s;
-  display: flex;
+.back-button {
+  max-width: 1200px;
+  margin: 0 auto 30px;
+  display: inline-flex;
   align-items: center;
   gap: 6px;
+  color: var(--addr-text-muted);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.back-button:hover {
+  color: var(--addr-gold);
+  transform: translateX(-3px);
+}
+
+.back-button .material-icons {
+  font-size: 18px;
+}
+
+/* ============================================================
+   PAGE HEADER WITH ACTION
+   ============================================================ */
+
+.page-header-wrapper {
+  max-width: 1200px;
+  margin: 0 auto 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 30px;
+}
+
+.page-header {
+  flex: 1;
+}
+
+.page-title {
+  font-family: var(--font-serif);
+  font-size: 2.2rem;
+  color: var(--addr-text);
+  margin: 0 0 8px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.page-subtitle {
+  font-size: 1rem;
+  color: var(--addr-text-muted);
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* ============================================================
+   HEADER ACTION (ADD BUTTON)
+   ============================================================ */
+
+.header-action {
+  flex-shrink: 0;
+}
+
+.btn-add-address {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 28px;
+  background: var(--addr-gold);
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.3s;
   text-decoration: none;
 }
 
-.btn-text .material-icons {
+.btn-add-address:hover {
+  background: var(--addr-gold-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(205, 127, 50, 0.3);
+  color: #ffffff;
+}
+
+.btn-add-address .material-icons {
+  font-size: 18px;
+}
+
+/* ============================================================
+   ADDRESS GRID
+   ============================================================ */
+
+.address-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 30px;
+}
+
+/* ============================================================
+   DELIVERY LABEL CARDS
+   ============================================================ */
+
+.delivery-label {
+  background: var(--addr-card);
+  border: 1px solid var(--addr-border);
+  border-radius: 12px;
+  padding: 30px;
+  position: relative;
+  transition: all 0.3s;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.delivery-label:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  border-color: var(--addr-gold);
+}
+
+/* Default Address Elevation */
+.delivery-label-default {
+  border-color: var(--addr-gold);
+  border-width: 2px;
+  background: linear-gradient(to bottom right, #ffffff 0%, rgba(205, 127, 50, 0.03) 100%);
+}
+
+.delivery-label-default:hover {
+  border-color: var(--addr-gold-dark);
+}
+
+/* ============================================================
+   LABEL BADGE
+   ============================================================ */
+
+.label-badge {
+  position: absolute;
+  top: -12px;
+  left: 30px;
+  padding: 6px 16px;
+  background: linear-gradient(135deg, var(--addr-gold) 0%, var(--addr-gold-dark) 100%);
+  color: #ffffff;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-weight: 600;
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(205, 127, 50, 0.25);
+}
+
+/* ============================================================
+   DEFAULT INDICATOR
+   ============================================================ */
+
+.default-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  align-self: flex-start;
+  padding: 8px 14px;
+  background: rgba(205, 127, 50, 0.1);
+  color: var(--addr-gold-dark);
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-top: 8px;
+}
+
+.default-indicator .material-icons {
   font-size: 16px;
-  transition: color 0.3s;
+  color: var(--addr-gold);
 }
 
-.btn-text:hover {
-  color: var(--color-gold);
+/* ============================================================
+   LABEL CONTENT
+   ============================================================ */
+
+.label-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.btn-text:hover .material-icons {
-  color: var(--color-gold);
+.label-name {
+  font-family: var(--font-serif);
+  font-size: 1.2rem;
+  color: var(--addr-text);
+  font-weight: 600;
+  margin: 0 0 6px;
+  letter-spacing: 0.3px;
 }
 
-/* Default Action Button Specifics */
-.btn-text-default {
-  color: var(--text-pri);
+.label-address {
+  font-size: 0.9rem;
+  color: var(--addr-text-muted);
+  margin: 0;
+  line-height: 1.6;
 }
 
-.btn-text.text-danger:hover {
-  color: var(--color-error);
+.label-phone {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: var(--addr-text-muted);
+  margin: 12px 0 0;
 }
 
-.btn-text.text-danger:hover .material-icons {
-  color: var(--color-error);
+.label-phone .material-icons {
+  font-size: 18px;
+  color: var(--addr-gold);
 }
 
-/* Empty State */
+/* ============================================================
+   LABEL ACTIONS
+   ============================================================ */
+
+.label-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  padding-top: 20px;
+  border-top: 1px solid var(--addr-border);
+}
+
+.action-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: var(--addr-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: var(--font-sans);
+}
+
+.action-link .material-icons {
+  font-size: 16px;
+  transition: transform 0.2s;
+}
+
+.action-link:hover {
+  color: var(--addr-gold);
+}
+
+.action-link:hover .material-icons {
+  transform: scale(1.1);
+}
+
+.action-link-delete {
+  color: #9e9e9e;
+}
+
+.action-link-delete:hover {
+  color: #d32f2f;
+}
+
+/* ============================================================
+   ELEGANT EMPTY STATE
+   ============================================================ */
+
 .empty-state {
+  max-width: 500px;
+  margin: 60px auto;
   text-align: center;
-  padding: 4rem 2rem;
-  border: 1px solid var(--border-light);
-  background: #f9f9f9;
+  padding: 60px 40px;
 }
 
-.empty-state .material-icons {
+.empty-icon {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 30px;
+  background: linear-gradient(135deg, rgba(205, 127, 50, 0.08) 0%, rgba(176, 104, 37, 0.12) 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid rgba(205, 127, 50, 0.2);
+}
+
+.empty-icon .material-icons {
   font-size: 48px;
-  color: #ddd;
-  margin-bottom: 1rem;
+  color: var(--addr-gold);
 }
 
-.empty-state h3 {
-  font-family: var(--font-heading);
-  font-size: 1.5rem;
-  margin-bottom: 0.5rem;
+.empty-title {
+  font-family: var(--font-serif);
+  font-size: 1.8rem;
+  color: var(--addr-text);
+  margin: 0 0 12px;
+  font-weight: 600;
 }
 
-.empty-state p {
-  color: var(--text-sec);
-  margin-bottom: 2rem;
+.empty-text {
+  font-size: 1rem;
+  color: var(--addr-text-muted);
+  margin: 0 0 30px;
+  line-height: 1.6;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 1024px) {
+  .address-grid {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .addresses-page {
+    padding: 30px 15px 60px;
+  }
+
+  .page-title {
+    font-size: 2rem;
+  }
+
+  .address-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .delivery-label {
+    padding: 30px 24px;
+  }
+
+  .label-actions {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .action-link {
+    justify-content: flex-start;
+    width: 100%;
+  }
+
+  .empty-state {
+    padding: 40px 20px;
+  }
+
+  .empty-icon {
+    width: 80px;
+    height: 80px;
+  }
+
+  .empty-icon .material-icons {
+    font-size: 36px;
+  }
+
+  .page-header-wrapper {
+    flex-direction: column;
+    align-items: stretch;
+    margin-bottom: 30px;
+  }
+
+  .header-action {
+    width: 100%;
+  }
+
+  font-size: 24px;
+}
+
+.address-toast-error {
+  border-left: 4px solid #f44336;
+  color: #c62828;
+}
+
+.address-toast-error .material-icons {
+  color: #f44336;
+  font-size: 24px;
 }

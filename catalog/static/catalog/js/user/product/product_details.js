@@ -99,4 +99,83 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 300);
     });
   }
+  /* =========================================
+     Real-Time Stock Check
+     ========================================= */
+  const stockContainer = document.getElementById('pdp-stock-container');
+  const addBtn = document.getElementById('pdp-add-to-cart-btn');
+
+  if (stockContainer && stockContainer.dataset.stockUrl) {
+    const fetchStock = async () => {
+      try {
+        const response = await fetch(stockContainer.dataset.stockUrl, {
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+          }
+        });
+
+        if (!response.ok) throw new Error('Stock fetch failed');
+
+        const data = await response.json();
+        const stock = data.stock;
+
+        updateStockUI(stock);
+
+      } catch (error) {
+        console.error('Error fetching stock:', error);
+      }
+    };
+
+    const updateStockUI = (stock) => {
+      // 1. Update Stock Message & Class
+      stockContainer.className = 'pdp-stock-status width-fit'; // Reset classes
+      let icon = '';
+      let message = '';
+
+      if (stock > 10) {
+        stockContainer.classList.add('in_stock');
+        icon = '<span class="material-icons" style="font-size: 1.2em;">check_circle</span>';
+        message = 'In Stock';
+        enableAddToCart(true);
+      } else if (stock > 0) {
+        stockContainer.classList.add('low_stock');
+        icon = '<span class="material-icons" style="font-size: 1.2em;">warning</span>';
+        message = `Only ${stock} left!`;
+        enableAddToCart(true);
+      } else {
+        stockContainer.classList.add('out_of_stock');
+        icon = '<span class="material-icons" style="font-size: 1.2em;">highlight_off</span>';
+        message = 'Out of Stock';
+        enableAddToCart(false);
+      }
+
+      stockContainer.innerHTML = `${icon} ${message}`;
+
+      // 2. Update Quantity Inputs
+      qtyInputs.forEach(input => {
+        input.setAttribute('max', stock);
+        // Clamp existing value
+        if (parseInt(input.value) > stock) {
+          input.value = Math.max(0, stock);
+        }
+        if (stock === 0) {
+          input.value = 1; // Or 0? Usually keep 1 but disable add button
+        }
+      });
+    };
+
+    const enableAddToCart = (enable) => {
+      if (addBtn) {
+        addBtn.disabled = !enable;
+        if (!enable) {
+          addBtn.textContent = 'Out of Stock';
+        } else {
+          addBtn.textContent = 'Add to Cart';
+        }
+      }
+    };
+
+    // Fetch on load
+    fetchStock();
+  }
 });

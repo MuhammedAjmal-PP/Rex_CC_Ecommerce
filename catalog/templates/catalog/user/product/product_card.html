@@ -15,25 +15,15 @@
     </button>
     <a href="{% url 'product_detail' variant.product.slug variant.sku %}"
        class="product-card__image-box">
-        {% if variant.images.exists %}
-            {% with primary_image=variant.images.first %}
-                <img src="{{ primary_image.image.url }}"
-                     alt="{{ variant.product.name }}"
-                     class="product-card__image"
-                     loading="lazy">
-            {% endwith %}
-        {% elif variant.product.thumbnail %}
-            <img src="{{ variant.product.thumbnail.url }}"
+        {% with primary_image=variant.images.first %}
+            <img src="{{ primary_image.image.url }}"
                  alt="{{ variant.product.name }}"
                  class="product-card__image"
                  loading="lazy">
-        {% else %}
-            <img src="https://via.placeholder.com/600x800?text=No+Image"
-                 alt="{{ variant.product.name }}"
-                 class="product-card__image"
-                 loading="lazy">
-        {% endif %}
-        {% if variant.discount_percentage and variant.discount_percentage > 0 %}
+        {% endwith %}
+        {% if variant.stock <= 0 %}
+            <span class="product-card__stock-badge">Out of Stock</span>
+        {% elif variant.discount_percentage and variant.discount_percentage > 0 %}
             <span class="product-card__discount-badge">-{{ variant.discount_percentage }}%</span>
         {% endif %}
         <div class="product-card__overlay">Discover</div>

@@ -1,271 +1,521 @@
-/* Address Form Styles - REX CC Premium Theme */
+/* ============================================================
+   REX CC - ADDRESS FORM
+   Luxury Editorial Data Entry
+   ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:wght@400;600;700&display=swap');
+/* ============================================================
+   CSS VARIABLES
+   ============================================================ */
 
 :root {
-  --bg-main: #F2F2F2;
-  --bg-card: #FFFFFF;
-  --text-pri: #111111;
-  --text-muted: #666666;
-  --accent-bronze: #CD7F32;
-  --accent-gold: #BFA15F;
-  --border-light: #E0E0E0;
-  --shadow-sm: 0 4px 20px rgba(0, 0, 0, 0.06);
-  --radius-md: 12px;
-  --radius-sm: 8px;
-  --font-heading: 'Playfair Display', serif;
-  --font-body: 'Montserrat', sans-serif;
+  --form-bg: #faf9f7;
+  --form-surface: #ffffff;
+  --form-text: #2c2c2c;
+  --form-text-muted: #7a7a7a;
+  --form-border: #e8e6e2;
+  --form-gold: #cd7f32;
+  --form-gold-light: #bfa15f;
+  --form-gold-dark: #b06825;
+  --font-serif: "Playfair Display", serif;
+  --font-sans: "Montserrat", sans-serif;
 }
 
-/* Address Form */
+/* ============================================================
+   PAGE CONTAINER
+   ============================================================ */
+
+.address-form-page {
+  background: var(--form-bg);
+  min-height: calc(100vh - 200px);
+  padding: 40px 60px 80px;
+}
+
+/* ============================================================
+   BREADCRUMBS (Match Address List)
+   ============================================================ */
+
+.breadcrumb-nav {
+  max-width: 700px;
+  margin: 0 auto 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--form-text-muted);
+}
+
+.breadcrumb-link {
+  color: var(--form-text-muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.breadcrumb-link:hover {
+  color: var(--form-gold);
+}
+
+.breadcrumb-separator {
+  color: var(--form-gold-dark);
+  user-select: none;
+}
+
+.breadcrumb-current {
+  color: var(--form-text);
+  font-weight: 500;
+}
+
+/* ============================================================
+   BACK BUTTON (Match Address List)
+   ============================================================ */
+
+.back-button {
+  max-width: 700px;
+  margin: 0 auto 30px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--form-text-muted);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.back-button:hover {
+  color: var(--form-gold);
+  transform: translateX(-3px);
+}
+
+.back-button .material-icons {
+  font-size: 18px;
+}
+
+/* ============================================================
+   PAGE HEADER
+   ============================================================ */
+
+.page-header {
+  max-width: 700px;
+  margin: 0 auto 40px;
+  text-align: center;
+}
+
+.page-title {
+  font-family: var(--font-serif);
+  font-size: 2.2rem;
+  color: var(--form-text);
+  margin: 0 0 12px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.page-subtitle {
+  font-size: 0.95rem;
+  color: var(--form-text-muted);
+  margin: 0;
+  line-height: 1.5;
+  font-style: italic;
+}
+
+/* ============================================================
+   FORM WRAPPER
+   ============================================================ */
+
+.form-wrapper {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
 .address-form {
-  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
 }
 
-/* Form Row */
-.form-row {
+/* ============================================================
+   FORM SECTIONS
+   ============================================================ */
+
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.form-section-title {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  color: var(--form-text);
+  margin: 0;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--form-border);
+}
+
+/* ============================================================
+   LABEL CHOICE - TACTILE RADIO CARDS
+   ============================================================ */
+
+.label-choice-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1.25rem;
-  margin-bottom: 1.25rem;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
 }
 
-/* Form Group */
+.label-radio-card {
+  position: relative;
+  cursor: pointer;
+}
+
+.label-radio-card input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.radio-card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 28px 20px;
+  background: var(--form-surface);
+  border: 2px solid var(--form-border);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.radio-card-content .material-icons {
+  font-size: 32px;
+  color: var(--form-text-muted);
+  transition: all 0.3s ease;
+}
+
+.radio-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--form-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  transition: all 0.3s ease;
+}
+
+/* Hover State */
+.label-radio-card:hover .radio-card-content {
+  border-color: var(--form-gold-light);
+  background: rgba(191, 161, 95, 0.04);
+}
+
+.label-radio-card:hover .material-icons {
+  color: var(--form-gold);
+  transform: scale(1.1);
+}
+
+.label-radio-card:hover .radio-label {
+  color: var(--form-gold);
+}
+
+/* Checked State */
+.label-radio-card input[type="radio"]:checked + .radio-card-content {
+  background: linear-gradient(
+    to bottom right,
+    rgba(205, 127, 50, 0.08) 0%,
+    rgba(176, 104, 37, 0.1) 100%
+  );
+  border-color: var(--form-gold);
+  border-width: 2px;
+  box-shadow: 0 4px 16px rgba(205, 127, 50, 0.15);
+}
+
+.label-radio-card
+  input[type="radio"]:checked
+  + .radio-card-content
+  .material-icons {
+  color: var(--form-gold-dark);
+  transform: scale(1.15);
+}
+
+.label-radio-card
+  input[type="radio"]:checked
+  + .radio-card-content
+  .radio-label {
+  color: var(--form-gold-dark);
+}
+
+/* ============================================================
+   CUSTOM LABEL INPUT
+   ============================================================ */
+
+.custom-label-group {
+  display: none;
+  margin-top: 8px;
+  padding-top: 24px;
+  border-top: 1px dashed var(--form-border);
+}
+
+.custom-label-group label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--form-text);
+  margin-bottom: 8px;
+}
+
+/* ============================================================
+   FORM ELEMENTS
+   ============================================================ */
+
 .form-group {
-  margin-bottom: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .form-group label {
-  display: block;
-  font-size: 0.875rem;
+  font-size: 0.9rem;
   font-weight: 500;
-  margin-bottom: 0.5rem;
-  color: var(--text-pri);
+  color: var(--form-text);
 }
 
-.form-group .required {
-  color: #dc3545;
-  margin-left: 0.25rem;
+.optional-label {
+  font-weight: 400;
+  color: var(--form-text-muted);
+  font-size: 0.85rem;
 }
 
-/* Form Controls */
 .form-control,
 .address-form input[type="text"],
 .address-form input[type="tel"],
 .address-form select {
   width: 100%;
-  padding: 0.75rem 1rem;
-  background: #FFFFFF;
-  border: 2px solid var(--border-light);
-  border-radius: var(--radius-sm);
-  color: var(--text-pri);
-  font-family: var(--font-body);
+  padding: 12px 16px;
   font-size: 0.95rem;
-  transition: all 0.2s ease;
-}
-
-.form-control:hover,
-.address-form input[type="text"]:hover,
-.address-form input[type="tel"]:hover,
-.address-form select:hover {
-  border-color: #cccccc;
+  font-family: var(--font-sans);
+  color: var(--form-text);
+  background: var(--form-surface);
+  border: 1px solid var(--form-border);
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  outline: none;
 }
 
 .form-control:focus,
 .address-form input[type="text"]:focus,
 .address-form input[type="tel"]:focus,
 .address-form select:focus {
-  outline: none;
-  border-color: var(--accent-bronze);
+  border-color: var(--form-gold);
   box-shadow: 0 0 0 3px rgba(205, 127, 50, 0.1);
-  background: #FFFFFF;
 }
 
 .form-control::placeholder,
 .address-form input::placeholder {
-  color: #bbb;
-  font-weight: 300;
+  color: var(--form-text-muted);
+  opacity: 0.6;
 }
 
-/* Address Label Options */
-.label-options {
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.form-error {
+  font-size: 0.8rem;
+  color: #d32f2f;
+  margin-top: 4px;
+}
+
+/* ============================================================
+   DEFAULT ADDRESS CHECKBOX
+   ============================================================ */
+
+.default-section {
+  padding: 24px;
+  background: rgba(205, 127, 50, 0.03);
+  border: 1px solid var(--form-border);
+  border-radius: 8px;
+}
+
+.checkbox-wrapper {
   display: flex;
-  gap: 1rem;
-  margin-top: 0.5rem;
-  margin-bottom: 1rem;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
 }
 
-.label-option {
-  position: relative;
-}
-
-.label-option input[type="radio"] {
+.checkbox-wrapper input[type="checkbox"] {
   position: absolute;
   opacity: 0;
-  cursor: pointer;
+  width: 0;
+  height: 0;
 }
 
-.label-option label {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.65rem 1.5rem;
-  background: #FFFFFF;
-  border: 2px solid var(--border-light);
-  border-radius: var(--radius-sm);
-  color: var(--text-muted);
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  margin: 0;
+.checkbox-custom {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--form-border);
+  border-radius: 4px;
+  background: var(--form-surface);
+  flex-shrink: 0;
+  position: relative;
+  transition: all 0.3s ease;
+  margin-top: 15px;
 }
 
-.label-option input[type="radio"]:checked+label {
-  background: linear-gradient(135deg, rgba(205, 127, 50, 0.1) 0%, rgba(191, 161, 95, 0.1) 100%);
-  border-color: var(--accent-bronze);
-  color: var(--accent-bronze);
-  font-weight: 600;
+.checkbox-custom::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  width: 10px;
+  height: 10px;
+  background: var(--form-gold);
+  border-radius: 2px;
+  transition: transform 0.2s ease;
 }
 
-.label-option label:hover {
-  border-color: var(--accent-bronze);
-  transform: translateY(-1px);
+.checkbox-wrapper input[type="checkbox"]:checked + .checkbox-custom {
+  border-color: var(--form-gold);
+  background: var(--form-surface);
 }
 
-/* Custom Label Input */
-.custom-label-group {
-  margin-top: 0.75rem;
+.checkbox-wrapper input[type="checkbox"]:checked + .checkbox-custom::after {
+  transform: translate(-50%, -50%) scale(1);
 }
 
-.custom-label-group input[type="text"] {
-  width: 100%;
-  padding: 0.75rem 1rem;
-  background: #FFFFFF;
-  border: 2px solid var(--border-light);
-  border-radius: var(--radius-sm);
-  color: var(--text-pri);
-  font-family: var(--font-body);
-  font-size: 0.95rem;
-  transition: all 0.2s ease;
-}
-
-.custom-label-group input[type="text"]:focus {
-  outline: none;
-  border-color: var(--accent-bronze);
-  box-shadow: 0 0 0 3px rgba(205, 127, 50, 0.1);
-}
-
-.form-help-text {
-  display: block;
-  margin-top: 0.5rem;
-  font-size: 0.8rem;
-  color: var(--text-muted);
-}
-
-/* Hidden Label Field */
-.address-form input[name="label"] {
-  display: none;
-}
-
-/* Checkbox Group */
-.checkbox-group {
-  background: rgba(205, 127, 50, 0.05);
-  border: 1px solid rgba(205, 127, 50, 0.2);
-  border-radius: var(--radius-sm);
-  padding: 1rem;
-  margin: 1.5rem 0;
+.checkbox-wrapper:hover .checkbox-custom {
+  border-color: var(--form-gold-light);
 }
 
 .checkbox-label {
   display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  cursor: pointer;
-  margin: 0;
-  font-weight: 400;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
 }
 
-.checkbox-label input[type="checkbox"] {
-  width: 20px;
-  height: 20px;
-  cursor: pointer;
-  accent-color: var(--accent-bronze);
-  border-radius: 4px;
+.checkbox-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--form-text);
 }
 
-.checkbox-label span {
-  color: var(--text-pri);
-  font-size: 0.95rem;
-  font-weight: 500;
+.checkbox-description {
+  font-size: 0.85rem;
+  color: var(--form-text-muted);
+  line-height: 1.5;
 }
 
-/* Form Actions */
+/* ============================================================
+   FORM ACTIONS
+   ============================================================ */
+
 .form-actions {
   display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
-  margin-top: 2rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid var(--border-light);
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  padding-top: 32px;
+  border-top: 1px solid var(--form-border);
 }
 
-/* Buttons */
-.btn-submit {
-  background: linear-gradient(135deg, #CD7F32 0%, #b06825 100%);
-  color: #fff;
-  padding: 0.875rem 2.5rem;
-  border-radius: var(--radius-sm);
-  border: none;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 0.95rem;
-  transition: all 0.3s ease;
+.btn-outline,
+.btn-primary {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  font-family: var(--font-body);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  gap: 8px;
+  padding: 12px 28px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  border: none;
 }
 
-.btn-submit:hover {
-  background: linear-gradient(135deg, #b06825 0%, #9a5a1f 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(205, 127, 50, 0.35);
+.btn-outline {
+  background: transparent;
+  border: 2px solid var(--form-border);
+  color: var(--form-text);
 }
 
-.btn-submit .material-icons {
+.btn-outline:hover {
+  border-color: var(--form-text);
+  background: var(--form-surface);
+}
+
+.btn-outline .material-icons {
   font-size: 18px;
 }
 
-/* Error Messages */
-.error-message {
-  color: #dc3545;
-  font-size: 0.8rem;
-  margin-top: 0.35rem;
+.btn-primary {
+  background: linear-gradient(
+    135deg,
+    var(--form-gold) 0%,
+    var(--form-gold-dark) 100%
+  );
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(205, 127, 50, 0.2);
 }
 
-/* Responsive */
+.btn-primary:hover {
+  box-shadow: 0 4px 16px rgba(205, 127, 50, 0.3);
+  transform: translateY(-1px);
+}
+
+.btn-primary .material-icons {
+  font-size: 18px;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
 @media (max-width: 768px) {
+  .address-form-page {
+    padding: 30px 20px 60px;
+  }
+
+  .breadcrumb-nav {
+    font-size: 0.8rem;
+  }
+
+  .page-title {
+    font-size: 1.8rem;
+  }
+
+  .label-choice-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .radio-card-content {
+    flex-direction: row;
+    justify-content: flex-start;
+    padding: 20px;
+  }
+
+  .radio-card-content .material-icons {
+    font-size: 24px;
+  }
+
   .form-row {
     grid-template-columns: 1fr;
-  }
-
-  .label-options {
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-
-  .label-option label {
-    width: 100%;
-    justify-content: center;
+    gap: 16px;
   }
 
   .form-actions {
-    flex-direction: column;
+    flex-direction: column-reverse;
   }
 
-  .btn-submit {
+  .form-actions .btn-primary,
+  .form-actions .btn-outline {
     width: 100%;
     justify-content: center;
   }

@@ -212,7 +212,7 @@ body:not(.home-page) .site-header {
   gap: 20px;
 }
 
-.nav-icon {
+.nav-links .nav-icon {
   color: #333;
   text-decoration: none;
   transition: color 0.3s ease;
@@ -224,10 +224,11 @@ body:not(.home-page) .site-header {
   transition: transform 0.3s ease;
 }
 
-.nav-icon:hover {
+.nav-links .nav-icon:hover {
   color: var(--color-bronze);
   transform: scale(1.05);
 }
+
 .nav-icon-wishlist .nav-icon .material-icons {
   font-size: 26px;
 }
@@ -238,9 +239,6 @@ body:not(.home-page) .site-header {
 
 .wishlist-icon-wrapper {
   position: relative;
-}
-.wishlist-icon-wrapper:hover {
-  color: red;
 }
 
 .wishlist-badge {
@@ -261,7 +259,7 @@ body:not(.home-page) .site-header {
   line-height: 1;
 
   color: #fff;
-  background-color: #ff3b30;
+  background-color: #dc3545;
 
   border-radius: 50%;
   border: 2px solid #fff;
@@ -867,9 +865,9 @@ body.home-page .nav-icon:hover {
   color: var(--color-bronze);
 }
 
-body.home-page .wishlist-icon-wrapper:hover {
+/* body.home-page .wishlist-icon-wrapper:hover {
   color: red;
-}
+} */
 
 body.home-page .search-input {
   background: rgba(255, 255, 255, 0.95);
@@ -886,4 +884,91 @@ body:not(.home-page) {
 
 body.home-page {
   padding-top: 0;
+}
+
+/* Cart Icon Wrapper */
+.cart-icon-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Cart Badge Style */
+.cart-badge {
+  position: absolute;
+  top: 1px;
+  right: 1px;
+
+  min-width: 18px;
+  height: 18px;
+  padding: 4px 4px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1;
+
+  color: #fff;
+  background-color: #dc3545;
+
+  border-radius: 50%;
+  border: 2px solid #fff;
+  z-index: 10;
+}
+
+body.home-page .cart-badge {
+  border: none;
+}
+
+/* Base Material Symbol */
+.material-symbol {
+  font-family: "Material Symbols Outlined";
+  font-weight: 400;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  user-select: none;
+
+  /* Default = outlined */
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 24;
+}
+
+/* Filled version */
+.material-symbol.filled {
+  font-variation-settings:
+    "FILL" 1,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 24;
+}
+
+/* Optional sizes */
+.material-symbol.sm {
+  font-size: 20px;
+}
+.material-symbol.md {
+  font-size: 24px;
+}
+.material-symbol.lg {
+  font-size: 28px;
+}
+
+/* Optional luxury color hooks */
+.material-symbol.gold {
+  color: var(--accent-gold);
+}
+.material-symbol.muted {
+  color: var(--text-muted);
 }

@@ -11,16 +11,19 @@
     const wishlistLoading = document.getElementById("wishlist-loading");
     const wishlistEmpty = document.getElementById("wishlist-empty");
     const itemTemplate = document.getElementById("wishlist-page-item-template");
+    const wishlistCountDisplay = document.getElementById("wishlist-count-display");
+    const wishlistCountBadge = document.getElementById("wishlist-count-badge");
 
     // API
     const WISHLIST_API_URL = "/api/wishlist/";
-    const REMOVE_URL = (variantId) => `/api/wishlist/${variantId}/toggle/`;
+    const REMOVE_URL = (slug, sku) => `/api/wishlist/${slug}/v/${sku}/toggle/`;
 
     // STATE
     let wishlistItems = [];
 
     // INIT
     function init() {
+        if (!wishlistGrid) return; // Guard
         loadWishlist();
 
         // Listen for global changes (to sync if item removed from offcamvas or header)
@@ -34,13 +37,10 @@
         if (!added) {
             // Remove item from grid if it exists
             removeItemFromGrid(variantId);
+        } else {
+            // If added externally, reload to keep sync
+            loadWishlist();
         }
-        // If added, we might want to reload or append, but typically
-        // user adds from other pages. If they are on wishlist page,
-        // they probably aren't adding items unless we have a "Quick Add"
-        // which we don't right now.
-        // Re-fetching is safest to maintain order.
-        // However, usually you are removing items on this page.
     }
 
     // LOAD DATA
@@ -54,12 +54,21 @@
 
             if (data.success) {
                 wishlistItems = data.products || [];
+                updatecount(wishlistItems.length);
                 renderWishlist();
             }
         } catch (error) {
             console.error("Failed to load wishlist", error);
         } finally {
             hideLoading();
+        }
+    }
+
+    function updatecount(count) {
+        if (wishlistCountDisplay) wishlistCountDisplay.textContent = count;
+        if (wishlistCountBadge) {
+            if (count === 0) wishlistCountBadge.style.display = 'none';
+            else wishlistCountBadge.style.display = 'inline-block';
         }
     }
 
@@ -83,36 +92,52 @@
     // CREATE CARD
     function createProductCard(product) {
         const template = itemTemplate.content.cloneNode(true);
-        const card = template.querySelector(".wishlist-card");
+        // The root is a document fragment, we need the column div
+        const colWrapper = template.querySelector("div");
+        const card = colWrapper.querySelector(".product-card-simple");
 
-        // Set ID for easy removal
-        card.dataset.variantId = product.variant;
+        // Set ID for easy removal on the wrapper/col
+        colWrapper.dataset.variantId = product.variant;
 
         // Image
-        const img = card.querySelector(".wishlist-card-img");
+        const img = card.querySelector(".card-img-top");
         img.src = product.image || "https://via.placeholder.com/300";
         img.alt = product.product_name;
 
         // Link
-        const link = card.querySelector(".wishlist-card-link");
+        const link = card.querySelector(".card-link-wrapper");
         link.href = `/product/${product.slug}/v/${product.sku}/`;
 
         // Remove Button
-        const removeBtn = card.querySelector(".wishlist-remove-action");
-        // We attach event listener manually instead of using global class
-        // because we want specific behavior (remove card)
-        removeBtn.addEventListener("click", () => handleRemove(product.variant));
+        const removeBtn = card.querySelector(".btn-remove-icon");
+        removeBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleRemove(product.variant, product.slug, product.sku);
+        });
 
         // Brand & Name
-        card.querySelector(".wishlist-card-brand").textContent = product.brand;
-        const nameLink = card.querySelector(".wishlist-card-name a");
-        nameLink.textContent = product.product_name;
-        nameLink.href = `/product/${product.slug}/v/${product.sku}/`;
+        card.querySelector(".brand-name").textContent = product.brand;
+        const titleLink = card.querySelector(".title-link");
+        titleLink.href = `/product/${product.slug}/v/${product.sku}/`;
+        card.querySelector(".product-title").textContent = product.product_name;
+
+        // Variant Details
+        const variantContainer = card.querySelector(".variant-details-container");
+        if (product.variant_details && product.variant_details.length > 0) {
+            variantContainer.innerHTML = "";
+            product.variant_details.forEach(detail => {
+                const detailSpan = document.createElement("span");
+                detailSpan.className = "variant-detail";
+                detailSpan.textContent = detail;
+                variantContainer.appendChild(detailSpan);
+            });
+        } else {
+            variantContainer.remove();
+        }
 
         // Price
-        card.querySelector(".current-price").textContent = formatPrice(
-            product.final_price,
-        );
+        card.querySelector(".current-price").textContent = formatPrice(product.final_price);
         const originalPrice = card.querySelector(".original-price");
 
         if (parseFloat(product.final_price) < parseFloat(product.price)) {
@@ -121,26 +146,20 @@
             originalPrice.style.display = "none";
         }
 
-        // View Button
-        const viewBtn = card.querySelector(".btn-view-product");
-        viewBtn.href = `/product/${product.slug}/v/${product.sku}/`;
-
         // Stock
         const stockBadge = card.querySelector(".stock-badge");
         if (!product.is_in_stock) {
             stockBadge.textContent = "Out of Stock";
             stockBadge.classList.add("out-of-stock");
-        } else {
-            stockBadge.style.display = "none";
         }
 
-        return card;
+        return colWrapper;
     }
 
     // REMOVE ACTION
-    async function handleRemove(variantId) {
+    async function handleRemove(variantId, slug, sku) {
         try {
-            const response = await fetch(REMOVE_URL(variantId), {
+            const response = await fetch(REMOVE_URL(slug, sku), {
                 method: "POST",
                 headers: {
                     "X-CSRFToken": getCSRFToken(),
@@ -151,16 +170,16 @@
             const data = await response.json();
 
             if (data.success) {
+                // Remove from local list
+                wishlistItems = wishlistItems.filter(item => item.variant != variantId);
+                updatecount(wishlistItems.length);
+
                 // We emit the global event so header badge updates
                 if (window.emitWishlistChange) {
                     window.emitWishlistChange({ variantId, added: false });
                 } else {
-                    // Fallback if helper missing
-                    // Trigger local removal
                     removeItemFromGrid(variantId);
                 }
-            } else {
-                alert(data.message || "Failed to remove item");
             }
         } catch (error) {
             console.error(error);
@@ -169,18 +188,17 @@
 
     // UI HELPERS
     function removeItemFromGrid(variantId) {
-        const card = wishlistGrid.querySelector(
-            `.wishlist-card[data-variant-id="${variantId}"]`,
-        );
-        if (card) {
+        // Find the column wrapper
+        const col = wishlistGrid.querySelector(`div[data-variant-id="${variantId}"]`);
+
+        if (col) {
             // Animate out
-            card.style.opacity = "0";
-            card.style.transform = "scale(0.9)";
+            col.style.transition = "all 0.3s ease";
+            col.style.opacity = "0";
+            col.style.transform = "scale(0.9)";
 
             setTimeout(() => {
-                card.remove();
-
-                // Check if empty
+                col.remove();
                 if (wishlistGrid.children.length === 0) {
                     showEmpty();
                 }
@@ -189,23 +207,23 @@
     }
 
     function showLoading() {
-        wishlistLoading.style.display = "flex";
-        wishlistGrid.style.display = "none";
-        wishlistEmpty.style.display = "none";
+        if (wishlistLoading) wishlistLoading.style.display = "block";
+        if (wishlistGrid) wishlistGrid.style.display = "none";
+        if (wishlistEmpty) wishlistEmpty.style.display = "none";
     }
 
     function hideLoading() {
-        wishlistLoading.style.display = "none";
+        if (wishlistLoading) wishlistLoading.style.display = "none";
     }
 
     function showEmpty() {
-        wishlistEmpty.style.display = "flex";
-        wishlistGrid.style.display = "none";
+        if (wishlistEmpty) wishlistEmpty.style.display = "block";
+        if (wishlistGrid) wishlistGrid.style.display = "none";
     }
 
     function showGrid() {
-        wishlistEmpty.style.display = "none";
-        wishlistGrid.style.display = "grid";
+        if (wishlistEmpty) wishlistEmpty.style.display = "none";
+        if (wishlistGrid) wishlistGrid.style.display = "flex"; // Row is flex
     }
 
     function formatPrice(price) {

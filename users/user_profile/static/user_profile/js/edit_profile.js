@@ -2,8 +2,9 @@
 
 let cropper = null;
 
-// Password visibility toggle
-function togglePassword(inputElement, button) {
+// Password visibility toggle function (GLOBAL)
+function togglePasswordVisibility(inputId, button) {
+    const inputElement = document.getElementById(inputId);
     const icon = button.querySelector('.material-icons');
 
     if (inputElement.type === 'password') {
@@ -19,10 +20,13 @@ function togglePassword(inputElement, button) {
 function initAvatarCropping() {
     const avatarInput = document.getElementById('id_avatar');
     const avatarPreview = document.getElementById('avatar-preview');
+    const avatarWrapper = document.getElementById('avatarWrapper');
     const cropModal = document.getElementById('avatarCropModal');
     const cropImage = document.getElementById('cropImage');
     const cropBtn = document.getElementById('cropBtn');
     const cancelCropBtn = document.getElementById('cancelCropBtn');
+    const removeAvatarBtn = document.getElementById('removeAvatarBtn');
+    const removeAvatarInput = document.getElementById('remove_avatar');
 
     if (!avatarInput || !cropModal) return;
 
@@ -69,7 +73,7 @@ function initAvatarCropping() {
         cropper = new Cropper(cropImage, {
             viewMode: 2,
             dragMode: 'crop',
-            aspectRatio: NaN, // Free-form cropping (Free Size) - as requested
+            aspectRatio: NaN, // Free-form cropping
             autoCropArea: 1,
             autoCrop: true,
             restore: true,
@@ -93,11 +97,6 @@ function initAvatarCropping() {
             cropper = null;
         }
         cropImage.src = '';
-
-        // Reset file input if crop was cancelled
-        if (!avatarInput.dataset.croppedFile) {
-            avatarInput.value = '';
-        }
     });
 
     // Apply crop
@@ -150,20 +149,13 @@ function initAvatarCropping() {
             const dataTransfer = new DataTransfer();
             dataTransfer.items.add(croppedFile);
             avatarInput.files = dataTransfer.files;
-            avatarInput.dataset.croppedFile = 'true';
 
             // Update preview
             const previewUrl = URL.createObjectURL(blob);
-            if (avatarPreview.tagName === 'IMG') {
-                avatarPreview.src = previewUrl;
-            } else {
-                // If preview is a placeholder div, convert it to img
-                const img = document.createElement('img');
-                img.src = previewUrl;
-                img.alt = 'Avatar Preview';
-                img.id = 'avatar-preview';
-                avatarPreview.parentNode.replaceChild(img, avatarPreview);
-            }
+            updateAvatarPreview(previewUrl);
+
+            // Clear remove flag
+            removeAvatarInput.value = '';
 
             // Close modal
             modal.hide();
@@ -172,98 +164,188 @@ function initAvatarCropping() {
 
     // Cancel crop
     cancelCropBtn.addEventListener('click', function () {
+        // Reset file input
         avatarInput.value = '';
-        delete avatarInput.dataset.croppedFile;
         modal.hide();
+    });
+
+    // Remove avatar button
+    if (removeAvatarBtn) {
+        removeAvatarBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            if (confirm('Are you sure you want to remove your profile photo?')) {
+                // Clear file input
+                avatarInput.value = '';
+
+                // Set remove flag
+                removeAvatarInput.value = 'true';
+
+                // Reset preview to placeholder
+                resetAvatarPreview();
+            }
+        });
+    }
+
+    // Helper function to update avatar preview
+    function updateAvatarPreview(imageUrl) {
+        const wrapper = avatarWrapper || document.querySelector('.avatar-wrapper');
+        const currentPreview = document.getElementById('avatar-preview'); // Re-query to avoid stale reference
+
+        if (currentPreview) {
+            if (currentPreview.tagName === 'IMG') {
+                currentPreview.src = imageUrl;
+            } else {
+                // Replace placeholder with image
+                const img = document.createElement('img');
+                img.src = imageUrl;
+                img.alt = 'Profile Photo';
+                img.id = 'avatar-preview';
+                img.className = 'avatar-image';
+                currentPreview.replaceWith(img);
+            }
+        }
+
+        // Update state
+        if (wrapper) {
+            wrapper.setAttribute('data-has-image', 'true');
+        }
+
+        // Show remove button
+        if (removeAvatarBtn) {
+            removeAvatarBtn.style.display = 'flex';
+        }
+    }
+
+    // Helper function to reset avatar preview
+    function resetAvatarPreview() {
+        const wrapper = avatarWrapper || document.querySelector('.avatar-wrapper');
+        const currentPreview = document.getElementById('avatar-preview');
+
+        if (currentPreview && currentPreview.tagName === 'IMG') {
+            // Replace image with placeholder
+            const placeholder = document.createElement('div');
+            placeholder.className = 'avatar-placeholder';
+            placeholder.id = 'avatar-preview';
+            placeholder.innerHTML = '<span class="material-icons">person</span>';
+            currentPreview.replaceWith(placeholder);
+        }
+
+        // Update state
+        if (wrapper) {
+            wrapper.setAttribute('data-has-image', 'false');
+        }
+
+        // Hide remove button
+        if (removeAvatarBtn) {
+            removeAvatarBtn.style.display = 'none';
+        }
+    }
+}
+
+// Password Change Toggle Button Text
+function initPasswordToggle() {
+    const toggleBtn = document.getElementById('passwordToggleBtn');
+    const toggleText = document.getElementById('passwordToggleText');
+    const securityCollapse = document.getElementById('securityCollapse');
+
+    if (!toggleBtn || !toggleText || !securityCollapse) {
+        console.log('Password toggle elements not found');
+        return;
+    }
+
+    // Listen for collapse show/hide events
+    securityCollapse.addEventListener('show.bs.collapse', function () {
+        toggleText.textContent = 'Cancel';
+    });
+
+    securityCollapse.addEventListener('hide.bs.collapse', function () {
+        toggleText.textContent = 'Change Password';
     });
 }
 
 // Password Change Functionality
 function initPasswordChange() {
-    const collapseElement = document.getElementById('changePasswordCollapse');
-    const toggleBtn = document.getElementById('togglePasswordBtn');
-    const toggleBtnText = document.getElementById('toggleBtnText');
+    const securityCollapse = document.getElementById('securityCollapse');
     const passwordForm = document.getElementById('changePasswordForm');
-    const alertBox = document.getElementById('passwordAlert');
 
-    // Check if elements exist
-    if (!collapseElement || !toggleBtn || !toggleBtnText) {
-        console.error('Required password change elements not found');
+    if (!securityCollapse || !passwordForm) {
+        console.log('Password form elements not found');
         return;
     }
 
-    // Toggle button text when collapse shows/hides
-    collapseElement.addEventListener('shown.bs.collapse', function () {
-        toggleBtnText.textContent = 'Cancel';
-        const icon = document.getElementById('toggleBtnIcon');
-        if (icon) icon.style.display = 'none';
-    });
-
-    collapseElement.addEventListener('hidden.bs.collapse', function () {
-        toggleBtnText.textContent = 'Change Password';
-        const icon = document.getElementById('toggleBtnIcon');
-        if (icon) icon.style.display = 'inline';
-    });
-
     // Password change form submission
-    if (passwordForm && alertBox) {
-        passwordForm.addEventListener("submit", async function (e) {
-            e.preventDefault();
+    passwordForm.addEventListener("submit", async function (e) {
+        e.preventDefault();
 
-            const form = e.target;
-            const submitBtn = form.querySelector("button[type='submit']");
-            const formData = new FormData(form);
+        const form = e.target;
+        const submitBtn = form.querySelector("button[type='submit']");
+        const formData = new FormData(form);
 
-            submitBtn.disabled = true;
-            alertBox.innerHTML = ""; // Clear previous messages
+        // Create or get alert container
+        let alertBox = form.querySelector('.password-alert');
+        if (!alertBox) {
+            alertBox = document.createElement('div');
+            alertBox.className = 'password-alert';
+            form.insertBefore(alertBox, form.firstChild);
+        }
 
-            try {
-                const response = await fetch(form.dataset.changePasswordUrl, {
-                    method: "POST",
-                    body: formData,
-                    headers: {
-                        "X-Requested-With": "XMLHttpRequest"
-                    }
-                });
+        submitBtn.disabled = true;
+        const originalHTML = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Updating...';
+        alertBox.innerHTML = ""; // Clear previous messages
 
-                const data = await response.json();
-                submitBtn.disabled = false;
-
-                if (data.success) {
-                    alertBox.innerHTML = `<div class="alert alert-success">${data.message}</div>`;
-                    form.reset();
-
-                    // Close collapse after a short delay
-                    setTimeout(() => {
-                        bootstrap.Collapse.getOrCreateInstance(collapseElement).hide();
-                        // Clear alert after closing
-                        setTimeout(() => {
-                            alertBox.innerHTML = "";
-                        }, 300);
-                    }, 2000);
-
-                } else {
-                    let errors = "";
-                    for (const field in data.errors) {
-                        data.errors[field].forEach(msg => {
-                            errors += `<p class="mb-0">${msg}</p>`;
-                        });
-                    }
-                    alertBox.innerHTML = `<div class="alert alert-danger">${errors}</div>`;
+        try {
+            const response = await fetch(form.dataset.changePasswordUrl, {
+                method: "POST",
+                body: formData,
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest"
                 }
-            } catch (error) {
-                submitBtn.disabled = false;
-                alertBox.innerHTML = `<div class="alert alert-danger">An error occurred. Please try again.</div>`;
-                console.error('Password change error:', error);
+            });
+
+            const data = await response.json();
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalHTML;
+
+            if (data.success) {
+                alertBox.innerHTML = `<div class="alert alert-success">${data.message || 'Password updated successfully!'}</div>`;
+                form.reset();
+
+                // Close collapse after delay
+                setTimeout(() => {
+                    bootstrap.Collapse.getInstance(securityCollapse)?.hide();
+                    // Clear alert after closing
+                    setTimeout(() => {
+                        alertBox.innerHTML = "";
+                    }, 300);
+                }, 2000);
+
+            } else {
+                let errors = "";
+                for (const field in data.errors) {
+                    data.errors[field].forEach(msg => {
+                        errors += `<p class="mb-0">${msg}</p>`;
+                    });
+                }
+                alertBox.innerHTML = `<div class="alert alert-danger">${errors || 'Failed to update password'}</div>`;
             }
-        });
-    }
+        } catch (error) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalHTML;
+            alertBox.innerHTML = `<div class="alert alert-danger">An error occurred. Please try again.</div>`;
+            console.error('Password change error:', error);
+        }
+    });
 }
 
 // Main initialization
 document.addEventListener('DOMContentLoaded', function () {
     // Initialize avatar cropping functionality
     initAvatarCropping();
+
+    // Initialize password toggle button text
+    initPasswordToggle();
 
     // Initialize password change functionality
     initPasswordChange();
@@ -273,32 +355,30 @@ document.addEventListener('DOMContentLoaded', function () {
     forms.forEach(form => {
         form.addEventListener('submit', function (e) {
             const submitBtn = form.querySelector('button[type="submit"]');
-            if (submitBtn) {
+            if (submitBtn && !submitBtn.disabled) {
                 submitBtn.disabled = true;
+                const originalHTML = submitBtn.innerHTML;
                 submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Saving...';
+
+                // Re-enable after 5 seconds as fallback
+                setTimeout(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalHTML;
+                }, 5000);
             }
         });
     });
 
     // Email confirmation for making email primary
-    const primaryEmailForms = document.querySelectorAll('form[action*="make-primary"]');
-    primaryEmailForms.forEach(form => {
-        form.addEventListener('submit', function (e) {
+    const primaryEmailForms = document.querySelectorAll('button[name="action_make_primary"]');
+    primaryEmailForms.forEach(button => {
+        button.closest('form')?.addEventListener('submit', function (e) {
             const confirmed = confirm(
-                'This will change your primary email and block the old email from being reused. Continue?'
+                'This will change your primary email. Continue?'
             );
             if (!confirmed) {
                 e.preventDefault();
             }
         });
-    });
-
-    // Auto-dismiss alerts after 5 seconds
-    const alerts = document.querySelectorAll('.alert');
-    alerts.forEach(alert => {
-        setTimeout(() => {
-            alert.classList.add('fade');
-            setTimeout(() => alert.remove(), 300);
-        }, 5000);
     });
 });

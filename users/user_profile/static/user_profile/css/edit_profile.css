@@ -1,0 +1,797 @@
+/* ============================================================
+   REX CC - EDIT PROFILE PAGE
+   Private Client Identity Management
+   ============================================================ */
+
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:wght@400;600;700&display=swap");
+
+:root {
+  --edit-bg: #faf9f7;
+  --edit-card: #ffffff;
+  --edit-text: #2c2c2c;
+  --edit-text-muted: #666666;
+  --edit-gold: #cd7f32;
+  --edit-gold-dark: #b06825;
+  --edit-border: #e5e1da;
+
+  --font-serif: "Playfair Display", serif;
+  --font-sans: "Montserrat", sans-serif;
+}
+
+/* ============================================================
+   PAGE CONTAINER
+   ============================================================ */
+
+.edit-profile-page {
+  background: var(--edit-bg);
+  min-height: 100vh;
+  padding: 40px 20px 80px;
+}
+
+/* ============================================================
+   BREADCRUMB
+   ============================================================ */
+
+.breadcrumb-nav {
+  max-width: 900px;
+  margin: 0 auto 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--edit-text-muted);
+}
+
+.breadcrumb-link {
+  color: var(--edit-text-muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.breadcrumb-link:hover {
+  color: var(--edit-gold);
+}
+
+.breadcrumb-separator {
+  color: var(--edit-border);
+}
+
+.breadcrumb-current {
+  color: var(--edit-text);
+  font-weight: 500;
+}
+
+/* ============================================================
+   BACK BUTTON
+   ============================================================ */
+
+.back-button {
+  max-width: 900px;
+  margin: 0 auto 30px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--edit-text-muted);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.back-button:hover {
+  color: var(--edit-gold);
+  transform: translateX(-3px);
+}
+
+.back-button .material-icons {
+  font-size: 18px;
+}
+
+/* ============================================================
+   PAGE HEADER
+   ============================================================ */
+
+.page-header {
+  max-width: 900px;
+  margin: 0 auto 50px;
+}
+
+.page-title {
+  font-family: var(--font-serif);
+  font-size: 2.5rem;
+  color: var(--edit-text);
+  margin: 0 0 12px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.page-subtitle {
+  font-size: 1rem;
+  color: var(--edit-text-muted);
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* ============================================================
+   EDIT SECTIONS
+   ============================================================ */
+
+.edit-section {
+  max-width: 900px;
+  margin: 0 auto 50px;
+}
+
+.section-title {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  color: var(--edit-text);
+  margin: 0 0 20px;
+  font-weight: 600;
+}
+
+.section-header-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.section-card {
+  background: var(--edit-card);
+  border: 1px solid var(--edit-border);
+  border-radius: 12px;
+  padding: 40px;
+}
+
+/* ============================================================
+   PROFILE LAYOUT (AVATAR + FIELDS)
+   ============================================================ */
+
+.profile-layout {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 50px;
+  align-items: start;
+}
+
+/* ============================================================
+   AVATAR SECTION
+   ============================================================ */
+
+.avatar-section {
+  text-align: center;
+}
+
+.avatar-wrapper {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  margin: 0 auto 12px;
+}
+
+.avatar-image {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid var(--edit-gold);
+  display: block;
+}
+
+.avatar-placeholder {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(
+    135deg,
+    rgba(205, 127, 50, 0.1) 0%,
+    rgba(176, 104, 37, 0.12) 100%
+  );
+  border: 4px solid var(--edit-gold);
+}
+
+.avatar-placeholder .material-icons {
+  font-size: 60px;
+  color: var(--edit-gold);
+}
+
+.avatar-edit-trigger {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  width: 40px;
+  height: 40px;
+  background: var(--edit-gold);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  border: 3px solid var(--edit-card);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.avatar-edit-trigger:hover {
+  background: var(--edit-gold-dark);
+  transform: scale(1.1);
+}
+
+.avatar-edit-trigger .material-icons {
+  font-size: 20px;
+  color: #ffffff;
+}
+
+.avatar-remove-trigger {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  border: none;
+  opacity: 0;
+  backdrop-filter: blur(2px);
+}
+
+.avatar-wrapper:hover .avatar-remove-trigger {
+  opacity: 1;
+}
+
+.avatar-remove-trigger:hover {
+  background: rgba(32, 32, 32, 0.85);
+}
+
+.avatar-remove-trigger .material-icons {
+  font-size: 48px;
+  color: #ffffff;
+}
+
+/* Hide remove button when no image */
+.avatar-wrapper[data-has-image="false"] .avatar-remove-trigger {
+  display: none !important;
+}
+
+.avatar-input-hidden {
+  display: none;
+}
+
+.avatar-hint {
+  font-size: 0.8rem;
+  color: var(--edit-text-muted);
+  margin: 0;
+}
+
+/* ============================================================
+   FORM FIELDS
+   ============================================================ */
+
+.fields-section {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field-group label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--edit-text);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-top: 20px;
+}
+
+.field-group input,
+.form-input {
+  padding: 14px 16px;
+  border: 1px solid var(--edit-border);
+  border-radius: 6px;
+  font-size: 0.95rem;
+  color: var(--edit-text);
+  background: #fafafa;
+  transition: all 0.2s;
+  font-family: var(--font-sans);
+}
+
+.field-group input:focus,
+.form-input:focus {
+  outline: none;
+  border-color: var(--edit-gold);
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(205, 127, 50, 0.1);
+}
+
+/* Password Input Wrapper & Toggle Button */
+.password-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-input-wrapper .form-input {
+  flex: 1;
+  padding-right: 50px;
+  /* Make room for toggle button */
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s;
+  color: var(--edit-text-muted);
+}
+
+.password-toggle-btn:hover {
+  background: rgba(205, 127, 50, 0.1);
+  color: var(--edit-gold);
+}
+
+.password-toggle-btn .material-icons {
+  font-size: 20px;
+}
+
+.form-submit {
+  margin-top: 8px;
+}
+
+.btn-save {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 28px;
+  background: var(--edit-gold);
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-save:hover {
+  background: var(--edit-gold-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(205, 127, 50, 0.3);
+}
+
+.btn-save .material-icons {
+  font-size: 18px;
+}
+
+/* ============================================================
+   EMAIL SECTION - LUXURY CARDS
+   ============================================================ */
+
+.email-cards-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.email-card-item {
+  background: var(--edit-card);
+  border: 1px solid var(--edit-border);
+  border-radius: 10px;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  transition: all 0.3s;
+}
+
+.email-card-item:hover {
+  border-color: var(--edit-gold);
+  box-shadow: 0 4px 16px rgba(205, 127, 50, 0.1);
+}
+
+.email-icon-wrapper {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(
+    135deg,
+    rgba(205, 127, 50, 0.1) 0%,
+    rgba(176, 104, 37, 0.12) 100%
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.email-icon-wrapper .material-icons {
+  font-size: 24px;
+  color: var(--edit-gold);
+}
+
+.email-info-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.email-address-text {
+  font-size: 1.05rem;
+  color: var(--edit-text);
+  font-weight: 500;
+  letter-spacing: 0.2px;
+}
+
+.email-status-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.status-pill .material-icons {
+  font-size: 14px;
+}
+
+.pill-primary {
+  background: linear-gradient(
+    135deg,
+    rgba(205, 127, 50, 0.15) 0%,
+    rgba(176, 104, 37, 0.18) 100%
+  );
+  color: var(--edit-gold-dark);
+  border: 1px solid rgba(205, 127, 50, 0.3);
+}
+
+.pill-primary .material-icons {
+  color: var(--edit-gold);
+}
+
+.pill-verified {
+  background: rgba(46, 125, 50, 0.1);
+  color: #2e7d32;
+  border: 1px solid rgba(46, 125, 50, 0.2);
+}
+
+.pill-verified .material-icons {
+  color: #4caf50;
+}
+
+.pill-unverified {
+  background: rgba(158, 158, 158, 0.1);
+  color: #666666;
+  border: 1px solidrgba(158, 158, 158, 0.2);
+}
+
+.pill-unverified .material-icons {
+  color: #9e9e9e;
+}
+
+.email-action-wrapper {
+  flex-shrink: 0;
+}
+
+.email-action-form {
+  margin: 0;
+}
+
+.btn-make-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+  background: transparent;
+  border: 1px solid var(--edit-gold);
+  border-radius: 6px;
+  color: var(--edit-gold);
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-make-primary:hover {
+  background: var(--edit-gold);
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(205, 127, 50, 0.25);
+}
+
+.btn-make-primary .material-icons {
+  font-size: 16px;
+}
+
+/* Empty State */
+.email-empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--edit-text-muted);
+}
+
+.email-empty-state .material-icons {
+  font-size: 48px;
+  color: var(--edit-border);
+  margin-bottom: 16px;
+}
+
+.email-empty-state p {
+  margin: 0;
+  font-style: italic;
+}
+
+/* ============================================================
+   SECURITY SECTION
+   ============================================================ */
+
+.btn-toggle-security {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--edit-gold);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: color 0.2s;
+}
+
+.btn-toggle-security:hover {
+  color: var(--edit-gold-dark);
+}
+
+.btn-toggle-security .material-icons {
+  font-size: 18px;
+}
+
+/* Password Change Alerts */
+.password-alert {
+  margin-bottom: 24px;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.password-alert .alert {
+  padding: 16px 20px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  margin-bottom: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.password-alert .alert::before {
+  font-family: "Material Icons";
+  font-size: 22px;
+  flex-shrink: 0;
+  margin-top: -2px;
+}
+
+.password-alert .alert-success {
+  background: linear-gradient(
+    135deg,
+    rgba(46, 125, 50, 0.08) 0%,
+    rgba(76, 175, 80, 0.12) 100%
+  );
+  color: #2e7d32;
+  border: 1px solid rgba(46, 125, 50, 0.25);
+}
+
+.password-alert .alert-success::before {
+  content: "check_circle";
+  color: #4caf50;
+}
+
+.password-alert .alert-danger {
+  background: linear-gradient(
+    135deg,
+    rgba(211, 47, 47, 0.08) 0%,
+    rgba(244, 67, 54, 0.12) 100%
+  );
+  color: #c62828;
+  border: 1px solid rgba(211, 47, 47, 0.25);
+}
+
+.password-alert .alert-danger::before {
+  content: "error_outline";
+  color: #f44336;
+}
+
+.password-alert .alert p {
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* ============================================================
+   CROPPER MODAL
+   ============================================================ */
+
+.crop-modal .modal-header {
+  background: var(--edit-card);
+  border-bottom: 1px solid var(--edit-border);
+  padding: 20px 30px;
+}
+
+.crop-modal .modal-title {
+  font-family: var(--font-serif);
+  font-size: 1.4rem;
+  color: var(--edit-text);
+  font-weight: 600;
+}
+
+.crop-modal .modal-body {
+  padding: 30px;
+  background: #fafafa;
+}
+
+.crop-container {
+  max-height: 500px;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.crop-container img {
+  max-width: 100%;
+  display: block;
+}
+
+.crop-modal .modal-footer {
+  background: var(--edit-card);
+  border-top: 1px solid var(--edit-border);
+  padding: 20px 30px;
+  gap: 12px;
+}
+
+.btn-cancel {
+  padding: 10px 24px;
+  background: transparent;
+  border: 1px solid var(--edit-border);
+  color: var(--edit-text);
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-cancel:hover {
+  border-color: var(--edit-gold);
+  color: var(--edit-gold);
+}
+
+.btn-apply {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 24px;
+  background: var(--edit-gold);
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-apply:hover {
+  background: var(--edit-gold-dark);
+}
+
+.btn-apply .material-icons {
+  font-size: 18px;
+}
+
+/* ============================================================
+   EMPTY STATE
+   ============================================================ */
+
+.empty-message {
+  text-align: center;
+  color: var(--edit-text-muted);
+  font-style: italic;
+  padding: 30px;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 768px) {
+  .edit-profile-page {
+    padding: 30px 15px 60px;
+  }
+
+  .page-title {
+    font-size: 2rem;
+  }
+
+  .profile-layout {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+
+  .avatar-section {
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--edit-border);
+  }
+
+  .field-row {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .section-card {
+    padding: 30px 24px;
+  }
+
+  .section-header-flex {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .email-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .btn-text-action {
+    align-self: flex-start;
+  }
+}

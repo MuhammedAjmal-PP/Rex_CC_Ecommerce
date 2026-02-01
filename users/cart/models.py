@@ -12,6 +12,10 @@ class Cart(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
 
+    @property
+    def items_count(self):
+        return self.items.count()
+
     def __str__(self):
         return f"{self.user}'s cart"
 

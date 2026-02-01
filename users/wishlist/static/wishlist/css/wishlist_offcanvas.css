@@ -40,7 +40,7 @@
 
 .wishlist-icon {
   font-size: 24px;
-  color: #cd7f32;
+  color: #dc3545;
 }
 
 .wishlist-title {
@@ -478,11 +478,21 @@
   animation: wishlistSlideIn 0.3s ease forwards;
 }
 
-.wishlist-item:nth-child(1) { animation-delay: 0.05s; }
-.wishlist-item:nth-child(2) { animation-delay: 0.1s; }
-.wishlist-item:nth-child(3) { animation-delay: 0.15s; }
-.wishlist-item:nth-child(4) { animation-delay: 0.2s; }
-.wishlist-item:nth-child(5) { animation-delay: 0.25s; }
+.wishlist-item:nth-child(1) {
+  animation-delay: 0.05s;
+}
+.wishlist-item:nth-child(2) {
+  animation-delay: 0.1s;
+}
+.wishlist-item:nth-child(3) {
+  animation-delay: 0.15s;
+}
+.wishlist-item:nth-child(4) {
+  animation-delay: 0.2s;
+}
+.wishlist-item:nth-child(5) {
+  animation-delay: 0.25s;
+}
 
 /* Remove animation */
 @keyframes wishlistRemove {

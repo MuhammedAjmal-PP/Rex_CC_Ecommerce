@@ -1,88 +1,101 @@
-{% extends "user_profile/profile_base.html" %}
+{% extends "pages/user/base_user.html" %}
 {% load static %}
-{% block extra_page_css %}
+{% block head_title %}
+My Addresses | REX CC
+{% endblock head_title %}
+{% block extra_css %}
 <link rel="stylesheet" href="{% static 'user_profile/css/address.css' %}">
-{% endblock extra_page_css %}
-{% block page_header %}
-My Addresses
-{% endblock page_header %}
-{% block page_subtitle %}
-Manage your shipping and billing addresses
-{% endblock page_subtitle %}
-{% block page_nav_btn %}
-<a href="{% url 'add_address' %}" class="btn-primary">
-    <span class="material-icons">add</span>
-    Add New Address
-</a>
-{% endblock page_nav_btn %}
-{% block page_content %}
-<!-- CSRF TOKEN (used by JS) -->
-<input type="hidden" id="csrf-token" value="{{ csrf_token }}">
-<div class="addresses-grid">
+{% endblock extra_css %}
+{% block content %}
+<div class="addresses-page">
+    <!-- BREADCRUMB -->
+    <nav class="breadcrumb-nav">
+        <a href="{% url 'home' %}" class="breadcrumb-link">Home</a>
+        <span class="breadcrumb-separator">›</span>
+        <a href="{% url 'user_profile' %}" class="breadcrumb-link">My Account</a>
+        <span class="breadcrumb-separator">›</span>
+        <span class="breadcrumb-current">Addresses</span>
+    </nav>
+    <!-- PAGE HEADER WITH ACTION -->
+    <div class="page-header-wrapper">
+        <header class="page-header">
+            <h1 class="page-title">My Addresses</h1>
+            <p class="page-subtitle">Manage your delivery destinations with care</p>
+        </header>
+        <div class="header-action">
+            <a href="{% url 'add_address' %}" class="btn-add-address">
+                <span class="material-icons">add</span>
+                <span>Add New Address</span>
+            </a>
+        </div>
+    </div>
+    <!-- ADDRESS GRID -->
     {% if addresses %}
-    {% for address in addresses %}
-    <div class="address-card {% if address.is_default %}default-address{% endif %}" id="address-{{ address.id }}">
-        {% if address.is_default %}
-        <span class="default-badge">
-            <span class="material-icons">verified</span>
-            Default
-        </span>
-        {% endif %}
-        <div class="address-content">
-            <div class="address-type-icon">
-                {% if address.label == "Home" %}
-                <span class="material-icons">home</span>
-                {% elif address.label == "Work" %}
-                <span class="material-icons">work</span>
-                {% else %}
-                <span class="material-icons">bookmark</span>
-                {% endif %}
-                <p>{{ address.label }}</p>
+    <div class="address-grid">
+        {% for address in addresses %}
+        <div class="delivery-label {% if address.is_default %}delivery-label-default{% endif %}"
+            id="address-{{ address.id }}">
+            <!-- Label Badge -->
+            <div class="label-badge">{{ address.label }}</div>
+            <!-- Default Indicator -->
+            {% if address.is_default %}
+            <div class="default-indicator">
+                <span class="material-icons">verified</span>
+                <span>Default</span>
             </div>
-            <div class="address-details">
-                <h3 class="address-name">{{ address.full_name }}</h3>
-                <p class="address-line">{{ address.address_line_1 }}</p>
-                {% if address.address_line_2 %}<p class="address-line">{{ address.address_line_2 }}</p>{% endif %}
-                <p class="address-line">{{ address.city }}, {{ address.state }} {{ address.postal_code }}</p>
-                <p class="address-line">{{ address.country }}</p>
-                <p class="address-phone">
+            {% endif %}
+            <!-- Address Content -->
+            <div class="label-content">
+                <p class="label-name">{{ address.full_name }}</p>
+                <p class="label-address">
+                    {{ address.address_line_1 }}
+                    {% if address.address_line_2 %}, {{ address.address_line_2 }}{% endif %}
+                </p>
+                <p class="label-address">{{ address.city }}, {{ address.state }} {{ address.postal_code }}</p>
+                <p class="label-address">{{ address.country }}</p>
+                <p class="label-phone">
                     <span class="material-icons">phone</span>
                     {{ address.phone_number }}
                 </p>
             </div>
+            <!-- Actions -->
+            <div class="label-actions">
+                {% if not address.is_default %}
+                <button type="button" onclick="setDefaultAddress(event, '{{ address.id }}')" class="action-link"
+                    data-url="{% url 'set_default_address' address.id %}" id="csrf-token" data-csrf="{{ csrf_token }}">
+                    <span class="material-icons">push_pin</span>
+                    <span>Set as Default</span>
+                </button>
+                {% endif %}
+                <a href="{% url 'address_edit' address.id %}" class="action-link">
+                    <span class="material-icons">edit</span>
+                    <span>Edit</span>
+                </a>
+                <button type="button" onclick="deleteAddress(event, '{{ address.id }}')"
+                    class="action-link action-link-delete" data-url="{% url 'address_delete' address.id %}">
+                    <span class="material-icons">delete_outline</span>
+                    <span>Remove</span>
+                </button>
+            </div>
         </div>
-        <div class="address-actions">
-            {% if not address.is_default %}
-            <button class="btn-text" onclick="setDefaultAddress(event, '{{ address.id }}')"
-                data-url="{% url 'set_default_address' address.id %}">
-                <span class="material-icons">check_circle</span>
-                Set as Default
-            </button>
-            {% endif %}
-            <a href="{% url 'address_edit' address.id %}" class="btn-text">
-                <span class="material-icons">edit</span>
-                Edit
-            </a>
-            <button class="btn-text text-danger" onclick="deleteAddress(event, '{{ address.id }}')"
-                data-url="{% url 'address_delete' address.id %}">
-                <span class="material-icons">delete</span>
-                Delete
-            </button>
-        </div>
+        {% endfor %}
     </div>
-    {% endfor %}
-    {% endif %}
-    <!-- Add Address Button for Empty State (if needed, or extra one) -->
-    {% if not addresses %}
+    {% else %}
+    <!-- ELEGANT EMPTY STATE -->
     <div class="empty-state">
-        <span class="material-icons">location_off</span>
-        <h3>No Addresses Added</h3>
-        <p>Add your first address to make checkout faster</p>
-        <a href="{% url 'add_address' %}" class="btn-premium mt-3">Add Address</a>
+        <div class="empty-icon">
+            <span class="material-icons">place</span>
+        </div>
+        <h3 class="empty-title">No Addresses Yet</h3>
+        <p class="empty-text">Add your first delivery address to make checkout seamless and secure</p>
+        <a href="{% url 'add_address' %}" class="btn-add-address">
+            <span class="material-icons">add</span>
+            <span>Add Address</span>
+        </a>
     </div>
     {% endif %}
 </div>
-{% endblock page_content %}
-{% block extra_page_js %}
+{% endblock content %}
+{% block extra_js %}
 <script src="{% static 'user_profile/js/address.js' %}"></script>
-{% endblock extra_page_js %}
+{% endblock extra_js %}

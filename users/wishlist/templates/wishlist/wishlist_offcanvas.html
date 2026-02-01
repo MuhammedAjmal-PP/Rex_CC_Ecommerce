@@ -1,8 +1,6 @@
 <!-- Wishlist Offcanvas -->
-<div class="offcanvas offcanvas-end wishlist-offcanvas"
-     tabindex="-1"
-     id="offcanvasWishlist"
-     aria-labelledby="wishlistOffcanvasLabel">
+<div class="offcanvas offcanvas-end wishlist-offcanvas" tabindex="-1" id="offcanvasWishlist"
+    aria-labelledby="wishlistOffcanvasLabel">
     <!-- Offcanvas Header -->
     <div class="wishlist-offcanvas-header">
         <div class="wishlist-title-group">
@@ -10,10 +8,7 @@
             <h5 class="wishlist-title" id="wishlistOffcanvasLabel">My Wishlist</h5>
         </div>
         <span class="wishlist-count" id="wishlistCount">0 items</span>
-        <button type="button"
-                class="wishlist-close-btn"
-                data-bs-dismiss="offcanvas"
-                aria-label="Close">
+        <button type="button" class="wishlist-close-btn" data-bs-dismiss="offcanvas" aria-label="Close">
             <span class="material-icons">close</span>
         </button>
     </div>
@@ -40,11 +35,9 @@
         </div>
     </div>
     <!-- Offcanvas Footer -->
-    <div class="wishlist-offcanvas-footer"
-         id="wishlistFooter"
-         style="display: none">
-        <a href="{% url 'product_list' %}" class="wishlist-view-all-btn">
-            View All Products
+    <div class="wishlist-offcanvas-footer" id="wishlistFooter" style="display: none">
+        <a href="{% url 'user_wishlist' %}" class="wishlist-view-all-btn">
+            View Wishlist
             <span class="material-icons">arrow_forward</span>
         </a>
     </div>

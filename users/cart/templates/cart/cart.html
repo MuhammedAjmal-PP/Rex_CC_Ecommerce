@@ -1,0 +1,168 @@
+{% extends "pages/user/base_user.html" %}
+{% load static %}
+{% load humanize %}
+{% block head_title %}My Cart | REX CC{% endblock %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'cart/css/cart.css' %}">
+{% endblock %}
+{% block content %}
+    <div class="cart-page">
+        <!-- BREADCRUMBS -->
+        <nav class="breadcrumb-nav">
+            <a href="{% url 'home' %}" class="breadcrumb-link">Home</a>
+            <span class="breadcrumb-separator">›</span>
+            <a href="{% url 'user_profile' %}" class="breadcrumb-link">My Account</a>
+            <span class="breadcrumb-separator">›</span>
+            <span class="breadcrumb-current">Cart</span>
+        </nav>
+
+        <!-- PAGE HEADER -->
+        <header class="page-header">
+            <div class="header-content">
+                <h1 class="page-title">My Cart</h1>
+                <p class="page-subtitle">Review your selection before securing your timepieces</p>
+            </div>
+            <!-- <div class="header-stats">
+                <span class="cart-count-display">
+                    <span class="material-icons">local_mall</span>
+                    <span id="cart-item-count">{{ items|length }}</span>
+                    <span class="count-label">Items</span>
+                </span>
+            </div> -->
+        </header>
+
+        {% if items %}
+            <div class="cart-layout">
+                <!-- Cart Items List -->
+                <div class="cart-items-container">
+                    <div class="cart-items-header">
+                        <span class="col-product">Product</span>
+                        <span class="col-qty">Quantity</span>
+                        <span class="col-total">Total</span>
+                        <span class="col-action"></span>
+                    </div>
+                    {% for item in items %}
+                        <div class="cart-item"
+                             data-slug="{{ item.variant.slug }}"
+                             data-sku="{{ item.variant.sku }}">
+                            <!-- Product Info -->
+                            <a href="{% url 'product_detail' item.variant.slug item.variant.sku %}"
+                               class="cart-item-info"
+                               style="text-decoration:none;
+                                      color:inherit">
+                                <div class="cart-item-image">
+                                    <img src="{{ item.variant.image }}" alt="{{ item.variant.product_name }}">
+                                </div>
+                                <div class="cart-item-details">
+                                    <span class="cart-item-brand">{{ item.variant.brand }}</span>
+                                    <span class="cart-item-name">{{ item.variant.product_name }}</span>
+                                    <span class="cart-item-sku">SKU: {{ item.variant.sku }}</span>
+                                    <!-- Mobile Price Display -->
+                                    <div class="cart-item-price-mobile">
+                                        <span class="final-price">₹{{ item.variant.final_price|floatformat:0|intcomma }}</span>
+                                        {% if item.variant.price > item.variant.final_price %}
+                                            <span class="original-price"
+                                                  style="text-decoration: line-through;
+                                                         color: #999;
+                                                         font-size: 0.85em;
+                                                         margin-left: 5px">₹{{ item.variant.price|floatformat:0|intcomma }}</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </a>
+                            <!-- Quantity Control -->
+                            <div class="cart-item-qty">
+                                <div class="qty-control">
+                                    <button type="button"
+                                            class="qty-btn"
+                                            data-action="decrease"
+                                            {% if item.quantity <= 1 %}disabled{% endif %}>−</button>
+                                    <input type="number"
+                                           class="qty-input"
+                                           value="{{ item.quantity }}"
+                                           readonly
+                                           aria-label="Quantity">
+                                    <button type="button"
+                                            class="qty-btn"
+                                            data-action="increase"
+                                            {% if not item.variant.is_in_stock or item.quantity >= item.variant.stock %}disabled{% endif %}>
+                                        +
+                                    </button>
+                                </div>
+                                {% if item.variant.stock <= 5 and item.variant.stock > 0 %}
+                                    <span class="stock-warning">Only {{ item.variant.stock }} left</span>
+                                {% endif %}
+                                {% if not item.variant.is_in_stock %}<span class="stock-error">Out of Stock</span>{% endif %}
+                            </div>
+                            <!-- Total -->
+                            <div class="cart-item-total">
+                                ₹{{ item.total_amount|floatformat:0|intcomma }}
+                                {% if item.total_discount > 0 %}
+                                    <div class="cart-item-savings">Saved ₹{{ item.total_discount|floatformat:0|intcomma }}</div>
+                                {% endif %}
+                            </div>
+                            <!-- Remove -->
+                            <div class="cart-item-remove">
+                                <button type="button" class="remove-btn" aria-label="Remove item">
+                                    <span class="material-icons">close</span>
+                                </button>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <!-- Order Summary -->
+                <div class="cart-summary-container">
+                    <div class="cart-summary">
+                        <h2 class="summary-title">Order Summary</h2>
+                        <div class="summary-row">
+                            <span>Subtotal ({{ order_summary.products_count }} items)</span>
+                            <span>₹{{ order_summary.products_total_price|floatformat:0|intcomma }}</span>
+                        </div>
+                        {% if order_summary.total_discount > 0 %}
+                            <div class="summary-row discount">
+                                <span>Discount</span>
+                                <span>−₹{{ order_summary.total_discount|floatformat:0|intcomma }}</span>
+                            </div>
+                        {% endif %}
+                        <div class="summary-row">
+                            <span>Delivery</span>
+                            <span>
+                                {% if order_summary.delivery_charge == 0 %}
+                                    Free
+                                {% else %}
+                                    ₹{{ order_summary.delivery_charge|floatformat:0|intcomma }}
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="summary-divider"></div>
+                        <div class="summary-row total">
+                            <span>Total</span>
+                            <span>₹{{ order_summary.total_amount_to_pay|floatformat:0|intcomma }}</span>
+                        </div>
+                        <div class="summary-actions">
+                            <a href="{% comment %} Checkout URL {% endcomment %}#"
+                               class="btn-checkout">Proceed to Checkout</a>
+                            <a href="{% url 'product_list' %}" class="btn-continue">Continue Shopping</a>
+                        </div>
+                        <p class="summary-note">
+                            <span class="material-icons">lock</span> Secure Checkout confirmed
+                        </p>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <!-- Empty State -->
+            <div class="cart-empty">
+                <span class="material-icons empty-icon">shopping_bag</span>
+                <h2>Your cart is empty</h2>
+                <p>Explore our collection to find your next timepiece.</p>
+                <a href="{% url 'product_list' %}" class="btn-shop-now">Explore Collection</a>
+            </div>
+        {% endif %}
+    </div>
+    <!-- Hidden form for updates (if needed for non-ajax fallback, but strict rules say API) -->
+    {% csrf_token %}
+{% endblock %}
+{% block extra_js %}
+    <script src="{% static 'cart/js/cart.js' %}"></script>
+{% endblock %}

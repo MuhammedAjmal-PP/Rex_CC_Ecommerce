@@ -58,22 +58,21 @@
       if (data.success) {
         showToast(data.message, "info");
 
-        // Emit global event instead of updating just this button
+        // Update this button immediately
+        toggleWishlistIcon(button, data.added);
+
+        // Emit global event using helper if available
         if (window.emitWishlistChange) {
           window.emitWishlistChange({
             variantId: variantId,
             added: data.added
           });
         } else {
-          // Fallback if helper missing: manually update this button
-          toggleWishlistIcon(button, data.added);
-
-          // Should also manually dispatch event if helper missing?
-          // Let's assume helper is there or dispatch manually
-          const event = new CustomEvent("wishlist:changed", {
+          // Fallback: dispatch event manually
+          const customEvent = new CustomEvent("wishlist:changed", {
             detail: { variantId: variantId, added: data.added },
           });
-          window.dispatchEvent(event);
+          window.dispatchEvent(customEvent);
         }
 
       } else {
@@ -87,6 +86,7 @@
       button.dataset.loading = "false";
     }
   }
+
 
   // ===============================
   // GLOBAL EVENT LISTENER

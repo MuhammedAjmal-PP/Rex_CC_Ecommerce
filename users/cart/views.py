@@ -89,39 +89,88 @@ def view_cart(request):
 @login_required
 @require_POST
 def add_cart(request, slug, sku):
+    """
+    Add a product variant to the user's cart.
+
+    - Accepts quantity from product detail or wishlist
+    - Merges quantity if item already exists in cart
+    - Validates stock before saving
+    - Removes item from wishlist if present
+    """
     cart, _ = Cart.objects.get_or_create(user=request.user)
+
     product = get_object_or_404(Product, slug=slug, is_drafted=False, is_deleted=False)
+
     variant = get_object_or_404(
-        ProductVariant, product=product, sku=sku, is_drafted=False, is_deleted=False
+        ProductVariant,
+        product=product,
+        sku=sku,
+        is_drafted=False,
+        is_deleted=False,
     )
 
-    cart_item, created = CartItem.objects.get_or_create(
-        cart=cart,
-        product_variant=variant,
-    )
-    if created:
-        message = "Added to Cart"
-        added = True
+    # Parse quantity safely
+    try:
+        quantity = int(request.POST.get("quantity", 1))
+    except (TypeError, ValueError):
+        return JsonResponse(
+            {"success": False, "message": "Invalid quantity"},
+            status=400,
+        )
+
+    # Validate quantity
+    if quantity <= 0:
+        return JsonResponse(
+            {"success": False, "message": "Quantity must be greater than zero"},
+            status=400,
+        )
+
+    # Get existing cart item (without quantity)
+    cart_item = CartItem.objects.filter(cart=cart, product_variant=variant).first()
+
+    # Compute merged quantity
+    if cart_item:
+        new_quantity = cart_item.quantity + quantity
     else:
-        cart_item.quantity += 1
+        new_quantity = quantity
+
+    # Stock validation
+    if new_quantity > variant.stock:
+        return JsonResponse(
+            {
+                "success": False,
+                "message": f"Only {variant.stock} item(s) available",
+            },
+            status=400,
+        )
+
+    # Save
+    if cart_item:
+        cart_item.quantity = new_quantity
         cart_item.save()
-        message = "Incremented the product quantity"
-        added = True
+        message = "Cart quantity updated"
+    else:
+        CartItem.objects.create(
+            cart=cart,
+            product_variant=variant,
+            quantity=new_quantity,
+        )
+        message = "Added to cart"
 
-    wishlist = Wishlist.objects.get_or_create(user=request.user)
-    wishlist_item = WishlistItem.objects.filter(
-        wishlist=wishlist,
-        product_variant=variant,
-    ).first()
-
-    if wishlist_item:
-        wishlist_item.delete()
+    # Enforce cart > wishlist
+    wishlist = Wishlist.objects.filter(user=request.user).first()
+    if wishlist:
+        WishlistItem.objects.filter(
+            wishlist=wishlist,
+            product_variant=variant,
+        ).delete()
 
     return JsonResponse(
         {
             "success": True,
             "message": message,
-            "added": added,
+            "added": True,
+            "quantity": new_quantity,
         }
     )
 
@@ -129,37 +178,48 @@ def add_cart(request, slug, sku):
 @login_required
 @require_POST
 def update_cart(request, slug, sku):
+    """
+    Update or remove a cart item.
+    """
+
     cart, _ = Cart.objects.get_or_create(user=request.user)
+
     product = get_object_or_404(Product, slug=slug, is_drafted=False, is_deleted=False)
     variant = get_object_or_404(
-        ProductVariant, product=product, sku=sku, is_drafted=False, is_deleted=False
+        ProductVariant,
+        product=product,
+        sku=sku,
+        is_drafted=False,
+        is_deleted=False,
     )
     cart_item = get_object_or_404(CartItem, cart=cart, product_variant=variant)
 
     try:
-        quantity = int(request.POST.get("quantity", 0))
-        remove = request.POST.get("remove") == "true"
-    except ValueError:
-        return JsonResponse({"error": "Invalid quantity"}, status=400)
+        quantity = int(request.POST.get("quantity", 1))
+    except (TypeError, ValueError):
+        return JsonResponse(
+            {"success": False, "message": "Invalid quantity"},
+            status=400,
+        )
 
-    if remove:
-        cart_item.delete()
-        return redirect("user_cart")
+    remove = request.POST.get("remove") == "true"
 
-    if quantity <= 0:
+    if remove or quantity <= 0:
         cart_item.delete()
         return redirect("user_cart")
 
     if quantity > variant.stock:
         return JsonResponse(
             {
-                "error": "Insufficient stock",
+                "success": False,
+                "message": f"Only {variant.stock} item(s) available",
             },
             status=400,
         )
 
     cart_item.quantity = quantity
-    cart_item.save()
+    cart_item.save(update_fields=["quantity"])
+
     return redirect("user_cart")
 
 
@@ -171,3 +231,17 @@ def get_variant_stock(request, slug, sku):
         ProductVariant, product=product, sku=sku, is_drafted=False, is_deleted=False
     )
     return JsonResponse({"stock": variant.stock})
+
+
+@require_GET
+def get_cartitems_count(request):
+    """
+    API to fetch current cart count.
+    Returns 0 if user is not authenticated or has no cart.
+    """
+    if not request.user.is_authenticated:
+        return JsonResponse({"cart_count": 0})
+        
+    cart, _ = Cart.objects.get_or_create(user=request.user)
+
+    return JsonResponse({"cart_count": cart.items_count})

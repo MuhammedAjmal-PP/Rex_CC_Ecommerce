@@ -63,6 +63,22 @@
   box-shadow: 0 4px 14px rgba(205, 127, 50, 0.35);
 }
 
+.product-card__stock-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 5px 11px;
+  border-radius: 3px;
+  z-index: 2;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  box-shadow: 0 4px 14px rgba(211, 47, 47, 0.25);
+}
+
 /* ========================================
    WISHLIST BUTTON
    ======================================== */
@@ -114,7 +130,7 @@
 }
 
 .product-card__wishlist-btn.is-active .material-icons {
-  font-family: 'Material Icons';
+  font-family: "Material Icons";
   /* Ensure filled icon renders */
   content: "favorite";
   animation: wishlistHeartbeat 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
