@@ -362,6 +362,7 @@
 }
 
 .wishlist-add-cart-btn,
+.wishlist-add-cart-btn-login,
 .wishlist-remove-btn {
   width: 36px;
   height: 36px;
@@ -374,19 +375,22 @@
   transition: all 0.3s ease;
 }
 
-.wishlist-add-cart-btn {
+.wishlist-add-cart-btn,
+.wishlist-add-cart-btn-login {
   background: linear-gradient(135deg, #cd7f32 0%, #b06825 100%);
   color: #fff;
   box-shadow: 0 2px 8px rgba(205, 127, 50, 0.3);
 }
 
-.wishlist-add-cart-btn:hover {
+.wishlist-add-cart-btn:hover,
+.wishlist-add-cart-btn-login:hover {
   background: linear-gradient(135deg, #b06825 0%, #9a5a1e 100%);
   transform: scale(1.1);
   box-shadow: 0 4px 12px rgba(205, 127, 50, 0.4);
 }
 
-.wishlist-add-cart-btn .material-icons {
+.wishlist-add-cart-btn .material-icons,
+.wishlist-add-cart-btn-login .material-icons {
   font-size: 18px;
 }
 

@@ -489,15 +489,21 @@
   /* Take remaining space */
   max-width: 400px;
   /* Optional cap */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
 }
 
 .pdp-btn-add:hover {
   background-color: #333;
 }
 
-.pdp-btn-add:disabled {
+.pdp-btn-add:disabled,
+.pdp-btn-add.disabled {
   background-color: #999;
   cursor: not-allowed;
+  pointer-events: none;
 }
 
 /* =========================================

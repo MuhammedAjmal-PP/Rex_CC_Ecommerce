@@ -1,6 +1,8 @@
 <!-- Wishlist Offcanvas -->
-<div class="offcanvas offcanvas-end wishlist-offcanvas" tabindex="-1" id="offcanvasWishlist"
-    aria-labelledby="wishlistOffcanvasLabel">
+<div class="offcanvas offcanvas-end wishlist-offcanvas"
+     tabindex="-1"
+     id="offcanvasWishlist"
+     aria-labelledby="wishlistOffcanvasLabel">
     <!-- Offcanvas Header -->
     <div class="wishlist-offcanvas-header">
         <div class="wishlist-title-group">
@@ -8,7 +10,10 @@
             <h5 class="wishlist-title" id="wishlistOffcanvasLabel">My Wishlist</h5>
         </div>
         <span class="wishlist-count" id="wishlistCount">0 items</span>
-        <button type="button" class="wishlist-close-btn" data-bs-dismiss="offcanvas" aria-label="Close">
+        <button type="button"
+                class="wishlist-close-btn"
+                data-bs-dismiss="offcanvas"
+                aria-label="Close">
             <span class="material-icons">close</span>
         </button>
     </div>
@@ -35,7 +40,9 @@
         </div>
     </div>
     <!-- Offcanvas Footer -->
-    <div class="wishlist-offcanvas-footer" id="wishlistFooter" style="display: none">
+    <div class="wishlist-offcanvas-footer"
+         id="wishlistFooter"
+         style="display: none">
         <a href="{% url 'user_wishlist' %}" class="wishlist-view-all-btn">
             View Wishlist
             <span class="material-icons">arrow_forward</span>
@@ -63,9 +70,17 @@
             </div>
         </div>
         <div class="wishlist-item-actions">
-            <button class="wishlist-add-cart-btn" title="Add to Cart">
-                <span class="material-icons">shopping_bag</span>
-            </button>
+            {% if request.user.is_authenticated %}
+                <button class="wishlist-add-cart-btn" title="Add to Cart">
+                    <span class="material-icons">shopping_bag</span>
+                </button>
+            {% else %}
+                <a href="{% url 'account_login' %}"
+                   class="wishlist-add-cart-btn-login"
+                   title="Add to Cart">
+                    <span class="material-icons">shopping_bag</span>
+                </a>
+            {% endif %}
             <button class="wishlist-remove-btn" title="Remove" data-action="remove">
                 <span class="material-icons">delete_outline</span>
             </button>

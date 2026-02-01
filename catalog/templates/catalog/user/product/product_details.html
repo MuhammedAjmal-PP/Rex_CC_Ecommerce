@@ -158,16 +158,29 @@
                             <button type="button" class="pdp-qty-btn" data-action="increase">+</button>
                         </div>
                         <!-- ADD TO CART -->
-                        <button type="submit"
-                                id="pdp-add-to-cart-btn"
-                                class="pdp-btn-add"
-                                {% if stock_status == 'out_of_stock' %}disabled{% endif %}>
-                            {% if stock_status == 'out_of_stock' %}
-                                Out of Stock
-                            {% else %}
-                                Add to Cart
-                            {% endif %}
-                        </button>
+                        {% if not user.is_authenticated %}
+                            <a href="{% url 'account_login' %}?next={% url 'product_detail' selected_variant.product.slug selected_variant.sku %}"
+                               class="pdp-btn-add {% if stock_status == 'out_of_stock' %}disabled{% endif %}"
+                               style="text-decoration: none; display: flex; align-items: center; justify-content: center;"
+                               {% if stock_status == 'out_of_stock' %}aria-disabled="true"{% endif %}>
+                                {% if stock_status == 'out_of_stock' %}
+                                    Out of Stock
+                                {% else %}
+                                    Add to Cart
+                                {% endif %}
+                            </a>
+                        {% else %}
+                            <button type="submit"
+                                    id="pdp-add-to-cart-btn"
+                                    class="pdp-btn-add"
+                                    {% if stock_status == 'out_of_stock' %}disabled{% endif %}>
+                                {% if stock_status == 'out_of_stock' %}
+                                    Out of Stock
+                                {% else %}
+                                    Add to Cart
+                                {% endif %}
+                            </button>
+                        {% endif %}
                     </div>
                 </form>
                 <div class="pdp-meta-info"

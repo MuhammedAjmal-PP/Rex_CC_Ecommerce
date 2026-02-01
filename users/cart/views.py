@@ -223,7 +223,6 @@ def update_cart(request, slug, sku):
     return redirect("user_cart")
 
 
-@login_required
 @require_GET
 def get_variant_stock(request, slug, sku):
     product = get_object_or_404(Product, slug=slug, is_drafted=False, is_deleted=False)

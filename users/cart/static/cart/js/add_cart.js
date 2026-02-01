@@ -83,8 +83,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
 
+            if (response.redirected) {
+                // If backend redirects (e.g. to login), follow it
+                window.location.href = response.url;
+                return;
+            }
+
             if (!response.ok) {
                 // Try to parse error message from JSON response
+                // If status is 401/403 (unauthorized) and NOT a redirect, standard API might return 403.
+                // But @login_required usually 302s.
+                // If it is an API error (json)
                 const errorData = await response.json().catch(() => ({}));
                 throw new Error(errorData.message || 'Network response was not ok');
             }
