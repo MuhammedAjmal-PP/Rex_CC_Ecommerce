@@ -37,8 +37,9 @@
 | User Profile | ✅ Complete | Profile settings, Avatar with crop |
 | Address Management | ✅ Complete | Full CRUD, Default selection, Soft delete |
 | Product Catalog | ✅ Complete | Listing, Detail, Search, Filter, Pagination |
-| Cart Management | 🔄 Next | Add/Remove, Quantity, Stock validation |
-| Checkout System | 🔄 Next | Address, Summary, COD payment |
+| Cart Management | ✅ Complete | Stock checks, Guest redirect, Wishlist sync |
+| Wishlist System | ✅ Complete | Offcanvas, AJAX toggle, Real-time sync |
+| Checkout System | 🔄 Next | Address selection, Order summary, Payment |
 | Order Management | 🔄 Next | User & Admin order handling |
 
 ---
@@ -364,13 +365,13 @@ MAX_ADDRESSES_PER_USER=5
 ## 📋 Next Steps - Implementation Plan
 
 ### c. Cart Management
-- [ ] **Add to Cart** - Add variant to cart, if product/category is blocked or unlisted, prevent addition even from product detail page
-- [ ] **Quantity Update** - If product already in cart, increase quantity instead of adding duplicate
-- [ ] **Wishlist Integration** - When adding to cart, auto-remove from wishlist if exists
-- [ ] **Increment/Decrement** - Validate against stock left in inventory
-- [ ] **Max Quantity Limit** - Handle maximum quantity per product per user
-- [ ] **Out of Stock Display** - Show disabled state, prevent checkout for unavailable items
-- [ ] **Cart Listing** - Display all cart items with product image, price, quantity
+- [x] **Add to Cart** - Add variant to cart, if product/category is blocked or unlisted, prevent addition even from product detail page
+- [x] **Quantity Update** - If product already in cart, increase quantity instead of adding duplicate
+- [x] **Wishlist Integration** - When adding to cart, auto-remove from wishlist if exists
+- [x] **Increment/Decrement** - Validate against stock left in inventory
+- [x] **Max Quantity Limit** - Handle maximum quantity per product per user
+- [x] **Out of Stock Display** - Show disabled state, prevent checkout for unavailable items
+- [x] **Cart Listing** - Display all cart items with product image, price, quantity
 
 ### d. Checkout Page
 - [ ] **Address Selection** - Display user addresses, allow add/edit, ensure one is selected as default
@@ -414,9 +415,9 @@ MAX_ADDRESSES_PER_USER=5
 - [x] Address Management (CRUD, Default, Soft-delete)
 - [x] Product Catalog (List, Detail, Search, Filter)
 
-### Phase 2 — E-Commerce (🔄 Next)
-- [ ] Cart Management
-- [ ] Wishlist
+### Phase 2 — E-Commerce (🔄 In Progress)
+- [x] Wishlist (Offcanvas, AJAX, Profile Sync)
+- [x] Cart Management (Stock Validation, Login Redirect, Public API)
 - [ ] Checkout Flow
 - [ ] Order Management (User & Admin)
 - [ ] Invoice Generation
@@ -429,10 +430,50 @@ MAX_ADDRESSES_PER_USER=5
 - [ ] Referral Program
 
 ### Phase 4 — Enhancement
-- [ ] Product Reviews
+- [x] Product Reviews (Basic Implementation)
 - [ ] Analytics Dashboard
 - [ ] Notification System
 - [ ] Support Tickets
+
+---
+
+## 🛒 Cart Management
+
+**Location:** `users/cart/`
+
+| Function | Description |
+|----------|-------------|
+| `view_cart()` | Displays cart items with real-time stock limits |
+| `add_cart()` | Adds items, merges quantities, redirects guests to login (GET support) |
+| `update_cart()` | Updates quantity or removes items via AJAX |
+| `get_variant_stock()` | **Public API** to fetch real-time stock for PDP/Wishlist |
+| `get_cartitems_count()` | Returns current count for header badge |
+
+**Key Features:**
+- **Guest Handling:** Guests clicking "Add to Cart" are redirected to Login, then back to the Product Page.
+- **Stock Validation:**
+  - Prevents adding more than available stock.
+  - "Out of Stock" badge on product cards (Red Gradient).
+  - Real-time stock checks via `fetch` API.
+- **Wishlist Sync:** Adding to cart automatically removes from wishlist.
+
+---
+
+## ❤️ Wishlist System
+
+**Location:** `users/wishlist/`
+
+| Function | Description |
+|----------|-------------|
+| `wishlist_view()` | Main page listing all saved items |
+| `toggle_wishlist()` | AJAX toggle (Add/Remove) from Cards/PDP |
+| `remove_wishlist_item()` | Removes specific item via Offcanvas/Page |
+
+**Key Features:**
+- **Offcanvas UI:** Quick view of wishlist items without leaving current page.
+- **AJAX Interactions:** Instant feedback (Heartbeat animation) without page reload.
+- **Profile Integration:** Real-time counter sync in Profile Dashboard.
+- **Luxury Design:** Gold/Bronze theme consistency.
 
 ---
 
