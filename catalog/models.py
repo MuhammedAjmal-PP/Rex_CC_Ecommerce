@@ -223,3 +223,89 @@ class ProductImage(models.Model):
 
     def __str__(self):
         return f"Image for {self.variant.sku}"
+
+
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ValidationError
+from django.db import models
+
+
+class InventoryLog(models.Model):
+
+    # ---------------- REASONS ----------------
+    REASON_CHOICES = (
+        ("ORDER_PLACED", "Order Placed"),
+        ("ORDER_CANCELLED", "Order Cancelled"),
+        ("RETURNED", "Returned"),
+        ("ADMIN_ADJUSTMENT", "Admin Adjustment"),
+        ("SYSTEM_CORRECTION", "System Correction"),
+    )
+
+    # ---------------- PRODUCT ----------------
+    product_variant = models.ForeignKey(
+        "catalog.ProductVariant",
+        on_delete=models.CASCADE,
+        related_name="inventory_logs",
+    )
+
+    # ---------------- STOCK CHANGE ----------------
+    change = models.IntegerField(
+        help_text="Positive for stock in, negative for stock out"
+    )
+
+    stock_before = models.PositiveIntegerField()
+    stock_after = models.PositiveIntegerField()
+
+    # ---------------- WHY ----------------
+    reason = models.CharField(
+        max_length=30,
+        choices=REASON_CHOICES,
+    )
+
+    note = models.TextField(blank=True, null=True)
+
+    # ---------------- WHO ----------------
+    actor = models.ForeignKey(
+        "accounts.CustomUser",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="inventory_actions",
+    )
+
+    # ---------------- REFERENCE (Order / OrderItem / Return) ----------------
+    content_type = models.ForeignKey(
+        ContentType,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
+    object_id = models.PositiveIntegerField(null=True, blank=True)
+    reference_object = GenericForeignKey("content_type", "object_id")
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["product_variant", "created_at"]),
+            models.Index(fields=["reason"]),
+            models.Index(fields=["content_type", "object_id"]),
+        ]
+
+    # ---------------- VALIDATION ----------------
+    def clean(self):
+        if self.change == 0:
+            raise ValidationError("Inventory change cannot be zero")
+
+        if self.stock_after != self.stock_before + self.change:
+            raise ValidationError("Stock after does not match stock calculation")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        sign = "+" if self.change > 0 else ""
+        return f"{self.product_variant} " f"{sign}{self.change} " f"({self.reason})"
