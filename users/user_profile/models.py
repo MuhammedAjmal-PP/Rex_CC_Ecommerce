@@ -76,11 +76,31 @@ class Address(models.Model):
 
     def save(self, *args, **kwargs):
         self.full_clean()
-        if self.is_default:
-            Address.objects.filter(user=self.user, is_default=True).exclude(
-                pk=self.pk
-            ).update(is_default=False)
-        elif not Address.objects.filter(user=self.user).exclude(pk=self.pk).exists():
-            self.is_default = True
-
+        # 1. Handle Soft Delete (is_active=False)
+        if not self.is_active:
+            if self.is_default:
+                # If we are deleting the default address, promote another one
+                other_address = (
+                    Address.active.filter(user=self.user)
+                    .exclude(pk=self.pk)
+                    .order_by("-updated")
+                    .first()
+                )
+                if other_address:
+                    other_address.is_default = True
+                    other_address.save()
+                self.is_default = False
+        # 2. Handle Active Address Logic
+        else:
+            has_other_active = (
+                Address.active.filter(user=self.user).exclude(pk=self.pk).exists()
+            )
+            if not has_other_active:
+                # If this is the only active address, force it to be default
+                self.is_default = True
+            elif self.is_default:
+                # If this one is set as default, unset others
+                Address.active.filter(user=self.user, is_default=True).exclude(
+                    pk=self.pk
+                ).update(is_default=False)
         super().save(*args, **kwargs)

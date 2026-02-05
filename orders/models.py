@@ -1,3 +1,4 @@
+from decimal import Decimal
 import uuid
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
@@ -194,6 +195,8 @@ class OrderItem(models.Model):
 
     @property
     def total_price(self):
+        if self.price is None or self.quantity is None:
+            return Decimal("0")
         return self.price * self.quantity
 
     def current_status(self):

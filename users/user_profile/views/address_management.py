@@ -32,6 +32,9 @@ def add_address(request):
         Address.active.filter(user=request.user).count()
         >= settings.MAX_ADDRESSES_PER_USER
     ):
+        if request.headers.get("x-requested-with") == "XMLHttpRequest":
+            return JsonResponse({"error": "Address limit reached"}, status=400)
+
         messages.error(
             request,
             f"You can only save up to {settings.MAX_ADDRESSES_PER_USER} addresses.",
@@ -44,8 +47,12 @@ def add_address(request):
             address = form.save(commit=False)
             address.user = request.user
             address.save()
+            if request.headers.get("x-requested-with") == "XMLHttpRequest":
+                return JsonResponse({"success": True})
             messages.success(request, "Address added successfully")
             return redirect("user_address")
+        if request.headers.get("x-requested-with") == "XMLHttpRequest":
+            return JsonResponse({"errors": form.errors}, status=400)
     else:
         form = AddressForm()
     return render(request, "user_profile/address_form.html", {"form": form})
@@ -63,8 +70,12 @@ def edit_address(request, address_id):
             address = form.save(commit=False)
             address.user = request.user
             address.save()
+            if request.headers.get("x-requested-with") == "XMLHttpRequest":
+                return JsonResponse({"success": True})
             messages.success(request, "Address updated successfully")
             return redirect("user_address")
+        if request.headers.get("x-requested-with") == "XMLHttpRequest":
+            return JsonResponse({"errors": form.errors}, status=400)
 
     else:
         form = AddressForm(instance=address)
