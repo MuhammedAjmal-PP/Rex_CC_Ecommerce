@@ -1,0 +1,135 @@
+.payment-methods-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  max-width: 600px;
+}
+
+.payment-card {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+
+/* Icons */
+.pay-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #f9f9f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 20px;
+  color: #555;
+}
+
+/* Info */
+.pay-info {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.pay-name {
+  font-weight: 600;
+  color: var(--co-text);
+  font-size: 1rem;
+}
+
+.pay-desc {
+  font-size: 0.85rem;
+  color: var(--co-text-muted);
+}
+
+/* Selected */
+.payment-card.selected {
+  border: 2px solid var(--co-gold);
+  background: rgba(205, 127, 50, 0.02);
+}
+
+.payment-card.selected .pay-icon {
+  background: #fff;
+  color: var(--co-gold);
+}
+/* Extracted Styles */
+.step-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    margin-bottom: 24px;
+}
+
+.step-actions {
+    margin-top: 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.btn-back {
+    background: none;
+    border: none;
+    color: #777;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+}
+
+.btn-primary-step {
+    background: linear-gradient(135deg, #cd7f32, #b06825);
+    color: #fff;
+    border: none;
+    padding: 12px 32px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 4px; /* Consistent radius */
+    transition: transform 0.2s;
+}
+
+.btn-primary-step:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(205,127,50,0.2);
+}
+
+.btn-primary-step:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+.pay-check {
+  color: var(--co-gold);
+  display: none;
+}
+
+.payment-card.selected .pay-check {
+  display: block;
+}
+
+/* Disabled */
+.payment-card.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: #fafafa;
+}
+
+.pay-badge {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  background: #eee;
+  padding: 4px 8px;
+  border-radius: 4px;
+  color: #777;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}

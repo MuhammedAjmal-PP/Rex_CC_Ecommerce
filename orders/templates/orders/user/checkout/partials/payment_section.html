@@ -1,0 +1,56 @@
+<div class="payment-section">
+    <h3 class="step-title">Select Payment Method</h3>
+
+    <div class="payment-methods-grid">
+        
+        <!-- COD (Active) -->
+        <div class="payment-card selected" onclick="selectPayment('cod')" id="pay-cod">
+            <div class="pay-icon">
+                <span class="material-icons">payments</span>
+            </div>
+            <div class="pay-info">
+                <span class="pay-name">Cash on Delivery</span>
+                <span class="pay-desc">Pay with cash upon receipt</span>
+            </div>
+            <div class="pay-check">
+                <span class="material-icons">check_circle</span>
+            </div>
+        </div>
+
+        <!-- Online (Disabled) -->
+        <div class="payment-card disabled">
+            <div class="pay-icon">
+                 <span class="material-icons">credit_card</span>
+            </div>
+            <div class="pay-info">
+                <span class="pay-name">Credit/Debit Card</span>
+                <span class="pay-desc">Secure online payment</span>
+            </div>
+            <div class="pay-badge">Coming Soon</div>
+        </div>
+
+        <!-- UPI (Disabled) -->
+         <div class="payment-card disabled">
+            <div class="pay-icon">
+                 <span class="material-icons">qr_code</span>
+            </div>
+            <div class="pay-info">
+                <span class="pay-name">UPI / Netbanking</span>
+                <span class="pay-desc">Pay via GooglePay, PhonePe</span>
+            </div>
+             <div class="pay-badge">Coming Soon</div>
+        </div>
+
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="step-actions">
+        <button type="button" class="btn-back" onclick="goToStep(1)">
+            <span class="material-icons btn-icon-sm">arrow_back</span> Back
+        </button>
+
+         <button type="button" class="btn-primary-step" id="btn-next-review" onclick="goToStep(3)">
+            Review Order
+        </button>
+    </div>
+</div>

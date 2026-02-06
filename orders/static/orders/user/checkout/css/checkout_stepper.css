@@ -1,0 +1,82 @@
+/* Stepper Container */
+.checkout-stepper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  margin-bottom: 20px;
+  padding: 0 20px;
+}
+
+/* Progress Bar Line background */
+.checkout-stepper::before {
+  content: "";
+  position: absolute;
+  top: 24px;
+  left: 40px;
+  right: 40px;
+  height: 2px;
+  background: #e0e0e0;
+  z-index: 1;
+}
+
+/* Individual Step */
+.step-item {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  background: var(--co-bg); /* Mask line behind */
+  padding: 0 10px;
+}
+
+/* Step Circle */
+.step-circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  color: #999;
+  transition: all 0.3s ease;
+  font-family: var(--font-sans);
+}
+
+/* Step Label */
+.step-label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #999;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+/* ACTIVE STATE */
+.step-item.active .step-circle {
+  border-color: var(--co-gold);
+  color: var(--co-gold);
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(205, 127, 50, 0.2);
+}
+
+.step-item.active .step-label {
+  color: var(--co-gold);
+}
+
+/* COMPLETED STATE */
+.step-item.completed .step-circle {
+  background: var(--co-gold);
+  border-color: var(--co-gold);
+  color: #fff;
+}
+
+.step-item.completed .step-label {
+  color: var(--co-text);
+}

@@ -1,0 +1,94 @@
+{% load humanize %}
+<div class="review-section">
+    <h3 class="step-title">Review Order</h3>
+    
+    <!-- 1. Delivery Details (Read Only) -->
+    <div class="review-block">
+        <h4 class="review-section-header">Delivery Address</h4>
+        <div class="review-address-box">
+            <div id="review-addr-name" class="addr-name-text"></div>
+            <div id="review-addr-details" class="review-info-text"></div>
+            <div id="review-addr-phone" class="review-info-sub"></div>
+        </div>
+    </div>
+
+    <!-- 2. Payment Method -->
+    <div class="review-block">
+        <h4 class="review-section-header">Payment Method</h4>
+        <div class="review-payment-box review-payment-flex">
+            <span class="material-icons pay-icon-text">payments</span>
+            <span class="pay-method-text">Cash on Delivery (COD)</span>
+        </div>
+    </div>
+
+    <!-- 3. Items Summary -->
+    <div class="review-block">
+        <h4 class="review-section-header">Order Items</h4>
+        
+        <div class="review-items-list">
+            {% for item in items %}
+                <div class="review-item">
+                    
+                    <!-- 1. Image -->
+                    <div class="review-col-image">
+                        <img src="{{ item.variant.image }}" 
+                             alt="{{ item.variant.product_name }}"
+                             class="review-item-img">
+                    </div>
+
+                    <!-- 2. Product Info -->
+                    <div class="review-col-info">
+                         <div class="review-item-name">{{ item.variant.product_name }}</div>
+                         <div class="review-item-brand">{{ item.variant.brand }}</div>
+                         <div class="review-item-sku">SKU: {{ item.variant.sku }}</div>
+                         <div class="review-pricing-unit">
+                             {% if item.variant.price > item.variant.final_price %}
+                                <span class="original-price">₹{{ item.variant.price|floatformat:0|intcomma }}</span>
+                             {% endif %}
+                             <span class="final-price">₹{{ item.variant.final_price|floatformat:0|intcomma }}<span class="per-unit">/unit</span></span>
+                         </div>
+                    </div>
+
+                    <!-- 3. Pricing Info -->
+                    <div class="review-col-pricing">
+                         <div class="review-pricing-row">
+                             <span class="pricing-label">Qty:</span>
+                             <span class="pricing-value">{{ item.quantity }}</span>
+                         </div>
+                         
+                         {% if item.total_discount > 0 %}
+                             <div class="review-pricing-row discount-row">
+                                 <span class="pricing-label">Discount:</span>
+                                 <span class="pricing-value badge-discount">{{ item.variant.discount_percentage|floatformat:0 }}% OFF</span>
+                             </div>
+                             <div class="review-pricing-row saving-row">
+                                 <span class="pricing-label">Saved:</span>
+                                 <span class="pricing-value">₹{{ item.total_discount|floatformat:0|intcomma }}</span>
+                             </div>
+                         {% endif %}
+
+                         
+                    </div>
+
+                    <!-- 4. Final Total -->
+                    <div class="review-col-total">
+                        <div class="total-label">Subtotal</div>
+                        <div class="total-amount">₹{{ item.total_amount|floatformat:0|intcomma }}</div>
+                    </div>
+
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- FINAL ACTION -->
+    <div class="review-actions">
+        <button type="button" class="btn-back" onclick="goToStep(2)">
+            <span class="material-icons btn-icon-sm">arrow_back</span> Back
+        </button>
+        <button type="button"
+                class="btn-place-order"
+                id="btn-place-order"
+                onclick="placeOrder()">Confirm & Place Order</button>
+    </div>
+</div>

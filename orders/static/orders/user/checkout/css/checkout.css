@@ -1,0 +1,163 @@
+/* ============================================================
+   CHECKOUT PAGE - PREMIUM LUXURY THEME
+   ============================================================ */
+
+:root {
+  /* Inherit global tokens, but ensure scope */
+  --co-bg: #faf9f7;
+  --co-surface: #ffffff;
+  --co-text: #2c2c2c;
+  --co-text-muted: #7a7a7a;
+  --co-border: #e8e6e2;
+  --co-gold: #cd7f32;
+  --co-gold-light: #bfa15f;
+  --co-danger: #d32f2f;
+
+  --font-serif: "Playfair Display", serif;
+  --font-sans: "Montserrat", sans-serif;
+}
+
+/* Base Layout */
+.checkout-page {
+  background: var(--co-bg);
+  min-height: 100vh;
+  padding: 40px 0 80px;
+}
+
+.checkout-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Main Wrapper */
+.checkout-main {
+  display: flex;
+  flex-direction: column;
+  gap: 40px; /* Space between Stepper and Content Area */
+}
+
+/* Headings */
+.checkout-title {
+  font-family: var(--font-serif);
+  font-size: 2.2rem;
+  color: var(--co-text);
+  margin-bottom: 20px;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* ============================================================
+   CONTENT AREA LAYOUT
+   ============================================================ */
+
+.content-area {
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+}
+
+/* 1. Left Column: Step Container */
+.checkout-step-container {
+  flex: 1;
+  background: var(--co-surface);
+  border: 1px solid var(--co-border);
+  border-radius: 8px;
+  padding: 40px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+  min-height: 400px; /* Prevent layout shift */
+  transition: all 0.3s ease;
+
+}
+
+
+/* 2. Right Column: Sidebar */
+.checkout-sidebar {
+  width: 355px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 100px;
+}
+
+/* Summary Card Styling */
+.summary-card {
+  background: var(--co-surface);
+  border: 1px solid var(--co-border);
+  border-radius: 8px;
+  padding: 30px; 
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08); 
+  height: fit-content; /* Important for sticky to work if container is flex */
+}
+
+.summary-title {
+  font-family: var(--font-serif);
+  font-size: 1.6rem;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #eee; /* Lighter separator */
+  color: var(--co-text);
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  color: #666; /* Softer text color */
+  font-size: 1rem;
+  font-family: var(--font-sans); /* Ensure labels are clean */
+}
+
+.summary-row.total {
+  border-top: 1px solid #eee; /* Separator above total */
+  padding-top: 20px;
+  margin-top: 10px;
+  margin-bottom: 0;
+  align-items: center; /* Align text vertically */
+}
+
+.summary-row.total .summary-label {
+  font-weight: 700;
+  font-size: 1.4rem;
+  color: var(--co-text);
+  font-family: var(--font-sans); /* User requested NO Playfair on numbers, safer to use sans for label too or just numbers? Image shows bold sans layout often. Let's use Sans for robust numbers. */
+}
+
+.summary-row.total .summary-value {
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: var(--co-text);
+  font-family: var(--font-sans); /* EXPLICIT REQUEST: No Playfair Display for numbers */
+}
+
+.summary-value {
+  font-weight: 500;
+  color: var(--co-text);
+  font-family: var(--font-sans); /* Ensure all values are sans-serif */
+}
+
+.summary-row.discount .summary-value {
+  color: var(--co-danger);
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 991px) {
+  .content-area {
+    flex-direction: column;
+  }
+
+  .checkout-sidebar {
+    width: 100%;
+    position: static;
+    margin-top: 0;
+    order: 1; /* Sidebar below content on mobile */
+  }
+}
+
+@media (max-width: 768px) {
+  .checkout-step-container {
+    padding: 20px;
+  }
+}

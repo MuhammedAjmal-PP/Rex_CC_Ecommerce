@@ -1,0 +1,260 @@
+/* Address Grid */
+.address-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+/* Card Style */
+.checkout-address-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px; /* Match site standard */
+  padding: 20px;
+  cursor: pointer;
+  background: #fff;
+  transition: all 0.2s ease;
+  position: relative;
+  min-height: 160px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Hover */
+.checkout-address-card:hover {
+  border-color: #cdcdcd;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+}
+
+/* SELECTED STATE */
+.checkout-address-card.selected {
+  border: 2px solid var(--co-gold);
+  background: rgba(205, 127, 50, 0.02);
+  box-shadow: 0 4px 12px rgba(205, 127, 50, 0.1);
+}
+
+.checkout-address-card.selected::after {
+  content: "check_circle";
+  font-family: "Material Icons";
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background: #fff;
+  color: var(--co-gold);
+  border-radius: 50%;
+  font-size: 24px;
+}
+
+/* Content */
+.addr-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.addr-type {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  background: #f0f0f0;
+  padding: 4px 8px;
+  border-radius: 4px;
+  color: #555;
+  font-weight: 600;
+}
+
+.addr-controls {
+  opacity: 0; /* Hidden by default, show on hover/select */
+  transition: opacity 0.2s;
+}
+
+.checkout-address-card:hover .addr-controls,
+.checkout-address-card.selected .addr-controls {
+  opacity: 1;
+}
+
+.btn-addr-edit {
+  color: #999;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.btn-addr-edit:hover {
+  color: var(--co-gold);
+}
+
+.addr-name {
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-size: 1rem;
+  color: var(--co-text);
+  font-family: var(--font-serif);
+}
+
+.addr-details {
+  font-size: 0.9rem;
+  color: var(--co-text-muted);
+  line-height: 1.5;
+  margin-bottom: 12px;
+  flex-grow: 1;
+}
+
+.addr-phone {
+  font-size: 0.85rem;
+  color: #555;
+}
+
+/* Form Styles */
+.form-floating > .form-control:focus ~ label,
+.form-floating > .form-control:not(:placeholder-shown) ~ label {
+  color: var(--co-gold);
+}
+
+.form-control:focus {
+  border-color: var(--co-gold);
+  box-shadow: none;
+}
+
+/* Action Buttons */
+.btn-add-new {
+  border: 1px dashed var(--co-gold);
+  background: rgba(205, 127, 50, 0.05);
+  color: var(--co-gold) !important;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  padding: 12px 24px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  letter-spacing: 0.5px;
+}
+
+.btn-add-new:hover {
+  background: var(--co-gold);
+  color: #fff !important;
+  border-style: solid;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(205, 127, 50, 0.2);
+}
+
+.btn-manage {
+  color: var(--co-text-muted);
+  font-size: 0.9rem;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: all 0.2s;
+}
+
+.btn-manage:hover {
+  color: var(--co-text);
+  border-bottom-color: var(--co-text);
+}
+
+/* Badges & Icons */
+.badge-default {
+  font-size: 0.65rem;
+  background: var(--co-gold);
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 12px;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.btn-addr-action-icon {
+  font-size: 18px;
+  color: #ccc;
+  cursor: pointer;
+  transition: color 0.2s;
+  margin-left: 8px;
+}
+
+.btn-addr-action-icon:hover {
+  color: var(--co-gold);
+}
+
+.btn-addr-action-icon.default-icon:hover {
+  color: var(--co-gold);
+}
+
+.no-address-msg {
+  padding: 30px;
+  text-align: center;
+  background: #f9f9f9;
+  border-radius: 8px;
+  border: 1px dashed #ddd;
+  margin-bottom: 24px;
+  color: var(--co-text-muted);
+}
+
+/* Inline Address Form Wrapper */
+.address-form-wrapper {
+  padding: 20px 0;
+  border-top: 1px solid #eee;
+  margin-top: 20px;
+  animation: fadeIn 0.3s ease;
+}
+
+.address-form-title {
+  font-family: var(--font-serif);
+  margin-bottom: 20px;
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: var(--co-text);
+  text-align: center;
+}
+
+
+/* Action Buttons Container */
+.step-actions-right {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 20px; /* Space between buttons */
+  margin-top: 30px;
+}
+
+/* Primary Step Button (Proceed) */
+.btn-primary-step {
+  background: var(--co-text);
+  color: #fff;
+  border: none;
+  padding: 14px 35px;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.btn-primary-step:hover:not(:disabled) {
+  background: var(--co-gold);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(205, 127, 50, 0.3);
+}
+
+/* Billing Info Alert */
+.alert-info-billing {
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+  color: #666;
+  background: #f8f9fa;
+  padding: 10px 15px;
+  border-left: 3px solid var(--co-gold);
+  border-radius: 4px;
+}
+
+.alert-info-billing .material-icons {
+  font-size: 16px;
+  vertical-align: text-top;
+  margin-right: 5px;
+}

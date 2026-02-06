@@ -25,7 +25,6 @@
    ============================================================ */
 
 .address-form-page {
-  background: var(--form-bg);
   min-height: calc(100vh - 200px);
   padding: 40px 60px 80px;
 }
@@ -419,7 +418,7 @@
   justify-content: space-between;
   align-items: center;
   gap: 20px;
-  padding-top: 32px;
+  padding: 32px;
   border-top: 1px solid var(--form-border);
 }
 
@@ -477,45 +476,44 @@
    RESPONSIVE
    ============================================================ */
 
-@media (max-width: 768px) {
-  .address-form-page {
-    padding: 30px 20px 60px;
-  }
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
 
-  .breadcrumb-nav {
-    font-size: 0.8rem;
-  }
-
-  .page-title {
-    font-size: 1.8rem;
-  }
-
-  .label-choice-grid {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-
-  .radio-card-content {
-    flex-direction: row;
-    justify-content: flex-start;
-    padding: 20px;
-  }
-
-  .radio-card-content .material-icons {
-    font-size: 24px;
-  }
-
+@media (max-width: 900px) {
   .form-row {
     grid-template-columns: 1fr;
     gap: 16px;
   }
 
-  .form-actions {
-    flex-direction: column-reverse;
+  .label-choice-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .profile-page-centered {
+    padding: 20px;
   }
 
-  .form-actions .btn-primary,
-  .form-actions .btn-outline {
+  .label-choice-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .radio-card-content {
+    flex-direction: row;
+    justify-content: flex-start;
+    padding: 15px;
+    gap: 15px;
+  }
+
+  .form-actions {
+    flex-direction: column-reverse;
+    gap: 12px;
+  }
+
+  .btn-primary,
+  .btn-outline {
     width: 100%;
     justify-content: center;
   }

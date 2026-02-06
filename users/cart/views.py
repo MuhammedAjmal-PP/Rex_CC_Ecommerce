@@ -6,6 +6,7 @@ from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_GET, require_POST
 from catalog.models import Product, ProductVariant
 from users.cart.models import Cart, CartItem
+from users.cart.utils import build_cart_summary, fetch_cart
 from users.wishlist.models import Wishlist, WishlistItem
 
 # Create your views here.
@@ -18,63 +19,21 @@ def view_cart(request):
 
     cart, _ = Cart.objects.get_or_create(user=request.user)
 
-    cart_items = (
-        CartItem.objects.filter(
-            cart=cart,
-            product_variant__is_deleted=False,
-            product_variant__is_drafted=False,
-            product_variant__product__is_deleted=False,
-            product_variant__product__is_drafted=False,
-        )
-        .select_related(
-            "product_variant",
-            "product_variant__product",
-            "product_variant__product__brand",
-        )
-        .prefetch_related("product_variant__images")
-    )
+    cart_items = fetch_cart(cart)
 
-    products = []
-    products_total_price = Decimal("0.00")
-    total_discount = Decimal("0.00")
-
-    for item in cart_items:
-        variant = item.product_variant
-        image = variant.images.filter(is_primary=True).first()
-        available = not variant.is_drafted and not variant.product.is_drafted
-
-        products.append(
-            {
-                "variant": {
-                    "id": variant.id,
-                    "sku": variant.sku,
-                    "slug": variant.product.slug,
-                    "product_name": variant.product.name,
-                    "brand": variant.product.brand.name,
-                    "price": variant.price,
-                    "final_price": variant.final_price,
-                    "stock": variant.stock,
-                    "is_in_stock": variant.stock > 0,
-                    "image": image.image.url,
-                },
-                "quantity": item.quantity,
-                "total_amount": variant.final_price * item.quantity,
-                "total_discount": variant.discount_amount * item.quantity,
-            }
-        )
-        products_total_price += variant.final_price * item.quantity
-        total_discount += variant.discount_amount * item.quantity
+    products, sub_total = build_cart_summary(cart_items)
 
     # order summay variables
+    total_discount = Decimal("0.00")
     total_quantity = sum(item.quantity for item in cart_items)
-    delivery_charge = Decimal("100.00") * total_quantity
-    total_amount_to_pay = products_total_price + delivery_charge
+    shipping_fee = Decimal("100.00") * total_quantity
+    total_amount_to_pay = sub_total + shipping_fee
 
     order_summary = {
         "products_count": len(products),
-        "products_total_price": products_total_price,
+        "sub_total": sub_total,
         "total_discount": total_discount,
-        "delivery_charge": delivery_charge,
+        "shipping_fee": shipping_fee,
         "total_amount_to_pay": total_amount_to_pay,
     }
 
@@ -240,7 +199,7 @@ def get_cartitems_count(request):
     """
     if not request.user.is_authenticated:
         return JsonResponse({"cart_count": 0})
-        
+
     cart, _ = Cart.objects.get_or_create(user=request.user)
 
     return JsonResponse({"cart_count": cart.items_count})

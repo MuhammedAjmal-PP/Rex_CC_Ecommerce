@@ -90,9 +90,38 @@ document.addEventListener('DOMContentLoaded', () => {
     /**
      * Handles removal of item
      */
-    async function handleRemove(slug, sku) {
-        if (!confirm('Are you sure you want to remove this item?')) return;
+    let itemToRemove = null; // Store {slug, sku}
+    const removeModalEl = document.getElementById('removeConfirmModal');
+    let removeModal = null;
+    const confirmBtn = document.getElementById('confirmRemoveBtn');
 
+    if (removeModalEl) {
+        removeModal = new bootstrap.Modal(removeModalEl);
+        
+        // Bind Confirm Action once
+        if (confirmBtn) {
+            confirmBtn.addEventListener('click', () => {
+                if (itemToRemove) {
+                    performRemove(itemToRemove.slug, itemToRemove.sku);
+                }
+            });
+        }
+    }
+
+    function handleRemove(slug, sku) {
+        itemToRemove = { slug, sku };
+        if (removeModal) {
+            removeModal.show();
+        } else {
+            // Fallback if modal missing
+            if (confirm('Are you sure you want to remove this item?')) {
+                performRemove(slug, sku);
+            }
+        }
+    }
+
+    async function performRemove(slug, sku) {
+        if (removeModal) removeModal.hide();
         showLoadingCursor(true);
         try {
             const formData = new FormData();
@@ -116,6 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
             showToast('Could not remove item.', 'error');
         } finally {
             showLoadingCursor(false);
+            itemToRemove = null;
         }
     }
 

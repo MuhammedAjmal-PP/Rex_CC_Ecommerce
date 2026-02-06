@@ -215,18 +215,18 @@ body:not(.home-page) .site-header {
 .nav-links .nav-icon {
   color: #333;
   text-decoration: none;
-  transition: color 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 40px;
   height: 40px;
-  transition: transform 0.3s ease;
+  border-radius: 50%;
+  transition: all 0.3s ease;
 }
 
 .nav-links .nav-icon:hover {
-  color: var(--color-bronze);
-  transform: scale(1.05);
+  transform: scale(1.1); /* Slightly stronger zoom for 'bubble' feel */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Subtle shadow bubble */
 }
 
 .nav-icon-wishlist .nav-icon .material-icons {

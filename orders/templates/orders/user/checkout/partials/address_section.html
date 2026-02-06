@@ -1,0 +1,80 @@
+<div class="address-section">
+    <h3 class="step-title">Select Delivery Address</h3>
+    <!-- Billing Info Alert -->
+    <div class="alert-info-billing">
+        <span class="material-icons">info</span>
+        The default address will be used as the billing address.
+    </div>
+
+    <!-- SAVED ADDRESSES GRID -->
+    {% if addresses %}
+        <div class="address-grid" id="address-grid">
+            {% for address in addresses %}
+                <div class="checkout-address-card {% if address.is_default %}selected default-selection{% endif %}"
+                     data-address-id="{{ address.id }}"
+                     onclick="selectAddress(this, '{{ address.id }}')">
+                    <div class="addr-header">
+                        <span class="addr-type">{{ address.label }}</span>
+                        {% if address.is_default %}<span class="badge-default">Default</span>{% endif %}
+                        <div class="addr-controls">
+                            {% if not address.is_default %}
+                                <span class="material-icons btn-addr-action-icon default-icon"
+                                      title="Set as Default"
+                                      onclick="setAsDefault(event, '{{ address.id }}')">star_border</span>
+                            {% endif %}
+                            <span class="material-icons btn-addr-action-icon"
+                                  title="Edit"
+                                  onclick="editAddress(event, '{{ address.id }}')">edit</span>
+                        </div>
+                    </div>
+                    <div class="addr-name">{{ address.full_name }}</div>
+                    <div class="addr-details">
+                        {{ address.address_line_1 }}
+                        <br>
+                        {% if address.address_line_2 %}
+                            {{ address.address_line_2 }}
+                            <br>
+                        {% endif %}
+                        {{ address.city }}, {{ address.state }} - {{ address.postal_code }}
+                        <br>
+                        {{ address.country }}
+                    </div>
+                    <div class="addr-phone">Phone: {{ address.phone_number }}</div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    <!-- ACTIONS -->
+    <div class="step-actions-right">
+        <!-- Add New (Conditionally) -->
+        {% if can_add_address %}
+            <button type="button"
+                    class="btn-add-new"
+                    id="btn-show-address-form"
+                    onclick="showAddAddressForm()">
+                <span class="material-icons">add</span> Add New Address
+            </button>
+        {% else %}
+            <a href="{% url 'user_address' %}" class="btn-manage">Manage Addresses</a>
+        {% endif %}
+        <!-- Continue Button -->
+        <button type="button"
+                class="btn-primary-step"
+                id="btn-next-payment"
+                disabled
+                onclick="goToStep(2)">Proceed to Payment</button>
+    </div>
+    <!-- HIDDEN ADD FORM CONTAINER (Populated by JS) -->
+    <div id="checkout-address-form-container" style="display:none;">
+        <div class="address-form-wrapper">
+            <h4 class="address-form-title">
+                {% if address_id %}
+                    Edit Address
+                {% else %}
+                    New Address
+                {% endif %}
+            </h4>
+            {% include "user_profile/partials/address_form.html" with form=address_form %}
+        </div>
+    </div>
+</div>

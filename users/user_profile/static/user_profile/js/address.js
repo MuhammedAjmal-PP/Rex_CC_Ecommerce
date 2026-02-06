@@ -1,39 +1,55 @@
 // static/user_profile/js/address.js
 
+// static/user_profile/js/address.js
+
 function getCSRFToken() {
+  const globalToken = document.getElementById("global-csrf-token");
+  if (globalToken) return globalToken.value;
+  
+  // Fallback (legacy)
   const tokenInput = document.getElementById("csrf-token");
   return tokenInput ? tokenInput.dataset.csrf : "";
 }
 
 function deleteAddress(event, addressId) {
-  if (!confirm("Delete this address?")) return;
+  if (!confirm("Are you sure you want to delete this address?")) return;
 
   // Get URL from button's data-url attribute
   const url = event.currentTarget.getAttribute("data-url");
 
   if (!url) {
-    alert("Invalid URL configuration. Please contact support.");
+    showMessage("Invalid URL configuration.", "error");
     return;
   }
+  
+  const button = event.currentTarget;
+  button.disabled = true;
+  button.innerHTML = '<span class="material-icons">hourglass_empty</span> Removing...';
+
   fetch(url, {
     method: "POST",
     headers: {
       "X-CSRFToken": getCSRFToken(),
+      "X-Requested-With": "XMLHttpRequest"
     },
   })
     .then((response) => response.json())
     .then((data) => {
       if (data.success) {
-        const card = document.getElementById(`address-${addressId}`);
-        if (card) {
-          card.remove();
-        }
+        showMessage("Address deleted successfully.", "success");
+        setTimeout(() => {
+             window.location.reload();
+        }, 1000);
       } else {
         alert("Failed to delete address.");
+        button.disabled = false;
+        button.innerHTML = '<span class="material-icons">delete_outline</span> <span>Remove</span>';
       }
     })
     .catch(() => {
-      alert("Something went wrong. Please try again.");
+      showMessage("Something went wrong. Please try again.", "error");
+      button.disabled = false;
+      button.innerHTML = '<span class="material-icons">delete_outline</span> <span>Remove</span>';
     });
 }
 
@@ -42,13 +58,13 @@ function setDefaultAddress(event, addressId) {
   const url = event.currentTarget.getAttribute("data-url");
 
   if (!url) {
-    showMessage("Invalid URL configuration. Please contact support.", "error");
+    showMessage("Invalid URL configuration.", "error");
     return;
   }
 
   // Show loading state
   const button = event.currentTarget;
-  const originalText = button.innerHTML;
+  // const originalText = button.innerHTML; // Can use but simpler to hardcode restore if needed
   button.innerHTML = '<span class="material-icons">hourglass_empty</span><span>Setting...</span>';
   button.disabled = true;
 
@@ -56,6 +72,7 @@ function setDefaultAddress(event, addressId) {
     method: "POST",
     headers: {
       "X-CSRFToken": getCSRFToken(),
+      "X-Requested-With": "XMLHttpRequest"
     },
   })
     .then((response) => response.json())
@@ -68,13 +85,13 @@ function setDefaultAddress(event, addressId) {
         }, 1000);
       } else {
         showMessage("Unable to update default address.", "error");
-        button.innerHTML = originalText;
+        button.innerHTML = '<span class="material-icons">push_pin</span><span>Set as Default</span>';
         button.disabled = false;
       }
     })
     .catch(() => {
       showMessage("Network error. Please try again.", "error");
-      button.innerHTML = originalText;
+      button.innerHTML = '<span class="material-icons">push_pin</span><span>Set as Default</span>';
       button.disabled = false;
     });
 }
@@ -87,13 +104,16 @@ function showMessage(message, type) {
   if (!container) {
     container = document.createElement("div");
     container.className = "toast-container";
-    // Insert after breadcrumb or at top of addresses-page
-    const addressesPage = document.querySelector(".addresses-page");
-    const breadcrumb = addressesPage.querySelector(".breadcrumb-nav");
-    if (breadcrumb) {
-      breadcrumb.after(container);
+    
+    // Updated selector to match address.html structure
+    const addressesPage = document.querySelector(".profile-page-centered");
+    
+    if (addressesPage) {
+        // Insert at the top of the content area
+        addressesPage.prepend(container);
     } else {
-      addressesPage.prepend(container);
+        // Fallback to body
+        document.body.appendChild(container);
     }
   }
 
@@ -102,7 +122,7 @@ function showMessage(message, type) {
   toast.className = "toast-msg";
 
   const iconName = type === "success" ? "check_circle" : type === "error" ? "error" : "info";
-  const iconColor = type === "error" ? "#e74c3c" : "var(--color-gold)";
+  const iconColor = type === "error" ? "#e74c3c" : "var(--co-gold)"; // Fixed variable name if it was wrong, assuming co-gold works
 
   toast.innerHTML = `
     <span class="material-icons" style="color:${iconColor}">${iconName}</span>

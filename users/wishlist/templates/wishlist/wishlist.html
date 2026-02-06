@@ -13,8 +13,6 @@
 
     <!-- BREADCRUMBS -->
     <nav class="breadcrumb-nav">
-        <a href="{% url 'home' %}" class="breadcrumb-link">Home</a>
-        <span class="breadcrumb-separator">›</span>
         <a href="{% url 'user_profile' %}" class="breadcrumb-link">My Account</a>
         <span class="breadcrumb-separator">›</span>
         <span class="breadcrumb-current">Wishlist</span>
@@ -26,13 +24,7 @@
             <h1 class="page-title">My Wishlist</h1>
             <p class="page-subtitle">A curated collection of your favorite timepieces</p>
         </div>
-        <!-- <div class="header-stats">
-            <span class="wishlist-count">
-                <span class="material-icons">favorite</span>
-                <span id="wishlist-count-display">0</span>
-                <span class="count-label">Items</span>
-            </span>
-        </div> -->
+
     </header>
 
     <!-- LOADING STATE -->
@@ -44,14 +36,13 @@
     </div>
 
     <!-- EMPTY STATE -->
-    <div id="wishlist-empty" class="wishlist-state">
+    <div id="wishlist-empty" class="wishlist-state" style="display:none;">
         <div class="state-icon-large">
             <span class="material-icons">favorite_border</span>
         </div>
-        <h3 class="state-title">Your Wishlist is Empty</h3>
+        <h2 class="state-title">Your Wishlist is Empty</h2>
         <p class="state-text">Start building your collection of exquisite timepieces</p>
-        <a href="{% url 'product_list' %}" class="btn-primary">
-            <span class="material-icons">explore</span>
+        <a href="{% url 'product_list' %}" class="btn-shop-now">
             <span>Explore Watches</span>
         </a>
     </div>
@@ -66,30 +57,39 @@
 <!-- TEMPLATE FOR WISHLIST ITEMS -->
 <template id="wishlist-page-item-template">
     <div data-variant-id="">
-        <div class="product-card product-card-simple">
-            <button type="button" class="wishlist-remove-btn btn-remove-icon">
+        <div class="product-card">
+            <!-- Remove Button -->
+            <button type="button" class="product-card__wishlist-btn wishlist-remove-btn is-active" aria-label="Remove from wishlist">
                 <span class="material-icons">close</span>
             </button>
-            <a href="" class="card-link-wrapper">
-                <div class="product-visual">
-                    <div class="product-image-wrapper">
-                        <img src="" alt="" class="product-image card-img-top">
-                    </div>
-                </div>
-                <div class="product-info">
-                    <p class="product-brand brand-name"></p>
-                    <a href="" class="title-link" style="display: none;"></a>
-                    <h3 class="product-name product-title"></h3>
-                    <div class="product-variant-info variant-details-container">
-                        <!-- Variant  details will be added here by JS -->
-                    </div>
-                    <div class="product-pricing">
-                        <span class="product-price current-price"></span>
-                        <span class="product-price-old original-price"></span>
-                    </div>
-                    <div class="product-stock stock-badge"></div>
-                </div>
+            
+            <a href="" class="product-card__image-box card-link-wrapper">
+                <img src="" alt="" class="product-card__image card-img-top">
+                <!-- Badges -->
+                <span class="product-card__stock-badge" style="display: none;">Out of Stock</span>
+                <span class="product-card__discount-badge" style="display: none;"></span>
+                <div class="product-card__overlay">Discover</div>
             </a>
+
+            <div class="product-card__info">
+                <span class="product-card__brand brand-name"></span>
+                <h3 class="product-card__name product-title"></h3>
+                <div class="product-card__variant-info variant-details-container">
+                    <!-- Variant details injected here -->
+                </div>
+                <div class="product-card__pricing">
+                    <span class="product-card__price current-price"></span>
+                    <span class="product-card__original-price original-price"></span>
+                </div>
+                
+            </div>
+
+            <div style="padding: 0 8px 12px 8px; width: 100%;">
+                 <a href="#" class="btn-add-to-cart-wishlist" style="width:100%; padding:10px; background:#111; color:#fff; border:none; text-transform:uppercase; font-size:0.75rem; font-weight:600; letter-spacing:1px; cursor:pointer; display:flex; justify-content:center; align-items:center; gap:8px; text-decoration:none;">
+                    <span class="material-icons" style="font-size:16px;">local_mall</span>
+                    Add to Cart
+                </a>
+            </div>
         </div>
     </div>
 </template>

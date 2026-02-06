@@ -83,7 +83,7 @@ class Address(models.Model):
                 other_address = (
                     Address.active.filter(user=self.user)
                     .exclude(pk=self.pk)
-                    .order_by("-updated")
+                    .order_by("-updated_at")
                     .first()
                 )
                 if other_address:

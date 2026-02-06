@@ -9,28 +9,17 @@
     <div class="cart-page">
         <!-- BREADCRUMBS -->
         <nav class="breadcrumb-nav">
-            <a href="{% url 'home' %}" class="breadcrumb-link">Home</a>
-            <span class="breadcrumb-separator">›</span>
             <a href="{% url 'user_profile' %}" class="breadcrumb-link">My Account</a>
             <span class="breadcrumb-separator">›</span>
             <span class="breadcrumb-current">Cart</span>
         </nav>
-
         <!-- PAGE HEADER -->
         <header class="page-header">
             <div class="header-content">
                 <h1 class="page-title">My Cart</h1>
                 <p class="page-subtitle">Review your selection before securing your timepieces</p>
             </div>
-            <!-- <div class="header-stats">
-                <span class="cart-count-display">
-                    <span class="material-icons">local_mall</span>
-                    <span id="cart-item-count">{{ items|length }}</span>
-                    <span class="count-label">Items</span>
-                </span>
-            </div> -->
         </header>
-
         {% if items %}
             <div class="cart-layout">
                 <!-- Cart Items List -->
@@ -116,21 +105,19 @@
                         <h2 class="summary-title">Order Summary</h2>
                         <div class="summary-row">
                             <span>Subtotal ({{ order_summary.products_count }} items)</span>
-                            <span>₹{{ order_summary.products_total_price|floatformat:0|intcomma }}</span>
+                            <span>₹{{ order_summary.sub_total|floatformat:0|intcomma }}</span>
                         </div>
-                        {% if order_summary.total_discount > 0 %}
-                            <div class="summary-row discount">
-                                <span>Discount</span>
-                                <span>−₹{{ order_summary.total_discount|floatformat:0|intcomma }}</span>
-                            </div>
-                        {% endif %}
+                        <div class="summary-row {% if order_summary.total_discount > 0 %}discount{% endif %}">
+                            <span>Discount</span>
+                            <span>−₹{{ order_summary.total_discount|floatformat:0|intcomma }}</span>
+                        </div>
                         <div class="summary-row">
-                            <span>Delivery</span>
+                            <span>Shipping</span>
                             <span>
-                                {% if order_summary.delivery_charge == 0 %}
+                                {% if order_summary.shipping_fee == 0 %}
                                     Free
                                 {% else %}
-                                    ₹{{ order_summary.delivery_charge|floatformat:0|intcomma }}
+                                    ₹{{ order_summary.shipping_fee|floatformat:0|intcomma }}
                                 {% endif %}
                             </span>
                         </div>
@@ -140,7 +127,7 @@
                             <span>₹{{ order_summary.total_amount_to_pay|floatformat:0|intcomma }}</span>
                         </div>
                         <div class="summary-actions">
-                            <a href="{% comment %} Checkout URL {% endcomment %}#"
+                            <a href="{% url 'checkout' %}"
                                class="btn-checkout">Proceed to Checkout</a>
                             <a href="{% url 'product_list' %}" class="btn-continue">Continue Shopping</a>
                         </div>
@@ -159,6 +146,27 @@
                 <a href="{% url 'product_list' %}" class="btn-shop-now">Explore Collection</a>
             </div>
         {% endif %}
+        <!-- Remove Confirmation Modal -->
+        <div class="modal fade cart-remove-modal"
+             id="removeConfirmModal"
+             tabindex="-1"
+             aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Remove Item</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">Are you sure you want to remove this timepiece from your collection?</div>
+                    <div class="modal-footer">
+                        <!-- <button type="button" class="btn btn-link btn-cancel" data-bs-dismiss="modal">CANCEL</button> -->
+                        <button type="button"
+                                id="confirmRemoveBtn"
+                                class="btn btn-danger btn-confirm-remove">REMOVE</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <!-- Hidden form for updates (if needed for non-ajax fallback, but strict rules say API) -->
     {% csrf_token %}

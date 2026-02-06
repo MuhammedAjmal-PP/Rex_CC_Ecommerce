@@ -13,11 +13,9 @@
           href="{% static 'user_profile/css/address_form.css' %}">
 {% endblock extra_css %}
 {% block content %}
-    <div class="address-form-page">
+    <div class="profile-page-centered">
         <!-- BREADCRUMBS -->
-        <nav class="breadcrumb-nav">
-            <a href="{% url 'home' %}" class="breadcrumb-link">Home</a>
-            <span class="breadcrumb-separator">›</span>
+        <nav class="breadcrumb-nav" style="max-width:1000px; margin:0 auto 20px;">
             <a href="{% url 'user_profile' %}" class="breadcrumb-link">My Account</a>
             <span class="breadcrumb-separator">›</span>
             <a href="{% url 'user_address' %}" class="breadcrumb-link">Addresses</a>
@@ -31,160 +29,21 @@
             </span>
         </nav>
         <!-- PAGE HEADER -->
-        <header class="page-header">
-            <h1 class="page-title">
+        <header class="page-header"
+                style="max-width:1000px;
+                       margin:0 auto 40px;
+                       text-align:center">
+            <h1 class="page-title" style="font-size:2rem; margin-bottom:10px;">
                 {% if form.instance.pk %}
                     Edit Address
                 {% else %}
                     Add New Address
                 {% endif %}
             </h1>
-            <p class="page-subtitle">Carefully curated delivery details</p>
+            <p class="page-subtitle" style="color:#666;">Carefully curated delivery details</p>
         </header>
         <!-- ADDRESS FORM -->
-        <div class="form-wrapper">
-            <form method="post" class="address-form">
-                {% csrf_token %}
-                <!-- LABEL SELECTION -->
-                <div class="form-section">
-                    <h3 class="form-section-title">Address Label</h3>
-                    <div class="label-choice-grid">
-                        <label class="label-radio-card">
-                            <input type="radio"
-                                   name="label_choice"
-                                   value="Home"
-                                   id="label_home"
-                                   {% if form.label.value == 'Home' %}checked{% endif %}>
-                            <div class="radio-card-content">
-                                <span class="material-icons">home</span>
-                                <span class="radio-label">Home</span>
-                            </div>
-                        </label>
-                        <label class="label-radio-card">
-                            <input type="radio"
-                                   name="label_choice"
-                                   value="Work"
-                                   id="label_work"
-                                   {% if form.label.value == 'Work' %}checked{% endif %}>
-                            <div class="radio-card-content">
-                                <span class="material-icons">business</span>
-                                <span class="radio-label">Work</span>
-                            </div>
-                        </label>
-                        <label class="label-radio-card">
-                            <input type="radio"
-                                   name="label_choice"
-                                   value="Other"
-                                   id="label_other"
-                                   {% if form.label.value and form.label.value != 'Home' and form.label.value != 'Work' %}checked{% endif %}>
-                            <div class="radio-card-content">
-                                <span class="material-icons">location_on</span>
-                                <span class="radio-label">Other</span>
-                            </div>
-                        </label>
-                    </div>
-                    <!-- Custom Label Input -->
-                    <div id="customLabelGroup" class="custom-label-group">
-                        <label>Custom Label</label>
-                        <input type="text"
-                               id="custom_label"
-                               name="custom_label"
-                               class="form-control"
-                               placeholder="e.g., Parents House, Office"
-                               value="{% if form.label.value != 'Home' and form.label.value != 'Work' %}{{ form.label.value }}{% endif %}">
-                    </div>
-                    <!-- Hidden Field for Actual Label -->
-                    <input type="hidden"
-                           id="label"
-                           name="label"
-                           value="{{ form.label.value|default:'Home' }}">
-                </div>
-                <!-- CONTACT INFORMATION -->
-                <div class="form-section">
-                    <h3 class="form-section-title">Contact Information</h3>
-                    <div class="form-group">
-                        <label>Full Name</label>
-                        {{ form.full_name }}
-                        {% if form.full_name.errors %}<div class="form-error">{{ form.full_name.errors.0 }}</div>{% endif %}
-                    </div>
-                    <div class="form-group">
-                        <label>Phone Number</label>
-                        {{ form.phone_number }}
-                        {% if form.phone_number.errors %}<div class="form-error">{{ form.phone_number.errors.0 }}</div>{% endif %}
-                    </div>
-                </div>
-                <!-- ADDRESS DETAILS -->
-                <div class="form-section">
-                    <h3 class="form-section-title">Address Details</h3>
-                    <div class="form-group">
-                        <label>Address Line 1</label>
-                        {{ form.address_line_1 }}
-                        {% if form.address_line_1.errors %}<div class="form-error">{{ form.address_line_1.errors.0 }}</div>{% endif %}
-                    </div>
-                    <div class="form-group">
-                        <label>
-                            Address Line 2 <span class="optional-label">(Optional)</span>
-                        </label>
-                        {{ form.address_line_2 }}
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>City</label>
-                            {{ form.city }}
-                            {% if form.city.errors %}<div class="form-error">{{ form.city.errors.0 }}</div>{% endif %}
-                        </div>
-                        <div class="form-group">
-                            <label>State</label>
-                            {{ form.state }}
-                            {% if form.state.errors %}<div class="form-error">{{ form.state.errors.0 }}</div>{% endif %}
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Postal Code</label>
-                            {{ form.postal_code }}
-                            {% if form.postal_code.errors %}<div class="form-error">{{ form.postal_code.errors.0 }}</div>{% endif %}
-                        </div>
-                        <div class="form-group">
-                            <label>Country</label>
-                            {{ form.country }}
-                            {% if form.country.errors %}<div class="form-error">{{ form.country.errors.0 }}</div>{% endif %}
-                        </div>
-                    </div>
-                </div>
-                <!-- DEFAULT ADDRESS OPTION -->
-                <div class="form-section default-section">
-                    <label class="checkbox-wrapper">
-                        <input type="checkbox"
-                               name="is_default"
-                               id="is_default"
-                               {% if form.is_default.value %}checked{% endif %}>
-                        <span class="checkbox-custom"></span>
-                        <span class="checkbox-label">
-                            <span class="checkbox-title">Set as Default Address</span>
-                            <span class="checkbox-description">Use this address as your primary delivery location</span>
-                        </span>
-                    </label>
-                </div>
-                <!-- FORM ACTIONS -->
-                <div class="form-actions">
-                    <a href="{% url 'user_address' %}" class="btn-outline">
-                        <span class="material-icons">close</span>
-                        <span>Cancel</span>
-                    </a>
-                    <button type="submit" class="btn-primary">
-                        <span class="material-icons">save</span>
-                        <span>
-                            {% if form.instance.pk %}
-                                Update Address
-                            {% else %}
-                                Save Address
-                            {% endif %}
-                        </span>
-                    </button>
-                </div>
-            </form>
-        </div>
+        {% include "user_profile/partials/address_form.html" %}
     </div>
 {% endblock content %}
 {% block extra_js %}

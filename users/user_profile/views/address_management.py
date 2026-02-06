@@ -92,14 +92,6 @@ def delete_address(request, address_id):
     address.is_active = False
     address.save()
 
-    if address.is_default:
-        next_address = (
-            Address.active.filter(user=request.user).order_by("-created_at").first()
-        )
-        if next_address:
-            next_address.is_default = True
-            next_address.save()
-
     return JsonResponse(
         {
             "success": True,
