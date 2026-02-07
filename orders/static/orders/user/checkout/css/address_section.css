@@ -8,7 +8,7 @@
 /* Card Style */
 .checkout-address-card {
   border: 1px solid #e0e0e0;
-  border-radius: 8px; /* Match site standard */
+  border-radius: 3px; /* Match site standard */
   padding: 20px;
   cursor: pointer;
   background: #fff;
@@ -58,7 +58,7 @@
   letter-spacing: 1px;
   background: #f0f0f0;
   padding: 4px 8px;
-  border-radius: 4px;
+  border-radius: 3px;
   color: #555;
   font-weight: 600;
 }
@@ -125,7 +125,7 @@
   text-transform: uppercase;
   font-size: 0.85rem;
   padding: 12px 24px;
-  border-radius: 4px;
+  border-radius: 3px;
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -161,7 +161,7 @@
   background: var(--co-gold);
   color: #fff;
   padding: 2px 8px;
-  border-radius: 12px;
+  border-radius: 3px;
   text-transform: uppercase;
   font-weight: 600;
   letter-spacing: 0.5px;
@@ -187,7 +187,7 @@
   padding: 30px;
   text-align: center;
   background: #f9f9f9;
-  border-radius: 8px;
+  border-radius: 3px;
   border: 1px dashed #ddd;
   margin-bottom: 24px;
   color: var(--co-text-muted);
@@ -232,7 +232,7 @@
   font-size: 0.85rem;
   letter-spacing: 1.5px;
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: 3px;
   transition: all 0.3s ease;
 }
 
@@ -250,7 +250,7 @@
   background: #f8f9fa;
   padding: 10px 15px;
   border-left: 3px solid var(--co-gold);
-  border-radius: 4px;
+  border-radius: 3px;
 }
 
 .alert-info-billing .material-icons {
