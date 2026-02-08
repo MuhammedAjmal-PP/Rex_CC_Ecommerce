@@ -8,14 +8,19 @@ from catalog.models import (
     ProductVariant,
     ProductImage,
 )
-from utils.validators import (sku_validator,formatted_name_validator,image_file_extension_validator,image_size_validator,)
-from django.core.validators import MaxValueValidator,MinValueValidator
+from core.validators import (
+    image_file_extension_validator,
+    image_size_validator,
+)
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 
 class BrandForm(forms.ModelForm):
 
-    name = forms.CharField(validators=[formatted_name_validator])
-    logo=forms.ImageField(validators=[image_size_validator,image_file_extension_validator])
+    logo = forms.ImageField(
+        validators=[image_size_validator, image_file_extension_validator]
+    )
+
     class Meta:
         model = Brand
         fields = ["name", "tagline", "description", "logo", "is_active"]
@@ -34,8 +39,6 @@ class BrandForm(forms.ModelForm):
 
 
 class CategoryForm(forms.ModelForm):
-
-    name = forms.CharField(validators=[formatted_name_validator])
 
     class Meta:
         model = Category
@@ -57,8 +60,9 @@ class CategoryForm(forms.ModelForm):
 
 class ProductForm(forms.ModelForm):
 
-    # name = forms.CharField(validators=[name_validator])
-    thumbnail=forms.ImageField(validators=[image_file_extension_validator,image_size_validator])
+    thumbnail = forms.ImageField(
+        validators=[image_file_extension_validator, image_size_validator]
+    )
 
     class Meta:
         model = Product
@@ -87,18 +91,6 @@ class ProductForm(forms.ModelForm):
 
 class ProductVariantForm(forms.ModelForm):
 
-    sku = forms.CharField(validators=[sku_validator])
-
-    # Make specification fields required at the form level
-    dial_color = forms.CharField(max_length=100, required=True)
-    case_size_mm = forms.IntegerField(required=True, min_value=1)
-    case_material = forms.CharField(max_length=100, required=True)
-    movement_type = forms.CharField(max_length=100, required=True)
-    strap_color = forms.CharField(max_length=100, required=True)
-    strap_material = forms.CharField(max_length=100, required=True)
-    discount_percentage=forms.IntegerField(validators=[MaxValueValidator(100),MinValueValidator(0)])
-    
-
     class Meta:
         model = ProductVariant
         fields = [
@@ -114,8 +106,27 @@ class ProductVariantForm(forms.ModelForm):
             "stock",
             "is_featured",
             "is_drafted",
-            "discount_percentage"
+            "discount_percentage",
         ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Make specification fields required
+        required_fields = [
+            "sku",
+            "dial_color",
+            "case_size_mm",
+            "case_material",
+            "movement_type",
+            "strap_color",
+            "strap_material",
+        ]
+        for field in required_fields:
+            self.fields[field].required = True
+
+        # Ensure validators from model are active (they are by default in ModelForm)
+        # We can add extra widgets or attributes here if needed
 
     def clean_sku(self):
         sku = self.cleaned_data["sku"].strip()
@@ -134,7 +145,7 @@ class ProductVariantForm(forms.ModelForm):
 
 
 class ProductImageForm(forms.ModelForm):
-    image=forms.ImageField(validators=[image_file_extension_validator,image_size_validator])
+
     class Meta:
         model = ProductImage
         fields = ["image", "is_primary"]

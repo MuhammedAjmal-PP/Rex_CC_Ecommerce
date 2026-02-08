@@ -1,13 +1,16 @@
 from django.conf import settings
+from django.core.validators import MinLengthValidator
 from django.forms import ValidationError
 from accounts.models import CustomUser
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 import uuid
-from utils.validators import (
+from core.validators import min_len_name_validator
+from users.user_profile.validators import (
     full_name_validator,
-    min_len_name_validator,
     postal_code_validator,
+    address_regex,
+    alpha_space_hyphen,
 )
 
 
@@ -31,15 +34,27 @@ class Address(models.Model):
         max_length=100, validators=[full_name_validator, min_len_name_validator]
     )
     phone_number = PhoneNumberField()
-    address_line_1 = models.CharField(max_length=255)
-    address_line_2 = models.CharField(max_length=255, blank=True, default="")
-    city = models.CharField(max_length=100)
-    state = models.CharField(max_length=100)
+    address_line_1 = models.CharField(
+        max_length=150,
+        validators=[
+            MinLengthValidator(5, "Address line 1 is too short."),
+            address_regex,
+        ],
+    )
+    address_line_2 = models.CharField(
+        max_length=150, blank=True, default="", validators=[address_regex]
+    )
+    city = models.CharField(
+        max_length=100, validators=[MinLengthValidator(2), alpha_space_hyphen]
+    )
+    state = models.CharField(
+        max_length=100, validators=[MinLengthValidator(2), alpha_space_hyphen]
+    )
     postal_code = models.CharField(
         max_length=6,
         validators=[postal_code_validator],
     )
-    country = models.CharField(max_length=100, default="India")
+    country = models.CharField(max_length=5, default="India")
 
     label = models.CharField(
         max_length=50,

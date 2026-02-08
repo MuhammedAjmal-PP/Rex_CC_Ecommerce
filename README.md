@@ -21,10 +21,13 @@
 - [Authentication System](#-authentication-system)
 - [Admin Panel](#-admin-panel)
 - [User Features](#-user-features)
+- [Cart Management](#-cart-management)
+- [Wishlist System](#-wishlist-system)
+- [Checkout & Orders](#-checkout--orders)
 - [Tech Stack](#-tech-stack)
 - [Project Structure](#-project-structure)
 - [Quick Start](#-quick-start)
-- [Next Steps - Implementation Plan](#-next-steps---implementation-plan)
+- [roadmap](#-roadmap)
 
 ---
 
@@ -32,15 +35,14 @@
 
 | Feature | Status | Description |
 |---------|--------|-------------|
-| Authentication System | ✅ Complete | Email, OTP, Google OAuth, Password Reset |
-| Admin Panel | ✅ Complete | User, Brand, Category, Product, Variant Management |
-| User Profile | ✅ Complete | Profile settings, Avatar with crop |
-| Address Management | ✅ Complete | Full CRUD, Default selection, Soft delete |
-| Product Catalog | ✅ Complete | Listing, Detail, Search, Filter, Pagination |
-| Cart Management | ✅ Complete | Stock checks, Guest redirect, Wishlist sync |
-| Wishlist System | ✅ Complete | Offcanvas, AJAX toggle, Real-time sync |
-| Checkout System | 🔄 Next | Address selection, Order summary, Payment |
-| Order Management | 🔄 Next | User & Admin order handling |
+| Authentication | ✅ Complete | Email/OTP, Google OAuth, Password Reset |
+| Admin Panel | ✅ Complete | Dynamic variant forms, validation, advanced CRUD |
+| User Profile | ✅ Complete | Settings, Avatar cropping, Address book |
+| Catalog | ✅ Complete | Search, Filter, Sort, Stock status |
+| Cart | ✅ Complete | Real-time stock, Guest handling, Wishlist sync |
+| Wishlist | ✅ Complete | Offcanvas UI, AJAX toggle, Persistent storage |
+| Checkout | 🔄 In Progress | Address selection, Order summary |
+| Orders | 🔄 Planned | Order placement, Tracking, History |
 
 ---
 
@@ -50,17 +52,11 @@
 
 | Feature | Description | How It Works |
 |---------|-------------|--------------|
-| **Email-Based Auth** | Custom `CustomUser` model with email as primary identifier | Uses Django's `AbstractBaseUser`, email replaces username |
-| **OTP Verification** | Email verification for new accounts | 6-digit OTP sent via SMTP, stored in session with expiry |
-| **Google OAuth** | One-click sign-in via `django-allauth` | OAuth2 flow with GOOGLE_CLIENT_ID/SECRET |
-| **Password Reset** | Secure email-based recovery | Token-based reset links with 24hr expiry |
-| **Admin Auth** | Separate superuser-only portal | `@user_passes_test(lambda u: u.is_superuser)` decorator |
-
-### Key Files
-- `accounts/models.py` - CustomUser model with email authentication
-- `accounts/views/admin_views/admin_auth.py` - Admin login, logout, password reset
-- `accounts/decorators.py` - Custom authentication decorators
-- `accounts/validators.py` - Input validation (password strength, email format)
+| **Email-Based Auth** | Custom `CustomUser` model | Email replaces username as primary identifier |
+| **OTP Verification** | Account Activation | 6-digit OTP sent via SMTP, stored in session |
+| **Google OAuth** | Social Login | `django-allauth` integration with Google Provider |
+| **Password Reset** | Recovery | Secure token-based link with 24hr expiry |
+| **Admin Access** | Role-based | Superuser-only access via `@user_passes_test` |
 
 ---
 
@@ -71,169 +67,96 @@
 
 **Location:** `accounts/views/admin_views/user_management.py`
 
-| Function | Description |
-|----------|-------------|
-| `user_list()` | Paginated listing with search & status filter |
-| `user_profile_view()` | Detailed user profile with activity |
-| `toggle_user_status()` | One-click active/inactive toggle |
-
-**Features:**
-- Paginated user listing using Django Paginator
-- Search by email or name
-- Filter by status (active/inactive)
-- User profile view with activity details
+- Paginated user listing with search & status filter
+- Detailed user profile with activity view
+- One-click active/inactive toggle
 </details>
 
 <details>
-<summary><strong>🏷️ Brand Management</strong></summary>
+<summary><strong>📦 Catalog Management</strong></summary>
 
-**Location:** `catalog/views/admin/brand.py`
+**Location:** `catalog/views/admin/`
 
-| Function | Description |
-|----------|-------------|
-| `brands()` | List all brands with pagination |
-| `brand_add()` | Create new brand with logo upload |
-| `brand_edit()` | Edit brand with Cropper.js integration |
-| `brand_delete()` | Soft delete with status toggle |
-
-**Model Fields:** `name`, `slug` (auto-generated), `tagline`, `logo` (Cloudinary), `description`, `is_active`
+- **Brands & Categories**: AJAX-powered CRUD, logo uploads, soft deletes.
+- **Products**: Multi-category support, draft/publish toggle, soft delete.
+- **Variants**:
+    - **Dynamic Formsets**: Add/edit variants without page reloads using JavaScript.
+    - **Strict Validation**: Enforces minimum 3 images and exactly 1 primary image per variant.
+    - **Optimized UI**: Horizontal scrolling tables for complex data, unified form templates.
 </details>
 
 <details>
-<summary><strong>📁 Category Management</strong></summary>
+<summary><strong>🚚 Order Administration (Backend)</strong></summary>
 
-**Location:** `catalog/views/admin/category.py`
+**Location:** `orders/admin.py`
 
-| Function | Description |
-|----------|-------------|
-| `categories()` | List with AJAX-powered modals |
-| `category_add()` | Create with auto-slug generation |
-| `category_edit()` | Edit without page reload |
-| `category_toggle()` | Toggle active status |
-
-**Model Fields:** `name`, `slug` (auto-generated on save), `is_active`
-</details>
-
-<details>
-<summary><strong>📦 Product Management</strong></summary>
-
-**Location:** `catalog/views/admin/product.py`
-
-| Function | Description |
-|----------|-------------|
-| `products()` | List with search, filter, pagination |
-| `product_add()` | Create with thumbnail & multi-category |
-| `product_edit()` | Edit with brand/category changes |
-| `product_view()` | Detailed view with all variants |
-| `product_delete_toggle()` | Soft delete with cascade to variants |
-| `product_draft_toggle()` | Draft/publish toggle |
-
-**Model Fields:** `name`, `slug`, `brand` (FK), `category` (M2M), `description`, `thumbnail`, `is_deleted`, `is_drafted`
-
-**Logic:**
-- Soft delete with `is_deleted` flag and `deleted_at` timestamp
-- Draft mode prevents product from appearing on storefront
-- Slug auto-generated from name on create, updated on name change
-</details>
-
-<details>
-<summary><strong>🎨 Variant Management</strong></summary>
-
-**Location:** `catalog/views/admin/product.py`
-
-| Function | Description |
-|----------|-------------|
-| `variant_add()` | Create with watch specs & multi-image upload |
-| `variant_edit()` | Edit specs, price, stock, images |
-| `variant_view()` | Detailed view with image gallery |
-| `variant_delete_toggle()` | Soft delete toggle |
-| `variant_draft_toggle()` | Draft/publish toggle (requires min 3 images) |
-
-**Model Fields:**
-- **Identity:** `sku` (unique), `product` (FK)
-- **Watch Specs:** `dial_color`, `strap_color`, `strap_material`, `case_material`, `movement_type`, `case_size_mm`
-- **Pricing:** `price`, `discount_percentage` (0-100)
-- **Inventory:** `stock`
-- **Status:** `is_featured`, `is_drafted`, `is_deleted`
-
-**`final_price` Property:**
-```python
-@property
-def final_price(self):
-    if self.discount_percentage > 0:
-        discount = (self.price * self.discount_percentage) / 100
-        return self.price - discount
-    return self.price
-```
-
-**ProductImage Model:**
-- Multi-image upload with primary image selection
-- Unique constraint: only one primary image per variant
-- Cloudinary storage with auto-deletion on remove
+- **Order Tracking**: Full visibility of Orders and OrderItems.
+- **Timeline**: `StatusTimeline` generic relation tracks every status change (Pending -> Shipped -> Delivered).
+- **Audit Trail**: Records *who* changed the status (Admin/System) and *when*.
 </details>
 
 ---
 
 ## 👤 User Features
 
-### Profile Management
+### Profile & Address
+- **Profile**: Avatar cropping (Cropper.js), password management.
+- **Address**: Limit max addresses (default 5), auto-default selection logic, soft delete to preserve order history.
 
-**Location:** `users/user_profile/views/profile_settings.py`
+### Shopping Experience
+- **Catalog**: Faceted search (Brand, Category, Color, Movement), sorting, and pagination.
+- **Product Detail**: Variant selection changes URL/Images/Price dynamically. Stock status indicators.
 
-| Function | Description |
-|----------|-------------|
-| `profile()` | Dashboard displaying user info and avatar |
-| `edit_profile()` | Edit name, phone, avatar with Cropper.js crop |
-| `change_password()` | Password change with current password validation |
+---
 
-### Address Management
+## 🛒 Cart Management
 
-**Location:** `users/user_profile/views/address_management.py`
-
-| Function | Description |
-|----------|-------------|
-| `user_address()` | List all active addresses |
-| `add_address()` | Add new address with validation, max limit check |
-| `edit_address()` | Edit existing address |
-| `delete_address()` | Soft delete via AJAX (sets `is_active=False`) |
-| `toggle_default_address()` | Set address as default |
-
-**Model Fields:**
-- **Identity:** `id` (UUID), `user` (FK)
-- **Contact:** `full_name`, `phone_number` (PhoneNumberField)
-- **Location:** `address_line_1`, `address_line_2`, `city`, `state`, `postal_code`, `country`
-- **Meta:** `label` (Home/Work/Custom), `is_default`, `is_active`
-
-**Key Logic:**
-- `MAX_ADDRESSES_PER_USER` setting limits total addresses
-- First address automatically set as default
-- When default is deleted, most recent active becomes default
-- `AddressActiveManager` custom manager filters soft-deleted (`is_active=False`)
-
-### Product Catalog (User)
-
-**Location:** `catalog/views/user/product.py`
+**Location:** `users/cart/`
 
 | Function | Description |
 |----------|-------------|
-| `product_list()` | Variant-based listing with search, filter, sort, pagination |
-| `product_detail()` | Product page with variant selection, images, specs, stock status |
+| `view_cart()` | Displays items with real-time stock limits |
+| `add_cart()` | Adds items, merges quantities, redirects guests to login (preserving intent) |
+| `update_cart()` | Updates quantity via AJAX, respects stock limit |
+| `get_variant_stock()` | **Public API** for frontend stock checking |
 
-**product_list() Features:**
-- Search by: product name, brand, category, SKU, dial color, strap color, movement
-- Filter by: category (multi-select), brand (multi-select), price range
-- Sort by: price (low/high), name (A-Z/Z-A), new arrivals, featured
-- Pagination: 15 variants per page
-- Only shows: non-deleted, non-drafted, active brand & category
+**Key Logics:**
+1.  **Stock Validation**: Prevents adding more than available stock.
+2.  **Guest Handling**: Guests clicking "Add to Cart" are redirected to Login, then back to PDP.
+3.  **Wishlist Sync**: Adding to cart automatically removes from wishlist.
 
-**product_detail() Features:**
-- Variant selection via query param (`?variant=SKU`)
-- Image gallery with primary image
-- Stock status: "In Stock" / "Only X left!" / "Out of Stock"
-- Price display with original price & discount percentage
-- Dynamic breadcrumbs
-- Related products from same categories
-- Specifications table (movement, case, dial, strap)
+---
+
+## ❤️ Wishlist System
+
+**Location:** `users/wishlist/`
+
+| Function | Description |
+|----------|-------------|
+| `wishlist_view()` | Main page listing all saved items |
+| `toggle_wishlist()` | AJAX toggle (Add/Remove) from Cards/PDP |
+| `remove_wishlist_item()` | Removes specific item via Offcanvas/Page |
+
+**Key Features:**
+- **Offcanvas UI**: Quick view of wishlist items without leaving current page.
+- **AJAX Interactions**: Instant feedback (Heartbeat animation) without page reload.
+- **Profile Integration**: Real-time counter sync in Profile Dashboard.
+
+---
+
+## 🚚 Checkout & Orders
+
+**Location:** `orders/views/user/checkout.py`
+
+### Current Status
+- ✅ **Checkout Page**: Renders order summary and address selection.
+- ✅ **Address Selection**: Users can choose from saved addresses or add new ones inline.
+- ✅ **Order Summary**: Calculates Subtotal, Tax, Shipping, and Total dynamically.
+
+### Pending Implementation
+- 🔄 **Payment Integration**: Razorpay/Stripe or COD logic.
+- 🔄 **Place Order**: Transaction handling to reduce stock and create Order records.
+- 🔄 **Order History**: User dashboard to view past orders.
 
 ---
 
@@ -254,34 +177,22 @@ django-allauth   Vanilla CSS       Cloudinary       djLint (templates)
 
 ```
 Rex_CC_Ecommerce/
-├── accounts/              # User & admin authentication
-│   ├── views/admin_views/ # Admin auth & user management
-│   ├── templates/         # Auth templates (login, signup, reset)
-│   ├── models.py          # CustomUser, PasswordReset
-│   └── forms.py           # Auth forms with validation
+├── core/                  # Core modules (renamed from pages)
+│   ├── validators.py      # Shared validators (moved from utils)
+│   └── templates/core/    # Base templates (admin/user)
 │
-├── catalog/               # Product catalog
-│   ├── models.py          # Brand, Category, Product, ProductVariant, ProductImage
-│   ├── views/admin/       # Admin CRUD (brand, category, product)
-│   ├── views/user/        # product_list, product_detail
-│   └── templates/         # Admin & user product templates
+├── accounts/              # Authentication & User Model
+├── catalog/               # Products, Brands, Categories, Variants
+├── orders/                # Order models & checkout logic
+│   ├── admin.py           # Admin configuration for orders
+│   └── views/user/        # Checkout & placement views
 │
-├── pages/                 # Static pages & base templates
-│   ├── views/user_pages.py  # Homepage with featured products
-│   └── templates/         # Base layouts (admin, user)
+├── users/                 # User domain
+│   ├── cart/              # Cart logic & views
+│   ├── wishlist/          # Wishlist logic
+│   └── user_profile/      # Address & Profile management
 │
-├── users/                 # User-specific features
-│   └── user_profile/
-│       ├── models.py      # Address model
-│       ├── views/         # Profile & address management
-│       └── templates/     # Profile templates
-│
-├── utils/                 # Shared utilities
-│   └── validators.py      # Custom validation functions
-│
-└── rexcc_project/         # Project settings
-    ├── settings.py        # Django configuration
-    └── urls.py            # Root URL configuration
+└── rexcc_project/         # Project settings & URL conf
 ```
 
 ---
@@ -321,88 +232,9 @@ python manage.py createsuperuser
 python manage.py runserver
 ```
 
-### Environment Variables
-
-```env
-SECRET_KEY=your-secret-key
-DEBUG=True
-ALLOWED_HOSTS=localhost,127.0.0.1
-
-# Database
-DATABASE_URL=postgres://user:pass@localhost:5432/rexcc
-
-# Cloudinary
-CLOUDINARY_CLOUD_NAME=your-cloud
-CLOUDINARY_API_KEY=your-key
-CLOUDINARY_API_SECRET=your-secret
-
-# Email (Gmail SMTP)
-EMAIL_HOST_USER=your-email@gmail.com
-EMAIL_HOST_PASSWORD=your-app-password
-
-# Google OAuth
-GOOGLE_CLIENT_ID=your-client-id
-GOOGLE_CLIENT_SECRET=your-client-secret
-
-# App Settings
-MAX_ADDRESSES_PER_USER=5
-```
-
 ---
 
-## 🔒 Security Features
-
-- ✅ CSRF Protection on all forms
-- ✅ `@never_cache` on sensitive views
-- ✅ `@user_passes_test` for superuser verification
-- ✅ Session-based authentication
-- ✅ Secure password hashing (PBKDF2)
-- ✅ Email verification required
-- ✅ UUID primary keys for addresses
-
----
-
-## 📋 Next Steps - Implementation Plan
-
-### c. Cart Management
-- [x] **Add to Cart** - Add variant to cart, if product/category is blocked or unlisted, prevent addition even from product detail page
-- [x] **Quantity Update** - If product already in cart, increase quantity instead of adding duplicate
-- [x] **Wishlist Integration** - When adding to cart, auto-remove from wishlist if exists
-- [x] **Increment/Decrement** - Validate against stock left in inventory
-- [x] **Max Quantity Limit** - Handle maximum quantity per product per user
-- [x] **Out of Stock Display** - Show disabled state, prevent checkout for unavailable items
-- [x] **Cart Listing** - Display all cart items with product image, price, quantity
-
-### d. Checkout Page
-- [ ] **Address Selection** - Display user addresses, allow add/edit, ensure one is selected as default
-- [ ] **Product Summary** - Show product image, quantity, item total
-- [ ] **Price Breakdown** - Display taxes (optional), applicable discount, final price summary
-- [ ] **Place Order (COD)** - Cash on Delivery payment method
-- [ ] **Order Success Page** - Thank you message with illustration, buttons to order detail and continue shopping
-
-### e. Order Management (User)
-- [ ] **Order Listing** - List orders with unique orderID (not MongoDB `_id`), status, order date
-- [ ] **Order Detail** - Detailed view of each order
-- [ ] **Cancel Order/Item** - Cancel entire order or specific products, restore stock on cancellation, ask for optional reason
-- [ ] **Return Order** - Available only when delivered, mandatory reason required
-- [ ] **Invoice Download** - Generate PDF invoice for each order
-- [ ] **Search Orders** - Find specific orders by orderID or product name
-
-### f. Order Management (Admin)
-- [ ] **Order Listing** - Descending by order date
-- [ ] **Order Details** - Show orderID, date, user details, view button for detailed view
-- [ ] **Status Management** - Change status (pending, shipped, out for delivery, delivered, cancelled)
-- [ ] **Search/Sort/Filter** - With clear search functionality
-- [ ] **Pagination** - Paginated order list
-
-### g. Inventory/Stock Management
-- [ ] **Stock Tracking** - Track stock at variant level
-- [ ] **Stock Updates** - Decrement on order, increment on cancellation/return
-- [ ] **Low Stock Indicators** - Visual indicators in admin panel
-
----
-
-## 📋 Full Roadmap
+## 📋 Roadmap
 
 ### Phase 1 — Core (✅ Complete)
 - [x] User Authentication (Email, OTP, Google)
@@ -418,62 +250,17 @@ MAX_ADDRESSES_PER_USER=5
 ### Phase 2 — E-Commerce (🔄 In Progress)
 - [x] Wishlist (Offcanvas, AJAX, Profile Sync)
 - [x] Cart Management (Stock Validation, Login Redirect, Public API)
-- [ ] Checkout Flow
-- [ ] Order Management (User & Admin)
-- [ ] Invoice Generation
-- [ ] Inventory Management
+- [x] Checkout UI (Address Select, Summary)
+- [ ] Order Placement Logic
+- [ ] User Order History
+- [ ] Admin Order Management UI
+- [ ] Inventory Management (Stock decrement)
 
 ### Phase 3 — Payments & Growth
 - [ ] Razorpay/Stripe Integration
 - [ ] Coupon System
 - [ ] Wallet & Rewards
 - [ ] Referral Program
-
-### Phase 4 — Enhancement
-- [x] Product Reviews (Basic Implementation)
-- [ ] Analytics Dashboard
-- [ ] Notification System
-- [ ] Support Tickets
-
----
-
-## 🛒 Cart Management
-
-**Location:** `users/cart/`
-
-| Function | Description |
-|----------|-------------|
-| `view_cart()` | Displays cart items with real-time stock limits |
-| `add_cart()` | Adds items, merges quantities, redirects guests to login (GET support) |
-| `update_cart()` | Updates quantity or removes items via AJAX |
-| `get_variant_stock()` | **Public API** to fetch real-time stock for PDP/Wishlist |
-| `get_cartitems_count()` | Returns current count for header badge |
-
-**Key Features:**
-- **Guest Handling:** Guests clicking "Add to Cart" are redirected to Login, then back to the Product Page.
-- **Stock Validation:**
-  - Prevents adding more than available stock.
-  - "Out of Stock" badge on product cards (Red Gradient).
-  - Real-time stock checks via `fetch` API.
-- **Wishlist Sync:** Adding to cart automatically removes from wishlist.
-
----
-
-## ❤️ Wishlist System
-
-**Location:** `users/wishlist/`
-
-| Function | Description |
-|----------|-------------|
-| `wishlist_view()` | Main page listing all saved items |
-| `toggle_wishlist()` | AJAX toggle (Add/Remove) from Cards/PDP |
-| `remove_wishlist_item()` | Removes specific item via Offcanvas/Page |
-
-**Key Features:**
-- **Offcanvas UI:** Quick view of wishlist items without leaving current page.
-- **AJAX Interactions:** Instant feedback (Heartbeat animation) without page reload.
-- **Profile Integration:** Real-time counter sync in Profile Dashboard.
-- **Luxury Design:** Gold/Bronze theme consistency.
 
 ---
 

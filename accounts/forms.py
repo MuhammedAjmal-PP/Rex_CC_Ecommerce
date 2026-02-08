@@ -1,7 +1,6 @@
 from django import forms
 from allauth.account.forms import SignupForm
 from phonenumber_field.formfields import PhoneNumberField
-from utils.validators import name_validator
 
 
 class CustomSignupForm(SignupForm):
@@ -10,7 +9,6 @@ class CustomSignupForm(SignupForm):
     first_name = forms.CharField(
         max_length=100,
         required=True,
-        validators=[name_validator],
         widget=forms.TextInput(
             attrs={
                 "placeholder": "First Name",
@@ -24,7 +22,6 @@ class CustomSignupForm(SignupForm):
     last_name = forms.CharField(
         max_length=100,
         required=False,
-        validators=[name_validator],
         widget=forms.TextInput(
             attrs={
                 "placeholder": "Last Name",

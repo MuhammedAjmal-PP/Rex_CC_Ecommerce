@@ -20,12 +20,12 @@ from django.urls import path, include
 
 urlpatterns = [
     path("default-admin/", admin.site.urls),
-    path("", include("pages.urls.user_urls")),
+    path("", include("core.urls.user_urls")),
     path("", include("catalog.urls.user_urls")),
     path("myprofile/", include("users.user_profile.urls")),
     path("accounts/", include("allauth.urls")),
     path("adminpanel/accounts/", include("accounts.admin_urls")),
-    path("adminpanel/", include("pages.urls.admin_urls")),
+    path("adminpanel/", include("core.urls.admin_urls")),
     path("adminpanel/catalog/", include("catalog.urls.admin_urls")),
     path("", include("users.wishlist.urls")),
     path("", include("users.cart.urls")),

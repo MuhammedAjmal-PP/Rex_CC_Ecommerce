@@ -1,13 +1,15 @@
 /* ============================================================
    REX CC ADMIN - VARIANT FORM JAVASCRIPT
-   Handles formset image uploads with cropping, stock indicator
+   Handles formset image uploads, dynamic slots, cropping, validation
    Cropper.js v1.6.2 Compatible
    ============================================================ */
 
 document.addEventListener('DOMContentLoaded', function () {
     initStockIndicator();
-    initImageFormsetWithCropper();
+    initImageFormsetWithCropper(); // Initializes existing forms
     initPrimaryRadioLogic();
+    initDynamicFormset(); // New: Handles adding slots
+    initFormValidation(); // New: Strict validation
 });
 
 /* ========================================
@@ -66,146 +68,290 @@ function initStockIndicator() {
 }
 
 /* ========================================
+   DYNAMIC FORMSET HANDLING
+   ======================================== */
+
+function initDynamicFormset() {
+    const addBtn = document.getElementById('addFormBtn');
+    const container = document.getElementById('imageFormsetContainer');
+    const totalFormsInput = document.getElementById('id_form-TOTAL_FORMS');
+    const badge = document.querySelector('.card-header-badge');
+
+    if (!addBtn || !container || !totalFormsInput) return;
+
+    addBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+
+        const formCount = parseInt(totalFormsInput.value);
+        const forms = container.querySelectorAll('.image-form-item');
+        
+        if (forms.length === 0) {
+            console.error("No form template found to clone!");
+            return;
+        }
+
+        // Clone the last form
+        const templateForm = forms[forms.length - 1];
+        const newForm = templateForm.cloneNode(true);
+        
+        // Update regex to find the old index
+        const oldIndex = templateForm.dataset.formIndex;
+        const newIndex = formCount;
+        const regex = new RegExp(`-${oldIndex}-`, 'g');
+        const regexId = new RegExp(`_${oldIndex}_`, 'g'); // Django IDs often use underscores
+
+        newForm.dataset.formIndex = newIndex;
+        newForm.dataset.existingUrl = '';
+        newForm.dataset.hasExisting = 'false';
+        
+        // Update all inputs/labels/ids inside the new form
+        newForm.innerHTML = newForm.innerHTML.replace(regex, `-${newIndex}-`); 
+        // Note: HTML replace might not catch all attribute mutations if done this way on complex nodes,
+        // but for standard Django formsets it usually works. 
+        // Better approach: iterate elements.
+        
+        // Let's iterate to be safe and clean properties
+        resetFormElements(newForm, newIndex, oldIndex);
+
+        // Update visual elements
+        const uploadLabel = newForm.querySelector('.upload-label');
+        if (uploadLabel) uploadLabel.textContent = `Image ${newIndex + 1}`;
+        
+        const uploadBox = newForm.querySelector('.image-upload-box');
+        if (uploadBox) uploadBox.classList.remove('has-image');
+        
+        const previewWrapper = newForm.querySelector('.image-preview-wrapper');
+        const placeholder = newForm.querySelector('.upload-placeholder-content');
+        const previewImg = newForm.querySelector('.preview-image');
+        
+        if (previewWrapper) previewWrapper.hidden = true;
+        if (placeholder) placeholder.hidden = false;
+        if (previewImg) previewImg.src = '';
+
+        // Remove any error messages
+        newForm.querySelectorAll('.error-text').forEach(el => el.remove());
+        newForm.querySelectorAll('.form-errors').forEach(el => el.remove());
+
+        // Remove DELETE input if it was copied
+        const deleteInput = newForm.querySelector(`input[name$="-DELETE"]`);
+        if (deleteInput) deleteInput.remove();
+
+        // Append to container
+        container.appendChild(newForm);
+
+        // Update Management Form
+        totalFormsInput.value = formCount + 1;
+        if (badge) badge.textContent = `${formCount + 1} slots`;
+
+        // Re-initialize listeners for the new form
+        initSingleImageForm(newForm);
+        
+        // Re-init primary logic to include new radio
+        initPrimaryRadioLogic();
+    });
+}
+
+function resetFormElements(form, newIndex, oldIndex) {
+    // Inputs, Selects, Textareas
+    const inputs = form.querySelectorAll('input, select, textarea, label');
+    const regexName = new RegExp(`-${oldIndex}-`, 'g');
+    const regexId = new RegExp(`id_form-${oldIndex}-`, 'g'); // Standard Django ID prefix
+    const regexFor = new RegExp(`id_form-${oldIndex}-`, 'g');
+
+    inputs.forEach(input => {
+        if (input.name) {
+            input.name = input.name.replace(regexName, `-${newIndex}-`);
+        }
+        if (input.id) {
+            input.id = input.id.replace(regexId, `id_form-${newIndex}-`);
+            // Custom ID replacements if needed (e.g. previewImg0 -> previewImg1)
+            // Our current HTML uses specific IDs like uploadBox0.
+        }
+        if (input.tagName === 'LABEL' && input.htmlFor) {
+            input.htmlFor = input.htmlFor.replace(regexFor, `id_form-${newIndex}-`);
+        }
+        
+        // Clear values
+        if (input.type !== 'hidden' && input.type !== 'checkbox' && input.type !== 'radio') {
+            input.value = '';
+        }
+        if (input.type === 'checkbox' || input.type === 'radio') {
+            input.checked = false;
+        }
+        if (input.type === 'file') {
+            input.value = '';
+        }
+    });
+
+    // Fix custom IDs in our template (uploadBox0, placeholder0, etc.)
+    // Note: The innerHTML replace in initDynamicFormset handles text content and other attributes,
+    // but we should manually update IDs that don't match standard Django patterns if they exist.
+    // Our template uses: uploadBox{{index}}, placeholder{{index}}, preview{{index}}, previewImg{{index}}
+    
+    const elementsWithId = form.querySelectorAll('[id]');
+    elementsWithId.forEach(el => {
+        if (el.id.includes(oldIndex)) {
+            // Replace the LAST occurrence of the index to avoid breaking if index is part of name
+            // But here our IDs are suffixed with index: uploadBox0
+            const idBase = el.id.substring(0, el.id.length - String(oldIndex).length);
+            if (el.id === idBase + oldIndex) {
+               el.id = idBase + newIndex;
+            }
+        }
+    });
+}
+
+
+/* ========================================
    IMAGE FORMSET WITH CROPPER
    ======================================== */
 
 function initImageFormsetWithCropper() {
     const container = document.getElementById('imageFormsetContainer');
-    const cropModalEl = document.getElementById('cropModal');
-    const cropImage = document.getElementById('cropImage');
-    const cropBtn = document.getElementById('cropBtn');
-
-    if (!container || !cropModalEl) {
-        console.log('Formset container or crop modal not found');
-        return;
-    }
-
-    // Check if Bootstrap is available
-    if (typeof bootstrap === 'undefined') {
-        console.error('Bootstrap is not loaded.');
-        return;
-    }
-
-    const cropModal = new bootstrap.Modal(cropModalEl);
+    if (!container) return;
+    
     const formItems = container.querySelectorAll('.image-form-item');
-
-    formItems.forEach((item, index) => {
-        const fileInput = item.querySelector('input[type="file"]');
-        const uploadBox = item.querySelector('.image-upload-box');
-        const placeholder = item.querySelector('.upload-placeholder-content');
-        const previewWrapper = item.querySelector('.image-preview-wrapper');
-        const previewImg = item.querySelector('.preview-image');
-        const changeBtn = item.querySelector('.change-btn');
-        const removeBtn = item.querySelector('.remove-btn');
-
-        if (!fileInput) return;
-
-        // Check for existing image (from data attribute)
-        const existingUrl = item.dataset.existingUrl;
-        if (existingUrl && existingUrl.trim() !== '') {
-            // Mark as having image for styling
-            if (uploadBox) uploadBox.classList.add('has-image');
-            // Mark the item as having an existing image (for remove logic)
-            item.dataset.hasExisting = 'true';
-        }
-
-        // Handle file selection - open cropper
-        fileInput.addEventListener('change', function (e) {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            // Validate file type
-            if (!file.type.startsWith('image/')) {
-                alert('Please select an image file.');
-                return;
-            }
-
-            // Validate file size (5MB max)
-            if (file.size > 5 * 1024 * 1024) {
-                alert('Image is too large. Maximum size is 5MB.');
-                return;
-            }
-
-            // Store references for cropper callback
-            currentFileInput = fileInput;
-            currentPreviewImg = previewImg;
-            currentPlaceholder = placeholder;
-            currentPreviewWrapper = previewWrapper;
-            currentUploadBox = uploadBox;
-
-            // Load image into cropper modal
-            const reader = new FileReader();
-            reader.onload = function (event) {
-                cropImage.src = event.target.result;
-                cropModal.show();
-            };
-            reader.readAsDataURL(file);
-        });
-
-        // Change button click - trigger file input
-        if (changeBtn) {
-            changeBtn.addEventListener('click', function (e) {
-                e.preventDefault();
-                e.stopPropagation();
-                fileInput.click();
-            });
-        }
-
-        // Remove button click - clear the file input and preview
-        if (removeBtn) {
-            removeBtn.addEventListener('click', function (e) {
-                e.preventDefault();
-                e.stopPropagation();
-
-                // Clear file input
-                fileInput.value = '';
-
-                // Hide preview, show placeholder
-                if (previewWrapper) previewWrapper.hidden = true;
-                if (placeholder) placeholder.hidden = false;
-                if (previewImg) previewImg.src = '';
-                if (uploadBox) uploadBox.classList.remove('has-image');
-
-                // For existing images (modelformset edit mode), add DELETE field
-                const hasExisting = item.dataset.hasExisting === 'true';
-                if (hasExisting) {
-                    // Check if DELETE input already exists
-                    const formPrefix = `form-${index}`;
-                    let deleteInput = item.querySelector(`input[name="${formPrefix}-DELETE"]`);
-
-                    if (!deleteInput) {
-                        // Create hidden DELETE input to mark image for deletion
-                        deleteInput = document.createElement('input');
-                        deleteInput.type = 'hidden';
-                        deleteInput.name = `${formPrefix}-DELETE`;
-                        deleteInput.value = 'on';
-                        item.appendChild(deleteInput);
-                    } else {
-                        deleteInput.value = 'on';
-                    }
-
-                    // Clear the existing URL data attribute
-                    item.dataset.existingUrl = '';
-                    item.dataset.hasExisting = 'false';
-                }
-            });
-        }
+    formItems.forEach(item => {
+        initSingleImageForm(item);
     });
 
-    /* ========= INIT CROPPER WHEN MODAL SHOWN ========= */
-    cropModalEl.addEventListener('shown.bs.modal', function () {
-        // Destroy existing cropper if any
+    // Init the modal only once
+    const cropModalEl = document.getElementById('cropModal');
+    if (cropModalEl) {
+        initCropperModal(cropModalEl);
+    }
+}
+
+function initSingleImageForm(item) {
+    const fileInput = item.querySelector('input[type="file"]');
+    // Re-query elements scoped to this item to ensure we get the right ones
+    // especially after cloning/ID updates
+    const uploadBox = item.querySelector('.image-upload-box');
+    const placeholder = item.querySelector('.upload-placeholder-content');
+    const previewWrapper = item.querySelector('.image-preview-wrapper');
+    const previewImg = item.querySelector('.preview-image');
+    const changeBtn = item.querySelector('.change-btn');
+    const removeBtn = item.querySelector('.remove-btn');
+
+    if (!fileInput) return;
+
+    // Check for existing image (from data attribute)
+    const existingUrl = item.dataset.existingUrl;
+    if (existingUrl && existingUrl.trim() !== '') {
+        if (uploadBox) uploadBox.classList.add('has-image');
+        item.dataset.hasExisting = 'true';
+    }
+
+    // Handle file selection - open cropper
+    // Remove existing listener if any (cloning copies listeners? No, usually not.)
+    // But to be safe, just add.
+    
+    fileInput.onchange = function (e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            alert('Please select an image file.');
+            return;
+        }
+
+        // Validate file size (5MB max)
+        if (file.size > 5 * 1024 * 1024) {
+            alert('Image is too large. Maximum size is 5MB.');
+            return;
+        }
+
+        // Store references for cropper callback
+        currentFileInput = fileInput;
+        // Need to update global references to match THIS item's elements
+        currentPreviewImg = previewImg; 
+        currentPlaceholder = placeholder; 
+        currentPreviewWrapper = previewWrapper;
+        currentUploadBox = uploadBox;
+
+        const cropModalEl = document.getElementById('cropModal');
+        const cropImage = document.getElementById('cropImage');
+        const cropModal = bootstrap.Modal.getOrCreateInstance(cropModalEl);
+
+        const reader = new FileReader();
+        reader.onload = function (event) {
+            cropImage.src = event.target.result;
+            cropModal.show();
+        };
+        reader.readAsDataURL(file);
+    };
+
+    if (changeBtn) {
+        changeBtn.onclick = function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            fileInput.click();
+        };
+    }
+
+    if (removeBtn) {
+        removeBtn.onclick = function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            fileInput.value = '';
+
+            if (previewWrapper) previewWrapper.hidden = true;
+            if (placeholder) placeholder.hidden = false;
+            if (previewImg) previewImg.src = '';
+            if (uploadBox) uploadBox.classList.remove('has-image');
+
+            const hasExisting = item.dataset.hasExisting === 'true';
+            if (hasExisting) {
+                // Find existing DELETE input in this item scope
+                let deleteInput = item.querySelector(`input[name$="-DELETE"]`);
+                
+                if (!deleteInput) {
+                    const index = item.dataset.formIndex;
+                    deleteInput = document.createElement('input');
+                    deleteInput.type = 'hidden';
+                    deleteInput.name = `form-${index}-DELETE`;
+                    deleteInput.id = `id_form-${index}-DELETE`;
+                    deleteInput.value = 'on';
+                    item.appendChild(deleteInput);
+                } else {
+                    deleteInput.value = 'on';
+                }
+
+                item.dataset.existingUrl = '';
+                item.dataset.hasExisting = 'false';
+            }
+        };
+    }
+}
+
+function initCropperModal(cropModalEl) {
+    const cropImage = document.getElementById('cropImage');
+    const cropBtn = document.getElementById('cropBtn');
+    
+    // Remove existing listeners to avoid duplicates
+    const newCropModal = cropModalEl.cloneNode(true);
+    cropModalEl.parentNode.replaceChild(newCropModal, cropModalEl);
+    
+    // Re-query after replace
+    const modalEl = document.getElementById('cropModal');
+    const imgEl = document.getElementById('cropImage');
+    const btnEl = document.getElementById('cropBtn');
+    
+    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+
+    modalEl.addEventListener('shown.bs.modal', function () {
         if (cropper) {
             cropper.destroy();
             cropper = null;
         }
 
-        // Initialize Cropper.js
-        cropper = new Cropper(cropImage, {
+        cropper = new Cropper(imgEl, {
             viewMode: 2,
             dragMode: 'crop',
-            aspectRatio: NaN, // Free-form cropping - no aspect ratio restriction
-            autoCropArea: 1, // Select full image by default
+            aspectRatio: NaN,
+            autoCropArea: 1,
             autoCrop: true,
             restore: true,
             guides: true,
@@ -221,154 +367,175 @@ function initImageFormsetWithCropper() {
         });
     });
 
-    /* ========= CLEANUP CROPPER WHEN MODAL HIDDEN ========= */
-    cropModalEl.addEventListener('hidden.bs.modal', function () {
+    modalEl.addEventListener('hidden.bs.modal', function () {
         if (cropper) {
             cropper.destroy();
             cropper = null;
         }
-        cropImage.src = '';
+        imgEl.src = '';
     });
 
-    /* ========= CROP CONFIRM ========= */
-    cropBtn.addEventListener('click', function () {
-        if (!cropper) {
-            console.error('Cropper not initialized');
-            return;
-        }
+    btnEl.addEventListener('click', function () {
+        if (!cropper) return;
 
-        const canvas = cropper.getCroppedCanvas({
-            imageSmoothingQuality: 'high'
-        });
-
+        const canvas = cropper.getCroppedCanvas({ imageSmoothingQuality: 'high' });
         if (!canvas) {
-            alert('Failed to crop the image');
+            alert('Failed to crop');
             return;
         }
 
-        // Detect original file type to preserve format
         const originalFile = currentFileInput?.files[0];
         const originalName = originalFile?.name || 'variant_image.png';
         const originalType = originalFile?.type || 'image/png';
-
-        // Supported formats by canvas.toBlob (browser support varies)
-        // PNG, JPEG, WebP are widely supported
-        // AVIF, GIF may need fallback
+        
         const supportedFormats = {
-            'image/png': { mime: 'image/png', quality: undefined },
-            'image/jpeg': { mime: 'image/jpeg', quality: 0.9 },
-            'image/jpg': { mime: 'image/jpeg', quality: 0.9 },
-            'image/webp': { mime: 'image/webp', quality: 0.9 },
-            'image/avif': { mime: 'image/avif', quality: 0.9 },
-            'image/gif': { mime: 'image/png', quality: undefined }, // GIF -> PNG (canvas doesn't animate)
-            'image/svg+xml': { mime: 'image/png', quality: undefined }, // SVG -> PNG (canvas rasterizes)
+             'image/png': { mime: 'image/png' },
+             'image/jpeg': { mime: 'image/jpeg', quality: 0.9 },
+             'image/jpg': { mime: 'image/jpeg', quality: 0.9 },
+             'image/webp': { mime: 'image/webp', quality: 0.9 },
         };
 
-        // Get format settings, default to PNG for unknown formats (preserves transparency)
-        const formatSettings = supportedFormats[originalType] || { mime: 'image/png', quality: undefined };
-        const mimeType = formatSettings.mime;
-        const quality = formatSettings.quality;
-
+        const formatSettings = supportedFormats[originalType] || { mime: 'image/png' };
+        
         canvas.toBlob(function (blob) {
-            if (!blob) {
-                alert('Failed to create image blob');
-                return;
-            }
+            if (!blob) return;
 
-            // Create file from blob preserving original format
             const croppedFile = new File([blob], originalName, {
-                type: mimeType,
+                type: formatSettings.mime,
                 lastModified: Date.now()
             });
 
-            // Set the cropped file to the input
             const dataTransfer = new DataTransfer();
             dataTransfer.items.add(croppedFile);
-            currentFileInput.files = dataTransfer.files;
+            if (currentFileInput) currentFileInput.files = dataTransfer.files;
 
-            // Show preview
             const previewUrl = URL.createObjectURL(blob);
             if (currentPreviewImg) currentPreviewImg.src = previewUrl;
             if (currentPlaceholder) currentPlaceholder.hidden = true;
             if (currentPreviewWrapper) currentPreviewWrapper.hidden = false;
             if (currentUploadBox) currentUploadBox.classList.add('has-image');
 
-            // Close modal
-            cropModal.hide();
-        }, mimeType, quality);
+            modal.hide();
+        }, formatSettings.mime, formatSettings.quality);
     });
 }
+
 
 /* ========================================
    PRIMARY CHECKBOX LOGIC
    ======================================== */
 
 function initPrimaryRadioLogic() {
+    // Re-query because elements might be added
     const container = document.getElementById('imageFormsetContainer');
     if (!container) return;
 
+    // Use event delegation? Or just re-attach. 
+    // Re-attaching is safer given current structure.
     const primaryCheckboxes = container.querySelectorAll('input[name$="-is_primary"]');
 
-    // Make primary checkboxes act like radio buttons
     primaryCheckboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', function () {
+        // Remove old listener to avoid duplicates if re-init
+        checkbox.onchange = function () {
             if (this.checked) {
-                // Uncheck all other primary checkboxes
                 primaryCheckboxes.forEach(other => {
                     if (other !== this) {
                         other.checked = false;
                     }
                 });
             }
-        });
+        };
     });
 }
 
 /* ========================================
-   FORM VALIDATION
+   STRICT FORM VALIDATION
    ======================================== */
 
-document.getElementById('variantForm')?.addEventListener('submit', function (e) {
-    const sku = document.querySelector('input[name="sku"]');
-    const price = document.querySelector('input[name="price"]');
+function initFormValidation() {
+    const form = document.getElementById('variantForm');
+    if (!form) return;
 
-    let isValid = true;
+    form.addEventListener('submit', function (e) {
+        let isValid = true;
+        document.querySelectorAll('.error-text.dynamic').forEach(el => el.remove());
 
-    // Clear previous dynamic errors
-    document.querySelectorAll('.error-text.dynamic').forEach(el => el.remove());
-
-    // Validate SKU
-    if (sku && !sku.value.trim()) {
-        showError(sku, 'SKU is required');
-        isValid = false;
-    }
-
-    // Validate Price
-    if (price && (!price.value || parseFloat(price.value) <= 0)) {
-        showError(price, 'Price must be greater than 0');
-        isValid = false;
-    }
-
-    // Images are optional - no validation required
-
-    if (!isValid) {
-        e.preventDefault();
-        // Scroll to first error
-        const firstError = document.querySelector('.error-text');
-        if (firstError) {
-            firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // 1. Basic Fields
+        const sku = form.querySelector('input[name="sku"]');
+        const price = form.querySelector('input[name="price"]');
+        
+        if (sku && !sku.value.trim()) {
+            showError(sku, 'SKU is required');
+            isValid = false;
         }
-    }
-});
+        if (price && (!price.value || parseFloat(price.value) <= 0)) {
+            showError(price, 'Price must be greater than 0');
+            isValid = false;
+        }
+
+        // 2. Image Count Validation
+        const imageItems = form.querySelectorAll('.image-form-item');
+        let validImageCount = 0;
+        let primarySelected = false;
+
+        imageItems.forEach(item => {
+            const hasExisting = item.dataset.hasExisting === 'true';
+            const fileInput = item.querySelector('input[type="file"]');
+            const hasNewFile = fileInput && fileInput.files.length > 0;
+            const isMarkedForDelete = item.querySelector('input[name$="-DELETE"]')?.value === 'on';
+
+            // It counts if:
+            // (Existing AND NOT Deleted) OR (New File Selected)
+            if ((hasExisting && !isMarkedForDelete) || hasNewFile) {
+                validImageCount++;
+                
+                // Check if this valid image is primary
+                const primaryCb = item.querySelector('input[name$="-is_primary"]');
+                if (primaryCb && primaryCb.checked) {
+                    primarySelected = true;
+                }
+            }
+        });
+
+        const imageContainer = document.querySelector('.form-card .card-header'); // Anchor for error
+
+        if (validImageCount < 3) {
+            showError(imageContainer, `Minimum 3 images required. You have ${validImageCount}.`);
+            isValid = false;
+        }
+
+        if (!primarySelected && validImageCount > 0) {
+            // Only show if we have images but none are primary
+            showError(imageContainer, 'You must select one primary image.');
+            isValid = false;
+        }
+
+        if (!isValid) {
+            e.preventDefault();
+            const firstError = document.querySelector('.error-text.dynamic');
+            if (firstError) {
+                firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+    });
+}
 
 function showError(input, message) {
-    const existingError = input.parentNode.querySelector('.error-text.dynamic');
-    if (existingError) return;
+    // If input is not a direct input element (like the card header), handle gracefully
+    let parent = input.parentNode;
+    if (input.classList.contains('card-header')) {
+        parent = input; // append inside header
+    }
 
     const errorSpan = document.createElement('span');
     errorSpan.className = 'error-text dynamic';
+    errorSpan.style.display = 'block'; // Ensure block display
+    errorSpan.style.color = '#dc3545';
+    errorSpan.style.fontSize = '0.875rem';
+    errorSpan.style.marginTop = '0.25rem';
     errorSpan.textContent = message;
-    input.parentNode.appendChild(errorSpan);
+    
+    parent.appendChild(errorSpan);
 }
 
 /* ========================================

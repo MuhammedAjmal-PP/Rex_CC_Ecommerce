@@ -1,4 +1,4 @@
-{% extends "pages/admin/base_admin.html" %}
+{% extends "core/admin/base_admin.html" %}
 {% load static %}
 {% load cloudinary %}
 {% block title %}
@@ -6,9 +6,9 @@
 {% endblock title %}
 {% block extra_css %}
     <link rel="stylesheet"
-          href="{% static 'pages/admin/css/shared/admin_search_filter.css' %}">
+          href="{% static 'core/admin/css/shared/admin_search_filter.css' %}">
     <link rel="stylesheet"
-          href="{% static 'pages/admin/css/shared/admin_table_listing.css' %}">
+          href="{% static 'core/admin/css/shared/admin_table_listing.css' %}">
     <link rel="stylesheet"
           href="{% static 'catalog/css/admin/product/product_view.css' %}">
 {% endblock extra_css %}
@@ -261,11 +261,8 @@
                 <thead>
                     <tr>
                         <th>Variant</th>
-                        <th>Specifications</th>
                         <th>Price</th>
-                        <th>
-                            Discount 
-                        </th>
+                        <th>Discount</th>
                         <th>Stock</th>
                         <th>Status</th>
                         <th>Action</th>
@@ -307,34 +304,7 @@
                                     </div>
                                 </div>
                             </td>
-                            <td>
-                                <div class="specs-list">
-                                    {% if v.movement_type %}
-                                        <span class="spec-tag">
-                                            <span class="material-icons">settings</span>
-                                            {{ v.movement_type }}
-                                        </span>
-                                    {% endif %}
-                                    {% if v.case_size_mm %}
-                                        <span class="spec-tag">
-                                            <span class="material-icons">straighten</span>
-                                            {{ v.case_size_mm }}mm
-                                        </span>
-                                    {% endif %}
-                                    {% if v.case_material %}
-                                        <span class="spec-tag">
-                                            <span class="material-icons">layers</span>
-                                            {{ v.case_material }}
-                                        </span>
-                                    {% endif %}
-                                    {% if v.strap_material %}
-                                        <span class="spec-tag">
-                                            <span class="material-icons">cable</span>
-                                            {{ v.strap_material }}
-                                        </span>
-                                    {% endif %}
-                                </div>
-                            </td>
+
                             <td>
                                 <div class="price-display">
                                     <span class="currency">₹</span>

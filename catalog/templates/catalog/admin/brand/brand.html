@@ -1,4 +1,4 @@
-{% extends 'pages/admin/base_admin.html' %}
+{% extends 'core/admin/base_admin.html' %}
 {% load static %}
 {% load cloudinary %}
 {% cloudinary brand.logo.name width=100 height=100 %}
@@ -7,9 +7,9 @@
 {% endblock title %}
 {% block extra_css %}
     <link rel="stylesheet"
-          href="{% static 'pages/admin/css/shared/admin_search_filter.css' %}">
+          href="{% static 'core/admin/css/shared/admin_search_filter.css' %}">
     <link rel="stylesheet"
-          href="{% static 'pages/admin/css/shared/admin_table_listing.css' %}">
+          href="{% static 'core/admin/css/shared/admin_table_listing.css' %}">
     <link rel="stylesheet"
           href="{% static 'catalog/css/admin/brand/brand.css' %}">
 {% endblock extra_css %}

@@ -1,72 +1,106 @@
-# ------------------------
-# Python
-# ------------------------
-__pycache__/
+# ----------------------------------------------------------------------
+# Django / Python
+# ----------------------------------------------------------------------
 *.py[cod]
-*.egg
-*.egg-info/
-dist/
-build/
-*.so
+*$py.class
+__pycache__/
 
-# ------------------------
-# Virtual Environment
-# ------------------------
-.venv/
-venv/
-env/
-
-# ------------------------
-# Django & Cache
-# ------------------------
-*.log
-*.pot
-*.pyc
-*.mo
-*.db
-*.sqlite3
-*.bak
+# Django environment
 local_settings.py
-db.sqlite3
-
-# Django compiled files
-staticfiles/
-media/
-
-# ------------------------
-# Environment variables
-# ------------------------
 .env
-.env.* 
+.env.*
 *.env
 
-# ------------------------
-# System files
-# ------------------------
-.DS_Store
-Thumbs.db
+# Database
+*.sqlite3
+db.sqlite3
+# Postgres specific dump if used
+dump.rdb
 
-# ------------------------
-# IDE files
-# ------------------------
+# Log files
+*.log
+
+# Collected static files
+staticfiles/
+
+# Uploaded media files
+media/
+
+# Virtual Environments
+venv/
+env/
+.env/
+.venv/
+.testvenv/
+
+# ----------------------------------------------------------------------
+# IDE / Editor Files
+# ----------------------------------------------------------------------
+# VS Code
 .vscode/
-.idea/
-*.swp
-*.swo
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
 
-# ------------------------
-# Coverage / Testing
-# ------------------------
+# PyCharm / IntelliJ
+.idea/
+
+# Sublime Text
+*.sublime-workspace
+*.sublime-project
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# ----------------------------------------------------------------------
+# Operating System Files
+# ----------------------------------------------------------------------
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+
+# ----------------------------------------------------------------------
+# Testing & Coverage
+# ----------------------------------------------------------------------
 htmlcov/
-.coverage
 .tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
 .pytest_cache/
 pytest.xml
 
-# ------------------------
-# Node / Frontend (if added later)
-# ------------------------
+# ----------------------------------------------------------------------
+# Project Specific
+# ----------------------------------------------------------------------
+# Backup files
+*.bak
+
+# Celery (if added later)
+celerybeat-schedule
+celerybeat.pid
+
+# Node (if added later)
 node_modules/
 npm-debug.log
-yarn-debug.log
-yarn-error.log
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*

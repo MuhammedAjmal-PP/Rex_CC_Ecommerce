@@ -70,7 +70,7 @@ INSTALLED_APPS = [
     "cloudinary_storage",
     "phonenumber_field",
     # localapps
-    "pages",
+    "core",
     "catalog",
     "users.user_profile",
     "users.wishlist",

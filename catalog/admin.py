@@ -58,15 +58,45 @@ class CategoryAdmin(admin.ModelAdmin):
 
 
 # admin.site.register(Product)
+
+class ProductImageInline(admin.TabularInline):
+    model = ProductImage
+    extra = 1
+    readonly_fields = ("created_at",)
+
+
+class ProductVariantInline(admin.TabularInline):
+    model = ProductVariant
+    extra = 0
+    show_change_link = True  # Allows clicking through to the actual variant edit page
+    fields = (
+        "sku",
+        "price",
+        "stock",
+        "is_drafted",
+        "is_featured",
+    )
+    readonly_fields = ("created_at", "updated_at")
+
+
+# admin.site.register(Product)
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display = (
         "name",
-        "is_drafted",
         "brand",
+        "get_categories",
+        "is_drafted",
+        "is_deleted",
     )
-    list_filter = ("is_drafted",)
+    list_filter = ("is_drafted", "brand", "category")
+    search_fields = ("name", "brand__name", "category__name")
     actions = ["draft_products", "publish_products"]
+    inlines = [ProductVariantInline]
+
+    @admin.display(description="Categories")
+    def get_categories(self, obj):
+        return ", ".join([category.name for category in obj.category.all()])
 
     @admin.action(description="Move selected products to draft")
     def draft_products(self, request, queryset):
@@ -90,9 +120,11 @@ class ProductAdmin(admin.ModelAdmin):
 # admin.site.register(ProductVariant)
 @admin.register(ProductVariant)
 class ProductVariantAdmin(admin.ModelAdmin):
-    list_display = ("product", "sku", "is_drafted")
-    list_filter = ("is_drafted",)
+    list_display = ("product", "sku", "price", "stock","is_featured", "is_drafted","is_deleted")
+    list_filter = ("is_drafted", "product__brand", "is_featured")
+    search_fields = ("sku", "product__name")
     actions = ["draft_variants", "publish_variants"]
+    inlines = [ProductImageInline]
 
     @admin.action(description="Move selected variants to draft")
     def draft_variants(self, request, queryset):
@@ -116,4 +148,6 @@ class ProductVariantAdmin(admin.ModelAdmin):
 # admin.site.register(ProductImage)
 @admin.register(ProductImage)
 class ProductImageAdmin(admin.ModelAdmin):
-    list_display = ("variant", "is_primary")
+    list_display = ("variant", "is_primary", "image")
+    list_filter = ("is_primary",)
+

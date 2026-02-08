@@ -1,23 +1,56 @@
 from django.db import models
 from django.utils.text import slugify
 from decimal import Decimal
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import (
+    MaxLengthValidator,
+    MinLengthValidator,
+    MinValueValidator,
+    MaxValueValidator,
+    RegexValidator,
+)
+from core.validators import image_file_extension_validator, image_size_validator
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ValidationError
 
 # Create your models here.
 
 
 class Brand(models.Model):
 
-    name = models.CharField(max_length=255, unique=True)
-    slug = models.SlugField(unique=True, null=True, blank=True)
-    tagline = models.TextField(null=True, blank=True)
+    name = models.CharField(max_length=100, unique=True)
+    slug = models.SlugField(unique=True)
+    tagline = models.TextField(
+        null=True,
+        blank=True,
+        validators=[
+            MinLengthValidator(5, "Tagline is a bit too short."),
+            MaxLengthValidator(
+                150, "Keep the tagline under 150 characters for better display."
+            ),
+        ],
+        help_text="A brief slogan for the brand (e.g., 'Just Do It').",
+    )
     logo = models.ImageField(
         upload_to="brands_logo",
         blank=True,
         null=True,
         help_text="Brand Logo",
+        validators=[
+            image_file_extension_validator,
+            image_size_validator,
+        ],
     )
-    description = models.TextField(blank=True, null=True)
+    description = models.TextField(
+        blank=True,
+        null=True,
+        validators=[
+            MinLengthValidator(
+                20, "Please provide a more detailed description (min 20 chars)."
+            ),
+            MaxLengthValidator(3000, "Description cannot exceed 3000 characters."),
+        ],
+    )
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -47,8 +80,8 @@ class Brand(models.Model):
 
 class Category(models.Model):
 
-    name = models.CharField(max_length=255, unique=True)
-    slug = models.SlugField(unique=True, null=True, blank=True)
+    name = models.CharField(max_length=100, unique=True)
+    slug = models.SlugField(unique=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -75,21 +108,31 @@ class Category(models.Model):
 
 
 class Product(models.Model):
-    name = models.CharField(max_length=255)
-    slug = models.SlugField(unique=True, max_length=255)
+    name = models.CharField(max_length=100)
+    slug = models.SlugField(unique=True)
 
     brand = models.ForeignKey(
         "Brand", on_delete=models.PROTECT, related_name="products"
     )
     category = models.ManyToManyField("Category", related_name="products")
 
-    description = models.TextField(blank=True)
+    description = models.TextField(
+        blank=True,
+        null=True,
+        validators=[
+            MinLengthValidator(
+                20, "Please provide a more detailed description (min 20 chars)."
+            ),
+            MaxLengthValidator(3000, "Description cannot exceed 3000 characters."),
+        ],
+    )
 
     thumbnail = models.ImageField(
         upload_to="product_thumbs/",
         null=True,
         blank=True,
         help_text="Product thumbnail image",
+        validators=[image_size_validator, image_file_extension_validator],
     )
 
     # Soft delete
@@ -131,14 +174,37 @@ class ProductVariant(models.Model):
         Product, on_delete=models.CASCADE, related_name="variants"
     )
 
-    sku = models.CharField(max_length=100, unique=True, db_index=True)
+    sku = models.CharField(
+        max_length=50,
+        unique=True,
+        db_index=True,
+        validators=[
+            RegexValidator(
+                r"^[A-Z0-9-]*$", "SKU must be uppercase letters, numbers, and hyphens."
+            ),
+        ],
+    )
 
-    dial_color = models.CharField(max_length=100, blank=True)
-    strap_color = models.CharField(max_length=100, blank=True)
-    strap_material = models.CharField(max_length=100, blank=True)
-    case_material = models.CharField(max_length=100, blank=True)
+    dial_color = models.CharField(
+        max_length=50, blank=True, validators=[MinLengthValidator(3)]
+    )
+    strap_color = models.CharField(
+        max_length=50, blank=True, validators=[MinLengthValidator(3)]
+    )
+    strap_material = models.CharField(
+        max_length=100, blank=True, help_text="e.g., Genuine Leather, Stainless Steel"
+    )
+    case_material = models.CharField(
+        max_length=100, blank=True, help_text="e.g., Genuine Leather, Stainless Steel"
+    )
     movement_type = models.CharField(max_length=100, blank=True)
-    case_size_mm = models.PositiveIntegerField(null=True, blank=True)
+    case_size_mm = models.PositiveIntegerField(
+        validators=[
+            MinValueValidator(15, "Smallest watch case size is typically 15mm."),
+            MaxValueValidator(65, "Largest watch case size is typically 65mm."),
+        ],
+        help_text="Enter size in mm (e.g., 40)",
+    )
 
     price = models.DecimalField(max_digits=12, decimal_places=2)
     discount_percentage = models.PositiveIntegerField(
@@ -192,6 +258,7 @@ class ProductImage(models.Model):
         blank=True,
         upload_to="products_image/",
         help_text="ProductVariant Image",
+        validators=[image_size_validator, image_file_extension_validator],
     )
 
     is_primary = models.BooleanField(default=False)
@@ -225,12 +292,6 @@ class ProductImage(models.Model):
         return f"Image for {self.variant.sku}"
 
 
-from django.contrib.contenttypes.fields import GenericForeignKey
-from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import ValidationError
-from django.db import models
-
-
 class InventoryLog(models.Model):
 
     # ---------------- REASONS ----------------
@@ -244,7 +305,7 @@ class InventoryLog(models.Model):
 
     # ---------------- PRODUCT ----------------
     product_variant = models.ForeignKey(
-        "catalog.ProductVariant",
+        ProductVariant,
         on_delete=models.CASCADE,
         related_name="inventory_logs",
     )

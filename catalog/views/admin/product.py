@@ -9,6 +9,7 @@ from catalog.forms import ProductForm, ProductVariantForm, ProductImageForm
 from django.utils import timezone
 from django.contrib.auth.decorators import user_passes_test
 from django.forms import formset_factory, modelformset_factory
+from catalog.service import manage_product_draft_status
 
 
 @never_cache
@@ -24,7 +25,12 @@ def products(request):
     except (ValueError, TypeError):
         page_number = 1
 
-    products = Product.objects.all().order_by("name")
+    products = (
+        Product.objects.select_related("brand")
+        .prefetch_related("category")
+        .all()
+        .order_by("name")
+    )
 
     total_products = products.count()
     published_products = products.filter(is_drafted=False).count()
@@ -75,6 +81,7 @@ def product_add(request):
             product = form.save(commit=False)
             product.is_drafted = False
             product.save()
+            form.save_m2m()  # Explicitly save many-to-many data
             return redirect("admin_products")
     else:
         form = ProductForm()
@@ -144,7 +151,6 @@ def product_draft_toggle(request, product_id):
             request,
             "At least one published variant is required to publish this product.",
         )
-        messages.success(request, "Product saved as draft.")
     else:
         product.is_drafted = not product.is_drafted
         product.save()
@@ -169,7 +175,7 @@ def product_view(request, product_id):
     except (ValueError, TypeError):
         page_number = 1
 
-    variant = product.variants.all()
+    variant = product.variants.prefetch_related("images").all()
 
     total_variants = variant.count()
     published_variants = variant.filter(is_drafted=False).count()
@@ -229,32 +235,50 @@ def variant_add(request, product_id):
         imageformset = ImageFormSet(request.POST, request.FILES)
 
         if variantform.is_valid() and imageformset.is_valid():
+
+            # Check for at least 3 valid images BEFORE saving anything
+            valid_images = []
+            primary_count = 0
+
+            for form in imageformset:
+                if form.cleaned_data and form.cleaned_data.get("image"):
+                    valid_images.append(form)
+                    if form.cleaned_data.get("is_primary"):
+                        primary_count += 1
+            
+            if len(valid_images) < 3:
+                 messages.error(
+                    request,
+                    "A minimum of three product images is required to add a variant.",
+                )
+                 # Re-render the form with errors
+                 context = {
+                    "variantform": variantform,
+                    "imageformset": imageformset,
+                    "product": product,
+                }
+                 return render(request, "catalog/admin/product/variant_form.html", context)
+
+            if primary_count != 1:
+                messages.error(request, "Exactly one image must be set as primary.")
+                context = {
+                    "variantform": variantform,
+                    "imageformset": imageformset,
+                    "product": product,
+                }
+                return render(request, "catalog/admin/product/variant_form.html", context)
+
             variant = variantform.save(commit=False)
             variant.product = product
             variant.save()
 
             for form in imageformset:
-                # Only save if an image was actually uploaded
                 if form.cleaned_data and form.cleaned_data.get("image"):
                     image = form.save(commit=False)
                     image.variant = variant
                     image.save()
 
-            is_draft = variant.is_drafted
-            if not is_draft:
-                imagecount = variant.images.count()
-                if imagecount < 3:
-                    variant.is_drafted = True
-                    variant.save()
-                    messages.error(
-                        request,
-                        "A minimum of three product images is required to publish this variant.",
-                    )
-                    messages.success(request, "Variant saved as draft.")
-                else:
-                    messages.success(request, "Variant published successfully.")
-            else:
-                messages.success(request, "Variant saved as draft.")
+            messages.success(request, "Variant added successfully.")
             return redirect("admin_product_view", product_id=product_id)
 
     else:
@@ -266,7 +290,7 @@ def variant_add(request, product_id):
         "imageformset": imageformset,
         "product": product,
     }
-    return render(request, "catalog/admin/product/variant_add_form.html", context)
+    return render(request, "catalog/admin/product/variant_form.html", context)
 
 
 @never_cache
@@ -292,6 +316,54 @@ def variant_edit(request, product_id, variant_id):
         imageformset = ImageFormset(request.POST, request.FILES, queryset=images)
 
         if variantform.is_valid() and imageformset.is_valid():
+            
+            final_image_count = 0
+            primary_count = 0
+
+            for form in imageformset:
+                if not form.cleaned_data:
+                    continue
+                
+                is_delete = form.cleaned_data.get("DELETE", False)
+                has_image = form.cleaned_data.get("image")
+                is_primary = form.cleaned_data.get("is_primary", False)
+                
+                if form.instance.pk:
+                    # Existing image
+                    if not is_delete:
+                        final_image_count += 1
+                        if is_primary:
+                            primary_count += 1
+                else:
+                    # New image
+                    if has_image:
+                        final_image_count += 1
+                        if is_primary:
+                            primary_count += 1
+
+            if final_image_count < 3:
+                messages.error(
+                    request,
+                    "A minimum of three product images is required. Updates were not saved.",
+                )
+                context = {
+                    "variantform": variantform,
+                    "imageformset": imageformset,
+                    "product": product,
+                    "variant": variant,
+                }
+                return render(request, "catalog/admin/product/variant_form.html", context)
+
+            if primary_count != 1:
+                messages.error(request, "Exactly one image must be set as primary. Updates were not saved.")
+                context = {
+                    "variantform": variantform,
+                    "imageformset": imageformset,
+                    "product": product,
+                    "variant": variant,
+                }
+                return render(request, "catalog/admin/product/variant_form.html", context)
+
             variant = variantform.save(commit=False)
             variant.product = product
             variant.save()
@@ -307,21 +379,8 @@ def variant_edit(request, product_id, variant_id):
                         image.variant = variant
                         image.save()
 
-            is_draft = variant.is_drafted
-            if not is_draft:
-                imagecount = variant.images.count()
-                if imagecount < 3:
-                    variant.is_drafted = True
-                    variant.save()
-                    messages.error(
-                        request,
-                        "A minimum of three product images is required to publish this variant.",
-                    )
-                    messages.success(request, "Variant saved as draft.")
-                else:
-                    messages.success(request, "Variant published successfully.")
-            else:
-                messages.success(request, "Variant updated successfully.")
+            manage_product_draft_status(request, product)
+            messages.success(request, "Variant updated successfully.")
             return redirect("admin_product_view", product_id=product_id)
     else:
         variantform = ProductVariantForm(instance=variant)
@@ -333,7 +392,7 @@ def variant_edit(request, product_id, variant_id):
         "product": product,
         "variant": variant,
     }
-    return render(request, "catalog/admin/product/variant_edit_form.html", context)
+    return render(request, "catalog/admin/product/variant_form.html", context)
 
 
 @never_cache
@@ -372,6 +431,7 @@ def variant_delete_toggle(request, product_id, variant_id):
         status = "restored"
     variant.save()
     messages.success(request, f"Variant {status} successfully.")
+    manage_product_draft_status(request, product)
     return redirect(
         request.META.get(
             "HTTP_REFERER",
@@ -387,24 +447,15 @@ def variant_draft_toggle(request, product_id, variant_id):
     product = get_object_or_404(Product, id=product_id)
     variant = get_object_or_404(ProductVariant, product=product, id=variant_id)
 
-    imagecount = variant.images.count()
-
-    if imagecount < 3:
-        variant.is_drafted = True
-        variant.save()
-        messages.error(
-            request,
-            "A minimum of three product images is required to publish this variant.",
-        )
-        messages.success(request, "Variant saved as draft.")
+    variant.is_drafted = not variant.is_drafted
+    variant.save()
+    if variant.is_drafted:
+        status = "drafted"
     else:
-        variant.is_drafted = not variant.is_drafted
-        variant.save()
-        if variant.is_drafted:
-            status = "drafted"
-        else:
-            status = "published"
-        messages.success(request, f"Variant {status} successfully.")
+        status = "published"
+    messages.success(request, f"Variant {status} successfully.")
+
+    manage_product_draft_status(request, product)
 
     return redirect(
         request.META.get(

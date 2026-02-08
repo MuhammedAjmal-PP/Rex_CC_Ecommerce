@@ -1,4 +1,4 @@
-{% extends "pages/admin/base_admin.html" %}
+{% extends "core/admin/base_admin.html" %}
 {% load static %}
 {% load cloudinary %}
 {% block title %}
@@ -6,9 +6,9 @@
 {% endblock title %}
 {% block extra_css %}
     <link rel="stylesheet"
-          href="{% static 'pages/admin/css/shared/admin_search_filter.css' %}">
+          href="{% static 'core/admin/css/shared/admin_search_filter.css' %}">
     <link rel="stylesheet"
-          href="{% static 'pages/admin/css/shared/admin_table_listing.css' %}">
+          href="{% static 'core/admin/css/shared/admin_table_listing.css' %}">
     <link rel="stylesheet"
           href="{% static 'catalog/css/admin/product/products.css' %}">
 {% endblock extra_css %}

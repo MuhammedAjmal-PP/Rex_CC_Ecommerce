@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth import get_user_model
 from .models import Address
-from utils.validators import (
+from core.validators import (
     name_validator,
     min_len_name_validator,
     image_file_extension_validator,

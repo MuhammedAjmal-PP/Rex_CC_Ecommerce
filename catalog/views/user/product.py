@@ -3,11 +3,9 @@ from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.views.decorators.cache import never_cache
-from catalog.helper import get_category_from_referer
+from catalog.service import get_category_from_referer
 from catalog.models import Product, ProductVariant, Category, Brand
 from users.wishlist.utils import get_wishlist_variant_ids
-
-from users.wishlist.utils import get_session_wishlist
 
 
 @never_cache

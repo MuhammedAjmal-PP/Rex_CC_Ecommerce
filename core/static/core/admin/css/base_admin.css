@@ -1,0 +1,460 @@
+/* ============================================================
+   REX CC ADMIN DASHBOARD - BASE STYLES
+   File: core/static/core/admin/css/base_admin.css
+   Bootstrap 5.3.3 Enhanced
+   Desktop-only (min-width: 1280px recommended)
+   ============================================================ */
+
+/* Import fonts to match admin auth styling */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:wght@400;600;700&display=swap');
+
+:root {
+    --admin-bg: #F5F5F5;
+    --admin-sidebar-bg: #1A1A1A;
+    --admin-sidebar-hover: #2A2A2A;
+    --admin-text-primary: #000000;
+    --admin-text-secondary: #666666;
+    --admin-text-light: #999999;
+    --admin-border: #E0E0E0;
+    --admin-white: #FFFFFF;
+    --admin-accent: #333333;
+
+    /* Fonts matching admin auth */
+    --font-head: 'Playfair Display', serif;
+    --font-body: 'Montserrat', sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: var(--font-body);
+    background-color: var(--admin-bg);
+    color: var(--admin-text-primary);
+    overflow-x: hidden;
+}
+
+/* ========================================
+   DASHBOARD CONTAINER
+   ======================================== */
+
+.dashboard-container {
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+}
+
+/* ========================================
+   SIDEBAR
+   ======================================== */
+
+.sidebar {
+    width: 260px;
+    background-color: var(--admin-sidebar-bg);
+    color: var(--admin-white);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    height: 100vh;
+    left: 0;
+    top: 0;
+    z-index: 1000;
+    overflow-y: auto;
+}
+
+.sidebar-header {
+    padding: 30px 25px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.logo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.logo-main {
+    font-family: var(--font-head);
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: var(--admin-white);
+}
+
+/* Accent color for 'CC' part of logo */
+.logo-main .logo-accent {
+    color: var(--admin-text-light);
+}
+
+.logo-sub {
+    display: inline-block;
+    background-color: var(--admin-white);
+    color: var(--admin-sidebar-bg);
+    font-size: 0.6rem;
+    font-weight: 600;
+    letter-spacing: 3px;
+    padding: 5px 18px;
+    text-transform: uppercase;
+    font-family: var(--font-body);
+}
+
+/* ========================================
+   SIDEBAR NAVIGATION
+   ======================================== */
+
+.sidebar-nav {
+    flex: 1;
+    padding: 20px 0;
+    overflow-y: auto;
+}
+
+.sidebar-nav h6 {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: var(--admin-text-light);
+    padding: 20px 25px 10px;
+    margin: 0;
+    text-transform: uppercase;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 14px 25px;
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    font-weight: 400;
+    border-left: 3px solid transparent;
+}
+
+.nav-item:hover {
+    background-color: var(--admin-sidebar-hover);
+    color: var(--admin-white);
+    border-left-color: var(--admin-white);
+}
+
+.nav-item.active {
+    background-color: var(--admin-sidebar-hover);
+    color: var(--admin-white);
+    border-left-color: var(--admin-white);
+    font-weight: 500;
+}
+
+.nav-item svg {
+    flex-shrink: 0;
+}
+
+/* ========================================
+   SIDEBAR FOOTER
+   ======================================== */
+
+.sidebar-footer {
+    padding: 20px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.nav-item.logout {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.nav-item.logout:hover {
+    color: #ff4444;
+    background-color: rgba(255, 68, 68, 0.1);
+    border-left-color: #ff4444;
+}
+
+/* ========================================
+   MAIN CONTENT
+   ======================================== */
+
+.main-content {
+    margin-left: 260px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    width: calc(100% - 260px);
+}
+
+/* ========================================
+   DASHBOARD HEADER
+   ======================================== */
+
+.dashboard-header {
+    background-color: var(--admin-white);
+    padding: 30px 40px;
+    border-bottom: 1px solid var(--admin-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    top: 0;
+    z-index: 100;
+}
+
+.header-left h1 {
+    font-family: var(--font-head);
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin: 0 0 5px 0;
+    color: var(--admin-text-primary);
+    letter-spacing: 0.5px;
+}
+
+.header-subtitle {
+    font-size: 0.9rem;
+    color: var(--admin-text-secondary);
+    margin: 0;
+    font-weight: 400;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+/* ========================================
+   USER PROFILE
+   ======================================== */
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    background-color: var(--admin-border);
+}
+
+.user-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.user-name {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--admin-text-primary);
+}
+
+/* ========================================
+   CONTENT SECTIONS
+   ======================================== */
+
+.content-section {
+    background-color: var(--admin-white);
+    border-radius: 8px;
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.section-header h2 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin: 0;
+    color: var(--admin-text-primary);
+}
+
+.view-all {
+    font-size: 0.85rem;
+    color: var(--admin-text-secondary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.view-all:hover {
+    color: var(--admin-text-primary);
+}
+
+/* ========================================
+   SCROLLBAR STYLING
+   ======================================== */
+
+.sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* ========================================
+   MESSAGE NOTIFICATIONS
+   ======================================== */
+
+.messages-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 450px;
+    pointer-events: none;
+}
+
+.alert-message {
+    background-color: var(--admin-white);
+    border-radius: 0;
+    padding: 16px 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    border-left: 4px solid;
+    pointer-events: auto;
+    animation: slideIn 0.3s ease-out;
+    transition: all 0.3s ease;
+}
+
+.alert-message.fade-out {
+    animation: slideOut 0.3s ease-in forwards;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(120%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(120%);
+        opacity: 0;
+    }
+}
+
+.alert-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+}
+
+.alert-icon {
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.alert-text {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--admin-text-primary);
+    line-height: 1.4;
+}
+
+.alert-close {
+    background: none;
+    border: none;
+    color: var(--admin-text-secondary);
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0px;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.alert-close:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    color: var(--admin-text-primary);
+}
+
+.alert-close i {
+    font-size: 1.1rem;
+}
+
+/* Success Alert */
+.alert-success {
+    border-left-color: #10b981;
+}
+
+.alert-success .alert-icon {
+    color: #10b981;
+}
+
+/* Error Alert */
+.alert-error,
+.alert-danger {
+    border-left-color: #ef4444;
+}
+
+.alert-error .alert-icon,
+.alert-danger .alert-icon {
+    color: #ef4444;
+}
+
+/* Warning Alert */
+.alert-warning {
+    border-left-color: #f59e0b;
+}
+
+.alert-warning .alert-icon {
+    color: #f59e0b;
+}
+
+/* Info Alert */
+.alert-info {
+    border-left-color: #3b82f6;
+}
+
+.alert-info .alert-icon {
+    color: #3b82f6;
+}

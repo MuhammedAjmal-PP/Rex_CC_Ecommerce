@@ -6,7 +6,12 @@ from django.contrib.auth.models import (
 )
 from phonenumber_field.modelfields import PhoneNumberField
 import uuid
-
+from core.validators import (
+    image_size_validator,
+    image_file_extension_validator,
+    name_validator,
+    min_len_name_validator,
+)
 
 # Create your models here.
 
@@ -44,13 +49,30 @@ class CustomUserManager(BaseUserManager):
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     # Basic info
-    first_name = models.CharField(max_length=100, null=True, blank=True)
-    last_name = models.CharField(max_length=100, null=True, blank=True)
+    first_name = models.CharField(
+        max_length=100,
+        null=True,
+        blank=True,
+        validators=[
+            name_validator,
+            min_len_name_validator,
+        ],
+    )
+    last_name = models.CharField(
+        max_length=100,
+        null=True,
+        blank=True,
+        validators=[
+            name_validator,
+            min_len_name_validator,
+        ],
+    )
     avatar = models.ImageField(
         upload_to="user_avatar",
         null=True,
         blank=True,
         help_text="User Profile Pic",
+        validators=[image_size_validator, image_file_extension_validator],
     )
 
     email = models.EmailField(unique=True)
