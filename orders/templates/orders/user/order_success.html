@@ -1,0 +1,42 @@
+{% extends "core/user/base_user.html" %}
+{% load static %}
+{% block head_title %}Order Confirmed | REX CC{% endblock %}
+{% block extra_css %}
+    <link rel="stylesheet"
+          href="{% static 'orders/user/css/order_success.css' %}">
+{% endblock %}
+{% block content %}
+    <section class="success-page">
+        <div class="success-container">
+            <!-- Animated Checkmark -->
+            <div class="success-icon-wrapper">
+                <svg class="checkmark-svg" viewBox="0 0 52 52">
+                    <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none" />
+                    <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+                </svg>
+            </div>
+            <!-- Order Confirmation Text -->
+            <div class="success-text-block">
+                <h1 class="success-title">Order Confirmed</h1>
+                <p class="success-subtitle">Thank you for your purchase</p>
+            </div>
+            <!-- Order Number Card -->
+            <div class="order-number-card">
+                <span class="order-number-label">Order Number</span>
+                <span class="order-number-value">{{ order_number }}</span>
+            </div>
+            <!-- Info Text -->
+            <p class="success-info">
+                We've received your order and will begin processing it shortly.
+                You can track your order status from your account.
+            </p>
+            <!-- Action Buttons -->
+            <div class="success-actions">
+                <a href="{% url 'home' %}" class="btn-continue-shopping">
+                    <span class="material-icons">storefront</span>
+                    Continue Shopping
+                </a>
+            </div>
+        </div>
+    </section>
+{% endblock %}

@@ -1,5 +1,9 @@
 from django.contrib import messages
 from urllib.parse import urlparse, parse_qs
+from django.contrib.contenttypes.models import ContentType
+from django.db import transaction
+from django.core.exceptions import ValidationError
+from catalog.models import InventoryLog
 
 
 def manage_product_draft_status(request, product):
@@ -40,3 +44,59 @@ def get_category_from_referer(request):
         return None
 
     return category_slug[0]
+
+
+@transaction.atomic
+def update_stock(*, product_variant, change, reason, note, actor, reference_object):
+    """
+    Centralized stock update service.
+
+    Args:
+        product_variant (ProductVariant): Variant whose stock changes
+        change (int): +ve for stock in, -ve for stock out
+        reason (str): InventoryLog.REASON_CHOICES
+        actor (User, optional): Who triggered the change
+        reference_object (Model, optional): Order / OrderItem / Return
+        note (str, optional): Extra context
+
+    Returns:
+        InventoryLog instance
+    """
+
+    if change == 0:
+        raise ValidationError("Stock change cannot be Zero")
+
+    before = product_variant.stock
+    after = before + change
+
+    if after < 0:
+        raise ValidationError(
+            "Insufficient stock"
+        )  # change that into admin notification in future
+
+    # update actual stock
+    product_variant.stock = after
+    product_variant.save(update_fields=["stock"])
+
+    content_type = None
+    object_id = None
+
+    if reference_object:
+        content_type = ContentType.objects.get_for_model(reference_object)
+        object_id = reference_object.id
+
+    # create inventory log
+    log = InventoryLog.objects.create(
+        product_variant=product_variant,
+        change=change,
+        stock_before=before,
+        stock_after=after,
+        reason=reason,
+        note=note,
+        actor=actor,
+        content_type=content_type,
+        object_id=object_id,
+        reference_object=reference_object,
+    )
+
+    return log

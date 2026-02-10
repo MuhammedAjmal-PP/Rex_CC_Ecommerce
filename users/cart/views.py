@@ -21,20 +21,17 @@ def view_cart(request):
 
     cart_items = fetch_cart(cart)
 
-    products, sub_total = build_cart_summary(cart_items)
+    products = build_cart_summary(cart_items)
 
     # order summay variables
     total_discount = Decimal("0.00")
-    total_quantity = sum(item.quantity for item in cart_items)
-    shipping_fee = Decimal("100.00") * total_quantity
-    total_amount_to_pay = sub_total + shipping_fee
 
     order_summary = {
-        "products_count": len(products),
-        "sub_total": sub_total,
+        "products_count": cart.items_count,
+        "sub_total": cart.sub_total,
         "total_discount": total_discount,
-        "shipping_fee": shipping_fee,
-        "total_amount_to_pay": total_amount_to_pay,
+        "shipping_fee": cart.shipping_fee,
+        "total_amount_to_pay": cart.total_amount,
     }
 
     context = {

@@ -1,12 +1,7 @@
 {% extends "core/user/base_user.html" %}
 {% load static %}
 {% block head_title %}
-    {% if form.instance.pk %}
-        Edit Address
-    {% else %}
-        Add Address
-    {% endif %}
-    | REX CC
+    {{ title }} | REX CC
 {% endblock head_title %}
 {% block extra_css %}
     <link rel="stylesheet"
@@ -21,11 +16,7 @@
             <a href="{% url 'user_address' %}" class="breadcrumb-link">Addresses</a>
             <span class="breadcrumb-separator">›</span>
             <span class="breadcrumb-current">
-                {% if form.instance.pk %}
-                    Edit Address
-                {% else %}
-                    Add Address
-                {% endif %}
+                {{ title }}
             </span>
         </nav>
         <!-- PAGE HEADER -->
@@ -34,11 +25,7 @@
                        margin:0 auto 40px;
                        text-align:center">
             <h1 class="page-title" style="font-size:2rem; margin-bottom:10px;">
-                {% if form.instance.pk %}
-                    Edit Address
-                {% else %}
-                    Add New Address
-                {% endif %}
+                {{ title }}
             </h1>
             <p class="page-subtitle" style="color:#666;">Carefully curated delivery details</p>
         </header>

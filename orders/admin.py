@@ -38,7 +38,7 @@ class OrderAdmin(admin.ModelAdmin):
     list_display = (
         "order_number",
         "user",
-        "total",
+        "grant_total",
         "payment_method",
         "created_at",
     )

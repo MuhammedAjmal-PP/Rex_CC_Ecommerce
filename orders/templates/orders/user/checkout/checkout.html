@@ -41,49 +41,50 @@
                             {% include "orders/user/checkout/partials/review_section.html" %}
                         </div>
                     </div>
-                        <!-- RIGHT COLUMN: Order Summary -->
-                        <aside class="checkout-sidebar">
-                            <div class="summary-card">
-                                <h3 class="summary-title">Order Summary</h3>
-                                <div class="summary-row">
-                                    <span class="summary-label">Subtotal ({{ order_summary.items_count }} items)</span>
-                                    <span class="summary-value">₹{{ order_summary.subtotal|floatformat:0|intcomma }}</span>
-                                </div>
-                                <div class="summary-row">
-                                    <span class="summary-label">Discount</span>
-                                    <span class="summary-value">-₹{{ order_summary.discount|floatformat:0|intcomma }}</span>
-                                </div>
-                                <div class="summary-row">
-                                    <span class="summary-label">Shipping</span>
-                                    <span class="summary-value">
-                                        {% if order_summary.shipping_charge == 0 %}
-                                            Free
-                                        {% else %}
-                                            ₹{{ order_summary.shipping_charge|floatformat:0|intcomma }}
-                                        {% endif %}
-                                    </span>
-                                </div>
-
-                                <!-- Tax Included Note (Optional/If needed) -->
-                                <!-- <div class="summary-row" style="font-size:0.8rem; color:#999;">Tax included</div> -->
-                                <div class="summary-row total">
-                                    <span class="summary-label">Total</span>
-                                    <span class="summary-value">₹{{ order_summary.total|floatformat:0|intcomma }}</span>
-                                </div>
-                                <!-- Secure Badge -->
-                                <div style="margin-top: 20px;
-                                            text-align: center;
-                                            color: #888;
-                                            font-size: 0.8rem;
-                                            display: flex;
-                                            align-items: center;
-                                            justify-content: center;
-                                            gap: 5px">
-                                    <span class="material-icons" style="font-size: 14px;">lock</span>
-                                    Secure Checkout
-                                </div>
+                    <!-- RIGHT COLUMN: Order Summary -->
+                    <aside class="checkout-sidebar">
+                        <div class="summary-card">
+                            <h3 class="summary-title">Order Summary</h3>
+                            <div class="summary-row">
+                                <span class="summary-label">Subtotal ({{ order_summary.items_count }} items)</span>
+                                <span class="summary-value">₹{{ order_summary.sub_total|floatformat:0|intcomma }}</span>
                             </div>
-                        </aside>
+                            <div class="summary-row">
+                                <span class="summary-label">Discount</span>
+                                <span class="summary-value">-₹{{ order_summary.discount|floatformat:0|intcomma }}</span>
+                            </div>
+                            <div class="summary-row">
+                                <span class="summary-label">Shipping</span>
+                                <span class="summary-value">
+                                    {% if order_summary.shipping_charge == 0 %}
+                                        Free
+                                    {% else %}
+                                        ₹{{ order_summary.shipping_charge|floatformat:0|intcomma }}
+                                    {% endif %}
+                                </span>
+                            </div>
+                            <div class="summary-row">
+                                <span class="summary-label">Tax (GST {{ order_summary.gst_rate }}%)</span>
+                                <span class="summary-value">₹{{ order_summary.tax|default:0|floatformat:0|intcomma }}</span>
+                            </div>
+                            <div class="summary-row total">
+                                <span class="summary-label">Total</span>
+                                <span class="summary-value">₹{{ order_summary.total|floatformat:0|intcomma }}</span>
+                            </div>
+                            <!-- Secure Badge -->
+                            <div style="margin-top: 20px;
+                                        text-align: center;
+                                        color: #888;
+                                        font-size: 0.8rem;
+                                        display: flex;
+                                        align-items: center;
+                                        justify-content: center;
+                                        gap: 5px">
+                                <span class="material-icons" style="font-size: 14px;">lock</span>
+                                Secure Checkout
+                            </div>
+                        </div>
+                    </aside>
                 </div>
             </main>
         </div>

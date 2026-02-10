@@ -21,7 +21,6 @@ function selectAddress(cardEl, id) {
     
     // Store data for review
     const name = cardEl.querySelector('.addr-name').innerText;
-    // Helper to get text without HTML tags if needed, but innerText is usually fine
     
     CheckoutState.deliveryData = {
         name: name,
@@ -39,17 +38,156 @@ function selectAddress(cardEl, id) {
     }
 }
 
-// --- Management Logic ---
+// --- DOM & Helper Logic ---
 
-// Note: fetchAddresses is removed because we reload page on list update 
-// to respect "no backend changes" constraint for checkout specific partials.
+function setupCancelButton(form) {
+    const cancelBtn = form.querySelector('.btn-outline');
+    if (cancelBtn) {
+        cancelBtn.removeAttribute('href');
+        cancelBtn.type = 'button';
+        cancelBtn.onclick = () => {
+             document.getElementById('checkout-address-form-container').style.display = 'none';
+        };
+        cancelBtn.innerHTML = '<span class="material-icons">close</span> Cancel';
+    }
+}
+
+// Custom Label Logic (Ported from address_form.js)
+function initCustomLabelLogic(container) {
+    if (!container) return;
+    
+    const radioInputs = container.querySelectorAll('input[name="label_choice"]');
+    const customLabelGroup = container.querySelector('#customLabelGroup');
+    const customLabelInput = container.querySelector('#custom_label');
+    const hiddenLabelInput = container.querySelector('#label');
+
+    function updateLabelState() {
+        const selectedRadio = container.querySelector('input[name="label_choice"]:checked');
+        if (!selectedRadio) return;
+
+        const value = selectedRadio.value;
+
+        if (value === 'Other') {
+            if (customLabelGroup) customLabelGroup.style.display = 'block';
+            if (hiddenLabelInput) hiddenLabelInput.value = (customLabelInput && customLabelInput.value) || 'Other';
+        } else {
+            if (customLabelGroup) customLabelGroup.style.display = 'none';
+            if (customLabelInput) customLabelInput.value = ''; 
+            if (hiddenLabelInput) hiddenLabelInput.value = value;
+        }
+    }
+
+    if (radioInputs.length > 0) {
+        // Initial check
+        updateLabelState();
+
+        // Radio change listeners
+        radioInputs.forEach(radio => {
+            radio.addEventListener('change', updateLabelState);
+        });
+    }
+
+    // Custom label input listener
+    if (customLabelInput && hiddenLabelInput) {
+        customLabelInput.addEventListener('input', function() {
+            hiddenLabelInput.value = this.value;
+        });
+    }
+}
+
+// Address Validation Logic (India Post API)
+function initAddressValidation(container) {
+    if (!container) return;
+
+    const postalCodeInput = container.querySelector('#postal_code');
+    const cityInput = container.querySelector('#city');
+    const stateInput = container.querySelector('#state');
+    
+    // Remove existing feedback if re-initializing
+    let feedbackElement = container.querySelector('.api-feedback');
+    if (!feedbackElement) {
+        feedbackElement = document.createElement('div');
+        feedbackElement.className = 'form-text text-muted api-feedback';
+        feedbackElement.style.fontSize = '0.85rem';
+        feedbackElement.style.marginTop = '4px';
+        if (postalCodeInput) {
+            postalCodeInput.parentNode.appendChild(feedbackElement);
+        }
+    }
+
+    if (postalCodeInput) {
+        postalCodeInput.addEventListener('change', function() {
+            const pin = this.value.trim();
+            if (pin.length === 6 && /^\d+$/.test(pin)) {
+                
+                // Show loading state
+                feedbackElement.textContent = 'Fetching details from India Post...';
+                feedbackElement.style.color = '#666';
+                postalCodeInput.classList.remove('is-invalid');
+                
+                // Fetch from Public API
+                fetch(`https://api.postalpincode.in/pincode/${pin}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data && data[0].Status === "Success") {
+                            const postOfficeData = data[0].PostOffice[0];
+                            const state = postOfficeData.State;
+                            
+                            // 1. Auto-fill State & Lock it
+                            if (stateInput) {
+                                stateInput.value = state;
+                                stateInput.setAttribute('readonly', true);
+                                stateInput.classList.add('locked-input');
+                            }
+                            
+                            // 2. City Logic: Leave it UNLOCKED and UNTOUCHED
+                            if (cityInput) {
+                                 cityInput.removeAttribute('readonly');
+                            }
+                            
+                            // Success: Clear any error messages
+                            feedbackElement.textContent = '';
+                            postalCodeInput.classList.remove('is-invalid');
+                            postalCodeInput.classList.add('is-valid');
+                        } else {
+                            throw new Error('Invalid Pincode');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        feedbackElement.textContent = 'Invalid Postal Code. Please enter a valid code.';
+                        feedbackElement.style.color = '#d9534f'; 
+                        postalCodeInput.classList.add('is-invalid');
+                        
+                        // Strict Mode: Keep State locked/empty if invalid
+                        if (stateInput) {
+                            stateInput.value = ''; // Clear invalid state
+                            stateInput.setAttribute('readonly', true); // Keep it locked
+                        }
+                    });
+            } else if (pin.length > 0) {
+                 feedbackElement.textContent = 'Postal code must be 6 digits.';
+                 feedbackElement.style.color = '#d9534f';
+                 postalCodeInput.classList.add('is-invalid');
+            } else {
+                feedbackElement.textContent = '';
+                postalCodeInput.classList.remove('is-invalid', 'is-valid');
+                if (stateInput && !stateInput.value) {
+                     stateInput.removeAttribute('readonly'); 
+                     stateInput.setAttribute('readonly', true); // Strict consistency
+                }
+            }
+        });
+    }
+}
+
+// --- Form Management Logic ---
 
 async function toggleAddressForm(isEdit = false, addressId = null) {
     const container = document.getElementById('checkout-address-form-container');
     const titleEl = container.querySelector('.address-form-title');
     
-    // If closing (and not switching directly to another mode)
-    // We check if it's currently visible and we are just toggling off
+    // Toggle Off if already visible and matching mode
     if (container.style.display !== 'none' && !addressId && !isEdit) {
         container.style.display = 'none';
         return;
@@ -58,26 +196,16 @@ async function toggleAddressForm(isEdit = false, addressId = null) {
     // Toggle On
     container.style.display = 'block';
 
-    // If Add & Form already exists (and isn't the Edit form which would have a different action or no add action)
-    // The server render puts the Add form there by default.
-    // We need to check if we are in "Add Mode" and the form is already valid.
-    
+    // Handle "Add New" Mode reuse
     if (!isEdit) {
-        // Check if we need to reset/restore
         if (titleEl) titleEl.innerText = "New Address";
         
-        // If content was overwritten by Edit previously, we might need to fetch Add.
-        // Or if the initial render is there.
         const currentForm = container.querySelector('form');
         const isAddForm = currentForm && currentForm.action.includes('add/');
         
         if (currentForm && isAddForm) {
-            // Already set up for add, just show it
-            currentForm.reset(); // clear any previous input
-            
-            // Ensure Cancel button works (re-attach event if needed, but onclick is inline usually)
+            currentForm.reset(); 
             setupCancelButton(currentForm);
-            
             container.scrollIntoView({ behavior: 'smooth', block: 'center' });
             return;
         }
@@ -86,8 +214,7 @@ async function toggleAddressForm(isEdit = false, addressId = null) {
     // Determine URL
     let url = isEdit ? ENDPOINTS.EDIT_ADDRESS.replace('{id}', addressId) : ENDPOINTS.ADD_ADDRESS;
     
-    // Show Loading ONLY if we are fetching
-    // If we are here, it means we don't have the correct form inline.
+    // Show Loading
     container.innerHTML = '<div style="padding:20px; text-align:center;">Loading form...</div>';
 
     try {
@@ -103,7 +230,7 @@ async function toggleAddressForm(isEdit = false, addressId = null) {
             if (formWrapper) {
                 container.innerHTML = '';
                 
-                // Re-create wrapper structure if we blew it away
+                // Re-create wrapper structure
                 const wrapperDiv = document.createElement('div');
                 wrapperDiv.className = 'address-form-wrapper';
                 
@@ -112,13 +239,6 @@ async function toggleAddressForm(isEdit = false, addressId = null) {
                 titleHeading.innerText = isEdit ? 'Edit Address' : 'New Address';
                 
                 wrapperDiv.appendChild(titleHeading);
-                
-                // Append the fetched form 
-                // (Note: partials/address_form.html usually has .form-wrapper, so we might nest wrappers or strip one)
-                // The partial has <div class="form-wrapper" ...> so we might not need our own wrapper details.
-                // But our CSS expects .address-form-title inside .address-form-wrapper potentially.
-                
-                // Let's just use the fetched content but inject the title.
                 wrapperDiv.appendChild(formWrapper);
                 container.appendChild(wrapperDiv);
                 
@@ -128,14 +248,13 @@ async function toggleAddressForm(isEdit = false, addressId = null) {
                     form.action = url;
                     form.onsubmit = handleAddressSubmit;
                     setupCancelButton(form);
-                    
-                    // Style overrides if necessary
-                    form.style.padding = "0"; // Reset if partial has padding
+                    form.style.padding = "0"; 
                     form.style.border = "none";
                 }
                 
-                // Initialize Custom Label Logic for the fetched form
+                // Initialize Custom Logic
                 initCustomLabelLogic(container);
+                initAddressValidation(container);
                 
                 container.scrollIntoView({ behavior: 'smooth', block: 'center' });
             } else {
@@ -152,25 +271,13 @@ async function toggleAddressForm(isEdit = false, addressId = null) {
     }
 }
 
-function setupCancelButton(form) {
-    const cancelBtn = form.querySelector('.btn-outline');
-    if (cancelBtn) {
-        cancelBtn.removeAttribute('href');
-        cancelBtn.type = 'button';
-        cancelBtn.onclick = () => {
-             document.getElementById('checkout-address-form-container').style.display = 'none';
-        };
-        cancelBtn.innerHTML = '<span class="material-icons">close</span> Cancel';
-    }
-}
-
 async function handleAddressSubmit(event) {
     event.preventDefault();
     const form = event.target;
     const url = form.action;
     const formData = new FormData(form);
     
-    // Add submit button loading state
+    // Loading State
     const submitBtn = form.querySelector('button[type="submit"]');
     const originalText = submitBtn ? submitBtn.innerText : 'Save';
     if(submitBtn) {
@@ -188,12 +295,11 @@ async function handleAddressSubmit(event) {
         });
 
         if (response.ok) {
-            // Success - Reload to refresh address list (since we don't have partial endpoint)
+            // Success - Reload to refresh list
             window.location.reload();
         } else {
             const data = await response.json();
             if (data.errors) {
-                 // Map errors to fields
                  // Clear previous errors
                  form.querySelectorAll('.form-error').forEach(e => e.remove());
                  
@@ -201,7 +307,6 @@ async function handleAddressSubmit(event) {
                      const errorMsg = data.errors[field][0];
                      const input = form.querySelector(`[name="${field}"]`);
                      if (input) {
-                         // Insert error message
                          const errorDiv = document.createElement('div');
                          errorDiv.className = 'form-error';
                          errorDiv.style.color = '#dc3545';
@@ -253,69 +358,25 @@ function editAddress(e, id) {
     toggleAddressForm(true, id);
 }
 
-// Alias for add new (called by template button)
 function showAddAddressForm() {
     toggleAddressForm(false);
 }
 
-// Custom Label Logic (Ported from address_form.js)
-function initCustomLabelLogic(container) {
-    if (!container) return;
-    
-    const radioInputs = container.querySelectorAll('input[name="label_choice"]');
-    const customLabelGroup = container.querySelector('#customLabelGroup');
-    const customLabelInput = container.querySelector('#custom_label');
-    const hiddenLabelInput = container.querySelector('#label');
+// --- Initialization ---
 
-    function updateLabelState() {
-        const selectedRadio = container.querySelector('input[name="label_choice"]:checked');
-        if (!selectedRadio) return;
-
-        const value = selectedRadio.value;
-
-        if (value === 'Other') {
-            if (customLabelGroup) customLabelGroup.style.display = 'block';
-            if (hiddenLabelInput) hiddenLabelInput.value = (customLabelInput && customLabelInput.value) || 'Other';
-        } else {
-            if (customLabelGroup) customLabelGroup.style.display = 'none';
-            if (customLabelInput) customLabelInput.value = ''; // Clear custom input logic if desired, or keep it. Original kept it. 
-            // Original: hiddenLabelInput.value = value;
-            if (hiddenLabelInput) hiddenLabelInput.value = value;
-        }
-    }
-
-    if (radioInputs.length > 0) {
-        // Initial check
-        updateLabelState();
-
-        // Radio change listeners
-        radioInputs.forEach(radio => {
-            radio.addEventListener('change', updateLabelState);
-        });
-    }
-
-    // Custom label input listener
-    if (customLabelInput && hiddenLabelInput) {
-        customLabelInput.addEventListener('input', function() {
-            hiddenLabelInput.value = this.value;
-        });
-    }
-}
-
-// Initialization Logic
 document.addEventListener('DOMContentLoaded', () => {
     // Check if there are any addresses
     const addressCards = document.querySelectorAll('.checkout-address-card');
     const formContainer = document.getElementById('checkout-address-form-container');
     
-    // Initialize label logic for the pre-rendered form if it exists
+    // Initialize label & validation logic for the pre-rendered form if it exists
     if (formContainer) {
         initCustomLabelLogic(formContainer);
+        initAddressValidation(formContainer);
     }
     
     // If no addresses found, automatically open the Add Address form
     if (addressCards.length === 0) {
-        // We use a slight timeout to ensure DOM is fully ready if script is deferred
         setTimeout(() => {
             showAddAddressForm();
         }, 100);

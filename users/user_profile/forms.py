@@ -134,6 +134,7 @@ class AddressForm(forms.ModelForm):
                     "placeholder": "Enter State",
                     "id": "state",
                     "class": "form-control",
+                    "readonly": True, # Default to readonly for integrity, JS unlocks if needed or fills it
                 }
             ),
             "postal_code": forms.TextInput(
@@ -145,8 +146,8 @@ class AddressForm(forms.ModelForm):
             ),
             "country": forms.TextInput(
                 attrs={
-                    "placeholder": "Enter Country",
-                    "id": "country",
+                    "readonly": True,
+                    "value": "India",
                     "class": "form-control",
                 }
             ),

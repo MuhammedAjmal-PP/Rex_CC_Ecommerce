@@ -55,7 +55,12 @@ def add_address(request):
             return JsonResponse({"errors": form.errors}, status=400)
     else:
         form = AddressForm()
-    return render(request, "user_profile/address_form.html", {"form": form})
+
+    context = {
+        "form": form,
+        "title": "Add Address",
+    }
+    return render(request, "user_profile/address_manage.html", context)
 
 
 @never_cache
@@ -80,7 +85,11 @@ def edit_address(request, address_id):
     else:
         form = AddressForm(instance=address)
 
-    return render(request, "user_profile/address_form.html", {"form": form})
+    context = {
+        "form": form,
+        "title": "Edit Address",
+    }
+    return render(request, "user_profile/address_manage.html", context)
 
 
 @login_required

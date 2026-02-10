@@ -29,7 +29,12 @@ def checkoutview(request):
         messages.error(request, "Your cart is empty.")
         return redirect("user_cart")
 
-    products, products_total_price = build_cart_summary(cart_items)
+    for item in cart_items:
+        if item.quantity > item.product_variant.stock:
+            messages.error(request, f"Insufficient stock for {item.product_variant}.")
+            return redirect("user_cart")
+
+    products = build_cart_summary(cart_items)
 
     addresses = Address.active.filter(user=request.user).order_by(
         "-is_default", "-updated_at"
@@ -37,18 +42,16 @@ def checkoutview(request):
     can_add_address = addresses.count() < settings.MAX_ADDRESSES_PER_USER
     address_form = AddressForm() if can_add_address else None
 
-    subtotal = products_total_price
-    tax = (subtotal * Decimal("18")) / Decimal("100")
     discount = Decimal("0")
-    shipping_charge = sum(Decimal("100") * item.quantity for item in cart_items)
-    total = subtotal + tax + shipping_charge - discount
 
     order_summary = {
-        "items_count": len(products),
-        "subtotal": subtotal,
+        "items_count": cart.items_count,
+        "sub_total": cart.sub_total,
         "discount": discount,
-        "shipping_charge": shipping_charge,
-        "total": total,
+        "shipping_charge": cart.shipping_fee,
+        "gst_rate": settings.GST_RATE,
+        "tax": cart.tax,
+        "total": cart.grand_total,
     }
 
     context = {

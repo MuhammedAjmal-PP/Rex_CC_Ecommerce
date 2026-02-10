@@ -24,7 +24,6 @@ def fetch_cart(cart):
 
 def build_cart_summary(cart_items):
     products = []
-    products_total_price = Decimal("0.00")
 
     for item in cart_items:
         variant = item.product_variant
@@ -46,9 +45,8 @@ def build_cart_summary(cart_items):
                     "image": image.image.url,
                 },
                 "quantity": item.quantity,
-                "total_amount": variant.final_price * item.quantity,
-                "total_discount": variant.discount_amount * item.quantity,
+                "total_amount": item.total_amount,
+                "total_discount": item.total_discount,
             }
         )
-        products_total_price += variant.final_price * item.quantity
-    return products, products_total_price
+    return products

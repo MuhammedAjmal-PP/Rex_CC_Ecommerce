@@ -242,3 +242,22 @@ SOCIALACCOUNT_PROVIDERS = {
 CSRF_TRUSTED_ORIGINS = env("CSRF_TRUSTED_ORIGINS").split(",")
 
 MAX_ADDRESSES_PER_USER = 5
+
+# ---------------------------------------------------------------
+# TAX
+# ---------------------------------------------------------------
+
+# Your store's base location
+STORE_STATE = "KERALA"
+STORE_STATE_CODE = "32"
+
+# HSN Code for standard wristwatches (Mechanical/Battery-operated)
+DEFAULT_WATCH_HSN = "9102"
+
+# Standard GST rate for watches
+GST_RATE = 18.0
+
+# Split rates for internal calculation
+CGST_RATE = 9.0  # (Half of total GST for local sales)
+SGST_RATE = 9.0  # (Half of total GST for local sales)
+IGST_RATE = 18.0  # (Full GST for out-of-state sales)

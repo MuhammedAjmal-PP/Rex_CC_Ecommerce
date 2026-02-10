@@ -72,11 +72,12 @@ class StatusTimeline(models.Model):
         ]
 
     # ---------------- VALIDATION ----------------
+    @property
     def get_applicable_choices(self):
         return self.CHOICE_MAP.get(self.content_type.model, [])
 
     def clean(self):
-        allowed = [key for key, _ in self.get_applicable_choices()]
+        allowed = [key for key, _ in self.get_applicable_choices]
         if self.status not in allowed:
             raise ValidationError(
                 f"Invalid status '{self.status}' for {self.content_type.model}"
@@ -128,7 +129,7 @@ class Order(models.Model):
     tax = models.DecimalField(max_digits=10, decimal_places=2)
     discount = models.DecimalField(max_digits=10, decimal_places=2)
     shipping_fee = models.DecimalField(max_digits=10, decimal_places=2)
-    total = models.DecimalField(max_digits=10, decimal_places=2)
+    grant_total = models.DecimalField(max_digits=10, decimal_places=2)
 
     payment_method = models.CharField(
         max_length=50,
@@ -158,6 +159,7 @@ class Order(models.Model):
             super().save(update_fields=["order_number"])
 
     # ---------------- HELPERS ----------------
+    @property
     def current_status(self):
         return self.status.first()
 
@@ -199,6 +201,7 @@ class OrderItem(models.Model):
             return Decimal("0")
         return self.price * self.quantity
 
+    @property
     def current_status(self):
         return self.status.first()
 
