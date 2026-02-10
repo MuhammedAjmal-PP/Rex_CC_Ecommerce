@@ -24,10 +24,11 @@
 - [Cart Management](#-cart-management)
 - [Wishlist System](#-wishlist-system)
 - [Checkout & Orders](#-checkout--orders)
+- [Inventory Management](#-inventory-management)
 - [Tech Stack](#-tech-stack)
 - [Project Structure](#-project-structure)
 - [Quick Start](#-quick-start)
-- [roadmap](#-roadmap)
+- [Roadmap](#-roadmap)
 
 ---
 
@@ -41,8 +42,11 @@
 | Catalog | ✅ Complete | Search, Filter, Sort, Stock status |
 | Cart | ✅ Complete | Real-time stock, Guest handling, Wishlist sync |
 | Wishlist | ✅ Complete | Offcanvas UI, AJAX toggle, Persistent storage |
-| Checkout | 🔄 In Progress | Address selection, Order summary |
-| Orders | 🔄 Planned | Order placement, Tracking, History |
+| Checkout | ✅ Complete | 3-step stepper, Address selection, Order summary |
+| Order Placement | ✅ Complete | COD, Atomic transactions, Stock deduction |
+| Inventory | ✅ Complete | Centralized stock service, Audit logs |
+| Order Management (User) | 🔄 Next Up | Order history, Tracking, Cancellation |
+| Order Management (Admin) | 🔄 Next Up | Status updates, Fulfillment, Dashboard |
 
 ---
 
@@ -90,9 +94,9 @@
 
 **Location:** `orders/admin.py`
 
-- **Order Tracking**: Full visibility of Orders and OrderItems.
-- **Timeline**: `StatusTimeline` generic relation tracks every status change (Pending -> Shipped -> Delivered).
-- **Audit Trail**: Records *who* changed the status (Admin/System) and *when*.
+- **Order Admin**: Full CRUD with inline OrderItems + StatusTimeline.
+- **OrderItem Admin**: Per-item view with status timeline inline.
+- **Timeline Admin**: Audit trail of every status change with actor and timestamp.
 </details>
 
 ---
@@ -100,11 +104,12 @@
 ## 👤 User Features
 
 ### Profile & Address
-- **Profile**: Avatar cropping (Cropper.js), password management.
+- **Profile**: Avatar cropping (Cropper.js), inline password management.
 - **Address**: Limit max addresses (default 5), auto-default selection logic, soft delete to preserve order history.
+- **Address Validation**: Server-side India Post pincode-to-state mapping ensures address accuracy.
 
 ### Shopping Experience
-- **Catalog**: Faceted search (Brand, Category, Color, Movement), sorting, and pagination.
+- **Catalog**: Multi-select faceted filtering (Brand, Category, Color, Movement), sorting, and pagination.
 - **Product Detail**: Variant selection changes URL/Images/Price dynamically. Stock status indicators.
 
 ---
@@ -124,6 +129,7 @@
 1.  **Stock Validation**: Prevents adding more than available stock.
 2.  **Guest Handling**: Guests clicking "Add to Cart" are redirected to Login, then back to PDP.
 3.  **Wishlist Sync**: Adding to cart automatically removes from wishlist.
+4.  **Cart Properties**: `sub_total`, `tax` (GST), `shipping_fee`, `grand_total` as computed model properties.
 
 ---
 
@@ -146,17 +152,75 @@
 
 ## 🚚 Checkout & Orders
 
+### Checkout Flow
+
 **Location:** `orders/views/user/checkout.py`
 
-### Current Status
-- ✅ **Checkout Page**: Renders order summary and address selection.
-- ✅ **Address Selection**: Users can choose from saved addresses or add new ones inline.
-- ✅ **Order Summary**: Calculates Subtotal, Tax, Shipping, and Total dynamically.
+A **3-step stepper** UI guides the user through:
 
-### Pending Implementation
-- 🔄 **Payment Integration**: Razorpay/Stripe or COD logic.
-- 🔄 **Place Order**: Transaction handling to reduce stock and create Order records.
-- 🔄 **Order History**: User dashboard to view past orders.
+| Step | Feature | Details |
+|------|---------|---------|
+| 1. **Address** | Select/Add delivery address | Saved addresses with default selection, inline address form |
+| 2. **Payment** | Choose payment method | COD supported (Razorpay/Stripe planned) |
+| 3. **Review** | Final order review | Item summary, pricing breakdown, confirm & place |
+
+### Order Placement
+
+**Location:** `orders/views/user/place_order.py`
+
+| Function | Description |
+|----------|-------------|
+| `place_order_view()` | `@require_POST` — Atomic transaction: creates Order + OrderItems, decrements stock, clears cart |
+| `order_success_view()` | Animated success page with order number, guards against invalid access |
+
+**Transaction Flow (Atomic):**
+1. Validate address, payment method, cart items, and stock
+2. Create `Order` with address snapshots (JSONField) and totals
+3. Create `OrderItem` for each cart item with initial `PENDING` status
+4. Decrement stock via `update_stock()` service (creates `InventoryLog`)
+5. Set initial `PLACED` status on the Order via `StatusTimeline`
+6. Clear purchased items from cart
+7. Redirect to animated order success page
+
+### Order Models
+
+| Model | Description |
+|-------|-------------|
+| `Order` | User, address snapshots (JSON), totals, payment method, auto-generated order number |
+| `OrderItem` | Links Order ↔ ProductVariant with quantity and price |
+| `StatusTimeline` | **Generic relation** — tracks status history for both Order and OrderItem with actor audit |
+
+**StatusTimeline Statuses:**
+- **Order**: PLACED → CONFIRMED → INSPECTION → PACKING → READY → SHIPPED → IN_TRANSIT → OUT_FOR_DELIVERY → DELIVERED (+ ON_HOLD, FAILED, RTS)
+- **OrderItem**: PENDING → SHIPPED → DELIVERED (+ CANCELLED, RETURN_REQUESTED, RETURNED)
+
+---
+
+## 📊 Inventory Management
+
+**Location:** `catalog/service.py` + `catalog/models.py`
+
+### Centralized Stock Service
+
+```python
+update_stock(
+    product_variant,   # Which variant
+    change,            # +ve (restock) or -ve (order/return)
+    reason,            # ORDER_PLACED, ORDER_CANCELLED, RETURNED, ADMIN_ADJUSTMENT
+    actor,             # Who triggered the change
+    reference_object,  # Order/OrderItem/Return (generic FK)
+    note               # Extra context
+)
+```
+
+### InventoryLog Model
+
+Every stock change is recorded with:
+- `stock_before` / `stock_after` — Full audit trail
+- `reason` — Categorized (ORDER_PLACED, RETURNED, ADMIN_ADJUSTMENT, etc.)
+- `actor` — Who made the change (user/admin/system)
+- `reference_object` — Generic FK linking to the Order/OrderItem that caused it
+- Validation ensures `stock_after == stock_before + change`
 
 ---
 
@@ -177,20 +241,27 @@ django-allauth   Vanilla CSS       Cloudinary       djLint (templates)
 
 ```
 Rex_CC_Ecommerce/
-├── core/                  # Core modules (renamed from pages)
-│   ├── validators.py      # Shared validators (moved from utils)
+├── core/                  # Core modules
+│   ├── validators.py      # Shared validators
 │   └── templates/core/    # Base templates (admin/user)
 │
 ├── accounts/              # Authentication & User Model
+│   └── views/admin_views/ # User management (admin)
+│
 ├── catalog/               # Products, Brands, Categories, Variants
-├── orders/                # Order models & checkout logic
-│   ├── admin.py           # Admin configuration for orders
-│   └── views/user/        # Checkout & placement views
+│   ├── models.py          # Product, Variant, InventoryLog
+│   ├── service.py         # update_stock(), draft management
+│   └── views/admin/       # Full catalog CRUD
+│
+├── orders/                # Order lifecycle
+│   ├── models.py          # Order, OrderItem, StatusTimeline
+│   ├── admin.py           # Django admin with inlines
+│   └── views/user/        # Checkout, Place Order, Success
 │
 ├── users/                 # User domain
-│   ├── cart/              # Cart logic & views
-│   ├── wishlist/          # Wishlist logic
-│   └── user_profile/      # Address & Profile management
+│   ├── cart/              # Cart logic, utils, computed properties
+│   ├── wishlist/          # Wishlist toggle, offcanvas
+│   └── user_profile/      # Address (with pincode validation), Profile
 │
 └── rexcc_project/         # Project settings & URL conf
 ```
@@ -244,17 +315,18 @@ python manage.py runserver
 - [x] Product Management (Multi-category, Draft, Soft-delete)
 - [x] Variant Management (Specs, Images, Stock, Discount)
 - [x] User Profile (Avatar, Password Change)
-- [x] Address Management (CRUD, Default, Soft-delete)
-- [x] Product Catalog (List, Detail, Search, Filter)
+- [x] Address Management (CRUD, Default, Soft-delete, Pincode Validation)
+- [x] Product Catalog (List, Detail, Search, Multi-select Filters)
 
 ### Phase 2 — E-Commerce (🔄 In Progress)
 - [x] Wishlist (Offcanvas, AJAX, Profile Sync)
 - [x] Cart Management (Stock Validation, Login Redirect, Public API)
-- [x] Checkout UI (Address Select, Summary)
-- [ ] Order Placement Logic
-- [ ] User Order History
-- [ ] Admin Order Management UI
-- [ ] Inventory Management (Stock decrement)
+- [x] Checkout UI (3-Step Stepper, Address Select, Summary)
+- [x] Order Placement (COD, Atomic Transactions, Stock Deduction)
+- [x] Inventory Management (Centralized Service, InventoryLog Audit)
+- [x] Order Success Page (Animated SVG Confirmation)
+- [ ] **User Order History & Tracking** ← Next
+- [ ] **Admin Order Management UI** ← Next
 
 ### Phase 3 — Payments & Growth
 - [ ] Razorpay/Stripe Integration
