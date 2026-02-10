@@ -3,7 +3,6 @@
    Luxury Delivery Destinations
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:wght@400;600;700&display=swap');
 
 :root {
   --addr-bg: #faf9f7;
@@ -136,7 +135,7 @@
   background: var(--addr-gold);
   color: #ffffff;
   border: none;
-  border-radius: 6px;
+  border-radius: 3px;
   font-weight: 600;
   font-size: 0.9rem;
   text-transform: uppercase;
@@ -176,7 +175,7 @@
 .delivery-label {
   background: var(--addr-card);
   border: 1px solid var(--addr-border);
-  border-radius: 12px;
+  border-radius: 3px;
   padding: 30px;
   position: relative;
   transition: all 0.3s;
@@ -442,8 +441,6 @@
   .header-action {
     width: 100%;
   }
-
-  font-size: 24px;
 }
 
 .address-toast-error {

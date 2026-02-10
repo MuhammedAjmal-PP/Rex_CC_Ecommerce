@@ -8,10 +8,10 @@
   /* Deep Black/Charcoal */
   --pdp-secondary: #f4f4f4;
   /* Light Gray Background */
-  --pdp-accent: #d4af37;
-  /* Gold/Bronze */
-  --pdp-accent-hover: #b4941f;
-  /* Darker Gold */
+  --pdp-accent: #cd7f32;
+  /* Bronze - site-wide standard */
+  --pdp-accent-hover: #b06825;
+  /* Darker Bronze */
   --pdp-text: #333333;
   /* Main Text */
   --pdp-text-light: #666666;
@@ -28,14 +28,14 @@
   --pdp-spacing-sm: 1rem;
   --pdp-spacing-md: 2rem;
   --pdp-spacing-lg: 4rem;
-  --pdp-radius: 4px;
-  /* Sharp/Minimal radius */
+  --pdp-radius: 3px;
+  /* Site-wide standard radius */
 
   /* Typography Overrides (if needed beyond base) */
-  --font-heading: "Playfair Display", serif;
-  /* Or system serif */
-  --font-body: "Inter", sans-serif;
-  /* Or system sans */
+  --font-serif: "Playfair Display", serif;
+  /* Headings only */
+  --font-sans: "Montserrat", sans-serif;
+  /* Body + numbers */
 }
 
 /* =========================================
@@ -46,7 +46,7 @@
   max-width: 1400px;
   margin: 0 auto;
   padding: var(--pdp-spacing-md) var(--pdp-spacing-sm);
-  font-family: var(--font-body);
+  font-family: var(--font-sans);
   color: var(--pdp-text);
 }
 
@@ -267,7 +267,7 @@
 }
 
 .pdp-title {
-  font-family: var(--font-heading);
+  font-family: var(--font-serif);
   font-size: 2.5rem;
   font-weight: 600;
   margin: 0;
@@ -517,7 +517,7 @@
 }
 
 .pdp-section-title {
-  font-family: var(--font-heading);
+  font-family: var(--font-serif);
   font-size: 1.75rem;
   margin-bottom: var(--pdp-spacing-md);
   text-align: center;

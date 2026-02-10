@@ -250,6 +250,7 @@
   font-size: 1.05rem;
   font-weight: 600;
   color: #111111;
+  font-family: "Montserrat", sans-serif;
 }
 
 .product-card__original-price {
@@ -257,6 +258,7 @@
   color: #999;
   text-decoration: line-through;
   font-weight: 400;
+  font-family: "Montserrat", sans-serif;
 }
 
 /* ========================================
