@@ -1,4 +1,3 @@
-from datetime import timedelta
 from decimal import Decimal
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -13,6 +12,11 @@ from orders.models import Order, OrderItem, StatusTimeline
 from users.cart.models import Cart, CartItem
 from users.user_profile.models import Address
 from django.contrib.contenttypes.models import ContentType
+from orders.service import (
+    InsufficientStockError,
+    lock_variants_for_update,
+    validate_stock,
+)
 
 
 @login_required
@@ -56,17 +60,19 @@ def place_order_view(request):
         messages.error(request, "Your cart is empty.")
         return redirect("user_cart")
 
-    for item in cart_items:
-        if item.quantity > item.product_variant.stock:
-            messages.error(request, f"Insufficient stock for {item.product_variant}.")
-            return redirect("user_cart")
-
     discount = Decimal("0")
 
     order_obj = ContentType.objects.get_for_model(Order)
     order_item_obj = ContentType.objects.get_for_model(OrderItem)
 
     with transaction.atomic():
+        locked_variants = lock_variants_for_update(cart_items=cart_items)
+
+        try:
+            validate_stock(cart_items=cart_items, stock_lookup=locked_variants)
+        except InsufficientStockError as error:
+            messages.error(request, str(error))
+            return redirect("user_cart")
 
         # 1 create the order
         order = Order.objects.create(
@@ -82,11 +88,12 @@ def place_order_view(request):
         )
 
         for item in cart_items:
+            locked_variant = locked_variants[item.product_variant_id]
 
             # 2 create orderitems
             order_item = OrderItem.objects.create(
                 order=order,
-                product_variant=item.product_variant,
+                product_variant=locked_variant,
                 quantity=item.quantity,
                 price=item.total_amount,
             )
@@ -102,7 +109,7 @@ def place_order_view(request):
 
             # 4 update the stock and add entry to inventory log
             update_stock(
-                product_variant=item.product_variant,
+                product_variant=locked_variant,
                 change=-item.quantity,
                 reason="ORDER_PLACED",
                 actor=request.user,

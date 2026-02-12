@@ -9,6 +9,11 @@ from users.cart.models import Cart
 from users.cart.utils import build_cart_summary, fetch_cart
 from users.user_profile.forms import AddressForm
 from users.user_profile.models import Address
+from orders.service import (
+    InsufficientStockError,
+    build_unlocked_stock_lookup,
+    validate_stock,
+)
 
 
 # Create your views here.
@@ -29,10 +34,13 @@ def checkoutview(request):
         messages.error(request, "Your cart is empty.")
         return redirect("user_cart")
 
-    for item in cart_items:
-        if item.quantity > item.product_variant.stock:
-            messages.error(request, f"Insufficient stock for {item.product_variant}.")
-            return redirect("user_cart")
+    stock_lookup = build_unlocked_stock_lookup(cart_items=cart_items)
+
+    try:
+        validate_stock(cart_items=cart_items, stock_lookup=stock_lookup)
+    except InsufficientStockError as error:
+        messages.error(request, str(error))
+        return redirect("user_cart")
 
     products = build_cart_summary(cart_items)
 
