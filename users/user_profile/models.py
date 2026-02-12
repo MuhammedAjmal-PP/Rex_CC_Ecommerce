@@ -73,7 +73,7 @@ class Address(models.Model):
 
     class Meta:
         ordering = ["-is_default", "-created_at"]
-        verbose_name_plural = "Addreeses"
+        verbose_name_plural = "Addresses"
 
     @property
     def snapshot(self):

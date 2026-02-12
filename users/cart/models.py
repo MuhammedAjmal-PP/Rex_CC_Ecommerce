@@ -54,7 +54,7 @@ class CartItem(models.Model):
         on_delete=models.CASCADE,
         related_name="cart_items",
     )
-    quantity = models.PositiveBigIntegerField(default=1)
+    quantity = models.PositiveIntegerField(default=1)
 
     added_at = models.DateTimeField(auto_now_add=True)
 

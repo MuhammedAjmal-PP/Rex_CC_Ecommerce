@@ -1,5 +1,3 @@
-from email.policy import default
-from os import name
 from django import forms
 from catalog.models import (
     Brand,

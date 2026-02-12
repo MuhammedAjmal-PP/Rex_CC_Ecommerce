@@ -5,7 +5,6 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 from django.contrib import messages
 from allauth.account.models import EmailAddress
-from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.views.decorators.http import require_POST
 from users.user_profile.models import Address
