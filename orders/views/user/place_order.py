@@ -83,7 +83,7 @@ def place_order_view(request):
             tax=cart.tax,
             discount=discount,
             shipping_fee=cart.shipping_fee,
-            grant_total=cart.grand_total,
+            grand_total=cart.grand_total,
             payment_method="COD",
         )
 
