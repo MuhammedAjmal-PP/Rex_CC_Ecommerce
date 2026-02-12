@@ -16,23 +16,24 @@ class StatusTimeline(models.Model):
     ORDER_STATUSES = (
         ("PLACED", "Pending Review"),
         ("CONFIRMED", "Order Confirmed"),
-        ("INSPECTION", "Quality Check"),
-        ("PACKING", "Securing Package"),
-        ("READY", "Ready to Dispatch"),
         ("SHIPPED", "Dispatched"),
-        ("IN_TRANSIT", "In Transit"),
         ("OUT_FOR_DELIVERY", "Out for Delivery"),
         ("DELIVERED", "Delivered"),
-        ("ON_HOLD", "Action Required"),
-        ("FAILED", "Delivery Issue"),
-        ("RTS", "Returned to Sender"),
+        ("CANCELLED", "Cancelled"),
     )
 
     # ---------------- ORDER ITEM STATUSES ----------------
     ORDER_ITEM_STATUSES = (
         ("PENDING", "Pending"),
+        ("CONFIRMED", "Confirmed"),
+        ("PACKING", "Packing"),
+        ("READY", "Ready to Dispatch"),
         ("SHIPPED", "Shipped"),
+        ("IN_TRANSIT", "In Transit"),
+        ("OUT_FOR_DELIVERY", "Out for Delivery"),
         ("DELIVERED", "Delivered"),
+        ("FAILED", "Delivery Failed"),
+        ("RTS", "Returned to Sender"),
         ("CANCELLED", "Cancelled"),
         ("RETURN_REQUESTED", "Return Requested"),
         ("RETURNED", "Returned"),
@@ -116,8 +117,7 @@ class Order(models.Model):
     )
 
     order_number = models.CharField(
-        max_length=50,
-        editable=False,
+        max_length=50, editable=False, db_index=True, unique=True
     )
 
     billing_address = models.JSONField()
@@ -142,10 +142,7 @@ class Order(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = [["user", "order_number"]]
-        indexes = [
-            models.Index(fields=["user", "order_number"]),
-        ]
+        ordering = ["-created_at"]
 
     # ---------------- ORDER NUMBER ----------------
     def generate_order_number(self):
@@ -211,3 +208,76 @@ class OrderItem(models.Model):
 
     def __str__(self):
         return f"OrderItem #{self.id} ({self.product_variant})"
+
+
+# ======================================================
+# RETURN MODEL
+# ======================================================
+
+
+class Return(models.Model):
+
+    REASON_CODES = (
+        ("CHANGED_MIND", "Changed my mind"),
+        ("WRONG_ITEM_ORDERED", "Ordered wrong item"),
+        ("FOUND_BETTER_PRICE", "Found better price"),
+        ("DELIVERY_DELAY", "Delivery delay"),
+        ("DAMAGED_ITEM", "Item damaged"),
+        ("DEFECTIVE_ITEM", "Item defective"),
+        ("WRONG_ITEM_RECEIVED", "Wrong item received"),
+        ("SIZE_FIT_ISSUE", "Size/Fit issue"),
+        ("QUALITY_NOT_AS_EXPECTED", "Quality not as expected"),
+        ("OTHER", "Other"),
+    )
+
+    return_number = models.CharField(
+        max_length=50,
+        editable=False,
+        unique=True,
+        db_index=True,
+    )
+
+    order_item = models.ForeignKey(
+        OrderItem,
+        on_delete=models.CASCADE,
+        related_name="returns",
+    )
+
+    STATUS_CHOICES = (
+        ("REQUESTED", "Requested"),
+        ("APPROVED", "Approved"),
+        ("REJECTED", "Rejected"),
+        ("COMPLETED", "Completed"),
+    )
+
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default="REQUESTED",
+    )
+    reason_code = models.CharField(max_length=40, choices=REASON_CODES)
+    comment = models.TextField(blank=True, null=True)
+    photo = models.ImageField(upload_to="order_return/", blank=True, null=True)
+
+    admin_note = models.TextField(blank=True, null=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def generate_return_number(self):
+        while True:
+            return_number = f"RE-{uuid.uuid4().hex[-6:].upper()}"
+            if not Return.objects.filter(return_number=return_number).exists():
+                return return_number
+
+    def save(self, *args, **kwargs):
+        if not self.return_number:
+            self.return_number = self.generate_return_number()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return (
+            f"Return #{self.return_number} - {self.order_item_id} - {self.reason_code}"
+        )
