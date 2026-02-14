@@ -13,51 +13,48 @@
             <!-- AVATAR -->
             <div class="profile-avatar-wrapper">
                 {% if user.avatar %}
-                    <img src="{{ user.avatar.url }}" alt="{{ user.first_name }}" class="profile-avatar-large">
+                    <img src="{{ user.avatar.url }}"
+                         alt="{{ user.first_name }}"
+                         class="profile-avatar-large">
                 {% else %}
                     <div class="profile-avatar-placeholder-large">
                         <span class="material-icons">person</span>
                     </div>
                 {% endif %}
             </div>
-
             <!-- INFO -->
             <h1 class="profile-user-name">
-                {{ user.first_name }} {% if user.last_name %}{{ user.last_name }}{% endif %}
+                {{ user.first_name }}
+                {% if user.last_name %}{{ user.last_name }}{% endif %}
             </h1>
-            
             <div class="profile-meta-info">
                 <span class="meta-item">
                     <span class="material-icons">email</span>
                     {{ user.email }}
                 </span>
                 {% if user.phone_number %}
-                <span class="meta-separator">•</span>
-                <span class="meta-item">
-                    <span class="material-icons">phone</span>
-                    {{ user.phone_number }}
-                </span>
+                    <span class="meta-separator">•</span>
+                    <span class="meta-item">
+                        <span class="material-icons">phone</span>
+                        {{ user.phone_number }}
+                    </span>
                 {% endif %}
             </div>
-
             <div class="profile-actions-center">
-                 <a href="{% url 'account_logout' %}" class="btn-text-danger">
+                <a href="{% url 'account_logout' %}" class="btn-text-danger">
                     <span class="material-icons">logout</span> Sign Out
                 </a>
             </div>
         </header>
-
         <!-- MAIN DASHBOARD GRID -->
         <div class="profile-dashboard-container">
-            
             <!-- STATUS / NAVIGATION CARDS -->
             <section class="profile-nav-grid">
                 <!-- Orders -->
-                <a href="{% url 'order_list' %}" class="nav-card">
+                <a href="{% url 'user_order_list' %}" class="nav-card">
                     <span class="material-icons nav-icon">inventory_2</span>
                     <span class="nav-label">Orders</span>
                 </a>
-                
                 <!-- Wishlist -->
                 <a href="{% url 'user_wishlist' %}" class="nav-card">
                     <div class="nav-icon-wrapper">
@@ -71,38 +68,35 @@
                     </div>
                     <span class="nav-label">Wishlist</span>
                 </a>
-                
                 <!-- Cart -->
                 <a href="{% url 'user_cart' %}" class="nav-card">
                     <div class="nav-icon-wrapper">
                         <span class="material-icons nav-icon">local_mall</span>
-                         <!-- ID PRESERVED FOR JS -->
-                        <span id="profileCartBadge" class="nav-badge" {% if user.cart.items.count == 0 %}style="display:none"{% endif %}>
+                        <!-- ID PRESERVED FOR JS -->
+                        <span id="profileCartBadge"
+                              class="nav-badge"
+                              {% if user.cart.items.count == 0 %}style="display:none"{% endif %}>
                             {{ user.cart.items.count }}
                         </span>
                     </div>
                     <span class="nav-label">Cart</span>
                 </a>
-                
                 <!-- Wallet -->
                 <a href="#" class="nav-card">
                     <span class="material-icons nav-icon">account_balance_wallet</span>
                     <span class="nav-label">Wallet</span>
                 </a>
-
                 <!-- Addresses (Moved from Sidebar) -->
-                 <a href="{% url 'user_address' %}" class="nav-card">
+                <a href="{% url 'user_address' %}" class="nav-card">
                     <span class="material-icons nav-icon">place</span>
                     <span class="nav-label">Addresses</span>
                 </a>
-
                 <!-- Settings/Profile (Moved from Sidebar) -->
-                 <a href="{% url 'edit_profile' %}" class="nav-card">
+                <a href="{% url 'edit_profile' %}" class="nav-card">
                     <span class="material-icons nav-icon">settings</span>
                     <span class="nav-label">Settings</span>
                 </a>
             </section>
-
             <!-- RECENT ACTIVITY / DASHBOARD CONTENT -->
             <div class="dashboard-sections">
                 <!-- DEFAULT ADDRESS PREVIEW -->
@@ -111,30 +105,34 @@
                         <h3 class="section-title">Default Shipping</h3>
                         <a href="{% url 'user_address' %}" class="section-link">Manage</a>
                     </div>
-                    
                     {% if addresses %}
                         {% for address in addresses %}
                             {% if address.is_default %}
                                 <div class="address-card-dashboard">
                                     <div class="address-tag">DEFAULT</div>
                                     <span class="address-name">{{ address.full_name }}</span>
-                                    <p>{{ address.address_line_1 }}{% if address.address_line_2 %}, {{ address.address_line_2 }}{% endif %}</p>
+                                    <p>
+                                        {{ address.address_line_1 }}
+                                        {% if address.address_line_2 %}, {{ address.address_line_2 }}{% endif %}
+                                    </p>
                                     <p>{{ address.city }}, {{ address.state }} {{ address.postal_code }}</p>
                                     <p>{{ address.country }}</p>
                                 </div>
                             {% endif %}
                         {% endfor %}
                     {% else %}
-                        <div class="address-card-dashboard" style="text-align: center; padding: 40px;">
+                        <div class="address-card-dashboard"
+                             style="text-align: center;
+                                    padding: 40px">
                             <p style="color:#999; margin-bottom: 20px;">No default address set.</p>
                             <a href="{% url 'add_address' %}" class="btn btn-outline-dark btn-sm">Add Address</a>
                         </div>
                     {% endif %}
                 </section>
             </div>
-            
         </div>
-    </div>{% endblock content %}
+    </div>
+{% endblock content %}
 {% block extra_js %}
     <script src="{% static 'user_profile/js/profile.js' %}"></script>
 {% endblock extra_js %}

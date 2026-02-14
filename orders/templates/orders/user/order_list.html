@@ -1,0 +1,148 @@
+{% extends "core/user/base_user.html" %}
+{% load static %}
+{% load humanize %}
+{% block head_title %}My Orders | REX CC{% endblock %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'orders/user/css/order_list.css' %}">
+{% endblock %}
+{% block content %}
+    <div class="orders-page">
+        <!-- BREADCRUMBS -->
+        <nav class="breadcrumb-nav">
+            <a href="{% url 'user_profile' %}" class="breadcrumb-link">My Account</a>
+            <span class="breadcrumb-separator">›</span>
+            <span class="breadcrumb-current">Orders</span>
+        </nav>
+        <!-- PAGE HEADER -->
+        <header class="page-header">
+            <div class="header-content">
+                <h1 class="page-title">My Orders</h1>
+                <p class="page-subtitle">Track and manage your timepiece acquisitions</p>
+            </div>
+        </header>
+        <!-- SEARCH & FILTERS -->
+        <div class="orders-toolbar">
+            <form class="orders-search-form" method="get" action="">
+                <span class="material-icons search-icon">search</span>
+                <input type="text"
+                       name="q"
+                       class="orders-search-input"
+                       placeholder="Search by order number, product, or SKU..."
+                       value="{{ q|default:'' }}">
+                {% if date_filter %}<input type="hidden" name="date_filter" value="{{ date_filter }}">{% endif %}
+            </form>
+            <div class="orders-filters">
+                <a href="?{% if q %}q={{ q }}{% endif %}"
+                   class="filter-pill {% if not date_filter %}active{% endif %}">All</a>
+                <a href="?date_filter=today{% if q %}&q={{ q }}{% endif %}"
+                   class="filter-pill {% if date_filter == 'today' %}active{% endif %}">Today</a>
+                <a href="?date_filter=7d{% if q %}&q={{ q }}{% endif %}"
+                   class="filter-pill {% if date_filter == '7d' %}active{% endif %}">7 Days</a>
+                <a href="?date_filter=30d{% if q %}&q={{ q }}{% endif %}"
+                   class="filter-pill {% if date_filter == '30d' %}active{% endif %}">30 Days</a>
+                <a href="?date_filter=last_year{% if q %}&q={{ q }}{% endif %}"
+                   class="filter-pill {% if date_filter == 'last_year' %}active{% endif %}">Last Year</a>
+            </div>
+        </div>
+        {% if orders %}
+            <!-- ORDERS TABLE HEADER -->
+            <div class="orders-list">
+                <div class="orders-table-header">
+                    <span class="col-order">Order</span>
+                    <span class="col-date">Date</span>
+                    <span class="col-payment">Payment</span>
+                    <span class="col-status">Status</span>
+                    <span class="col-action"></span>
+                </div>
+                {% for order in orders %}
+                    <div class="order-row">
+                        <div class="order-row-order">
+                            <span class="order-number">{{ order.order_number }}</span>
+                            <span class="order-total-inline">₹{{ order.grand_total|floatformat:0|intcomma }}</span>
+                        </div>
+                        <div class="order-row-date">
+                            <span class="order-date">{{ order.created_at|date:"d M Y" }}</span>
+                            <span class="order-time">{{ order.created_at|date:"h:i A" }}</span>
+                        </div>
+                        <div class="order-row-payment">
+                            <span class="order-payment-method">
+                                <span class="material-icons">payment</span>
+                                {{ order.payment_method }}
+                            </span>
+                        </div>
+                        <div class="order-row-status">
+                            {% with status=order.current_status %}
+                                {% if status %}
+                                    <span class="order-status-badge status-{{ status.status|lower }}">
+                                        {% if status.status == "PLACED" %}
+                                            Pending Review
+                                        {% elif status.status == "CONFIRMED" %}
+                                            Confirmed
+                                        {% elif status.status == "SHIPPED" %}
+                                            Dispatched
+                                        {% elif status.status == "OUT_FOR_DELIVERY" %}
+                                            Out for Delivery
+                                        {% elif status.status == "DELIVERED" %}
+                                            Delivered
+                                        {% elif status.status == "CANCELLED" %}
+                                            Cancelled
+                                        {% else %}
+                                            {{ status.status }}
+                                        {% endif %}
+                                    </span>
+                                {% endif %}
+                            {% endwith %}
+                        </div>
+                        <div class="order-row-action">
+                            <a href="#" class="btn-view-order" title="View Order">
+                                <span class="material-icons">visibility</span>
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <!-- PAGINATION -->
+            {% if page_obj.has_other_pages %}
+                <nav class="orders-pagination">
+                    {% if page_obj.has_previous %}
+                        <a href="?page={{ page_obj.previous_page_number }}{% if q %}&q={{ q }}{% endif %}{% if date_filter %}&date_filter={{ date_filter }}{% endif %}"
+                           class="pagination-btn prev">
+                            <span class="material-icons">chevron_left</span>
+                            Previous
+                        </a>
+                    {% endif %}
+                    <div class="pagination-pages">
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                                <span class="pagination-page active">{{ num }}</span>
+                            {% elif num > page_obj.number|add:"-3" and num < page_obj.number|add:"3" %}
+                                <a href="?page={{ num }}{% if q %}&q={{ q }}{% endif %}{% if date_filter %}&date_filter={{ date_filter }}{% endif %}"
+                                   class="pagination-page">{{ num }}</a>
+                            {% elif num == 1 or num == page_obj.paginator.num_pages %}
+                                <a href="?page={{ num }}{% if q %}&q={{ q }}{% endif %}{% if date_filter %}&date_filter={{ date_filter }}{% endif %}"
+                                   class="pagination-page">{{ num }}</a>
+                            {% elif num == page_obj.number|add:"-3" or num == page_obj.number|add:"3" %}
+                                <span class="pagination-ellipsis">…</span>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}{% if q %}&q={{ q }}{% endif %}{% if date_filter %}&date_filter={{ date_filter }}{% endif %}"
+                           class="pagination-btn next">
+                            Next
+                            <span class="material-icons">chevron_right</span>
+                        </a>
+                    {% endif %}
+                </nav>
+            {% endif %}
+        {% else %}
+            <!-- EMPTY STATE -->
+            <div class="orders-empty">
+                <span class="material-icons empty-icon">receipt_long</span>
+                <h2>No orders yet</h2>
+                <p>Once you make a purchase, your order history will appear here.</p>
+                <a href="{% url 'product_list' %}" class="btn-shop-now">Explore Collection</a>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
