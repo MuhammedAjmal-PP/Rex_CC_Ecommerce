@@ -95,7 +95,7 @@ def place_order_view(request):
                 order=order,
                 product_variant=locked_variant,
                 quantity=item.quantity,
-                price=item.total_amount,
+                price=item.item_price,
             )
 
             # 3 Initial ORDER ITEM status
@@ -150,7 +150,7 @@ def order_success_view(request, order_number):
 
     # Sanity check: order must be in PLACED state
     if not current_status or current_status.status != "PLACED":
-        return redirect("user_orders")
+        return redirect("user_order_list")
 
     return render(
         request,

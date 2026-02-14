@@ -1,11 +1,15 @@
 from datetime import timedelta
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Q
-from django.shortcuts import render
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.template.loader import render_to_string
 from django.utils import timezone
 from django.views.decorators.cache import never_cache
-from orders.models import Order
+from orders.models import Order, OrderItem, Return
+from weasyprint import HTML
 
 
 @login_required
@@ -43,16 +47,107 @@ def order_list(request):
         "date_filter": date_filter,
         "page_obj": page_obj,
     }
-    return render(request, "orders/user/orderlist.html", context)
+    return render(request, "orders/user/order_list.html", context)
 
 
 @never_cache
 @login_required
-def order_detail(request):
-    pass
+def order_detail(request, order_number):
+    """Order details page with order-level and item-level status data."""
+    order = get_object_or_404(
+        Order.objects.prefetch_related("status"),
+        user=request.user,
+        order_number=order_number,
+    )
+
+    order_items = OrderItem.objects.filter(order=order).select_related(
+        "product_variant", "product_variant__product"
+    )
+
+    context = {
+        "order": order,
+        "items": order_items,
+        "order_status_timeline": order.status.all(),
+    }
+    return render(request, "orders/user/order_detail.html", context)
+
+
+@login_required
+@never_cache
+def order_invoice(request, order_number):
+    order = get_object_or_404(Order, user=request.user, order_number=order_number)
+    order_items = (
+        OrderItem.objects.filter(order=order)
+        .select_related("product_variant", "product_variant__product")
+        .prefetch_related("product_variant__images")
+    )
+
+    if not order.can_generate_invoice:
+        messages.warning(request, "Invoice will be available after order confirmation.")
+        return redirect("user_order_details", order_number=order.order_number)
+
+    html_string = render_to_string(
+        "orders/user/order_invoice.html",
+        {
+            "order": order,
+            "order_items": order_items,
+        },
+    )
+
+    pdf = HTML(string=html_string).write_pdf()
+
+    response = HttpResponse(pdf, content_type="application/pdf")
+    response["Content-Disposition"] = (
+        f'attachment; filename="invoice_{order.order_number}.pdf"'
+    )
+    return response
 
 
 @never_cache
 @login_required
-def orderitem_detail(request):
-    pass
+def orderitem_detail(request, order_number, item_id):
+    """order-item detail"""
+
+    order = get_object_or_404(Order, user=request.user, order_number=order_number)
+    order_item = get_object_or_404(
+        OrderItem.objects.select_related(
+            "order", "product_variant", "product_variant__product"
+        ).prefetch_related("status", "returns"),
+        id=item_id,
+        order=order,
+    )
+
+    timeline = [
+        {
+            "status": entry.status,
+            "note": entry.note,
+            "actor": (
+                entry.actor.get_short_name
+                if entry.actor and entry.actor.get_short_name
+                else None
+            ),
+            "created_at": entry.created_at,
+        }
+        for entry in order_item.status.all()
+    ]
+
+    return_entry = [
+        {
+            "return_number": ret.return_number,
+            "status": ret.status,
+            "reason_code": ret.reason_code,
+            "comment": ret.comment,
+            "admin_note": ret.admin_note,
+            "created_at": ret.created_at,
+        }
+        for ret in order_item.returns.all()
+    ]
+
+    context = {
+        "order": order,
+        "order_item": order_item,
+        "timeline": timeline,
+        "returns": return_entry,
+    }
+
+    return render(request, "orders/user/orderitem_detail.html", context)

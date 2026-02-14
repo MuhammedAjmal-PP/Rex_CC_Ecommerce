@@ -164,6 +164,15 @@ class Order(models.Model):
     def current_status(self):
         return self.status.first()
 
+    @property
+    def can_generate_invoice(self):
+        return self.current_status.status in (
+            "CONFIRMED",
+            "SHIPPED",
+            "OUT_FOR_DELIVERY",
+            "DELIVERED",
+        )
+
     def __str__(self):
         return f"Order {self.order_number}"
 

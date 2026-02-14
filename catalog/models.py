@@ -234,6 +234,10 @@ class ProductVariant(models.Model):
         ordering = ["product", "sku"]
 
     @property
+    def primary_image(self):
+        return self.images.first()
+
+    @property
     def discount_amount(self):
         if self.discount_percentage > 0:
             return self.price * Decimal(self.discount_percentage) / Decimal(100)
