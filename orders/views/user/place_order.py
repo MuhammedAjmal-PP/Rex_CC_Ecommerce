@@ -8,12 +8,13 @@ from django.utils import timezone
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_POST
 from catalog.service import update_stock
-from orders.models import Order, OrderItem, StatusTimeline
+from orders.models import Order, OrderItem
 from users.cart.models import Cart, CartItem
 from users.user_profile.models import Address
-from django.contrib.contenttypes.models import ContentType
 from orders.service import (
     InsufficientStockError,
+    change_order_item_status,
+    change_order_status,
     lock_variants_for_update,
     validate_stock,
 )
@@ -62,9 +63,6 @@ def place_order_view(request):
 
     discount = Decimal("0")
 
-    order_obj = ContentType.objects.get_for_model(Order)
-    order_item_obj = ContentType.objects.get_for_model(OrderItem)
-
     with transaction.atomic():
         locked_variants = lock_variants_for_update(cart_items=cart_items)
 
@@ -99,10 +97,9 @@ def place_order_view(request):
             )
 
             # 3 Initial ORDER ITEM status
-            StatusTimeline.objects.create(
-                content_type=order_item_obj,
-                object_id=order_item.id,
-                status="PENDING",
+            change_order_item_status(
+                order_item=order_item,
+                to_status="PENDING",
                 note="Item pending fulfillment",
                 actor=request.user,
             )
@@ -118,10 +115,9 @@ def place_order_view(request):
             )
 
         # 5 Initial ORDER status
-        StatusTimeline.objects.create(
-            content_type=order_obj,
-            object_id=order.id,
-            status="PLACED",
+        change_order_status(
+            order=order,
+            to_status="PLACED",
             note="Order placed by customer",
             actor=request.user,
         )
