@@ -263,7 +263,6 @@ class Return(models.Model):
     )
     reason_code = models.CharField(max_length=40, choices=REASON_CODES)
     comment = models.TextField(blank=True, null=True)
-    photo = models.ImageField(upload_to="order_return/", blank=True, null=True)
 
     admin_note = models.TextField(blank=True, null=True)
 
@@ -287,3 +286,25 @@ class Return(models.Model):
         return (
             f"Return #{self.return_number} - {self.order_item_id} - {self.reason_code}"
         )
+
+
+# ======================================================
+# RETURN IMAGE MODEL
+# ======================================================
+
+
+class ReturnImage(models.Model):
+
+    return_request = models.ForeignKey(
+        Return,
+        on_delete=models.CASCADE,
+        related_name="images",
+    )
+    image = models.ImageField(upload_to="order_return/")
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["uploaded_at"]
+
+    def __str__(self):
+        return f"Image for {self.return_request.return_number}"

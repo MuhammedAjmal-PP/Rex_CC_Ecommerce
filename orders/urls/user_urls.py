@@ -11,6 +11,10 @@ from orders.views.user.cancel_order import (
     cancel_order,
     cancel_order_submit,
 )
+from orders.views.user.return_order import (
+    return_order,
+    return_order_submit,
+)
 
 
 urlpatterns = [
@@ -37,5 +41,15 @@ urlpatterns = [
         "order/<str:order_number>/cancel/submit/",
         cancel_order_submit,
         name="user_cancel_order_submit",
+    ),
+    path(
+        "order/<str:order_number>/item/<int:item_id>/return/",
+        return_order,
+        name="user_return_order",
+    ),
+    path(
+        "order/<str:order_number>/item/<int:item_id>/return/submit/",
+        return_order_submit,
+        name="user_return_order_submit",
     ),
 ]

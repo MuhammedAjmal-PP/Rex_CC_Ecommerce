@@ -11,6 +11,11 @@ from .status import (
     change_order_status,
     get_current_status,
 )
+from .returns import (
+    ReturnNotEligibleError,
+    DuplicateReturnError,
+    validate_return_eligibility,
+)
 
 __all__ = [
     "InsufficientStockError",
@@ -22,4 +27,7 @@ __all__ = [
     "change_order_item_status",
     "change_order_status",
     "get_current_status",
+    "ReturnNotEligibleError",
+    "DuplicateReturnError",
+    "validate_return_eligibility",
 ]
