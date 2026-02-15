@@ -7,6 +7,10 @@ from orders.views.user.user_orders import (
     order_detail,
     orderitem_detail,
 )
+from orders.views.user.cancel_order import (
+    cancel_order,
+    cancel_order_submit,
+)
 
 
 urlpatterns = [
@@ -23,5 +27,15 @@ urlpatterns = [
     ),
     path(
         "order/<str:order_number>/invoice/download", order_invoice, name="order_invoice"
+    ),
+    path(
+        "order/<str:order_number>/cancel/",
+        cancel_order,
+        name="user_cancel_order",
+    ),
+    path(
+        "order/<str:order_number>/cancel/submit/",
+        cancel_order_submit,
+        name="user_cancel_order_submit",
     ),
 ]
