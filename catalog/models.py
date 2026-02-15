@@ -211,8 +211,6 @@ class ProductVariant(models.Model):
         default=0,
         validators=[MaxValueValidator(100), MinValueValidator(0)],
         help_text="Discount percentage (0–100)",
-        null=True,
-        blank=True,
     )
     stock = models.PositiveIntegerField(default=0)
 
