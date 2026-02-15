@@ -30,4 +30,5 @@ urlpatterns = [
     path("", include("users.wishlist.urls")),
     path("", include("users.cart.urls")),
     path("", include("orders.urls.user_urls")),
+    path("adminpanel/", include("orders.urls.admin_urls")),
 ]
