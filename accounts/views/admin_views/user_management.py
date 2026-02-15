@@ -8,7 +8,6 @@ from django.contrib.auth.decorators import user_passes_test
 from django.urls import reverse
 
 User = get_user_model()
-User = User.objects.filter(is_superuser=False)
 
 
 @never_cache
@@ -26,7 +25,7 @@ def user_list(request):
         page_number = 1
 
     # Base queryset: all non-superuser accounts, ordered by creation date
-    users = User.order_by("-created_at")
+    users = User.objects.filter(is_superuser=False).order_by("-created_at")
 
     # Apply search filter if query is provided
     if search_query:
@@ -70,7 +69,7 @@ def user_profile(request, id):
     """
     User Managemnet View of Admin Panel , its Users Profile.
     """
-    user = get_object_or_404(User, id=id)
+    user = get_object_or_404(User, id=id, is_superuser=False)
 
     # Static data for testing
     addresses = {
@@ -199,7 +198,7 @@ def user_status_toggle(request, id):
     """
     Toggle active/inactive status of a user from admin panel
     """
-    user = get_object_or_404(User, id=id)
+    user = get_object_or_404(User, id=id, is_superuser=False)
     user.is_active = not user.is_active
     user.save()
 

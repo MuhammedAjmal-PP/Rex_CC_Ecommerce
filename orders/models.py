@@ -152,12 +152,9 @@ class Order(models.Model):
                 return order_number
 
     def save(self, *args, **kwargs):
-        creating = self.pk is None
-        super().save(*args, **kwargs)
-
-        if creating and not self.order_number:
+        if not self.order_number:
             self.order_number = self.generate_order_number()
-            super().save(update_fields=["order_number"])
+        super().save(*args, **kwargs)
 
     # ---------------- HELPERS ----------------
     @property

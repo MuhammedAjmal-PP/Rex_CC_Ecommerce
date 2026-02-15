@@ -4,6 +4,7 @@ from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_GET, require_POST
+from catalog.service import update_stock
 from orders.models import Order, OrderItem
 from orders.service import InvalidTransitionError, change_order_item_status
 
@@ -78,6 +79,17 @@ def cancel_order_submit(request, order_number):
                     actor=request.user,
                     note=note,
                 )
+
+                # Restore stock for the cancelled item
+                update_stock(
+                    product_variant=item.product_variant,
+                    change=+item.quantity,
+                    reason="ORDER_CANCELLED",
+                    actor=request.user,
+                    reference_object=item,
+                    note=f"Stock restored — order {order.order_number} item cancelled",
+                )
+
                 cancelled_count += 1
     except InvalidTransitionError as error:
         messages.error(request, f"Unable to cancel selected item(s): {error}")
