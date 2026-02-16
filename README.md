@@ -45,8 +45,8 @@
 | Checkout | ✅ Complete | 3-step stepper, Address selection, Order summary |
 | Order Placement | ✅ Complete | COD, Atomic transactions, Stock deduction |
 | Inventory | ✅ Complete | Centralized stock service, Audit logs |
-| Order Management (User) | 🔄 Next Up | Order history, Tracking, Cancellation |
-| Order Management (Admin) | 🔄 Next Up | Status updates, Fulfillment, Dashboard |
+| Order Management (User) | ✅ Complete | Order history, Item tracking, Returns, Invoice PDF |
+| Order Management (Admin) | ✅ Complete | Status cascade, Return review, Order detail |
 
 ---
 
@@ -90,13 +90,25 @@
 </details>
 
 <details>
-<summary><strong>🚚 Order Administration (Backend)</strong></summary>
+<summary><strong>🚚 Order Administration</strong></summary>
 
-**Location:** `orders/admin.py`
+**Location:** `orders/views/admin/`
 
-- **Order Admin**: Full CRUD with inline OrderItems + StatusTimeline.
-- **OrderItem Admin**: Per-item view with status timeline inline.
-- **Timeline Admin**: Audit trail of every status change with actor and timestamp.
+- **Order List**: Paginated listing with search, filter by status, stat cards
+- **Order Detail**: View items, addresses, timeline; update order status
+- **Status Cascade**: Changing order status automatically walks all items through every intermediate status (e.g., order → SHIPPED cascades items through CONFIRMED → PACKING → READY → SHIPPED)
+- **Return Management**: Separate return list/detail views, approve/reject returns, admin cannot set RETURN_REQUESTED directly
+- **Invoice**: PDF generation via WeasyPrint with luxury-themed template
+</details>
+
+<details>
+<summary><strong>↩️ Return Management</strong></summary>
+
+**Location:** `orders/views/admin/returns.py` + `orders/service/returns.py`
+
+- **Eligibility Rules**: Must be DELIVERED, within 7-day window, no existing return (including rejected)
+- **User Flow**: Custom return form with reason selection, comments, photo upload (up to 3, inline preview + remove)
+- **Admin Review**: Approve/reject with status cascade back to item
 </details>
 
 ---
@@ -189,10 +201,27 @@ A **3-step stepper** UI guides the user through:
 | `Order` | User, address snapshots (JSON), totals, payment method, auto-generated order number |
 | `OrderItem` | Links Order ↔ ProductVariant with quantity and price |
 | `StatusTimeline` | **Generic relation** — tracks status history for both Order and OrderItem with actor audit |
+| `Return` | Return request linked to OrderItem with reason code, comment, status (REQUESTED/APPROVED/REJECTED) |
+| `ReturnImage` | Photos uploaded as return evidence (up to 3 per return) |
 
-**StatusTimeline Statuses:**
-- **Order**: PLACED → CONFIRMED → INSPECTION → PACKING → READY → SHIPPED → IN_TRANSIT → OUT_FOR_DELIVERY → DELIVERED (+ ON_HOLD, FAILED, RTS)
-- **OrderItem**: PENDING → SHIPPED → DELIVERED (+ CANCELLED, RETURN_REQUESTED, RETURNED)
+**Status Flows:**
+- **Order**: PLACED → CONFIRMED → SHIPPED → OUT_FOR_DELIVERY → DELIVERED (+ CANCELLED)
+- **OrderItem**: PENDING → CONFIRMED → PACKING → READY → SHIPPED → IN_TRANSIT → OUT_FOR_DELIVERY → DELIVERED (+ CANCELLED, RETURN_REQUESTED, RETURNED, FAILED, RTS)
+
+**Status Service** (`orders/service/status.py`):
+- **Progressive Cascade**: Order status changes walk items through every intermediate status in the chain
+- **Reverse Sync**: Item status changes auto-derive the correct order-level status
+- **Admin Restrictions**: Admins cannot set RETURN_REQUESTED directly; only the user return flow triggers it
+
+### User Order Pages
+
+| Page | Description |
+|------|-------------|
+| Order List | Tabular history with status badges, date, payment method |
+| Order Detail | Items table (qty, price, total, status), address, summary, timeline, invoice download |
+| Order Item Detail | Product info, vertical status timeline, return button (if eligible) |
+| Return Form | Reason dropdown, comments, styled photo upload with inline preview |
+| Invoice PDF | WeasyPrint-generated luxury-themed PDF with meta info, items, GST breakdown |
 
 ---
 
@@ -254,9 +283,13 @@ Rex_CC_Ecommerce/
 │   └── views/admin/       # Full catalog CRUD
 │
 ├── orders/                # Order lifecycle
-│   ├── models.py          # Order, OrderItem, StatusTimeline
-│   ├── admin.py           # Django admin with inlines
-│   └── views/user/        # Checkout, Place Order, Success
+│   ├── models.py          # Order, OrderItem, StatusTimeline, Return, ReturnImage
+│   ├── service/           # Status transitions, returns eligibility
+│   │   ├── status.py      # Progressive cascade, sync, transition validation
+│   │   └── returns.py     # Return eligibility checks
+│   ├── forms.py           # ReturnForm
+│   ├── views/user/        # Checkout, Place Order, Order Detail, Returns
+│   └── views/admin/       # Order list/detail, Return list/detail
 │
 ├── users/                 # User domain
 │   ├── cart/              # Cart logic, utils, computed properties
@@ -318,15 +351,16 @@ python manage.py runserver
 - [x] Address Management (CRUD, Default, Soft-delete, Pincode Validation)
 - [x] Product Catalog (List, Detail, Search, Multi-select Filters)
 
-### Phase 2 — E-Commerce (🔄 In Progress)
+### Phase 2 — E-Commerce (✅ Complete)
 - [x] Wishlist (Offcanvas, AJAX, Profile Sync)
 - [x] Cart Management (Stock Validation, Login Redirect, Public API)
 - [x] Checkout UI (3-Step Stepper, Address Select, Summary)
 - [x] Order Placement (COD, Atomic Transactions, Stock Deduction)
 - [x] Inventory Management (Centralized Service, InventoryLog Audit)
 - [x] Order Success Page (Animated SVG Confirmation)
-- [ ] **User Order History & Tracking** ← Next
-- [ ] **Admin Order Management UI** ← Next
+- [x] User Order History & Tracking (List, Detail, Item Timeline, Invoice PDF)
+- [x] Admin Order Management (Status Cascade, Return Review, Detail View)
+- [x] Return System (Eligibility Rules, Photo Upload, Admin Approve/Reject)
 
 ### Phase 3 — Payments & Growth
 - [ ] Razorpay/Stripe Integration
