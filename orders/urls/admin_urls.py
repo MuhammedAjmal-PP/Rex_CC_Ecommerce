@@ -6,6 +6,11 @@ from orders.views.admin.orders import (
     order_list,
     order_status_update,
 )
+from orders.views.admin.returns import (
+    return_list,
+    return_detail,
+    return_status_update,
+)
 
 
 urlpatterns = [
@@ -25,4 +30,16 @@ urlpatterns = [
         order_item_status_update,
         name="admin_order_item_status_update",
     ),
+    path("returns/", return_list, name="admin_return_list"),
+    path(
+        "returns/<str:return_number>/",
+        return_detail,
+        name="admin_return_detail",
+    ),
+    path(
+        "returns/<str:return_number>/status/update/",
+        return_status_update,
+        name="admin_return_status_update",
+    ),
 ]
+
