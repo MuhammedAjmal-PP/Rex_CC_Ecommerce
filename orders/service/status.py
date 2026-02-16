@@ -27,19 +27,42 @@ ORDER_ITEM_ALLOWED_TRANSITIONS = {
     "CANCELLED": set(),
 }
 
+# Admin-only transitions: stops at DELIVERED (no RETURN_REQUESTED)
+ADMIN_ITEM_ALLOWED_TRANSITIONS = {
+    "PENDING": {"CONFIRMED", "CANCELLED"},
+    "CONFIRMED": {"PACKING", "CANCELLED"},
+    "PACKING": {"READY", "CANCELLED"},
+    "READY": {"SHIPPED", "CANCELLED"},
+    "SHIPPED": {"IN_TRANSIT"},
+    "IN_TRANSIT": {"OUT_FOR_DELIVERY"},
+    "OUT_FOR_DELIVERY": {"DELIVERED", "FAILED"},
+    "FAILED": {"OUT_FOR_DELIVERY", "RTS", "CANCELLED"},
+    "DELIVERED": set(),
+    "RETURN_REQUESTED": set(),
+    "RETURNED": set(),
+    "RTS": set(),
+    "CANCELLED": set(),
+}
+
 INITIAL_STATUS_BY_MODEL = {
     "order": "PLACED",
     "orderitem": "PENDING",
 }
 
-# Mapping: if ALL items reach this item-status → set order to this order-status
-_ITEM_TO_ORDER_STATUS = {
-    "CANCELLED": "CANCELLED",
-    "DELIVERED": "DELIVERED",
-}
+# Ordered item status progression (happy path)
+ITEM_STATUS_CHAIN = [
+    "PENDING", "CONFIRMED", "PACKING", "READY",
+    "SHIPPED", "IN_TRANSIT", "OUT_FOR_DELIVERY", "DELIVERED",
+]
 
-# When order moves to these statuses, cascade (push) to eligible items
-_ORDER_CASCADE_TARGETS = {"CANCELLED", "CONFIRMED"}
+# Order status → target item status for cascade
+ORDER_TO_ITEM_TARGET = {
+    "CONFIRMED": "CONFIRMED",
+    "SHIPPED": "SHIPPED",
+    "OUT_FOR_DELIVERY": "OUT_FOR_DELIVERY",
+    "DELIVERED": "DELIVERED",
+    "CANCELLED": "CANCELLED",  # special: direct jump
+}
 
 
 def get_current_status(obj):
@@ -96,14 +119,17 @@ def _sync_order_status(order, *, actor=None):
 
     current_order_status = get_current_status(order)
 
+    # Post-delivery statuses (return flow): treated as "delivered" for order sync
+    _POST_DELIVERY = {"DELIVERED", "RETURN_REQUESTED", "RETURNED"}
+
     # Rule 1: ALL items cancelled → cancel the order
     if item_statuses == {"CANCELLED"}:
         target = "CANCELLED"
-    # Rule 2: ALL items delivered (or mix of delivered + cancelled) → deliver
-    elif item_statuses <= {"DELIVERED", "CANCELLED"} and "DELIVERED" in item_statuses:
+    # Rule 2: ALL items delivered/returned/cancelled (at least one post-delivery) → deliver
+    elif item_statuses <= (_POST_DELIVERY | {"CANCELLED"}) and item_statuses & _POST_DELIVERY:
         target = "DELIVERED"
     # Rule 3: Any item out-for-delivery (rest delivered/cancelled) → out for delivery
-    elif item_statuses <= {"OUT_FOR_DELIVERY", "DELIVERED", "CANCELLED"} and "OUT_FOR_DELIVERY" in item_statuses:
+    elif item_statuses <= ({"OUT_FOR_DELIVERY"} | _POST_DELIVERY | {"CANCELLED"}) and "OUT_FOR_DELIVERY" in item_statuses:
         target = "OUT_FOR_DELIVERY"
     # Rule 4: Any item shipped/in-transit (rest further along or cancelled) → shipped
     elif item_statuses & {"SHIPPED", "IN_TRANSIT"}:
@@ -134,23 +160,53 @@ def _sync_order_status(order, *, actor=None):
 # ────────────────────────────────────────────
 def _cascade_order_to_items(order, to_status, *, actor=None):
     """
-    Push order-level CANCELLED or CONFIRMED down to eligible items.
-    Called automatically after an order status change.
+    Push order-level status down to eligible items.
+    Items walk through every intermediate status in the chain.
+    CANCELLED is a direct jump (no walk needed).
     """
-    if to_status not in _ORDER_CASCADE_TARGETS:
+    target_item_status = ORDER_TO_ITEM_TARGET.get(to_status)
+    if not target_item_status:
         return
 
     for item in order.items.all():
         item_status = get_current_status(item)
-        if item_status and can_transition(
-            model_type="orderitem",
-            from_status=item_status,
-            to_status=to_status,
-        ):
+        if not item_status or item_status == "CANCELLED":
+            continue
+
+        # CANCELLED: direct jump (same as before)
+        if target_item_status == "CANCELLED":
+            if can_transition(
+                model_type="orderitem",
+                from_status=item_status,
+                to_status="CANCELLED",
+            ):
+                _change_status(
+                    obj=item,
+                    model_type="orderitem",
+                    to_status="CANCELLED",
+                    actor=actor,
+                    note=f"Auto-cascaded from order status → CANCELLED",
+                )
+            continue
+
+        # Progressive walk: find current and target positions in chain
+        if item_status not in ITEM_STATUS_CHAIN or target_item_status not in ITEM_STATUS_CHAIN:
+            continue
+
+        current_idx = ITEM_STATUS_CHAIN.index(item_status)
+        target_idx = ITEM_STATUS_CHAIN.index(target_item_status)
+
+        # Only move forward, skip if already at or past target
+        if current_idx >= target_idx:
+            continue
+
+        # Walk through each intermediate status
+        for step_idx in range(current_idx + 1, target_idx + 1):
+            step_status = ITEM_STATUS_CHAIN[step_idx]
             _change_status(
                 obj=item,
                 model_type="orderitem",
-                to_status=to_status,
+                to_status=step_status,
                 actor=actor,
                 note=f"Auto-cascaded from order status → {to_status}",
             )

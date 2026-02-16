@@ -118,17 +118,22 @@
                 <label class="ro-field-label">
                     Photos
                 </label>
-                <div class="ro-file-wrapper">
-                    <input type="file"
-                           name="photos"
-                           accept="image/*"
-                           multiple
-                           class="ro-file-input">
-                </div>
+                <input type="file"
+                       name="photos"
+                       id="id_photos"
+                       accept="image/*"
+                       multiple
+                       class="ro-file-input-hidden">
+                <button type="button" class="ro-upload-btn" id="uploadBtn">
+                    <span class="material-icons">add_photo_alternate</span>
+                    Add Photos
+                </button>
                 <div class="ro-file-hint">Upload up to 3 images (optional)</div>
                 {% if photo_errors %}
                     <div class="ro-field-error">{{ photo_errors }}</div>
                 {% endif %}
+                <!-- Inline preview -->
+                <div class="ro-preview-grid" id="photoPreviewGrid"></div>
             </div>
         </div>
 
@@ -139,4 +144,62 @@
     </form>
 
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function() {
+    const input = document.getElementById('id_photos');
+    const grid = document.getElementById('photoPreviewGrid');
+    const uploadBtn = document.getElementById('uploadBtn');
+    let dataTransfer = new DataTransfer();
+
+    uploadBtn.addEventListener('click', () => input.click());
+
+    function render() {
+        grid.innerHTML = '';
+        const files = Array.from(dataTransfer.files);
+
+        files.forEach((file, idx) => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const card = document.createElement('div');
+                card.className = 'ro-preview-card';
+                card.innerHTML = `
+                    <img src="${e.target.result}" alt="Preview ${idx + 1}" class="ro-preview-img">
+                    <button type="button" class="ro-preview-remove" data-idx="${idx}" title="Remove">
+                        <span class="material-icons">close</span>
+                    </button>
+                `;
+                grid.appendChild(card);
+            };
+            reader.readAsDataURL(file);
+        });
+
+        uploadBtn.style.display = files.length >= 3 ? 'none' : '';
+    }
+
+    input.addEventListener('change', function() {
+        const incoming = Array.from(this.files);
+        incoming.forEach(f => {
+            if (dataTransfer.files.length < 3) dataTransfer.items.add(f);
+        });
+        this.files = dataTransfer.files;
+        render();
+    });
+
+    grid.addEventListener('click', function(e) {
+        const btn = e.target.closest('.ro-preview-remove');
+        if (!btn) return;
+        const idx = parseInt(btn.dataset.idx, 10);
+        const newDT = new DataTransfer();
+        Array.from(dataTransfer.files).forEach((f, i) => {
+            if (i !== idx) newDT.items.add(f);
+        });
+        dataTransfer = newDT;
+        input.files = dataTransfer.files;
+        render();
+    });
+})();
+</script>
 {% endblock %}

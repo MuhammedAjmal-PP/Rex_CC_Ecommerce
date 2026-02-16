@@ -29,7 +29,7 @@
                     <span class="od-status-badge od-status-{{ status.status|lower }}">
                         {% if status.status == "PLACED" %}Pending Review
                         {% elif status.status == "CONFIRMED" %}Confirmed
-                        {% elif status.status == "SHIPPED" %}Dispatched
+                        {% elif status.status == "SHIPPED" %}Shipped
                         {% elif status.status == "OUT_FOR_DELIVERY" %}Out for Delivery
                         {% elif status.status == "DELIVERED" %}Delivered
                         {% elif status.status == "CANCELLED" %}Cancelled
@@ -59,6 +59,7 @@
                 <span>Product</span>
                 <span style="text-align:center;">Qty</span>
                 <span>Price</span>
+                <span>Total</span>
                 <span>Status</span>
                 <span></span>
             </div>
@@ -96,7 +97,10 @@
                     <div class="od-item-qty">{{ item.quantity }}</div>
 
                     <!-- Price -->
-                    <div class="od-item-price">₹{{ item.total_price|floatformat:0|intcomma }}</div>
+                    <div class="od-item-price">₹{{ item.price|floatformat:0|intcomma }}</div>
+
+                    <!-- Total -->
+                    <div class="od-item-total">₹{{ item.total_price|floatformat:0|intcomma }}</div>
 
                     <!-- Item Status -->
                     {% with istatus=item.current_status %}
@@ -171,7 +175,7 @@
                 <span class="od-summary-value">₹{{ order.shipping_fee|floatformat:0|intcomma }}</span>
             </div>
             <div class="od-summary-row">
-                <span class="od-summary-label">Tax</span>
+                <span class="od-summary-label">Tax (GST {{gst_rate}}%)</span>
                 <span class="od-summary-value">₹{{ order.tax|floatformat:0|intcomma }}</span>
             </div>
             <div class="od-summary-row od-summary-total">

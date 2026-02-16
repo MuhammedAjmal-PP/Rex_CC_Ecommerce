@@ -265,27 +265,41 @@
   border-color: var(--ro-gold-light);
 }
 
-/* File input */
-.ro-file-wrapper {
-  position: relative;
+/* File input (hidden, triggered by custom button) */
+.ro-file-input-hidden {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
 }
 
-.ro-file-input {
-  width: 100%;
-  padding: 10px 14px;
+/* Custom upload button */
+.ro-upload-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
   font-family: var(--font-sans);
-  font-size: 0.82rem;
-  color: var(--ro-text-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--ro-gold-dark);
+  background: var(--ro-surface);
   border: 1px solid var(--ro-border);
   border-radius: 3px;
-  background: var(--ro-surface);
   cursor: pointer;
-  transition: border-color 0.2s;
+  transition: all 0.25s;
 }
 
-.ro-file-input:focus {
-  outline: none;
+.ro-upload-btn:hover {
   border-color: var(--ro-gold-light);
+  background: rgba(205, 127, 50, 0.04);
+}
+
+.ro-upload-btn .material-icons {
+  font-size: 18px;
 }
 
 .ro-file-hint {
@@ -331,6 +345,58 @@
 
 .ro-btn-submit:hover {
   color: var(--ro-gold);
+}
+
+/* ============================================================
+   IMAGE PREVIEW
+   ============================================================ */
+
+.ro-preview-grid {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.ro-preview-card {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  border-radius: 3px;
+  overflow: hidden;
+  border: 1px solid var(--ro-border);
+}
+
+.ro-preview-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ro-preview-remove {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.55);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: background 0.2s;
+}
+
+.ro-preview-remove:hover {
+  background: rgba(211, 47, 47, 0.85);
+}
+
+.ro-preview-remove .material-icons {
+  font-size: 14px;
+  color: #fff;
 }
 
 /* ============================================================

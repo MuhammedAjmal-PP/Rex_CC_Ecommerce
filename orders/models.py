@@ -226,14 +226,12 @@ class OrderItem(models.Model):
         if not current or current.status != "DELIVERED":
             return False
 
-        if self.returns.filter(status__in=["REQUESTED", "APPROVED"]).exists():
+        if self.returns.filter(status__in=["REQUESTED", "APPROVED","REJECTED"]).exists():
             return False
 
         delivered_entry = self.status.filter(status="DELIVERED").first()
         if not delivered_entry:
             return False
-
-        
 
         days_since = (timezone.now() - delivered_entry.created_at).days
         return days_since <= 7

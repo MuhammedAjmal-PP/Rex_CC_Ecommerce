@@ -357,14 +357,6 @@
             color: #999;
             letter-spacing: 0.5pt;
         }
-
-        .inv-footer-store {
-            margin-top: 14pt;
-            font-size: 7pt;
-            color: #bbb;
-            text-transform: uppercase;
-            letter-spacing: 1pt;
-        }
     </style>
 </head>
 <body>
@@ -450,7 +442,8 @@
                 <th>Product</th>
                 <th>SKU</th>
                 <th>Qty</th>
-                <th>Amount</th>
+                <th>Price</th>
+                <th>Total</th>
             </tr>
         </thead>
         <tbody>
@@ -475,6 +468,7 @@
                     {% endif %}
                 </td>
                 <td>{{ item.quantity }}</td>
+                <td>₹{{ item.price|floatformat:2 }}</td>
                 <td>₹{{ item.total_price|floatformat:2 }}</td>
             </tr>
             {% endfor %}
@@ -482,6 +476,7 @@
     </table>
 
     <!-- SUMMARY (never splits across pages) -->
+    <div class="inv-items-title">Order Summary</div>
     <div class="inv-summary-section">
         <div class="inv-summary-wrapper">
             <div class="inv-summary">
@@ -500,7 +495,7 @@
                     <span class="inv-s-value">₹{{ order.shipping_fee|floatformat:2 }}</span>
                 </div>
                 <div class="inv-summary-row">
-                    <span class="inv-s-label">GST ({{ gst_rate }}%)</span>
+                    <span class="inv-s-label">Tax (GST {{ gst_rate }}%)</span>
                     <span class="inv-s-value">₹{{ order.tax|floatformat:2 }}</span>
                 </div>
                 <div class="inv-summary-divider"></div>
@@ -516,9 +511,6 @@
             <div class="inv-footer-thanks">Thank you for your purchase!</div>
             <div class="inv-footer-note">
                 This is a computer-generated invoice. No signature required.
-            </div>
-            <div class="inv-footer-store">
-                REX CC · {{ store_state }} · GSTIN on file
             </div>
         </div>
     </div>

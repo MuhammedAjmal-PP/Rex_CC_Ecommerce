@@ -18,8 +18,8 @@ def validate_return_eligibility(order_item):
     if not current or current.status != "DELIVERED":
         raise ReturnNotEligibleError("This item is not eligible for return.")
 
-    # No active return already pending
-    if order_item.returns.filter(status__in=["REQUESTED", "APPROVED"]).exists():
+    # No active/resolved return already exists
+    if order_item.returns.filter(status__in=["REQUESTED", "APPROVED", "REJECTED"]).exists():
         raise DuplicateReturnError("A return request already exists for this item.")
 
     # Must be within 7-day return window (uses same logic as can_return)

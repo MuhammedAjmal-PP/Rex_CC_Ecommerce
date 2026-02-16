@@ -13,8 +13,8 @@ from orders.service import (
     change_order_status,
 )
 from orders.service.status import (
+    ADMIN_ITEM_ALLOWED_TRANSITIONS,
     ORDER_ALLOWED_TRANSITIONS,
-    ORDER_ITEM_ALLOWED_TRANSITIONS,
 )
 
 
@@ -110,7 +110,7 @@ def order_detail(request, order_number):
     for item in order_items:
         item_current = item.current_status.status if item.current_status else None
         item_next = sorted(
-            ORDER_ITEM_ALLOWED_TRANSITIONS.get(item_current, set())
+            ADMIN_ITEM_ALLOWED_TRANSITIONS.get(item_current, set())
         )
         # Per-item timeline: oldest → newest for horizontal display
         item_timeline = list(

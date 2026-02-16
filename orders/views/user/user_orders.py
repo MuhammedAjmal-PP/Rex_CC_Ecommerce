@@ -74,6 +74,7 @@ def order_detail(request, order_number):
         "order": order,
         "items": order_items,
         "order_status_timeline": order.status.all(),
+        "gst_rate": settings.GST_RATE,
         "is_cancellable": is_cancellable,
     }
     return render(request, "orders/user/order_detail.html", context)
