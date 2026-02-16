@@ -4,6 +4,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelatio
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.utils import timezone
 
 # ======================================================
 # STATUS TIMELINE (GENERIC – Order & OrderItem)
@@ -202,6 +203,7 @@ class OrderItem(models.Model):
         related_query_name="order_items",
     )
 
+    
     @property
     def total_price(self):
         if self.price is None or self.quantity is None:
@@ -211,6 +213,31 @@ class OrderItem(models.Model):
     @property
     def current_status(self):
         return self.status.first()
+
+    @property
+    def can_return(self):
+        """
+        Item is returnable only if:
+        1. Current status is DELIVERED
+        2. Within 7 days of the delivery date
+        3. No pending (REQUESTED/APPROVED) return already exists
+        """
+        current = self.current_status
+        if not current or current.status != "DELIVERED":
+            return False
+
+        if self.returns.filter(status__in=["REQUESTED", "APPROVED"]).exists():
+            return False
+
+        delivered_entry = self.status.filter(status="DELIVERED").first()
+        if not delivered_entry:
+            return False
+
+        
+
+        days_since = (timezone.now() - delivered_entry.created_at).days
+        return days_since <= 7
+
 
     def __str__(self):
         return f"OrderItem #{self.id} ({self.product_variant})"

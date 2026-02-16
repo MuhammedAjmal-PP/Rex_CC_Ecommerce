@@ -1,4 +1,5 @@
 from datetime import timedelta
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
@@ -60,14 +61,20 @@ def order_detail(request, order_number):
         order_number=order_number,
     )
 
-    order_items = OrderItem.objects.filter(order=order).select_related(
-        "product_variant", "product_variant__product"
+    order_items = (
+        OrderItem.objects.filter(order=order)
+        .select_related("product_variant", "product_variant__product", "product_variant__product__brand")
+        .prefetch_related("product_variant__images", "status")
     )
+
+    order_status = order.current_status
+    is_cancellable = order_status and order_status.status in ("PLACED", "CONFIRMED")
 
     context = {
         "order": order,
         "items": order_items,
         "order_status_timeline": order.status.all(),
+        "is_cancellable": is_cancellable,
     }
     return render(request, "orders/user/order_detail.html", context)
 
@@ -78,7 +85,7 @@ def order_invoice(request, order_number):
     order = get_object_or_404(Order, user=request.user, order_number=order_number)
     order_items = (
         OrderItem.objects.filter(order=order)
-        .select_related("product_variant", "product_variant__product")
+        .select_related("product_variant", "product_variant__product", "product_variant__product__brand")
         .prefetch_related("product_variant__images")
     )
 
@@ -91,6 +98,10 @@ def order_invoice(request, order_number):
         {
             "order": order,
             "order_items": order_items,
+            "gst_rate": settings.GST_RATE,
+            "hsn_code": settings.DEFAULT_WATCH_HSN,
+            "store_state": settings.STORE_STATE,
+            "store_state_code": settings.STORE_STATE_CODE,
         },
     )
 
@@ -111,37 +122,14 @@ def orderitem_detail(request, order_number, item_id):
     order = get_object_or_404(Order, user=request.user, order_number=order_number)
     order_item = get_object_or_404(
         OrderItem.objects.select_related(
-            "order", "product_variant", "product_variant__product"
+            "order", "product_variant", "product_variant__product", "product_variant__product__brand"
         ).prefetch_related("status", "returns"),
         id=item_id,
         order=order,
     )
 
-    timeline = [
-        {
-            "status": entry.status,
-            "note": entry.note,
-            "actor": (
-                entry.actor.get_short_name
-                if entry.actor and entry.actor.get_short_name
-                else None
-            ),
-            "created_at": entry.created_at,
-        }
-        for entry in order_item.status.all()
-    ]
-
-    return_entry = [
-        {
-            "return_number": ret.return_number,
-            "status": ret.status,
-            "reason_code": ret.reason_code,
-            "comment": ret.comment,
-            "admin_note": ret.admin_note,
-            "created_at": ret.created_at,
-        }
-        for ret in order_item.returns.all()
-    ]
+    timeline = order_item.status.all().order_by("-created_at")
+    return_entry = order_item.returns.all().order_by("-created_at")
 
     context = {
         "order": order,

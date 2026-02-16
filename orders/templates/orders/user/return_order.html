@@ -1,0 +1,142 @@
+{% extends "core/user/base_user.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block head_title %}Return Item — {{ order.order_number }} | REX CC{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'orders/user/css/return_order.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="ro-page">
+
+    <!-- BREADCRUMBS -->
+    <nav class="ro-breadcrumb">
+        <a href="{% url 'user_profile' %}">My Account</a>
+        <span class="ro-breadcrumb-sep">›</span>
+        <a href="{% url 'user_order_list' %}">Orders</a>
+        <span class="ro-breadcrumb-sep">›</span>
+        <a href="{% url 'user_order_details' order.order_number %}">{{ order.order_number }}</a>
+        <span class="ro-breadcrumb-sep">›</span>
+        <a href="{% url 'user_order_item_details' order.order_number order_item.id %}">Item</a>
+        <span class="ro-breadcrumb-sep">›</span>
+        <span class="ro-breadcrumb-current">Return</span>
+    </nav>
+
+    <!-- HEADER -->
+    <div class="ro-header">
+        <h1 class="ro-title">Return Item</h1>
+    </div>
+
+    <!-- ITEM BEING RETURNED -->
+    <div class="ro-product-card">
+        {% if primary_image %}
+            <img src="{{ primary_image.image.url }}"
+                 alt="{{ order_item.product_variant.product.name }}"
+                 class="ro-product-img">
+        {% else %}
+            <div class="ro-product-img-placeholder">
+                <span class="material-icons">watch</span>
+            </div>
+        {% endif %}
+
+        <div class="ro-product-info">
+            {% if order_item.product_variant and order_item.product_variant.product and order_item.product_variant.product.brand %}
+                <div class="ro-product-brand">{{ order_item.product_variant.product.brand.name }}</div>
+            {% endif %}
+            <div class="ro-product-name">
+                {% if order_item.product_variant and order_item.product_variant.product %}
+                    {{ order_item.product_variant.product.name }}
+                {% else %}
+                    Product unavailable
+                {% endif %}
+            </div>
+            {% if order_item.product_variant %}
+                <div class="ro-product-sku">{{ order_item.product_variant.sku }}</div>
+            {% endif %}
+            <div class="ro-product-meta">
+                Qty: {{ order_item.quantity }}
+                <span class="ro-product-meta-dot">·</span>
+                ₹{{ order_item.total_price|floatformat:0|intcomma }}
+            </div>
+        </div>
+    </div>
+
+    <!-- RETURN FORM -->
+    <form method="post"
+          action="{% url 'user_return_order_submit' order.order_number order_item.id %}"
+          enctype="multipart/form-data"
+          class="ro-form">
+        {% csrf_token %}
+
+        <div class="ro-form-card">
+            <div class="ro-section-title">Return Details</div>
+
+            <!-- REASON -->
+            <div class="ro-field">
+                <label class="ro-field-label" for="id_reason_code">
+                    Reason for return<span class="ro-required">*</span>
+                </label>
+                <select name="reason_code" id="id_reason_code" class="ro-select" required>
+                    <option value="">Select a reason</option>
+                    {% for code, label in form.fields.reason_code.choices %}
+                        {% if code %}
+                            <option value="{{ code }}"
+                                {% if form.reason_code.value == code %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+                {% if form.reason_code.errors %}
+                    {% for error in form.reason_code.errors %}
+                        <div class="ro-field-error">{{ error }}</div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <!-- COMMENT -->
+            <div class="ro-field">
+                <label class="ro-field-label" for="id_comment">
+                    Additional Details
+                </label>
+                <textarea name="comment"
+                          id="id_comment"
+                          class="ro-textarea"
+                          maxlength="1000"
+                          placeholder="Tell us more about the issue...">{{ form.comment.value|default:"" }}</textarea>
+                {% if form.comment.errors %}
+                    {% for error in form.comment.errors %}
+                        <div class="ro-field-error">{{ error }}</div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <!-- PHOTOS -->
+            <div class="ro-field">
+                <label class="ro-field-label">
+                    Photos
+                </label>
+                <div class="ro-file-wrapper">
+                    <input type="file"
+                           name="photos"
+                           accept="image/*"
+                           multiple
+                           class="ro-file-input">
+                </div>
+                <div class="ro-file-hint">Upload up to 3 images (optional)</div>
+                {% if photo_errors %}
+                    <div class="ro-field-error">{{ photo_errors }}</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- SUBMIT -->
+        <div class="ro-footer">
+            <button type="submit" class="ro-btn-submit">Submit Return Request</button>
+        </div>
+    </form>
+
+</div>
+{% endblock %}

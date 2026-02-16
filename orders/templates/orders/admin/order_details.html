@@ -1,0 +1,324 @@
+{% extends 'core/admin/base_admin.html' %}
+{% load static %}
+
+{% block title %}Order {{ order.order_number }}{% endblock title %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'orders/admin/css/order_details.css' %}">
+{% endblock extra_css %}
+
+{% block header_title %}Order #{{ order.order_number }}{% endblock header_title %}
+{% block header_subtitle %}Order Details{% endblock header_subtitle %}
+
+{% block content %}
+
+    <!-- Action Bar -->
+    <div class="od-action-bar">
+        <a href="{% url 'admin_orders_list' %}" class="od-back-link">
+            <span class="material-icons">arrow_back</span>
+            <span>Back to Orders</span>
+        </a>
+        <div class="od-action-right">
+            <span class="status-badge order-status-{{ order_current|lower }}">{{ order_current }}</span>
+            {% if order_next %}
+                <form method="post" action="{% url 'admin_order_status_update' order.order_number %}" class="od-status-form">
+                    {% csrf_token %}
+                    <select name="to_status" class="od-status-select">
+                        <option value="">Change status…</option>
+                        {% for status in order_next %}
+                            <option value="{{ status }}">{{ status }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="od-status-btn">
+                        <span class="material-icons">sync</span>
+                        Update
+                    </button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Order Info + Summary Grid -->
+    <div class="od-info-grid">
+        <!-- Left: Order Information -->
+        <div class="od-card">
+            <div class="od-card-title">
+                <span class="material-icons">info</span>
+                Order Information
+            </div>
+            <div class="od-card-body">
+                <div class="od-meta-row">
+                    <span class="od-meta-label">Customer</span>
+                    <span class="od-meta-value">
+                        {% if order.user %}
+                            {{ order.user.email }}
+                        {% else %}
+                            Deleted user
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="od-meta-row">
+                    <span class="od-meta-label">Order Date</span>
+                    <span class="od-meta-value">{{ order.created_at|date:"d M Y, h:i A" }}</span>
+                </div>
+                <div class="od-meta-row">
+                    <span class="od-meta-label">Payment Method</span>
+                    <span class="od-meta-value">{{ order.payment_method }}</span>
+                </div>
+            </div>
+
+            <!-- Shipping Address -->
+            <div class="od-card-title od-card-title-sub">
+                <span class="material-icons">local_shipping</span>
+                Shipping Address
+            </div>
+            <div class="od-card-body">
+                {% with order.shipping_address as addr %}
+                    <div class="od-address">
+                        <p class="od-address-name">{{ addr.full_name }}</p>
+                        <p>{{ addr.address_line_1 }}</p>
+                        {% if addr.address_line_2 %}<p>{{ addr.address_line_2 }}</p>{% endif %}
+                        <p>{{ addr.city }}, {{ addr.state }} {{ addr.pincode }}</p>
+                        {% if addr.phone %}<p>Phone: {{ addr.phone }}</p>{% endif %}
+                    </div>
+                {% endwith %}
+            </div>
+
+            <!-- Billing Address -->
+            <div class="od-card-title od-card-title-sub">
+                <span class="material-icons">receipt</span>
+                Billing Address
+            </div>
+            <div class="od-card-body">
+                {% with order.billing_address as addr %}
+                    <div class="od-address">
+                        <p class="od-address-name">{{ addr.full_name }}</p>
+                        <p>{{ addr.address_line_1 }}</p>
+                        {% if addr.address_line_2 %}<p>{{ addr.address_line_2 }}</p>{% endif %}
+                        <p>{{ addr.city }}, {{ addr.state }} {{ addr.pincode }}</p>
+                        {% if addr.phone %}<p>Phone: {{ addr.phone }}</p>{% endif %}
+                    </div>
+                {% endwith %}
+            </div>
+        </div>
+
+        <!-- Right: Order Summary -->
+        <div class="od-card">
+            <div class="od-card-title">
+                <span class="material-icons">payments</span>
+                Order Summary
+            </div>
+            <div class="od-card-body od-summary">
+                <div class="od-summary-row">
+                    <span>Subtotal</span>
+                    <span>₹{{ order.sub_total|floatformat:2 }}</span>
+                </div>
+                <div class="od-summary-row">
+                    <span>Tax</span>
+                    <span>₹{{ order.tax|floatformat:2 }}</span>
+                </div>
+                <div class="od-summary-row">
+                    <span>Discount</span>
+                    <span>-₹{{ order.discount|floatformat:2 }}</span>
+                </div>
+                <div class="od-summary-row">
+                    <span>Shipping</span>
+                    <span>₹{{ order.shipping_fee|floatformat:2 }}</span>
+                </div>
+                <div class="od-summary-row od-summary-total">
+                    <span>Grand Total</span>
+                    <span>₹{{ order.grand_total|floatformat:2 }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Items Section -->
+    <div class="od-section">
+        <div class="od-section-title">
+            <span class="material-icons">inventory_2</span>
+            Order Items ({{ items_with_transitions|length }})
+        </div>
+        <div class="od-items-table-wrap">
+            <table class="od-items-table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Qty</th>
+                        <th>Price</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in items_with_transitions %}
+                        {% with entry.item as item %}
+                            <!-- Item Row -->
+                            <tr class="od-item-row">
+                                <td>
+                                    <div class="od-item-info">
+                                        {% if item.product_variant and item.product_variant.images.all %}
+                                            {% with item.product_variant.images.all|first as img %}
+                                                {% if img %}
+                                                    <img src="{{ img.image.url }}"
+                                                         alt="Product"
+                                                         class="od-item-thumb"
+                                                         loading="lazy">
+                                                {% else %}
+                                                    <div class="od-item-thumb-placeholder">
+                                                        <span class="material-icons">image</span>
+                                                    </div>
+                                                {% endif %}
+                                            {% endwith %}
+                                        {% else %}
+                                            <div class="od-item-thumb-placeholder">
+                                                <span class="material-icons">image</span>
+                                            </div>
+                                        {% endif %}
+                                        <div class="od-item-details">
+                                            {% if item.product_variant and item.product_variant.product and item.product_variant.product.brand %}
+                                                <span class="od-item-brand">{{ item.product_variant.product.brand.name }}</span>
+                                            {% endif %}
+                                            <span class="od-item-name">
+                                                {% if item.product_variant and item.product_variant.product %}
+                                                    {{ item.product_variant.product.name }}
+                                                {% else %}
+                                                    Product unavailable
+                                                {% endif %}
+                                            </span>
+                                            {% if item.product_variant %}
+                                                <span class="od-item-sku">{{ item.product_variant.sku }}</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="od-td-center">{{ item.quantity }}</td>
+                                <td class="od-td-center">₹{{ item.price|floatformat:2 }}</td>
+                                <td class="od-td-center od-item-total">₹{{ item.total_price|floatformat:2 }}</td>
+                                <td class="od-td-center">
+                                    <span class="status-badge item-status-{{ entry.current_status|lower }}">
+                                        {{ entry.current_status }}
+                                    </span>
+                                </td>
+                                <td class="od-td-center">
+                                    {% if entry.allowed_next %}
+                                        <form method="post"
+                                              action="{% url 'admin_order_item_status_update' order.order_number item.id %}"
+                                              class="od-item-status-form">
+                                            {% csrf_token %}
+                                            <select name="to_status" class="od-item-select">
+                                                <option value="">—</option>
+                                                {% for st in entry.allowed_next %}
+                                                    <option value="{{ st }}">{{ st }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <button type="submit" class="od-item-update-btn" title="Update">
+                                                <span class="material-icons">sync</span>
+                                            </button>
+                                        </form>
+                                    {% else %}
+                                        <span class="od-no-action">—</span>
+                                    {% endif %}
+                                </td>
+                                <td class="od-td-center">
+                                    {% if entry.timeline %}
+                                        <button type="button" class="od-toggle-btn" onclick="toggleTimeline(this)">
+                                            <span class="material-icons">expand_more</span>
+                                        </button>
+                                    {% endif %}
+                                </td>
+                            </tr>
+
+                            <!-- Collapsible Item Timeline Sub-row -->
+                            {% if entry.timeline %}
+                                <tr class="od-timeline-subrow" style="display:none;">
+                                    <td colspan="7">
+                                        <div class="od-htl">
+                                            <div class="od-htl-track">
+                                                {% for step in entry.timeline %}
+                                                    <div class="od-htl-step {% if forloop.last %}od-htl-step-current{% endif %}">
+                                                        <div class="od-htl-dot"></div>
+                                                        {% if not forloop.last %}
+                                                            <div class="od-htl-line"></div>
+                                                        {% endif %}
+                                                        <div class="od-htl-label">
+                                                            <span class="od-htl-status item-status-{{ step.status|lower }}">{{ step.status }}</span>
+                                                            <span class="od-htl-date">{{ step.created_at|date:"d M, h:i A" }}</span>
+                                                            {% if step.actor %}
+                                                                <span class="od-htl-actor">{{ step.actor.email|truncatechars:20 }}</span>
+                                                            {% endif %}
+                                                            {% if step.note %}
+                                                                <span class="od-htl-note">{{ step.note|truncatechars:40 }}</span>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        {% endwith %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Order Status Timeline -->
+    <div class="od-section">
+        <div class="od-section-title">
+            <span class="material-icons">timeline</span>
+            Order Status Timeline
+        </div>
+        <div class="od-htl od-htl-order">
+            <div class="od-htl-track">
+                {% for step in order_only_timeline %}
+                    <div class="od-htl-step {% if forloop.last %}od-htl-step-current{% endif %}">
+                        <div class="od-htl-dot"></div>
+                        {% if not forloop.last %}
+                            <div class="od-htl-line"></div>
+                        {% endif %}
+                        <div class="od-htl-label">
+                            <span class="od-htl-status order-status-{{ step.status|lower }}">{{ step.status }}</span>
+                            <span class="od-htl-date">{{ step.created_at|date:"d M Y, h:i A" }}</span>
+                            {% if step.actor %}
+                                <span class="od-htl-actor">by {{ step.actor.email }}</span>
+                            {% endif %}
+                            {% if step.note %}
+                                <span class="od-htl-note">{{ step.note|truncatechars:60 }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% empty %}
+                    <p class="od-timeline-empty">No status history available.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}
+
+{% block extra_js %}
+<script>
+    function toggleTimeline(btn) {
+        const itemRow = btn.closest('tr');
+        const subRow = itemRow.nextElementSibling;
+        if (!subRow || !subRow.classList.contains('od-timeline-subrow')) return;
+
+        const icon = btn.querySelector('.material-icons');
+        if (subRow.style.display === 'none') {
+            subRow.style.display = 'table-row';
+            icon.textContent = 'expand_less';
+            btn.classList.add('od-toggle-active');
+        } else {
+            subRow.style.display = 'none';
+            icon.textContent = 'expand_more';
+            btn.classList.remove('od-toggle-active');
+        }
+    }
+</script>
+{% endblock extra_js %}
+

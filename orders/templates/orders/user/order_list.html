@@ -94,7 +94,7 @@
                             {% endwith %}
                         </div>
                         <div class="order-row-action">
-                            <a href="#" class="btn-view-order" title="View Order">
+                            <a href="{% url 'user_order_details' order.order_number %}" class="btn-view-order" title="View Order">
                                 <span class="material-icons">visibility</span>
                             </a>
                         </div>

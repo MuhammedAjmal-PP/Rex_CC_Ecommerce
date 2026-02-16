@@ -1,0 +1,135 @@
+{% extends "core/user/base_user.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block head_title %}Cancel Order {{ order.order_number }} | REX CC{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'orders/user/css/cancel_order.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="co-page">
+
+    <!-- BREADCRUMBS -->
+    <nav class="co-breadcrumb">
+        <a href="{% url 'user_profile' %}">My Account</a>
+        <span class="co-breadcrumb-sep">›</span>
+        <a href="{% url 'user_order_list' %}">Orders</a>
+        <span class="co-breadcrumb-sep">›</span>
+        <a href="{% url 'user_order_details' order.order_number %}">{{ order.order_number }}</a>
+        <span class="co-breadcrumb-sep">›</span>
+        <span class="co-breadcrumb-current">Cancel</span>
+    </nav>
+
+    <!-- HEADER -->
+    <div class="co-header">
+        <h1 class="co-title">Cancel Items</h1>
+        <p class="co-subtitle">Select the items you'd like to cancel from this order</p>
+    </div>
+
+    {% if has_cancellable_items %}
+        <form method="post" action="{% url 'user_cancel_order_submit' order.order_number %}">
+            {% csrf_token %}
+
+            <!-- ITEMS LIST -->
+            <div class="co-items">
+                {% for item in order_items %}
+                    {% with istatus=item.current_status %}
+                        <div class="co-item-row {% if item.id not in cancellable_item_ids %}co-item-disabled{% endif %}">
+                            <!-- Checkbox -->
+                            <div class="co-checkbox">
+                                {% if item.id in cancellable_item_ids %}
+                                    <input type="checkbox" name="item_ids" value="{{ item.id }}">
+                                {% else %}
+                                    <input type="checkbox" disabled>
+                                {% endif %}
+                            </div>
+
+                            <!-- Image -->
+                            {% if item.product_variant and item.product_variant.primary_image %}
+                                <img src="{{ item.product_variant.primary_image.image.url }}"
+                                     alt="{{ item.product_variant.product.name }}"
+                                     class="co-item-img">
+                            {% else %}
+                                <div class="co-item-img-placeholder">
+                                    <span class="material-icons">image</span>
+                                </div>
+                            {% endif %}
+
+                            <!-- Info -->
+                            <div class="co-item-info">
+                                {% if item.product_variant and item.product_variant.product and item.product_variant.product.brand %}
+                                    <div class="co-item-brand">{{ item.product_variant.product.brand.name }}</div>
+                                {% endif %}
+                                <div class="co-item-name">
+                                    {% if item.product_variant and item.product_variant.product %}
+                                        {{ item.product_variant.product.name }}
+                                    {% else %}
+                                        Product unavailable
+                                    {% endif %}
+                                </div>
+                                {% if item.product_variant %}
+                                    <div class="co-item-sku">{{ item.product_variant.sku }}</div>
+                                {% endif %}
+                                <div class="co-item-qty">Qty: {{ item.quantity }}</div>
+                            </div>
+
+                            <!-- Price -->
+                            <div class="co-item-price">₹{{ item.total_price|floatformat:0|intcomma }}</div>
+
+                            <!-- Status -->
+                            {% if istatus %}
+                                <span class="co-status-badge co-status-{{ istatus.status|lower }}">
+                                    {% if istatus.status == "PENDING" %}Pending
+                                    {% elif istatus.status == "CONFIRMED" %}Confirmed
+                                    {% elif istatus.status == "PACKING" %}Packing
+                                    {% elif istatus.status == "READY" %}Ready
+                                    {% elif istatus.status == "SHIPPED" %}Shipped
+                                    {% elif istatus.status == "IN_TRANSIT" %}In Transit
+                                    {% elif istatus.status == "OUT_FOR_DELIVERY" %}Out for Delivery
+                                    {% elif istatus.status == "DELIVERED" %}Delivered
+                                    {% elif istatus.status == "CANCELLED" %}Cancelled
+                                    {% else %}{{ istatus.status }}
+                                    {% endif %}
+                                </span>
+                            {% endif %}
+                        </div>
+                    {% endwith %}
+                {% endfor %}
+            </div>
+
+            <!-- REASON (mandatory) -->
+            <div class="co-reason">
+                <label class="co-reason-label">
+                    Reason<span class="co-required">*</span>
+                </label>
+                <textarea
+                    name="reason_note"
+                    class="co-reason-textarea"
+                    placeholder="Please tell us why you'd like to cancel..."
+                    required
+                >{{ request.POST.reason_note }}</textarea>
+            </div>
+
+            <!-- SUBMIT -->
+            <div class="co-footer">
+                <button type="submit" class="co-btn-submit">Cancel Selected Items</button>
+            </div>
+        </form>
+
+    {% else %}
+        <!-- NO CANCELLABLE ITEMS -->
+        <div class="co-empty">
+            <div class="co-empty-icon">
+                <span class="material-icons">block</span>
+            </div>
+            <p class="co-empty-text">No items in this order can be cancelled at this stage.</p>
+            <a href="{% url 'user_order_details' order.order_number %}" class="co-btn-back">
+                ← Back to Order
+            </a>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

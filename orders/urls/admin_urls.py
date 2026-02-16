@@ -18,7 +18,7 @@ urlpatterns = [
     path(
         "orders/<str:order_number>/details/",
         order_detail,
-        name="admin_order_detail",
+        name="admin_order_details",
     ),
     path(
         "orders/<str:order_number>/status/update/",
@@ -42,4 +42,3 @@ urlpatterns = [
         name="admin_return_status_update",
     ),
 ]
-

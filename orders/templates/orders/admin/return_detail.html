@@ -1,0 +1,241 @@
+{% extends 'core/admin/base_admin.html' %}
+{% load static %}
+
+{% block title %}Return {{ return_obj.return_number }}{% endblock title %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'orders/admin/css/return_detail.css' %}">
+{% endblock extra_css %}
+
+{% block header_title %}Return #{{ return_obj.return_number }}{% endblock header_title %}
+{% block header_subtitle %}Return Details{% endblock header_subtitle %}
+
+{% block content %}
+
+    <!-- Django Messages -->
+    {% if messages %}
+        <div class="rd-messages">
+            {% for message in messages %}
+                <div class="rd-alert rd-alert-{{ message.tags }}">
+                    <span class="material-icons">
+                        {% if message.tags == 'success' %}check_circle
+                        {% elif message.tags == 'error' %}error
+                        {% elif message.tags == 'warning' %}warning
+                        {% else %}info{% endif %}
+                    </span>
+                    <span>{{ message }}</span>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Action Bar -->
+    <div class="rd-action-bar">
+        <a href="{% url 'admin_return_list' %}" class="rd-back-link">
+            <span class="material-icons">arrow_back</span>
+            <span>Back to Returns</span>
+        </a>
+        <span class="status-badge return-status-{{ return_obj.status|lower }}">{{ return_obj.status }}</span>
+    </div>
+
+    <!-- Info + Actions Grid -->
+    <div class="rd-grid">
+
+        <!-- Left: Return & Product Info -->
+        <div class="rd-card">
+            <!-- Return Info -->
+            <div class="rd-card-title">
+                <span class="material-icons">assignment_return</span>
+                Return Information
+            </div>
+            <div class="rd-card-body">
+                <div class="rd-row">
+                    <span class="rd-label">Return #</span>
+                    <span class="rd-value">{{ return_obj.return_number }}</span>
+                </div>
+                <div class="rd-row">
+                    <span class="rd-label">Order #</span>
+                    <span class="rd-value">
+                        <a href="{% url 'admin_order_details' order.order_number %}" class="rd-link">
+                            {{ order.order_number }}
+                        </a>
+                    </span>
+                </div>
+                <div class="rd-row">
+                    <span class="rd-label">Customer</span>
+                    <span class="rd-value">
+                        {% if order.user %}{{ order.user.email }}{% else %}Deleted user{% endif %}
+                    </span>
+                </div>
+                <div class="rd-row">
+                    <span class="rd-label">Submitted</span>
+                    <span class="rd-value">{{ return_obj.created_at|date:"d M Y, h:i A" }}</span>
+                </div>
+                <div class="rd-row">
+                    <span class="rd-label">Reason</span>
+                    <span class="rd-value rd-reason">{{ return_obj.get_reason_code_display }}</span>
+                </div>
+                {% if return_obj.comment %}
+                    <div class="rd-row rd-row-full">
+                        <span class="rd-label">Customer Comment</span>
+                        <p class="rd-comment">{{ return_obj.comment }}</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Product Info -->
+            <div class="rd-card-title rd-card-title-sub">
+                <span class="material-icons">inventory_2</span>
+                Product Details
+            </div>
+            <div class="rd-card-body">
+                <div class="rd-product">
+                    {% if order_item.product_variant and order_item.product_variant.images.all %}
+                        {% with order_item.product_variant.images.all|first as img %}
+                            {% if img %}
+                                <img src="{{ img.image.url }}" alt="Product" class="rd-product-img" loading="lazy">
+                            {% else %}
+                                <div class="rd-product-img-ph">
+                                    <span class="material-icons">image</span>
+                                </div>
+                            {% endif %}
+                        {% endwith %}
+                    {% else %}
+                        <div class="rd-product-img-ph">
+                            <span class="material-icons">image</span>
+                        </div>
+                    {% endif %}
+                    <div class="rd-product-info">
+                        {% if order_item.product_variant and order_item.product_variant.product %}
+                            {% if order_item.product_variant.product.brand %}
+                                <span class="rd-product-brand">{{ order_item.product_variant.product.brand.name }}</span>
+                            {% endif %}
+                            <span class="rd-product-name">{{ order_item.product_variant.product.name }}</span>
+                        {% else %}
+                            <span class="rd-product-name">Product unavailable</span>
+                        {% endif %}
+                        {% if order_item.product_variant %}
+                            <span class="rd-product-sku">{{ order_item.product_variant.sku }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="rd-row">
+                    <span class="rd-label">Quantity</span>
+                    <span class="rd-value">{{ order_item.quantity }}</span>
+                </div>
+                <div class="rd-row">
+                    <span class="rd-label">Unit Price</span>
+                    <span class="rd-value">₹{{ order_item.price|floatformat:2 }}</span>
+                </div>
+                <div class="rd-row">
+                    <span class="rd-label">Item Total</span>
+                    <span class="rd-value rd-bold">₹{{ order_item.total_price|floatformat:2 }}</span>
+                </div>
+                <div class="rd-row">
+                    <span class="rd-label">Item Status</span>
+                    <span class="rd-value">
+                        {% if order_item.current_status %}
+                            <span class="status-badge item-status-{{ order_item.current_status.status|lower }}">
+                                {{ order_item.current_status.status }}
+                            </span>
+                        {% else %}
+                            —
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Admin Actions -->
+        <div class="rd-card">
+            <div class="rd-card-title">
+                <span class="material-icons">admin_panel_settings</span>
+                Admin Actions
+            </div>
+            <div class="rd-card-body">
+                {% if allowed_next_statuses %}
+                    <form method="post"
+                          action="{% url 'admin_return_status_update' return_obj.return_number %}"
+                          class="rd-action-form">
+                        {% csrf_token %}
+
+                        <div class="rd-form-group">
+                            <label class="rd-form-label">Admin Note</label>
+                            <textarea name="admin_note"
+                                      class="rd-textarea"
+                                      rows="4"
+                                      placeholder="Add a note (required for rejection)...">{{ return_obj.admin_note|default:"" }}</textarea>
+                        </div>
+
+                        <div class="rd-action-buttons">
+                            {% for status in allowed_next_statuses %}
+                                {% if status == 'APPROVED' %}
+                                    <button type="submit"
+                                            name="action"
+                                            value="APPROVE"
+                                            class="rd-btn rd-btn-approve">
+                                        <span class="material-icons">thumb_up</span>
+                                        Approve Return
+                                    </button>
+                                {% elif status == 'REJECTED' %}
+                                    <button type="submit"
+                                            name="action"
+                                            value="REJECT"
+                                            class="rd-btn rd-btn-reject">
+                                        <span class="material-icons">thumb_down</span>
+                                        Reject Return
+                                    </button>
+                                {% elif status == 'COMPLETED' %}
+                                    <button type="submit"
+                                            name="action"
+                                            value="COMPLETE"
+                                            class="rd-btn rd-btn-complete">
+                                        <span class="material-icons">check_circle</span>
+                                        Complete Return
+                                    </button>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </form>
+                {% else %}
+                    <div class="rd-no-actions">
+                        <span class="material-icons">lock</span>
+                        <p>No further actions available for this return.</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Existing Admin Note -->
+            {% if return_obj.admin_note %}
+                <div class="rd-card-title rd-card-title-sub">
+                    <span class="material-icons">note</span>
+                    Admin Note
+                </div>
+                <div class="rd-card-body">
+                    <p class="rd-admin-note">{{ return_obj.admin_note }}</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Evidence Images -->
+    {% if images %}
+        <div class="rd-section">
+            <div class="rd-section-title">
+                <span class="material-icons">photo_library</span>
+                Evidence Images ({{ images|length }})
+            </div>
+            <div class="rd-images-grid">
+                {% for img in images %}
+                    <a href="{{ img.image.url }}" target="_blank" class="rd-image-card">
+                        <img src="{{ img.image.url }}" alt="Return evidence {{ forloop.counter }}" loading="lazy">
+                        <div class="rd-image-overlay">
+                            <span class="material-icons">open_in_new</span>
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+{% endblock content %}

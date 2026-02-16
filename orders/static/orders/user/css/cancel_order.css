@@ -1,0 +1,383 @@
+/* ============================================================
+   REX CC — CANCEL ORDER PAGE
+   Luxury theme matching site design system
+   ============================================================ */
+
+:root {
+  --co-bg: #faf9f7;
+  --co-surface: #ffffff;
+  --co-text: #2c2c2c;
+  --co-text-muted: #7a7a7a;
+  --co-border: #e8e6e2;
+  --co-gold: #cd7f32;
+  --co-gold-light: #bfa15f;
+  --co-gold-dark: #b06825;
+
+  --font-serif: "Playfair Display", serif;
+  --font-sans: "Montserrat", sans-serif;
+}
+
+/* ============================================================
+   PAGE CONTAINER
+   ============================================================ */
+
+.co-page {
+  min-height: calc(100vh - 200px);
+  padding: 40px 60px 80px;
+}
+
+.co-page * {
+  box-sizing: border-box;
+}
+
+/* ============================================================
+   BREADCRUMBS
+   ============================================================ */
+
+.co-breadcrumb {
+  max-width: 1200px;
+  margin: 0 auto 24px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--co-text-muted);
+  font-family: var(--font-sans);
+}
+
+.co-breadcrumb a {
+  color: var(--co-text-muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.co-breadcrumb a:hover {
+  color: var(--co-gold);
+}
+
+.co-breadcrumb-sep {
+  color: var(--co-gold-dark);
+  user-select: none;
+}
+
+.co-breadcrumb-current {
+  color: var(--co-text);
+  font-weight: 500;
+}
+
+/* ============================================================
+   PAGE HEADER
+   ============================================================ */
+
+.co-header {
+  max-width: 1200px;
+  margin: 0 auto 28px;
+}
+
+.co-title {
+  font-family: var(--font-serif);
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--co-text);
+  margin: 0 0 6px;
+}
+
+.co-subtitle {
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  color: var(--co-text-muted);
+}
+
+/* ============================================================
+   ITEMS LIST
+   ============================================================ */
+
+.co-items {
+  max-width: 1200px;
+  margin: 0 auto 28px;
+  background: var(--co-surface);
+  border: 1px solid var(--co-border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.co-item-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 24px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+  transition: background 0.2s;
+}
+
+.co-item-row:last-child {
+  border-bottom: none;
+}
+
+.co-item-row:hover {
+  background: rgba(250, 249, 247, 0.5);
+}
+
+.co-item-row.co-item-disabled {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+/* Checkbox */
+.co-checkbox {
+  flex-shrink: 0;
+}
+
+.co-checkbox input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--co-gold);
+  cursor: pointer;
+}
+
+.co-checkbox input[type="checkbox"]:disabled {
+  cursor: not-allowed;
+  opacity: 0.3;
+}
+
+/* Item image */
+.co-item-img {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 3px;
+  background: var(--co-bg);
+  flex-shrink: 0;
+}
+
+.co-item-img-placeholder {
+  width: 56px;
+  height: 56px;
+  border-radius: 3px;
+  background: var(--co-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.co-item-img-placeholder .material-icons {
+  font-size: 24px;
+  color: var(--co-text-muted);
+  opacity: 0.3;
+}
+
+/* Item info */
+.co-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.co-item-brand {
+  font-family: var(--font-sans);
+  font-size: 0.62rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--co-text-muted);
+  margin-bottom: 1px;
+}
+
+.co-item-name {
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--co-text);
+}
+
+.co-item-sku {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  color: var(--co-text-muted);
+  margin-top: 2px;
+}
+
+.co-item-qty {
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  color: var(--co-text-muted);
+  margin-top: 2px;
+}
+
+/* Item price */
+.co-item-price {
+  font-family: var(--font-sans);
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--co-gold-dark);
+  flex-shrink: 0;
+}
+
+/* Status badge */
+.co-status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 3px;
+  font-family: var(--font-sans);
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.co-status-pending     { color: #8d6e63; background: rgba(141,110,99,0.08); border: 1px solid rgba(141,110,99,0.2); }
+.co-status-confirmed   { color: #1565c0; background: rgba(21,101,192,0.08); border: 1px solid rgba(21,101,192,0.2); }
+.co-status-packing     { color: #6a1b9a; background: rgba(106,27,154,0.08); border: 1px solid rgba(106,27,154,0.2); }
+.co-status-ready       { color: #00838f; background: rgba(0,131,143,0.08); border: 1px solid rgba(0,131,143,0.2); }
+.co-status-shipped     { color: #4527a0; background: rgba(69,39,160,0.08); border: 1px solid rgba(69,39,160,0.2); }
+.co-status-in_transit  { color: #4527a0; background: rgba(69,39,160,0.08); border: 1px solid rgba(69,39,160,0.2); }
+.co-status-out_for_delivery { color: #e65100; background: rgba(230,81,0,0.08); border: 1px solid rgba(230,81,0,0.2); }
+.co-status-delivered   { color: #2e7d32; background: rgba(46,125,50,0.08); border: 1px solid rgba(46,125,50,0.2); }
+.co-status-cancelled   { color: #d32f2f; background: rgba(211,47,47,0.08); border: 1px solid rgba(211,47,47,0.2); }
+
+/* ============================================================
+   REASON TEXTAREA
+   ============================================================ */
+
+.co-reason {
+  max-width: 1200px;
+  margin: 0 auto 20px;
+}
+
+.co-reason-label {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--co-text-muted);
+  margin-bottom: 10px;
+  display: block;
+}
+
+.co-reason-label .co-required {
+  color: #d32f2f;
+  margin-left: 2px;
+}
+
+.co-reason-textarea {
+  width: 100%;
+  min-height: 90px;
+  padding: 14px 16px;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  color: var(--co-text);
+  border: 1px solid var(--co-border);
+  border-radius: 3px;
+  background: var(--co-surface);
+  resize: vertical;
+  transition: border-color 0.2s;
+  line-height: 1.5;
+}
+
+.co-reason-textarea::placeholder {
+  color: #bbb;
+}
+
+.co-reason-textarea:focus {
+  outline: none;
+  border-color: var(--co-gold-light);
+}
+
+/* ============================================================
+   FOOTER / SUBMIT
+   ============================================================ */
+
+.co-footer {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 4px;
+}
+
+.co-btn-submit {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--co-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  padding: 8px 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.co-btn-submit:hover {
+  color: #d32f2f;
+}
+
+/* ============================================================
+   EMPTY STATE
+   ============================================================ */
+
+.co-empty {
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.co-empty-icon {
+  font-size: 48px;
+  color: var(--co-gold-light);
+  opacity: 0.4;
+  margin-bottom: 16px;
+}
+
+.co-empty-text {
+  font-family: var(--font-sans);
+  font-size: 0.92rem;
+  color: var(--co-text-muted);
+  margin-bottom: 20px;
+}
+
+.co-btn-back {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--co-text-muted);
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  transition: color 0.2s;
+}
+
+.co-btn-back:hover {
+  color: var(--co-gold);
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 768px) {
+  .co-page {
+    padding: 24px 16px 60px;
+  }
+
+  .co-item-row {
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 14px 16px;
+  }
+
+  .co-item-price {
+    width: 100%;
+    text-align: right;
+  }
+
+  .co-title {
+    font-size: 1.4rem;
+  }
+}

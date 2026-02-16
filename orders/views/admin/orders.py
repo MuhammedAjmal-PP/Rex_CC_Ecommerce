@@ -89,47 +89,53 @@ def order_list(request):
 @never_cache
 @require_GET
 def order_detail(request, order_number):
-    """."""
     order = get_object_or_404(
         Order.objects.select_related("user").prefetch_related("status"),
         order_number=order_number,
     )
     order_items = (
         OrderItem.objects.filter(order=order)
-        .select_related("product_variant", "product_variant__product")
-        .prefetch_related("status")
+        .select_related(
+            "product_variant",
+            "product_variant__product",
+            "product_variant__product__brand",
+        )
+        .prefetch_related("product_variant__images", "status")
     )
 
-    order_current = order.current_status.status
+    order_current = order.current_status.status if order.current_status else None
     order_next = sorted(ORDER_ALLOWED_TRANSITIONS.get(order_current, set()))
 
-    items_payload = []
+    items_with_transitions = []
     for item in order_items:
-        item_current = item.current_status.status
-        item_next = sorted(ORDER_ITEM_ALLOWED_TRANSITIONS.get(item_current, set()))
-        items_payload.append(
+        item_current = item.current_status.status if item.current_status else None
+        item_next = sorted(
+            ORDER_ITEM_ALLOWED_TRANSITIONS.get(item_current, set())
+        )
+        # Per-item timeline: oldest → newest for horizontal display
+        item_timeline = list(
+            item.status.select_related("actor").order_by("created_at")
+        )
+        items_with_transitions.append(
             {
-                "id": item.id,
-                "product": item.product_variant.product.name,
-                "quantity": item.quantity,
-                "price": str(item.price),
-                "total_price": str(item.total_price),
+                "item": item,
                 "current_status": item_current,
-                "allowed_next_statuses": item_next,
+                "allowed_next": item_next,
+                "timeline": item_timeline,
             }
         )
 
+    # Order-only timeline: oldest → newest
+    order_only_timeline = list(
+        order.status.select_related("actor").order_by("created_at")
+    )
+
     context = {
-        "order": {
-            "order_number": order.order_number,
-            "customer_email": order.user.email if order.user else None,
-            "current_status": order_current,
-            "allowed_next_statuses": order_next,
-            "payment_method": order.payment_method,
-            "grand_total": str(order.grand_total),
-            "created_at": order.created_at.isoformat(),
-        },
-        "items": items_payload,
+        "order": order,
+        "order_current": order_current,
+        "order_next": order_next,
+        "items_with_transitions": items_with_transitions,
+        "order_only_timeline": order_only_timeline,
     }
 
     return render(request, "orders/admin/order_details.html", context)

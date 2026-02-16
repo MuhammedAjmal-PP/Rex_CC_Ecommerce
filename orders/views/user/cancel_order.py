@@ -17,8 +17,10 @@ CANCELLABLE_ITEM_STATUSES = {"PENDING", "CONFIRMED", "PACKING", "READY"}
 @never_cache
 def cancel_order(request, order_number):
     order = get_object_or_404(Order, user=request.user, order_number=order_number)
-    order_items = OrderItem.objects.filter(order=order).select_related(
-        "product_variant", "product_variant__product"
+    order_items = (
+        OrderItem.objects.filter(order=order)
+        .select_related("product_variant", "product_variant__product", "product_variant__product__brand")
+        .prefetch_related("product_variant__images", "status")
     )
 
     cancellable_items = [
@@ -50,6 +52,10 @@ def cancel_order_submit(request, order_number):
         messages.error(request, "Please select at least one item to cancel.")
         return redirect("user_cancel_order", order_number=order.order_number)
 
+    if not reason_note:
+        messages.error(request, "Please provide a reason for cancellation.")
+        return redirect("user_cancel_order", order_number=order.order_number)
+
     selected_items = list(
         OrderItem.objects.filter(order=order, id__in=selected_ids).select_related(
             "product_variant", "product_variant__product"
@@ -60,9 +66,7 @@ def cancel_order_submit(request, order_number):
         messages.error(request, "Invalid item selection. Please try again.")
         return redirect("user_cancel_order", order_number=order.order_number)
 
-    note = "Cancelled by user"
-    if reason_note:
-        note = f"Cancelled by user. Reason: {reason_note}"
+    note = f"Cancelled by user. Reason: {reason_note}"
 
     try:
         with transaction.atomic():

@@ -256,8 +256,3 @@ DEFAULT_WATCH_HSN = "9102"
 
 # Standard GST rate for watches
 GST_RATE = 18.0
-
-# Split rates for internal calculation
-CGST_RATE = 9.0  # (Half of total GST for local sales)
-SGST_RATE = 9.0  # (Half of total GST for local sales)
-IGST_RATE = 18.0  # (Full GST for out-of-state sales)

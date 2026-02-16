@@ -23,7 +23,7 @@ def return_order(request, order_number, item_id):
     order = get_object_or_404(Order, user=request.user, order_number=order_number)
     order_item = get_object_or_404(
         OrderItem.objects.select_related(
-            "product_variant", "product_variant__product"
+            "product_variant", "product_variant__product", "product_variant__product__brand"
         ).prefetch_related("returns"),
         id=item_id,
         order=order,

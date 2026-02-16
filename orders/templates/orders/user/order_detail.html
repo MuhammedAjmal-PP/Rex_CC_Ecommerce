@@ -1,0 +1,229 @@
+{% extends "core/user/base_user.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block head_title %}Order {{ order.order_number }} | REX CC{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'orders/user/css/order_detail.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="od-page">
+
+    <!-- BREADCRUMBS -->
+    <nav class="od-breadcrumb">
+        <a href="{% url 'user_profile' %}">My Account</a>
+        <span class="od-breadcrumb-sep">›</span>
+        <a href="{% url 'user_order_list' %}">Orders</a>
+        <span class="od-breadcrumb-sep">›</span>
+        <span class="od-breadcrumb-current">{{ order.order_number }}</span>
+    </nav>
+
+    <!-- HEADER -->
+    <div class="od-header">
+        <div class="od-header-left">
+            <h1 class="od-order-number">Order {{ order.order_number }}</h1>
+            {% with status=order.current_status %}
+                {% if status %}
+                    <span class="od-status-badge od-status-{{ status.status|lower }}">
+                        {% if status.status == "PLACED" %}Pending Review
+                        {% elif status.status == "CONFIRMED" %}Confirmed
+                        {% elif status.status == "SHIPPED" %}Dispatched
+                        {% elif status.status == "OUT_FOR_DELIVERY" %}Out for Delivery
+                        {% elif status.status == "DELIVERED" %}Delivered
+                        {% elif status.status == "CANCELLED" %}Cancelled
+                        {% else %}{{ status.status }}
+                        {% endif %}
+                    </span>
+                {% endif %}
+            {% endwith %}
+            <span class="od-order-date">Placed on {{ order.created_at|date:"d M Y" }}, {{ order.created_at|date:"h:i A" }}</span>
+        </div>
+        <div class="od-header-right">
+            {% if order.can_generate_invoice %}
+                <a href="{% url 'order_invoice' order.order_number %}" class="od-btn-invoice">
+                    <span class="material-icons">download</span>
+                    Download Invoice
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- ITEMS -->
+    <div class="od-section">
+        <div class="od-section-title">Items</div>
+        <div class="od-items-card">
+            <div class="od-items-header">
+                <span></span>
+                <span>Product</span>
+                <span style="text-align:center;">Qty</span>
+                <span>Price</span>
+                <span>Status</span>
+                <span></span>
+            </div>
+            {% for item in items %}
+                <div class="od-item-row">
+                    <!-- Image -->
+                    {% if item.product_variant and item.product_variant.primary_image %}
+                        <img src="{{ item.product_variant.primary_image.image.url }}"
+                             alt="{{ item.product_variant.product.name }}"
+                             class="od-item-img">
+                    {% else %}
+                        <div class="od-item-img-placeholder">
+                            <span class="material-icons">image</span>
+                        </div>
+                    {% endif %}
+
+                    <!-- Name + SKU -->
+                    <div>
+                        {% if item.product_variant and item.product_variant.product and item.product_variant.product.brand %}
+                            <div class="od-item-brand">{{ item.product_variant.product.brand.name }}</div>
+                        {% endif %}
+                        <div class="od-item-name">
+                            {% if item.product_variant and item.product_variant.product %}
+                                {{ item.product_variant.product.name }}
+                            {% else %}
+                                Product unavailable
+                            {% endif %}
+                        </div>
+                        {% if item.product_variant %}
+                            <div class="od-item-sku">{{ item.product_variant.sku }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Qty -->
+                    <div class="od-item-qty">{{ item.quantity }}</div>
+
+                    <!-- Price -->
+                    <div class="od-item-price">₹{{ item.total_price|floatformat:0|intcomma }}</div>
+
+                    <!-- Item Status -->
+                    {% with istatus=item.current_status %}
+                        {% if istatus %}
+                            <span class="od-status-badge od-status-{{ istatus.status|lower }}">
+                                {% if istatus.status == "PENDING" %}Pending
+                                {% elif istatus.status == "CONFIRMED" %}Confirmed
+                                {% elif istatus.status == "PACKING" %}Packing
+                                {% elif istatus.status == "READY" %}Ready
+                                {% elif istatus.status == "SHIPPED" %}Shipped
+                                {% elif istatus.status == "IN_TRANSIT" %}In Transit
+                                {% elif istatus.status == "OUT_FOR_DELIVERY" %}Out for Delivery
+                                {% elif istatus.status == "DELIVERED" %}Delivered
+                                {% elif istatus.status == "FAILED" %}Failed
+                                {% elif istatus.status == "CANCELLED" %}Cancelled
+                                {% elif istatus.status == "RETURN_REQUESTED" %}Return Requested
+                                {% elif istatus.status == "RETURNED" %}Returned
+                                {% elif istatus.status == "RTS" %}RTS
+                                {% else %}{{ istatus.status }}
+                                {% endif %}
+                            </span>
+                        {% endif %}
+                    {% endwith %}
+
+                    <!-- View button -->
+                    <a href="{% url 'user_order_item_details' order.order_number item.id %}"
+                       class="od-item-view" title="View Item">
+                        <span class="material-icons">chevron_right</span>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- ADDRESS + SUMMARY -->
+    <div class="od-info-row">
+        <!-- Shipping Address -->
+        <div class="od-info-card">
+            <div class="od-info-card-title">Shipping Address</div>
+            {% with addr=order.shipping_address %}
+                <div class="od-address-name">{{ addr.full_name }}</div>
+                <div class="od-address-line">
+                    {{ addr.address_line_1 }}
+                    {% if addr.address_line_2 %}<br>{{ addr.address_line_2 }}{% endif %}
+                    <br>{{ addr.city }}, {{ addr.state }} {{ addr.postal_code }}
+                    {% if addr.country %}<br>{{ addr.country }}{% endif %}
+                </div>
+                {% if addr.phone_number %}
+                    <div class="od-address-phone">
+                        <span class="material-icons">phone</span>
+                        {{ addr.phone_number }}
+                    </div>
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <!-- Order Summary -->
+        <div class="od-info-card">
+            <div class="od-info-card-title">Order Summary</div>
+            <div class="od-summary-row">
+                <span class="od-summary-label">Sub Total</span>
+                <span class="od-summary-value">₹{{ order.sub_total|floatformat:0|intcomma }}</span>
+            </div>
+            {% if order.discount > 0 %}
+                <div class="od-summary-row">
+                    <span class="od-summary-label">Discount</span>
+                    <span class="od-summary-value od-discount">-₹{{ order.discount|floatformat:0|intcomma }}</span>
+                </div>
+            {% endif %}
+            <div class="od-summary-row">
+                <span class="od-summary-label">Shipping</span>
+                <span class="od-summary-value">₹{{ order.shipping_fee|floatformat:0|intcomma }}</span>
+            </div>
+            <div class="od-summary-row">
+                <span class="od-summary-label">Tax</span>
+                <span class="od-summary-value">₹{{ order.tax|floatformat:0|intcomma }}</span>
+            </div>
+            <div class="od-summary-row od-summary-total">
+                <span class="od-summary-label">Grand Total</span>
+                <span class="od-summary-value">₹{{ order.grand_total|floatformat:0|intcomma }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ORDER TIMELINE -->
+    <div class="od-timeline-section">
+        <div class="od-section-title">Order Timeline</div>
+        <div class="od-timeline">
+            <div class="od-timeline-track">
+                {% comment %}
+                    Build a reversed timeline (oldest first) to show progress left-to-right.
+                    Each StatusTimeline entry: .status, .created_at, .note
+                {% endcomment %}
+                {% with timeline=order_status_timeline %}
+                    {% for entry in timeline reversed %}
+                        <div class="od-timeline-step od-step-done {% if forloop.last %}od-step-current{% endif %}">
+                            <div class="od-step-marker"></div>
+                            <div class="od-step-label">
+                                {% if entry.status == "PLACED" %}Placed
+                                {% elif entry.status == "CONFIRMED" %}Confirmed
+                                {% elif entry.status == "SHIPPED" %}Dispatched
+                                {% elif entry.status == "IN_TRANSIT" %}In Transit
+                                {% elif entry.status == "OUT_FOR_DELIVERY" %}Out for Delivery
+                                {% elif entry.status == "DELIVERED" %}Delivered
+                                {% elif entry.status == "CANCELLED" %}Cancelled
+                                {% else %}{{ entry.status }}
+                                {% endif %}
+                            </div>
+                            <div class="od-step-time">
+                                {{ entry.created_at|date:"d M" }}<br>
+                                {{ entry.created_at|date:"h:i A" }}
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endwith %}
+            </div>
+        </div>
+    </div>
+
+    <!-- CANCEL ORDER (subtle, bottom-right) -->
+    {% if is_cancellable %}
+        <div class="od-footer">
+            <a href="{% url 'user_cancel_order' order.order_number %}" class="od-btn-cancel">
+                Cancel Order
+            </a>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

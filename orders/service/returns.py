@@ -1,8 +1,3 @@
-from orders.service.status import get_current_status
-
-RETURNABLE_STATUSES = {"DELIVERED"}
-
-
 class ReturnNotEligibleError(Exception):
     """Raised when item is not eligible for return."""
 
@@ -14,13 +9,21 @@ class DuplicateReturnError(Exception):
 def validate_return_eligibility(order_item):
     """
     Check if the order item can be returned.
-    Raises ReturnNotEligibleError or DuplicateReturnError.
+    Delegates to OrderItem.can_return for the core logic,
+    but raises distinct exceptions for UI messaging.
     """
-    item_status = get_current_status(order_item)
+    current = order_item.current_status
 
-    if item_status not in RETURNABLE_STATUSES:
+    # Must be DELIVERED
+    if not current or current.status != "DELIVERED":
         raise ReturnNotEligibleError("This item is not eligible for return.")
 
+    # No active return already pending
     if order_item.returns.filter(status__in=["REQUESTED", "APPROVED"]).exists():
         raise DuplicateReturnError("A return request already exists for this item.")
 
+    # Must be within 7-day return window (uses same logic as can_return)
+    if not order_item.can_return:
+        raise ReturnNotEligibleError(
+            "The 7-day return window has expired for this item."
+        )
