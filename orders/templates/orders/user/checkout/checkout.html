@@ -96,4 +96,22 @@
         <script src="{% static 'orders/user/checkout/js/payment.js' %}"></script>
         <script src="{% static 'orders/user/checkout/js/review.js' %}"></script>
         <script src="{% static 'orders/user/checkout/js/checkout.js' %}"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.get('step') === '2') {
+                    // Slight delay to ensure initCheckout has run and selected default address
+                    setTimeout(() => {
+                         // Check if address is selected (auto-selected by initCheckout)
+                         // If not, we can't force step 2 because validation will fail.
+                         // But we try anyway; if validation fails, it stays on step 1 which is correct behavior.
+                         if (window.CheckoutState && window.CheckoutState.selectedAddressId) {
+                             goToStep(2);
+                         } else {
+                             console.warn("Cannot auto-navigate to payment: No address selected.");
+                         }
+                    }, 100);
+                }
+            });
+        </script>
     {% endblock %}

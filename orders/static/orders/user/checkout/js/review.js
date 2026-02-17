@@ -33,7 +33,7 @@ function placeOrder() {
     const fields = {
         csrfmiddlewaretoken: csrfToken,
         address_id: CheckoutState.selectedAddressId,
-        payment_method: CheckoutState.selectedPaymentMethod === 'cod' ? 'COD' : CheckoutState.selectedPaymentMethod,
+        payment_method: CheckoutState.selectedPaymentMethod.toUpperCase(),
     };
 
     for (const [key, value] of Object.entries(fields)) {

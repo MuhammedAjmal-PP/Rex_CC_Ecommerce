@@ -4,13 +4,21 @@ from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.http import HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_POST
 from catalog.service import update_stock
 from orders.models import Order, OrderItem
+from payments.service import create_transaction
 from users.cart.models import Cart, CartItem
 from users.user_profile.models import Address
+from users.wallet.service import (
+    InsufficientBalanceError,
+    WalletInactiveError,
+    can_pay_with_wallet,
+    debit_wallet,
+)
 from orders.service import (
     InsufficientStockError,
     change_order_item_status,
@@ -33,8 +41,10 @@ def place_order_view(request):
     if not address_id or not payment_method:
         return HttpResponseBadRequest("Invalid request")
 
-    if payment_method != "COD":
-        return HttpResponseBadRequest("Only Cash on Delivery is supported")
+    ALLOWED_METHODS = {"COD", "WALLET"}
+
+    if payment_method not in ALLOWED_METHODS:
+        return HttpResponseBadRequest(f"Unsupported payment method: {payment_method}")
 
     shipping_address = get_object_or_404(
         Address,
@@ -63,6 +73,12 @@ def place_order_view(request):
 
     discount = Decimal("0")
 
+    # Pre-check wallet balance to avoid database lock if insufficient
+    if payment_method == "WALLET":
+        if not can_pay_with_wallet(request.user, cart.grand_total):
+            messages.error(request, "Insufficient wallet balance. Please choose another payment method.")
+            return redirect(reverse("checkout") + "?step=2")
+
     with transaction.atomic():
         locked_variants = lock_variants_for_update(cart_items=cart_items)
 
@@ -82,7 +98,6 @@ def place_order_view(request):
             discount=discount,
             shipping_fee=cart.shipping_fee,
             grand_total=cart.grand_total,
-            payment_method="COD",
         )
 
         for item in cart_items:
@@ -122,7 +137,43 @@ def place_order_view(request):
             actor=request.user,
         )
 
-        # 6 cartitems purchased_product delete form cart
+        # 6 Payment handling
+        if payment_method == "WALLET":
+            
+            # Create Transaction record first
+            txn = create_transaction(
+                user=request.user,
+                txn_type="ORDER_PAYMENT",
+                method="WALLET",
+                amount=order.grand_total,
+                status="PAID",
+                content_object=order,
+                note=f"Wallet payment for order {order.order_number}",
+            )
+            # Debit wallet and link to Transaction
+            debit_wallet(
+                user=request.user,
+                amount=order.grand_total,
+                transaction_obj=txn,
+            )
+        
+        else:
+            # COD — record the payment transaction as PENDING
+            txn = create_transaction(
+                user=request.user,
+                txn_type="ORDER_PAYMENT",
+                method="COD",
+                amount=order.grand_total,
+                status="PENDING",
+                content_object=order,
+                note=f"COD payment for order {order.order_number}",
+            )
+
+        # Link the payment transaction to the order
+        order.payment = txn
+        order.save(update_fields=["payment"])
+
+        # 7 Clear cart
         cart_items.delete()
 
     return redirect("order_success", order_number=order.order_number)

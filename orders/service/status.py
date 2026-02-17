@@ -223,6 +223,16 @@ def change_order_status(*, order, to_status, actor=None, note=""):
         actor=actor,
         note=note,
     )
+    
+    # Auto-update COD payment status to PAID upon delivery
+    if to_status == "DELIVERED" and order.payment:
+        # Re-fetch payment to ensure we have latest status if needed, 
+        # or just check current state. order.payment is cached on the instance.
+        payment = order.payment
+        if payment.payment_method == "COD" and payment.status == "PENDING":
+             payment.status = "PAID"
+             payment.save(update_fields=["status", "updated_at"])
+
     _cascade_order_to_items(order, to_status, actor=actor)
     return result
 

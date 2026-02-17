@@ -1,9 +1,19 @@
 /**
  * Payment Logic
- * Currently just handles selection
+ * Handles selection between COD and Wallet
  */
 function selectPayment(method) {
-    // UI Update
     CheckoutState.selectedPaymentMethod = method;
-    // (Only COD active for now so logic is simple)
+
+    // Remove selected class from all payment cards
+    document.querySelectorAll('.payment-card:not(.disabled)').forEach(card => {
+        card.classList.remove('selected');
+    });
+
+    // Add selected class to the chosen card
+    const cardId = method === 'cod' ? 'pay-cod' : 'pay-wallet';
+    const selectedCard = document.getElementById(cardId);
+    if (selectedCard) {
+        selectedCard.classList.add('selected');
+    }
 }

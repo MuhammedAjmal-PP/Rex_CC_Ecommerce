@@ -17,6 +17,33 @@
             </div>
         </div>
 
+        <!-- Wallet -->
+        {% if wallet_balance >= order_summary.total %}
+        <div class="payment-card" onclick="selectPayment('wallet')" id="pay-wallet">
+            <div class="pay-icon">
+                <span class="material-icons">account_balance_wallet</span>
+            </div>
+            <div class="pay-info">
+                <span class="pay-name">Wallet</span>
+                <span class="pay-desc">Balance: ₹{{ wallet_balance|floatformat:2 }}</span>
+            </div>
+            <div class="pay-check">
+                <span class="material-icons">check_circle</span>
+            </div>
+        </div>
+        {% else %}
+        <div class="payment-card disabled" style="opacity: 0.6; cursor: not-allowed;" title="Insufficient Balance">
+            <div class="pay-icon">
+                <span class="material-icons">account_balance_wallet</span>
+            </div>
+            <div class="pay-info">
+                <span class="pay-name">Wallet</span>
+                <span class="pay-desc">Balance: ₹{{ wallet_balance|floatformat:2 }}</span>
+                <span class="text-danger" style="font-size: 0.8rem; display: block;">Insufficient Balance</span>
+            </div>
+        </div>
+        {% endif %}
+
         <!-- Online (Disabled) -->
         <div class="payment-card disabled">
             <div class="pay-icon">

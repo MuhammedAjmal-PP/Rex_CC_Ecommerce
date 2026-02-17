@@ -9,6 +9,7 @@ from users.cart.models import Cart
 from users.cart.utils import build_cart_summary, fetch_cart
 from users.user_profile.forms import AddressForm
 from users.user_profile.models import Address
+from users.wallet.service import get_or_create_wallet
 from orders.service import (
     InsufficientStockError,
     build_unlocked_stock_lookup,
@@ -62,12 +63,15 @@ def checkoutview(request):
         "total": cart.grand_total,
     }
 
+    wallet = get_or_create_wallet(request.user)
+
     context = {
         "items": products,
         "order_summary": order_summary,
         "addresses": addresses,
         "can_add_address": can_add_address,
         "address_form": address_form,
+        "wallet_balance": wallet.balance,
     }
 
     return render(request, "orders/user/checkout/checkout.html", context)
