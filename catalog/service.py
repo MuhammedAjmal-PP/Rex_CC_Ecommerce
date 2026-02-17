@@ -96,7 +96,6 @@ def update_stock(*, product_variant, change, reason, note, actor, reference_obje
         actor=actor,
         content_type=content_type,
         object_id=object_id,
-        reference_object=reference_object,
     )
 
     return log

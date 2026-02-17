@@ -95,15 +95,17 @@ def cancel_order_submit(request, order_number):
                     note=f"Stock restored — order {order.order_number} item cancelled",
                 )
 
-                # Create PENDING refund transaction (admin must approve)
-                initiate_refund(
-                    order=order,
-                    user=request.user,
-                    amount=item.total_price,
-                    txn_type="CANCELLATION_REFUND",
-                    content_object=item,
-                    note=note,
-                )
+                # Create PENDING refund transaction only for prepaid orders
+                # COD orders haven't collected money, so no refund needed
+                if order.payment and order.payment.payment_method != "COD":
+                    initiate_refund(
+                        order=order,
+                        user=request.user,
+                        amount=item.total_price,
+                        txn_type="CANCELLATION_REFUND",
+                        content_object=item,
+                        note=note,
+                    )
 
                 cancelled_count += 1
     except InvalidTransitionError as error:

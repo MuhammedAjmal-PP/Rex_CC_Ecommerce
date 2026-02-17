@@ -221,6 +221,7 @@ def return_status_update(request, return_number):
         )
 
         # Create PENDING refund transaction (admin must approve)
+        order = order_item.order
         initiate_refund(
             order=order,
             user=order.user,

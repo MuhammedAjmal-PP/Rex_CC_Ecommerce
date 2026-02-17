@@ -23,6 +23,7 @@ urlpatterns = [
     path("", include("core.urls.user_urls")),
     path("", include("catalog.urls.user_urls")),
     path("myprofile/", include("users.user_profile.urls")),
+    path("myprofile/", include("users.wallet.urls")),
     path("accounts/", include("allauth.urls")),
     path("adminpanel/accounts/", include("accounts.admin_urls")),
     path("adminpanel/", include("core.urls.admin_urls")),
@@ -31,4 +32,6 @@ urlpatterns = [
     path("", include("users.cart.urls")),
     path("", include("orders.urls.user_urls")),
     path("adminpanel/", include("orders.urls.admin_urls")),
+    path("adminpanel/", include("payments.urls")),
 ]
+

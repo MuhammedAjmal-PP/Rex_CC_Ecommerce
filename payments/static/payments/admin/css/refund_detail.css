@@ -1,0 +1,359 @@
+/* ============================================================
+   REX CC ADMIN — REFUND DETAIL
+   Detail page with approve/reject actions
+   ============================================================ */
+
+/* Action Bar */
+.rd-action-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.rd-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #555;
+  text-decoration: none;
+  background: #fff;
+  transition: all 0.2s;
+}
+
+.rd-back-btn:hover {
+  border-color: #b06825;
+  color: #b06825;
+}
+
+.rd-back-btn .material-icons {
+  font-size: 18px;
+}
+
+/* Action buttons */
+.rd-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.rd-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 20px;
+  border-radius: 3px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.rd-btn .material-icons {
+  font-size: 18px;
+}
+
+.rd-btn-approve {
+  background: #16a34a;
+  color: #fff;
+}
+
+.rd-btn-approve:hover {
+  background: #15803d;
+}
+
+.rd-btn-reject {
+  background: #fff;
+  color: #dc2626;
+  border: 1px solid #dc2626;
+}
+
+.rd-btn-reject:hover {
+  background: #fef2f2;
+}
+
+/* Messages */
+.rd-messages {
+  margin-bottom: 20px;
+}
+
+.rd-alert {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-radius: 3px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.rd-alert .material-icons {
+  font-size: 20px;
+}
+
+.rd-alert-success {
+  background: #f0fdf4;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
+}
+
+.rd-alert-error {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+
+/* Grid */
+.rd-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+/* Cards */
+.rd-card {
+  background: #fff;
+  border: 1px solid #e8e6e2;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.rd-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 20px;
+  background: #f9f8f6;
+  border-bottom: 1px solid #e8e6e2;
+}
+
+.rd-card-header .material-icons {
+  font-size: 20px;
+  color: #b06825;
+}
+
+.rd-card-header h3 {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #2c2c2c;
+  margin: 0;
+}
+
+.rd-card-body {
+  padding: 4px 0;
+}
+
+/* Rows */
+.rd-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  border-bottom: 1px solid #f3f2ef;
+}
+
+.rd-row:last-child {
+  border-bottom: none;
+}
+
+.rd-label {
+  font-size: 0.82rem;
+  color: #888;
+  font-weight: 500;
+}
+
+.rd-value {
+  font-size: 0.88rem;
+  color: #2c2c2c;
+  font-weight: 500;
+  text-align: right;
+}
+
+.rd-mono {
+  font-family: "Courier New", monospace;
+  font-size: 0.78rem;
+}
+
+.rd-amount {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+/* Type badges */
+.txn-type-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 3px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.type-cancellation_refund { background: #fff7ed; color: #c2410c; }
+.type-return_refund { background: #fef3c7; color: #92400e; }
+
+/* Status badges */
+.status-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 3px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-pending { background: #fffbeb; color: #b45309; }
+.status-completed { background: #f0fdf4; color: #16a34a; }
+.status-failed { background: #fef2f2; color: #dc2626; }
+
+/* Wallet label */
+.wt-label {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 3px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.wt-credit { background: #f0fdf4; color: #16a34a; }
+.wt-debit { background: #fef2f2; color: #dc2626; }
+
+/* ============================================================
+   REJECT MODAL
+   ============================================================ */
+
+.rd-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.5);
+  align-items: center;
+  justify-content: center;
+}
+
+.rd-modal.show {
+  display: flex;
+}
+
+.rd-modal-content {
+  background: #fff;
+  border-radius: 3px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.rd-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e8e6e2;
+}
+
+.rd-modal-header h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #2c2c2c;
+  margin: 0;
+}
+
+.rd-modal-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #888;
+  padding: 4px;
+  border-radius: 3px;
+  transition: all 0.2s;
+}
+
+.rd-modal-close:hover {
+  background: #f3f2ef;
+  color: #2c2c2c;
+}
+
+.rd-modal-body {
+  padding: 20px;
+}
+
+.rd-form-label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #555;
+  margin-bottom: 8px;
+}
+
+.rd-form-textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 3px;
+  font-size: 0.88rem;
+  font-family: inherit;
+  resize: vertical;
+  transition: border-color 0.2s;
+}
+
+.rd-form-textarea:focus {
+  outline: none;
+  border-color: #b06825;
+}
+
+.rd-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 16px 20px;
+  border-top: 1px solid #e8e6e2;
+}
+
+.rd-btn-cancel {
+  background: #fff;
+  color: #555;
+  border: 1px solid #ddd;
+}
+
+.rd-btn-cancel:hover {
+  background: #f3f2ef;
+}
+
+.rd-btn-reject-confirm {
+  background: #dc2626;
+  color: #fff;
+}
+
+.rd-btn-reject-confirm:hover {
+  background: #b91c1c;
+}
+
+@media (max-width: 768px) {
+  .rd-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .rd-action-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .rd-actions {
+    justify-content: flex-end;
+  }
+}

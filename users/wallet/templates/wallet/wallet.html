@@ -1,0 +1,123 @@
+{% extends "core/user/base_user.html" %}
+{% load static %}
+{% load humanize %}
+{% block head_title %}My Wallet | REX CC{% endblock %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'wallet/css/wallet.css' %}">
+{% endblock %}
+{% block content %}
+    <div class="wallet-page">
+        <!-- BREADCRUMBS -->
+        <nav class="breadcrumb-nav">
+            <a href="{% url 'user_profile' %}" class="breadcrumb-link">My Account</a>
+            <span class="breadcrumb-separator">›</span>
+            <span class="breadcrumb-current">Wallet</span>
+        </nav>
+
+        <!-- PAGE HEADER -->
+        <header class="page-header">
+            <div class="header-content">
+                <h1 class="page-title">My Wallet</h1>
+                <p class="page-subtitle">Your transaction history and balance overview</p>
+            </div>
+        </header>
+
+        <!-- BALANCE CARD -->
+        <div class="wallet-balance-card">
+            <div class="balance-icon">
+                <span class="material-icons">account_balance_wallet</span>
+            </div>
+            <div class="balance-info">
+                <span class="balance-label">Available Balance</span>
+                <span class="balance-amount">₹{{ wallet.balance|floatformat:2|intcomma }}</span>
+            </div>
+            {% if not wallet.is_active %}
+                <span class="wallet-inactive-badge">Inactive</span>
+            {% endif %}
+        </div>
+
+        <!-- TRANSACTION HISTORY -->
+        {% if transactions %}
+            <div class="txn-list">
+                <div class="txn-table-header">
+                    <span class="col-date">Date</span>
+                    <span class="col-type">Type</span>
+                    <span class="col-desc">Description</span>
+                    <span class="col-amount">Amount</span>
+                    <span class="col-balance">Balance</span>
+                </div>
+                {% for txn in transactions %}
+                    <div class="txn-row">
+                        <div class="txn-row-date">
+                            <span class="txn-date">{{ txn.created_at|date:"d M Y" }}</span>
+                            <span class="txn-time">{{ txn.created_at|date:"h:i A" }}</span>
+                        </div>
+                        <div class="txn-row-type">
+                            <span class="txn-type-badge txn-{{ txn.label|lower }}">
+                                {{ txn.label }}
+                            </span>
+                        </div>
+                        <div class="txn-row-desc">
+                            {% if txn.transaction %}
+                                <span class="txn-desc-main">{{ txn.transaction.get_transaction_type_display }}</span>
+                                <span class="txn-desc-id">{{ txn.transaction.transaction_id|truncatechars:18 }}</span>
+                            {% else %}
+                                <span class="txn-desc-main">Wallet Transaction</span>
+                            {% endif %}
+                        </div>
+                        <div class="txn-row-amount">
+                            {% if txn.label == "CREDIT" %}
+                                <span class="amount-credit">+₹{{ txn.transaction.amount|floatformat:0|intcomma }}</span>
+                            {% else %}
+                                <span class="amount-debit">-₹{{ txn.transaction.amount|floatformat:0|intcomma }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="txn-row-balance">
+                            <span class="balance-after">₹{{ txn.balance_after|floatformat:2|intcomma }}</span>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- PAGINATION -->
+            {% if page_obj.has_other_pages %}
+                <nav class="wallet-pagination">
+                    {% if page_obj.has_previous %}
+                        <a href="?page={{ page_obj.previous_page_number }}"
+                           class="pagination-btn prev">
+                            <span class="material-icons">chevron_left</span>
+                            Previous
+                        </a>
+                    {% endif %}
+                    <div class="pagination-pages">
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                                <span class="pagination-page active">{{ num }}</span>
+                            {% elif num > page_obj.number|add:"-3" and num < page_obj.number|add:"3" %}
+                                <a href="?page={{ num }}" class="pagination-page">{{ num }}</a>
+                            {% elif num == 1 or num == page_obj.paginator.num_pages %}
+                                <a href="?page={{ num }}" class="pagination-page">{{ num }}</a>
+                            {% elif num == page_obj.number|add:"-3" or num == page_obj.number|add:"3" %}
+                                <span class="pagination-ellipsis">…</span>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}"
+                           class="pagination-btn next">
+                            Next
+                            <span class="material-icons">chevron_right</span>
+                        </a>
+                    {% endif %}
+                </nav>
+            {% endif %}
+        {% else %}
+            <!-- EMPTY STATE -->
+            <div class="wallet-empty">
+                <span class="material-icons empty-icon">receipt_long</span>
+                <h2>No transactions yet</h2>
+                <p>Your wallet transaction history will appear here once you make a purchase or receive a refund.</p>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
