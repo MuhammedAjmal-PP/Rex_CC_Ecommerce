@@ -20,7 +20,7 @@ def order_list(request):
     search = request.GET.get("q", "").strip()
     date_filter = request.GET.get("date_filter", "").strip().lower()
 
-    orders = Order.objects.filter(user=request.user).prefetch_related("status")
+    orders = Order.objects.filter(user=request.user).select_related("payment").prefetch_related("status")
 
     if search:
         orders = orders.filter(
@@ -56,7 +56,7 @@ def order_list(request):
 def order_detail(request, order_number):
     """Order details page with order-level and item-level status data."""
     order = get_object_or_404(
-        Order.objects.prefetch_related("status"),
+        Order.objects.select_related("payment").prefetch_related("status"),
         user=request.user,
         order_number=order_number,
     )
@@ -83,7 +83,7 @@ def order_detail(request, order_number):
 @login_required
 @never_cache
 def order_invoice(request, order_number):
-    order = get_object_or_404(Order, user=request.user, order_number=order_number)
+    order = get_object_or_404(Order.objects.select_related("payment"), user=request.user, order_number=order_number)
     order_items = (
         OrderItem.objects.filter(order=order)
         .select_related("product_variant", "product_variant__product", "product_variant__product__brand")
@@ -124,7 +124,7 @@ def orderitem_detail(request, order_number, item_id):
     order_item = get_object_or_404(
         OrderItem.objects.select_related(
             "order", "product_variant", "product_variant__product", "product_variant__product__brand"
-        ).prefetch_related("status", "returns"),
+        ).prefetch_related("status", "returns", "transactions", "returns__transactions"),
         id=item_id,
         order=order,
     )

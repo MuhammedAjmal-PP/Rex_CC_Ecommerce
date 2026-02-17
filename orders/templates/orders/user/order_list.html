@@ -67,8 +67,13 @@
                         <div class="order-row-payment">
                             <span class="order-payment-method">
                                 <span class="material-icons">payment</span>
-                                {{ order.payment_method }}
+                                {{ order.payment.get_payment_method_display }}
                             </span>
+                            {% if order.payment %}
+                                <span class="order-payment-status status-{{ order.payment.status|lower }}">
+                                    {{ order.payment.get_status_display }}
+                                </span>
+                            {% endif %}
                         </div>
                         <div class="order-row-status">
                             {% with status=order.current_status %}

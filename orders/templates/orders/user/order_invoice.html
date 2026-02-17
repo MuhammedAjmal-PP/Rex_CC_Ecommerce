@@ -121,6 +121,15 @@
             color: #2c2c2c;
         }
 
+        .inv-meta-value.mono {
+            font-family: "Courier New", Courier, monospace;
+            font-size: 8pt;
+        }
+
+        .inv-meta-value.upper {
+            text-transform: uppercase;
+        }
+
         .inv-meta-spacer {
             width: 40pt;
         }
@@ -387,7 +396,14 @@
             <td class="inv-meta-value">{{ order.order_number }}</td>
             <td class="inv-meta-spacer"></td>
             <td class="inv-meta-label">Payment</td>
-            <td class="inv-meta-value">{{ order.payment_method }}</td>
+            <td class="inv-meta-value">{{ order.payment.get_payment_method_display }}</td>
+        </tr>
+        <tr>
+            <td class="inv-meta-label">Txn ID</td>
+            <td class="inv-meta-value mono">{{ order.payment.transaction_id|default:"-"|truncatechars:18 }}</td>
+            <td class="inv-meta-spacer"></td>
+            <td class="inv-meta-label">Status</td>
+            <td class="inv-meta-value upper">{{ order.payment.get_status_display }}</td>
         </tr>
         <tr>
             <td class="inv-meta-label">HSN Code</td>

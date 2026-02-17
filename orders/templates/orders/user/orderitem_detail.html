@@ -118,10 +118,70 @@
                             <div class="oid-admin-note-text">{{ ret.admin_note }}</div>
                         </div>
                     {% endif %}
+
+                    {% if ret.transactions.all %}
+                        <div class="oid-return-divider"></div>
+                        <div class="oid-txn-section">
+                            <div class="oid-txn-title">Refund Details</div>
+                            {% for txn in ret.transactions.all %}
+                                <div class="oid-return-row">
+                                    <span class="oid-return-label">Txn ID</span>
+                                    <span class="oid-return-value" style="font-family:monospace;">{{ txn.transaction_id|truncatechars:12 }}</span>
+                                </div>
+                                <div class="oid-return-row">
+                                    <span class="oid-return-label">Status</span>
+                                    <div class="oid-status-badge oid-status-badge-sm oid-return-{{ txn.status|lower }}">
+                                        {{ txn.get_status_display }}
+                                    </div>
+                                </div>
+                                <div class="oid-return-row">
+                                    <span class="oid-return-label">Amount</span>
+                                    <span class="oid-return-value">₹{{ txn.amount|floatformat:0|intcomma }}</span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                 </div>
             {% endfor %}
         </div>
     {% endif %}
+
+    <!-- REFUND / TRANSACTION INFO (only if transactions exist) -->
+    {% with txns=order_item.transactions.all %}
+    {% if txns %}
+        <div class="oid-section">
+            <div class="oid-section-title">Refund Info</div>
+            {% for txn in txns %}
+                <div class="oid-return-card">
+                    <div class="oid-return-header">
+                        <span class="oid-return-number" style="font-family:monospace; font-size:0.82rem;">{{ txn.transaction_id|truncatechars:18 }}</span>
+                        <span class="oid-status-badge oid-return-{{ txn.status|lower }}">
+                            {{ txn.get_status_display }}
+                        </span>
+                    </div>
+                    <div class="oid-return-details">
+                        <div class="oid-return-row">
+                            <span class="oid-return-label">Type</span>
+                            <span class="oid-return-value">{{ txn.get_transaction_type_display }}</span>
+                        </div>
+                        <div class="oid-return-row">
+                            <span class="oid-return-label">Amount</span>
+                            <span class="oid-return-value">₹{{ txn.amount|floatformat:0|intcomma }}</span>
+                        </div>
+                        <div class="oid-return-row">
+                            <span class="oid-return-label">Method</span>
+                            <span class="oid-return-value">{{ txn.get_payment_method_display }}</span>
+                        </div>
+                        <div class="oid-return-row">
+                            <span class="oid-return-label">Date</span>
+                            <span class="oid-return-value">{{ txn.created_at|date:"d M Y, h:i A" }}</span>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% endwith %}
 
     <!-- ITEM TIMELINE -->
     <div class="oid-section">

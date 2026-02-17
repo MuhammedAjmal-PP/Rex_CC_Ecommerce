@@ -182,6 +182,22 @@
                 <span class="od-summary-label">Grand Total</span>
                 <span class="od-summary-value">₹{{ order.grand_total|floatformat:0|intcomma }}</span>
             </div>
+            {% if order.payment %}
+                <div class="od-summary-row" style="margin-top:12px; padding-top:12px; border-top:1px solid var(--border,#e8e6e2);">
+                    <span class="od-summary-label">Payment Method</span>
+                    <span class="od-summary-value">{{ order.payment.get_payment_method_display }}</span>
+                </div>
+                <div class="od-summary-row">
+                    <span class="od-summary-label">Transaction ID</span>
+                    <span class="od-summary-value" style="font-size:0.82rem; font-family:monospace;">{{ order.payment.transaction_id|truncatechars:18 }}</span>
+                </div>
+                <div class="od-summary-row">
+                    <span class="od-summary-label">Payment Status</span>
+                    <span class="od-payment-status od-status-{{ order.payment.status|lower }}">
+                        {{ order.payment.get_status_display }}
+                    </span>
+                </div>
+            {% endif %}
         </div>
     </div>
 

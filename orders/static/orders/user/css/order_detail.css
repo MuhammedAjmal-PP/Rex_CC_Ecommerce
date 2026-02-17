@@ -196,6 +196,32 @@
 .od-status-returned     { color: #1565c0; background: rgba(21,101,192,0.08); border: 1px solid rgba(21,101,192,0.2); }
 .od-status-rts          { color: #d32f2f; background: rgba(211,47,47,0.08); border: 1px solid rgba(211,47,47,0.2); }
 
+/* Payment Statuses */
+.od-payment-status {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: 3px;
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.od-status-paid, .od-status-completed {
+  color: #2e7d32;
+  background: rgba(46, 125, 50, 0.08);
+  border: 1px solid rgba(46, 125, 50, 0.2);
+}
+
+.od-status-pending-payment { /* Distinct from order pending */
+  color: #f57f17;
+  background: rgba(245, 127, 23, 0.08);
+  border: 1px solid rgba(245, 127, 23, 0.2);
+}
+
 /* ============================================================
    ITEMS SECTION
    ============================================================ */

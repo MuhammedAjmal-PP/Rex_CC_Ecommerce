@@ -281,6 +281,32 @@
   color: var(--ol-gold-light);
 }
 
+.order-payment-status {
+  display: inline-block;
+  margin-top: 4px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 2px;
+  letter-spacing: 0.5px;
+}
+
+.status-paid, .status-completed {
+  color: #2e7d32;
+  background: rgba(46, 125, 50, 0.05);
+}
+
+.status-pending {
+  color: #f57f17;
+  background: rgba(245, 127, 23, 0.05);
+}
+
+.status-failed {
+  color: #c62828;
+  background: rgba(198, 40, 40, 0.05);
+}
+
 /* ---- STATUS BADGES ---- */
 .order-status-badge {
   display: inline-flex;

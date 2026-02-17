@@ -408,6 +408,27 @@
   color: var(--oid-gold);
 }
 
+/* Return Transactions */
+.oid-return-divider {
+  margin: 16px 0;
+  border-top: 1px dashed var(--oid-border);
+}
+
+.oid-txn-title {
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--oid-text-muted);
+  margin-bottom: 8px;
+}
+
+.oid-status-badge-sm {
+  padding: 2px 8px;
+  font-size: 0.65rem;
+}
+
 /* ============================================================
    RESPONSIVE
    ============================================================ */
