@@ -84,11 +84,11 @@
         </div>
     </div>
 
-    <!-- RETURN INFO (only if returns exist) -->
-    {% if returns %}
+    <!-- RETURN INFO (only if return_request exists) -->
+    {% if return_request %}
         <div class="oid-section">
             <div class="oid-section-title">Return Info</div>
-            {% for ret in returns %}
+            {% with return_request as ret %}
                 <div class="oid-return-card">
                     <div class="oid-return-header">
                         <span class="oid-return-number">{{ ret.return_number }}</span>
@@ -142,7 +142,7 @@
                         </div>
                     {% endif %}
                 </div>
-            {% endfor %}
+            {% endwith %}
         </div>
     {% endif %}
 

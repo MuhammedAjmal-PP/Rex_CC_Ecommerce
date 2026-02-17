@@ -234,7 +234,7 @@ class OrderItem(models.Model):
         if not current or current.status != "DELIVERED":
             return False
 
-        if self.returns.filter(status__in=["REQUESTED", "APPROVED","REJECTED"]).exists():
+        if hasattr(self, 'return_request') and self.return_request.status in ("REQUESTED", "APPROVED", "REJECTED"):
             return False
 
         delivered_entry = self.status.filter(status="DELIVERED").first()
@@ -276,10 +276,10 @@ class Return(models.Model):
         db_index=True,
     )
 
-    order_item = models.ForeignKey(
+    order_item = models.OneToOneField(
         OrderItem,
         on_delete=models.CASCADE,
-        related_name="returns",
+        related_name="return_request",
     )
 
     STATUS_CHOICES = (

@@ -1,5 +1,4 @@
 from decimal import Decimal
-from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 
 
@@ -25,8 +24,7 @@ class Wallet(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    # Reverse lookup: wallet.transactions.all()
-    transactions = GenericRelation("payments.Transaction")
+
 
     class Meta:
         ordering = ["-created_at"]
@@ -46,12 +44,12 @@ class WalletTransaction(models.Model):
     Stores balance snapshots before and after the operation.
     """
 
-    transaction = models.ForeignKey(
+    transaction = models.OneToOneField(
         "payments.Transaction",
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name="wallet_transactions",
+        related_name="wallet_transaction",
     )
     wallet = models.ForeignKey(
         Wallet,

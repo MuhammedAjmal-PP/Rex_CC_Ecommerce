@@ -7,6 +7,7 @@ from django.views.decorators.http import require_GET, require_POST
 from catalog.service import update_stock
 from orders.models import Order, OrderItem
 from orders.service import InvalidTransitionError, change_order_item_status
+from payments.service import initiate_refund
 
 
 CANCELLABLE_ITEM_STATUSES = {"PENDING", "CONFIRMED", "PACKING", "READY"}
@@ -92,6 +93,16 @@ def cancel_order_submit(request, order_number):
                     actor=request.user,
                     reference_object=item,
                     note=f"Stock restored — order {order.order_number} item cancelled",
+                )
+
+                # Create PENDING refund transaction (admin must approve)
+                initiate_refund(
+                    order=order,
+                    user=request.user,
+                    amount=item.total_price,
+                    txn_type="CANCELLATION_REFUND",
+                    content_object=item,
+                    note=note,
                 )
 
                 cancelled_count += 1

@@ -124,19 +124,19 @@ def orderitem_detail(request, order_number, item_id):
     order_item = get_object_or_404(
         OrderItem.objects.select_related(
             "order", "product_variant", "product_variant__product", "product_variant__product__brand"
-        ).prefetch_related("status", "returns", "transactions", "returns__transactions"),
+        ).select_related("return_request").prefetch_related("status", "transactions", "return_request__transactions"),
         id=item_id,
         order=order,
     )
 
     timeline = order_item.status.all().order_by("-created_at")
-    return_entry = order_item.returns.all().order_by("-created_at")
+    return_entry = getattr(order_item, 'return_request', None)
 
     context = {
         "order": order,
         "order_item": order_item,
         "timeline": timeline,
-        "returns": return_entry,
+        "return_request": return_entry,
     }
 
     return render(request, "orders/user/orderitem_detail.html", context)
