@@ -130,9 +130,12 @@ class Order(models.Model):
     shipping_fee = models.DecimalField(max_digits=10, decimal_places=2)
     grand_total = models.DecimalField(max_digits=10, decimal_places=2)
 
-    payment_method = models.CharField(
-        max_length=50,
-        default="COD",
+    payment = models.OneToOneField(
+        "payments.Transaction",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="order",
     )
 
     status = GenericRelation(
@@ -158,6 +161,7 @@ class Order(models.Model):
         super().save(*args, **kwargs)
 
     # ---------------- HELPERS ----------------
+
     @property
     def current_status(self):
         return self.status.first()
@@ -200,6 +204,10 @@ class OrderItem(models.Model):
 
     status = GenericRelation(
         StatusTimeline,
+        related_query_name="order_items",
+    )
+    transactions = GenericRelation(
+        "payments.Transaction",
         related_query_name="order_items",
     )
 
@@ -295,6 +303,11 @@ class Return(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
+
+    transactions = GenericRelation(
+        "payments.Transaction",
+        related_query_name="returns",
+    )
 
     def generate_return_number(self):
         while True:

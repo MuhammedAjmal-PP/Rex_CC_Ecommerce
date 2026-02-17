@@ -1,5 +1,5 @@
-import uuid
 from decimal import Decimal
+from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 
 
@@ -25,6 +25,9 @@ class Wallet(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    # Reverse lookup: wallet.transactions.all()
+    transactions = GenericRelation("payments.Transaction")
+
     class Meta:
         ordering = ["-created_at"]
 
@@ -38,50 +41,34 @@ class Wallet(models.Model):
 
 
 class WalletTransaction(models.Model):
-    """Immutable log of every wallet credit/debit."""
+    """
+    Wallet-specific record linked to a universal Transaction.
+    Stores balance snapshots before and after the operation.
+    """
 
-    TRANSACTION_TYPES = (
-        ("CREDIT", "Credit"),
-        ("DEBIT", "Debit"),
-    )
-
-    REASON_CHOICES = (
-        ("ORDER_REFUND", "Order Refund"),
-        ("RETURN_REFUND", "Return Refund"),
-        ("CANCELLATION_REFUND", "Cancellation Refund"),
-        ("ORDER_PAYMENT", "Order Payment"),
-        ("REFERRAL_BONUS", "Referral Bonus"),
-    )
-
-    transaction_id = models.UUIDField(
-        default=uuid.uuid4,
-        unique=True,
-        editable=False,
-        db_index=True,
-    )
-    wallet = models.ForeignKey(
-        Wallet,
-        on_delete=models.CASCADE,
-        related_name="transactions",
-    )
-    transaction_type = models.CharField(
-        max_length=10,
-        choices=TRANSACTION_TYPES,
-    )
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
-    balance_after = models.DecimalField(max_digits=10, decimal_places=2)
-    reason = models.CharField(max_length=40, choices=REASON_CHOICES)
-    description = models.TextField(blank=True)
-
-    # Link to the raw payment record (optional)
-    payment = models.ForeignKey(
-        "payments.PaymentTransaction",
+    transaction = models.ForeignKey(
+        "payments.Transaction",
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
         related_name="wallet_transactions",
     )
-
+    wallet = models.ForeignKey(
+        Wallet,
+        on_delete=models.CASCADE,
+        related_name="wallet_transactions",
+    )
+    LABEL_CHOICES = (
+        ("CREDIT", "Credit"),
+        ("DEBIT", "Debit"),
+    )
+    label = models.CharField(
+        max_length=10,
+        choices=LABEL_CHOICES,
+        default="CREDIT", # Default needed for migration, will remove later or set correctly
+    )
+    balance_before = models.DecimalField(max_digits=10, decimal_places=2)
+    balance_after = models.DecimalField(max_digits=10, decimal_places=2)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -91,5 +78,6 @@ class WalletTransaction(models.Model):
         ]
 
     def __str__(self):
-        sign = "+" if self.transaction_type == "CREDIT" else "-"
-        return f"{sign}₹{self.amount} ({self.get_reason_display()}) → ₹{self.balance_after}"
+        diff = self.balance_after - self.balance_before
+        sign = "+" if diff >= 0 else ""
+        return f"{sign}₹{diff} → ₹{self.balance_after}"

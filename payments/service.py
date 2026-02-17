@@ -1,26 +1,37 @@
 from decimal import Decimal
+from django.contrib.contenttypes.models import ContentType
 from django.db import transaction as db_transaction
 
-from payments.models import PaymentTransaction
+from payments.models import Transaction
 from users.wallet.service import credit_wallet
 
 
 # ────────────────────────────────────────────
-# Create Payment Records
+# Create Transaction Record
 # ────────────────────────────────────────────
 
-def create_payment(order, user, method, txn_type, amount, status="PENDING", note=""):
+def create_transaction(
+    user, txn_type, method, amount, status="PENDING",
+    content_object=None, note="",
+):
     """
-    Create a raw PaymentTransaction record.
-    Used by checkout (PAYMENT) and refund flows (REFUND).
+    Create a universal Transaction record.
+    Optionally links to a source object via GenericFK.
     """
-    return PaymentTransaction.objects.create(
-        order=order,
+    ct = None
+    obj_id = None
+    if content_object is not None:
+        ct = ContentType.objects.get_for_model(content_object)
+        obj_id = content_object.pk
+
+    return Transaction.objects.create(
         user=user,
-        payment_method=method,
         transaction_type=txn_type,
+        payment_method=method,
         amount=Decimal(str(amount)),
         status=status,
+        content_type=ct,
+        object_id=obj_id,
         note=note,
     )
 
@@ -29,98 +40,83 @@ def create_payment(order, user, method, txn_type, amount, status="PENDING", note
 # Refund Operations (admin-controlled)
 # ────────────────────────────────────────────
 
-def initiate_refund(order, user, amount, reason_note=""):
+def initiate_refund(order, user, amount, txn_type, content_object=None, note=""):
     """
-    Create a PENDING refund PaymentTransaction.
-    Called when an order is cancelled or a return is completed.
-    The refund stays PENDING until admin approves it.
+    Create a PENDING refund Transaction.
+    Called on cancellation / return completion.
+    Stays PENDING until admin approves.
     """
-    return create_payment(
-        order=order,
+    return create_transaction(
         user=user,
-        method=order.payment_method,
-        txn_type="REFUND",
+        txn_type=txn_type,
+        method=order.payment.payment_method,
         amount=amount,
         status="PENDING",
-        note=reason_note,
+        content_object=content_object or order,
+        note=note,
     )
 
 
-def complete_refund(payment_transaction, wallet_reason="ORDER_REFUND"):
+def complete_refund(transaction, wallet_reason="WALLET_CREDIT"):
     """
     Admin approves a refund:
-      1. Mark PaymentTransaction → COMPLETED
+      1. Mark Transaction → COMPLETED
       2. Credit the user's wallet
-
-    Args:
-        payment_transaction: The PENDING refund PaymentTransaction
-        wallet_reason: Reason code for the WalletTransaction
-                       (ORDER_REFUND, RETURN_REFUND, CANCELLATION_REFUND)
     """
-    if payment_transaction.status != "PENDING":
+    if transaction.status != "PENDING":
         raise ValueError(
-            f"Cannot complete refund — current status is {payment_transaction.status}"
+            f"Cannot complete refund — current status is {transaction.status}"
         )
-    if payment_transaction.transaction_type != "REFUND":
-        raise ValueError("This transaction is not a refund.")
 
     with db_transaction.atomic():
-        payment_transaction.status = "COMPLETED"
-        payment_transaction.save(update_fields=["status", "updated_at"])
+        transaction.status = "COMPLETED"
+        transaction.save(update_fields=["status", "updated_at"])
 
         credit_wallet(
-            user=payment_transaction.user,
-            amount=payment_transaction.amount,
-            reason=wallet_reason,
-            payment=payment_transaction,
-            description=(
-                f"Refund for Order {payment_transaction.order.order_number} — "
-                f"₹{payment_transaction.amount}"
-            ),
+            user=transaction.user,
+            amount=transaction.amount,
+            transaction_obj=transaction,
         )
 
-    return payment_transaction
+    return transaction
 
 
-def fail_refund(payment_transaction, note=""):
-    """
-    Admin rejects a refund — mark PaymentTransaction → FAILED.
-    """
-    if payment_transaction.status != "PENDING":
+def fail_refund(transaction, note=""):
+    """Admin rejects a refund → FAILED."""
+    if transaction.status != "PENDING":
         raise ValueError(
-            f"Cannot fail refund — current status is {payment_transaction.status}"
+            f"Cannot fail refund — current status is {transaction.status}"
         )
-
-    payment_transaction.status = "FAILED"
+    transaction.status = "FAILED"
     if note:
-        payment_transaction.note = note
-    payment_transaction.save(update_fields=["status", "note", "updated_at"])
-    return payment_transaction
+        transaction.note = note
+    transaction.save(update_fields=["status", "note", "updated_at"])
+    return transaction
 
 
 # ────────────────────────────────────────────
-# Payment Status Updates
+# Status Helpers
 # ────────────────────────────────────────────
 
-def complete_payment(payment_transaction):
-    """Mark a PENDING payment as COMPLETED."""
-    if payment_transaction.status != "PENDING":
+def complete_transaction(transaction):
+    """Mark a PENDING transaction as COMPLETED."""
+    if transaction.status != "PENDING":
         raise ValueError(
-            f"Cannot complete — current status is {payment_transaction.status}"
+            f"Cannot complete — current status is {transaction.status}"
         )
-    payment_transaction.status = "COMPLETED"
-    payment_transaction.save(update_fields=["status", "updated_at"])
-    return payment_transaction
+    transaction.status = "COMPLETED"
+    transaction.save(update_fields=["status", "updated_at"])
+    return transaction
 
 
-def fail_payment(payment_transaction, note=""):
-    """Mark a PENDING payment as FAILED."""
-    if payment_transaction.status != "PENDING":
+def fail_transaction(transaction, note=""):
+    """Mark a PENDING transaction as FAILED."""
+    if transaction.status != "PENDING":
         raise ValueError(
-            f"Cannot fail — current status is {payment_transaction.status}"
+            f"Cannot fail — current status is {transaction.status}"
         )
-    payment_transaction.status = "FAILED"
+    transaction.status = "FAILED"
     if note:
-        payment_transaction.note = note
-    payment_transaction.save(update_fields=["status", "note", "updated_at"])
-    return payment_transaction
+        transaction.note = note
+    transaction.save(update_fields=["status", "note", "updated_at"])
+    return transaction

@@ -5,40 +5,37 @@ from users.wallet.models import Wallet, WalletTransaction
 
 
 class InsufficientBalanceError(Exception):
-    """Raised when wallet balance is not sufficient for a debit."""
+    pass
 
 
 class WalletInactiveError(Exception):
-    """Raised when wallet is frozen/inactive."""
+    pass
 
 
 # ────────────────────────────────────────────
-# Wallet Access
+# Wallet CRUD
 # ────────────────────────────────────────────
 
 def get_or_create_wallet(user):
-    """Lazily create a wallet for the user if it doesn't exist."""
+    """Get existing wallet or create one with zero balance."""
     wallet, _ = Wallet.objects.get_or_create(user=user)
     return wallet
 
 
 def can_pay_with_wallet(user, amount):
-    """Check if the user's wallet has enough balance."""
-    try:
-        wallet = Wallet.objects.get(user=user)
-        return wallet.is_active and wallet.balance >= Decimal(str(amount))
-    except Wallet.DoesNotExist:
-        return False
+    """Check if user's wallet has enough balance."""
+    wallet = get_or_create_wallet(user)
+    return wallet.is_active and wallet.balance >= Decimal(str(amount))
 
 
 # ────────────────────────────────────────────
-# Credit / Debit (atomic + select_for_update)
+# Credit / Debit
 # ────────────────────────────────────────────
 
-def credit_wallet(user, amount, reason, payment=None, description=""):
+def credit_wallet(user, amount, transaction_obj=None):
     """
-    Add funds to the user's wallet.
-    Creates a WalletTransaction with type=CREDIT.
+    Add funds to user's wallet.
+    Creates a WalletTransaction linked to the universal Transaction.
     """
     amount = Decimal(str(amount))
     if amount <= 0:
@@ -51,26 +48,25 @@ def credit_wallet(user, amount, reason, payment=None, description=""):
         if not wallet.is_active:
             raise WalletInactiveError("Wallet is inactive.")
 
+        balance_before = wallet.balance
         wallet.balance += amount
         wallet.save(update_fields=["balance", "updated_at"])
 
-        txn = WalletTransaction.objects.create(
+        wt = WalletTransaction.objects.create(
+            transaction=transaction_obj,
             wallet=wallet,
-            transaction_type="CREDIT",
-            amount=amount,
+            label="CREDIT",
+            balance_before=balance_before,
             balance_after=wallet.balance,
-            reason=reason,
-            description=description,
-            payment=payment,
         )
-    return txn
+
+    return wt
 
 
-def debit_wallet(user, amount, reason, payment=None, description=""):
+def debit_wallet(user, amount, transaction_obj=None):
     """
-    Deduct funds from the user's wallet.
-    Creates a WalletTransaction with type=DEBIT.
-    Raises InsufficientBalanceError if balance < amount.
+    Deduct funds from user's wallet.
+    Creates a WalletTransaction linked to the universal Transaction.
     """
     amount = Decimal(str(amount))
     if amount <= 0:
@@ -88,16 +84,16 @@ def debit_wallet(user, amount, reason, payment=None, description=""):
                 f"Insufficient wallet balance. Available: ₹{wallet.balance}, Required: ₹{amount}"
             )
 
+        balance_before = wallet.balance
         wallet.balance -= amount
         wallet.save(update_fields=["balance", "updated_at"])
 
-        txn = WalletTransaction.objects.create(
+        wt = WalletTransaction.objects.create(
+            transaction=transaction_obj,
             wallet=wallet,
-            transaction_type="DEBIT",
-            amount=amount,
+            label="DEBIT",
+            balance_before=balance_before,
             balance_after=wallet.balance,
-            reason=reason,
-            description=description,
-            payment=payment,
         )
-    return txn
+
+    return wt

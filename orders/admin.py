@@ -39,14 +39,13 @@ class OrderAdmin(admin.ModelAdmin):
         "order_number",
         "user",
         "grand_total",
-        "payment_method",
         "created_at",
     )
-    list_filter = ("payment_method", "created_at")
+    list_filter = ("created_at",)
     search_fields = ("order_number", "user__email", "user__phone")
     ordering = ("-created_at",)
 
-    readonly_fields = ("order_number", "created_at")
+    readonly_fields = ("order_number", "payment", "created_at")
 
     inlines = [
         OrderItemInline,

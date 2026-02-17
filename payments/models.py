@@ -1,38 +1,44 @@
 import uuid
 from decimal import Decimal
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
 
 # ======================================================
-# PAYMENT TRANSACTION MODEL
+# TRANSACTION MODEL
 # ======================================================
 
 
-class PaymentTransaction(models.Model):
+class Transaction(models.Model):
     """
-    Raw-level payment record.
-    Every financial event (order payment, refund) creates one of these.
-    Future Razorpay integration will populate gateway_* fields.
+    Universal financial ledger entry.
+    Every money movement creates one of these — GenericFK links
+    to the source object (Order, OrderItem, Return, Wallet, etc.).
     """
 
-    # ── Payment Methods ────────────────────────
+    # ── What happened ──────────────────────────
+    TRANSACTION_TYPES = (
+        ("ORDER_PAYMENT", "Order Payment"),
+        ("CANCELLATION_REFUND", "Cancellation Refund"),
+        ("RETURN_REFUND", "Return Refund"),
+        ("WALLET_CREDIT", "Wallet Credit"),
+        ("WALLET_DEBIT", "Wallet Debit"),
+    )
+
+    # ── How (payment method) ───────────────────
     PAYMENT_METHODS = (
         ("COD", "Cash on Delivery"),
         ("WALLET", "Wallet"),
-        ("RAZORPAY", "Razorpay"),  # future
+        ("RAZORPAY", "Razorpay"),
     )
 
-    # ── Transaction Types ──────────────────────
-    TRANSACTION_TYPES = (
-        ("PAYMENT", "Payment"),
-        ("REFUND", "Refund"),
-    )
-
-    # ── Statuses ───────────────────────────────
+    # ── Status ─────────────────────────────────
     STATUS_CHOICES = (
-        ("PENDING", "Pending"),  # awaiting admin approval (refunds)
-        ("COMPLETED", "Completed"),  # money moved successfully
-        ("FAILED", "Failed"),  # payment/refund failed or rejected
+        ("PENDING", "Pending"),
+        ("PAID", "Paid"),
+        ("COMPLETED", "Completed"),
+        ("FAILED", "Failed"),
     )
 
     # ── Core Fields ────────────────────────────
@@ -42,25 +48,35 @@ class PaymentTransaction(models.Model):
         editable=False,
         db_index=True,
     )
-    order = models.ForeignKey(
-        "orders.Order",
-        on_delete=models.CASCADE,
-        related_name="payment_transactions",
-    )
     user = models.ForeignKey(
         "accounts.CustomUser",
         on_delete=models.CASCADE,
-        related_name="payment_transactions",
+        related_name="transactions",
     )
-
-    payment_method = models.CharField(max_length=20, choices=PAYMENT_METHODS)
-    transaction_type = models.CharField(max_length=10, choices=TRANSACTION_TYPES)
+    transaction_type = models.CharField(
+        max_length=30,
+        choices=TRANSACTION_TYPES,
+    )
+    payment_method = models.CharField(
+        max_length=20,
+        choices=PAYMENT_METHODS,
+    )
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.CharField(
         max_length=20,
         choices=STATUS_CHOICES,
         default="PENDING",
     )
+
+    # ── GenericFK → any source object ──────────
+    content_type = models.ForeignKey(
+        ContentType,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
+    object_id = models.PositiveIntegerField(null=True, blank=True)
+    content_object = GenericForeignKey("content_type", "object_id")
 
     # ── Razorpay Gateway Fields (future) ───────
     gateway_order_id = models.CharField(max_length=100, blank=True, default="")
@@ -75,8 +91,9 @@ class PaymentTransaction(models.Model):
     class Meta:
         ordering = ["-created_at"]
         indexes = [
-            models.Index(fields=["order", "-created_at"]),
             models.Index(fields=["user", "-created_at"]),
+            models.Index(fields=["content_type", "object_id"]),
+            models.Index(fields=["transaction_type", "status"]),
         ]
 
     def __str__(self):

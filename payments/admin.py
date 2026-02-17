@@ -1,32 +1,32 @@
 from django.contrib import admin
-from payments.models import PaymentTransaction
+from payments.models import Transaction
 
 
-@admin.register(PaymentTransaction)
-class PaymentTransactionAdmin(admin.ModelAdmin):
+@admin.register(Transaction)
+class TransactionAdmin(admin.ModelAdmin):
     list_display = (
         "transaction_id",
-        "order",
         "user",
-        "payment_method",
         "transaction_type",
+        "payment_method",
         "amount",
         "status",
         "created_at",
     )
-    list_filter = ("payment_method", "transaction_type", "status")
+    list_filter = ("transaction_type", "payment_method", "status", "created_at")
     search_fields = (
         "transaction_id",
-        "order__order_number",
         "user__email",
+        "note",
     )
     readonly_fields = (
         "transaction_id",
-        "order",
         "user",
-        "payment_method",
         "transaction_type",
+        "payment_method",
         "amount",
+        "content_type",
+        "object_id",
         "gateway_order_id",
         "gateway_payment_id",
         "gateway_signature",
