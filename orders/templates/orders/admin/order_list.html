@@ -110,6 +110,7 @@
                         <th>Customer</th>
                         <th>Date</th>
                         <th>Payment</th>
+                        <th>Status</th>
                         <th>Total</th>
                         <th>Status</th>
                         <th>Action</th>
@@ -146,7 +147,18 @@
                                 </div>
                             </td>
                             <td>
-                                <span class="payment-method">{{ order.payment_method }}</span>
+                                <div class="payment-method-wrapper">
+                                    <span class="payment-method">{{ order.payment.get_payment_method_display }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                {% if order.payment %}
+                                    <span class="payment-status-badge payment-status-{{ order.payment.status|lower }}">
+                                        {{ order.payment.get_status_display }}
+                                    </span>
+                                {% else %}
+                                    —
+                                {% endif %}
                             </td>
                             <td>
                                 <span class="order-total">₹{{ order.grand_total|floatformat:2 }}</span>

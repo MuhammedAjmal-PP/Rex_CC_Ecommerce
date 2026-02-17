@@ -12,6 +12,7 @@ from orders.service.status import (
     InvalidTransitionError,
     change_order_item_status,
 )
+from payments.service import initiate_refund
 
 # Return model status transitions allowed by admin
 RETURN_ALLOWED_TRANSITIONS = {
@@ -38,7 +39,7 @@ def return_list(request):
             "order_item__product_variant",
             "order_item__product_variant__product",
         )
-        .prefetch_related("images")
+        .prefetch_related("images", "transactions")
         .order_by("-created_at")
     )
 
@@ -86,7 +87,7 @@ def return_detail(request, return_number):
             "order_item__order__user",
             "order_item__product_variant",
             "order_item__product_variant__product",
-        ).prefetch_related("images"),
+        ).prefetch_related("images", "transactions"),
         return_number=return_number,
     )
 
@@ -99,6 +100,7 @@ def return_detail(request, return_number):
         "order": return_obj.order_item.order,
         "images": return_obj.images.all(),
         "allowed_next_statuses": allowed_next,
+        "refund_transactions": return_obj.transactions.all(),
     }
     return render(request, "orders/admin/return_detail.html", context)
 
@@ -214,7 +216,18 @@ def return_status_update(request, return_number):
         messages.success(
             request,
             f"Return {return_obj.return_number} completed. "
-            f"Stock restored (+{order_item.quantity}).",
+            f"Stock restored (+{order_item.quantity}). "
+            f"Refund of ₹{order_item.total_price} is pending admin approval.",
+        )
+
+        # Create PENDING refund transaction (admin must approve)
+        initiate_refund(
+            order=order,
+            user=order.user,
+            amount=order_item.total_price,
+            txn_type="RETURN_REFUND",
+            content_object=return_obj,
+            note=f"Return refund — return #{return_obj.return_number}",
         )
 
     else:

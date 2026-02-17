@@ -144,6 +144,44 @@
                     </span>
                 </div>
             </div>
+
+            <!-- Refund Transactions -->
+            {% if refund_transactions %}
+                <div class="rd-card-title rd-card-title-sub">
+                    <span class="material-icons">receipt_long</span>
+                    Refund Transaction
+                </div>
+                <div class="rd-card-body">
+                    {% for txn in refund_transactions %}
+                        <div class="rd-row">
+                            <span class="rd-label">Transaction ID</span>
+                            <span class="rd-value text-mono">{{ txn.transaction_id|truncatechars:18 }}</span>
+                        </div>
+                        <div class="rd-row">
+                            <span class="rd-label">Type</span>
+                            <span class="rd-value">{{ txn.get_transaction_type_display }}</span>
+                        </div>
+                        <div class="rd-row">
+                            <span class="rd-label">Amount</span>
+                            <span class="rd-value rd-bold">₹{{ txn.amount|floatformat:2 }}</span>
+                        </div>
+                        <div class="rd-row">
+                            <span class="rd-label">Method</span>
+                            <span class="rd-value">{{ txn.get_payment_method_display }}</span>
+                        </div>
+                        <div class="rd-row">
+                            <span class="rd-label">Status</span>
+                            <span class="rd-value">
+                                <span class="status-badge return-status-{{ txn.status|lower }}">{{ txn.get_status_display }}</span>
+                            </span>
+                        </div>
+                        <div class="rd-row">
+                            <span class="rd-label">Date</span>
+                            <span class="rd-value">{{ txn.created_at|date:"d M Y, h:i A" }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
         </div>
 
         <!-- Right: Admin Actions -->

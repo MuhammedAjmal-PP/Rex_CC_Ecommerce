@@ -122,13 +122,51 @@
     font-weight: 600;
     color: #333333;
     text-transform: uppercase;
+    color: #333333;
+    text-transform: uppercase;
     letter-spacing: 0.3px;
+}
+
+.payment-method-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
 }
 
 .order-total {
     font-size: 0.95rem;
     font-weight: 700;
     color: #000000;
+}
+
+.payment-status-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-left: 8px;
+    vertical-align: middle;
+}
+
+.payment-status-paid {
+    background-color: #d1fae5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+}
+
+.payment-status-pending {
+    background-color: #ffedd5;
+    color: #9a3412;
+    border: 1px solid #fed7aa;
+}
+
+.payment-status-failed {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
 }
 
 /* ========================================

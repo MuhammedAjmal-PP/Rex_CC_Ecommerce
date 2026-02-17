@@ -63,8 +63,24 @@
                 </div>
                 <div class="od-meta-row">
                     <span class="od-meta-label">Payment Method</span>
-                    <span class="od-meta-value">{{ order.payment_method }}</span>
+                    <span class="od-meta-value">{{ order.payment.get_payment_method_display }}</span>
                 </div>
+                {% if order.payment %}
+                    <div class="od-meta-row">
+                        <span class="od-meta-label">Transaction ID</span>
+                        <span class="od-meta-value text-mono">{{ order.payment.transaction_id|truncatechars:18 }}</span>
+                    </div>
+                    <div class="od-meta-row">
+                        <span class="od-meta-label">Payment Status</span>
+                        <span class="od-meta-value">
+                            <span class="status-badge order-status-{{ order.payment.status|lower }}">{{ order.payment.get_status_display }}</span>
+                        </span>
+                    </div>
+                    <div class="od-meta-row">
+                        <span class="od-meta-label">Amount Paid</span>
+                        <span class="od-meta-value">₹{{ order.payment.amount|floatformat:2 }}</span>
+                    </div>
+                {% endif %}
             </div>
 
             <!-- Shipping Address -->

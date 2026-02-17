@@ -220,6 +220,12 @@
     color: var(--rd-black);
 }
 
+.text-mono {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.85rem;
+    letter-spacing: -0.5px;
+}
+
 .rd-bold {
     font-weight: 700;
 }

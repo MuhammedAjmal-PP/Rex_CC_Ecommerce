@@ -25,7 +25,7 @@ def order_list(request):
     status_filter = request.GET.get("status", "all").strip().upper()
 
     orders_qs = (
-        Order.objects.select_related("user")
+        Order.objects.select_related("user", "payment")
         .prefetch_related("status")
         .order_by("-created_at")
     )
@@ -90,7 +90,7 @@ def order_list(request):
 @require_GET
 def order_detail(request, order_number):
     order = get_object_or_404(
-        Order.objects.select_related("user").prefetch_related("status"),
+        Order.objects.select_related("user", "payment").prefetch_related("status"),
         order_number=order_number,
     )
     order_items = (

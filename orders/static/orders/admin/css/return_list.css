@@ -142,6 +142,45 @@
 }
 
 /* ========================================
+   REFUND STATUS
+   ======================================== */
+
+.refund-status-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    background: #f3f4f6;
+    color: #374151;
+    border: 1px solid #e5e7eb;
+}
+
+.refund-status-paid, .refund-status-completed {
+    background: #d1fae5;
+    color: #065f46;
+    border-color: #a7f3d0;
+}
+
+.refund-status-pending {
+    background: #ffedd5;
+    color: #9a3412;
+    border-color: #fed7aa;
+}
+
+.refund-amount {
+    font-size: 0.75rem;
+    color: #666;
+    margin-top: 2px;
+}
+
+.no-refund {
+    color: #999;
+    font-size: 0.8rem;
+}
+
+/* ========================================
    PRODUCT & REASON
    ======================================== */
 

@@ -289,6 +289,12 @@
     color: var(--od-black);
 }
 
+.text-mono {
+    font-family: 'Courier New', Courier, monospace;
+    letter-spacing: -0.5px;
+    font-size: 0.85rem;
+}
+
 /* Addresses */
 .od-address {
     line-height: 1.8;
