@@ -258,3 +258,10 @@ DEFAULT_WATCH_HSN = "9102"
 
 # Standard GST rate for watches
 GST_RATE = 18.0
+
+# ---------------------------------------------------------------
+# RAZORPAY
+# ---------------------------------------------------------------
+
+RAZORPAY_KEY_ID = env("RAZORPAY_KEY_ID")
+RAZORPAY_KEY_SECRET = env("RAZORPAY_KEY_SECRET")

@@ -3,16 +3,17 @@ class InvalidTransitionError(Exception):
 
 
 ORDER_ALLOWED_TRANSITIONS = {
-    "PLACED": {"CONFIRMED", "CANCELLED"},
+    "PLACED": {"CONFIRMED", "CANCELLED","FAILED"},
     "CONFIRMED": {"SHIPPED", "CANCELLED"},
     "SHIPPED": {"OUT_FOR_DELIVERY"},
     "OUT_FOR_DELIVERY": {"DELIVERED"},
     "DELIVERED": set(),
     "CANCELLED": set(),
+    "FAILED": set(),
 }
 
 ORDER_ITEM_ALLOWED_TRANSITIONS = {
-    "PENDING": {"CONFIRMED", "CANCELLED"},
+    "PENDING": {"CONFIRMED", "CANCELLED","FAILED"},
     "CONFIRMED": {"PACKING", "CANCELLED"},
     "PACKING": {"READY", "CANCELLED"},
     "READY": {"SHIPPED", "CANCELLED"},
@@ -62,6 +63,7 @@ ORDER_TO_ITEM_TARGET = {
     "OUT_FOR_DELIVERY": "OUT_FOR_DELIVERY",
     "DELIVERED": "DELIVERED",
     "CANCELLED": "CANCELLED",  # special: direct jump
+    "FAILED": "FAILED",        # special: direct jump (payment failure)
 }
 
 
@@ -125,6 +127,9 @@ def _sync_order_status(order, *, actor=None):
     # Rule 1: ALL items cancelled → cancel the order
     if item_statuses == {"CANCELLED"}:
         target = "CANCELLED"
+    # Rule 1b: ALL items failed (payment) → fail the order
+    elif item_statuses == {"FAILED"}:
+        target = "FAILED"
     # Rule 2: ALL items delivered/returned/cancelled (at least one post-delivery) → deliver
     elif item_statuses <= (_POST_DELIVERY | {"CANCELLED"}) and item_statuses & _POST_DELIVERY:
         target = "DELIVERED"
@@ -173,19 +178,19 @@ def _cascade_order_to_items(order, to_status, *, actor=None):
         if not item_status or item_status == "CANCELLED":
             continue
 
-        # CANCELLED: direct jump (same as before)
-        if target_item_status == "CANCELLED":
+        # CANCELLED / FAILED: direct jump (no walk needed)
+        if target_item_status in ("CANCELLED", "FAILED"):
             if can_transition(
                 model_type="orderitem",
                 from_status=item_status,
-                to_status="CANCELLED",
+                to_status=target_item_status,
             ):
                 _change_status(
                     obj=item,
                     model_type="orderitem",
-                    to_status="CANCELLED",
+                    to_status=target_item_status,
                     actor=actor,
-                    note=f"Auto-cascaded from order status → CANCELLED",
+                    note=f"Auto-cascaded from order status → {target_item_status}",
                 )
             continue
 

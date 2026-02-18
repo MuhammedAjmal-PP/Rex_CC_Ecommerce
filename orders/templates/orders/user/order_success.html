@@ -1,5 +1,6 @@
 {% extends "core/user/base_user.html" %}
 {% load static %}
+{% load humanize %}
 {% block head_title %}Order Confirmed | REX CC{% endblock %}
 {% block extra_css %}
     <link rel="stylesheet"
@@ -15,24 +16,45 @@
                     <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
                 </svg>
             </div>
-            <!-- Order Confirmation Text -->
+
+            <!-- Confirmation Text -->
             <div class="success-text-block">
                 <h1 class="success-title">Order Confirmed</h1>
                 <p class="success-subtitle">Thank you for your purchase</p>
             </div>
-            <!-- Order Number Card -->
-            <div class="order-number-card">
-                <span class="order-number-label">Order Number</span>
-                <span class="order-number-value">{{ order_number }}</span>
+
+            <!-- Order Card -->
+            <div class="order-card">
+                <div class="order-card-row">
+                    <span class="order-card-label">Order Number</span>
+                    <span class="order-card-value order-number">{{ order.order_number }}</span>
+                </div>
+                <div class="order-card-row">
+                    <span class="order-card-label">Total</span>
+                    <span class="order-card-value order-total">₹{{ order.grand_total|floatformat:0|intcomma }}</span>
+                </div>
+                <div class="order-card-row">
+                    <span class="order-card-label">Payment</span>
+                    <span class="order-card-value">{{ order.payment.get_payment_method_display }}</span>
+                </div>
+                <div class="order-card-row">
+                    <span class="order-card-label">Date</span>
+                    <span class="order-card-value">{{ order.created_at|date:"d M Y, h:i A" }}</span>
+                </div>
             </div>
+
             <!-- Info Text -->
             <p class="success-info">
-                We've received your order and will begin processing it shortly.
-                You can track your order status from your account.
+                We'll begin processing your order shortly. Track your order status from your account.
             </p>
+
             <!-- Action Buttons -->
             <div class="success-actions">
-                <a href="{% url 'home' %}" class="btn-continue-shopping">
+                <a href="{% url 'user_order_details' order.order_number %}" class="btn-view-order">
+                    <span class="material-icons">receipt_long</span>
+                    View Order
+                </a>
+                <a href="{% url 'product_list' %}" class="btn-continue-shopping">
                     <span class="material-icons">storefront</span>
                     Continue Shopping
                 </a>

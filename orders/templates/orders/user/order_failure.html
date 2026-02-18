@@ -1,0 +1,64 @@
+{% extends "core/user/base_user.html" %}
+{% load static %}
+{% load humanize %}
+{% block head_title %}Order Failed | REX CC{% endblock %}
+{% block extra_css %}
+    <link rel="stylesheet"
+          href="{% static 'orders/user/css/order_failure.css' %}">
+{% endblock %}
+{% block content %}
+    <section class="failure-page">
+        <div class="failure-container">
+            <!-- Animated X Mark -->
+            <div class="failure-icon-wrapper">
+                <svg class="xmark-svg" viewBox="0 0 52 52">
+                    <circle class="xmark-circle" cx="26" cy="26" r="25" fill="none" />
+                    <path class="xmark-x" fill="none" d="M16 16 36 36" />
+                    <path class="xmark-x xmark-x2" fill="none" d="M36 16 16 36" />
+                </svg>
+            </div>
+
+            <!-- Failure Text -->
+            <div class="failure-text-block">
+                <h1 class="failure-title">Payment Failed</h1>
+                <p class="failure-subtitle">We couldn't process your payment</p>
+            </div>
+
+            <!-- Order Info Card -->
+            <div class="failure-info-card">
+                <div class="failure-info-row">
+                    <span class="failure-info-label">Order Number</span>
+                    <span class="failure-info-value">{{ order.order_number }}</span>
+                </div>
+                <div class="failure-info-row">
+                    <span class="failure-info-label">Amount</span>
+                    <span class="failure-info-value">₹{{ order.grand_total|floatformat:0|intcomma }}</span>
+                </div>
+                {% if order.payment %}
+                    <div class="failure-info-row">
+                        <span class="failure-info-label">Method</span>
+                        <span class="failure-info-value">{{ order.payment.get_payment_method_display }}</span>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Help Text -->
+            <p class="failure-help">
+                Don't worry — no money has been deducted from your account.
+                You can retry the payment or choose a different payment method.
+            </p>
+
+            <!-- Action Buttons -->
+            <div class="failure-actions">
+                <a href="{% url 'user_order_details' order.order_number %}" class="btn-retry-payment">
+                    <span class="material-icons">receipt_long</span>
+                    View Order
+                </a>
+                <a href="{% url 'product_list' %}" class="btn-continue-shopping">
+                    <span class="material-icons">storefront</span>
+                    Continue Shopping
+                </a>
+            </div>
+        </div>
+    </section>
+{% endblock %}

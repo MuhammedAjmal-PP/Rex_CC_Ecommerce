@@ -21,6 +21,7 @@ class StatusTimeline(models.Model):
         ("OUT_FOR_DELIVERY", "Out for Delivery"),
         ("DELIVERED", "Delivered"),
         ("CANCELLED", "Cancelled"),
+        ("FAILED", "Payment Failed"),
     )
 
     # ---------------- ORDER ITEM STATUSES ----------------

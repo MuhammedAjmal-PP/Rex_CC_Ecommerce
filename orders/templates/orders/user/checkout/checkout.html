@@ -92,6 +92,7 @@
         {% csrf_token %}
     {% endblock %}
     {% block extra_js %}
+        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
         <script src="{% static 'orders/user/checkout/js/address.js' %}"></script>
         <script src="{% static 'orders/user/checkout/js/payment.js' %}"></script>
         <script src="{% static 'orders/user/checkout/js/review.js' %}"></script>

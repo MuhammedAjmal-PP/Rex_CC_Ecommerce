@@ -44,28 +44,18 @@
         </div>
         {% endif %}
 
-        <!-- Online (Disabled) -->
-        <div class="payment-card disabled">
+        <!-- Razorpay (Online Payment) -->
+        <div class="payment-card" onclick="selectPayment('razorpay')" id="pay-razorpay">
             <div class="pay-icon">
-                 <span class="material-icons">credit_card</span>
+                <span class="material-icons">credit_card</span>
             </div>
             <div class="pay-info">
-                <span class="pay-name">Credit/Debit Card</span>
-                <span class="pay-desc">Secure online payment</span>
+                <span class="pay-name">Online Payment</span>
+                <span class="pay-desc">Cards, UPI, Netbanking via Razorpay</span>
             </div>
-            <div class="pay-badge">Coming Soon</div>
-        </div>
-
-        <!-- UPI (Disabled) -->
-         <div class="payment-card disabled">
-            <div class="pay-icon">
-                 <span class="material-icons">qr_code</span>
+            <div class="pay-check">
+                <span class="material-icons">check_circle</span>
             </div>
-            <div class="pay-info">
-                <span class="pay-name">UPI / Netbanking</span>
-                <span class="pay-desc">Pay via GooglePay, PhonePe</span>
-            </div>
-             <div class="pay-badge">Coming Soon</div>
         </div>
 
     </div>

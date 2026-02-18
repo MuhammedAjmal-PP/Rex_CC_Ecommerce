@@ -1,6 +1,5 @@
 /* ============================================================
    REX CC — ORDER SUCCESS PAGE
-   Animated confirmation with luxury feel
    ============================================================ */
 
 :root {
@@ -16,10 +15,7 @@
   --font-sans: "Montserrat", sans-serif;
 }
 
-/* ============================================================
-   PAGE CONTAINER
-   ============================================================ */
-
+/* PAGE */
 .success-page {
   background: var(--os-bg);
   min-height: 100vh;
@@ -30,24 +26,20 @@
 }
 
 .success-container {
-  max-width: 520px;
+  max-width: 480px;
   width: 100%;
   text-align: center;
   animation: fadeInUp 0.8s cubic-bezier(0.2, 1, 0.2, 1);
 }
 
-/* ============================================================
-   ANIMATED CHECKMARK (SVG)
-   ============================================================ */
-
+/* CHECKMARK */
 .success-icon-wrapper {
-  margin-bottom: 40px;
+  margin-bottom: 36px;
 }
 
 .checkmark-svg {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
+  width: 76px;
+  height: 76px;
   display: block;
   margin: 0 auto;
   stroke-width: 2;
@@ -58,8 +50,6 @@
 .checkmark-circle {
   stroke-dasharray: 166;
   stroke-dashoffset: 166;
-  stroke-width: 2;
-  stroke-miterlimit: 10;
   stroke: var(--os-gold);
   fill: none;
   animation: circleStroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) 0.2s forwards;
@@ -75,177 +65,173 @@
   animation: checkStroke 0.35s cubic-bezier(0.65, 0, 0.45, 1) 0.7s forwards;
 }
 
-@keyframes circleStroke {
-  100% {
-    stroke-dashoffset: 0;
-  }
-}
+@keyframes circleStroke { 100% { stroke-dashoffset: 0; } }
+@keyframes checkStroke  { 100% { stroke-dashoffset: 0; } }
 
-@keyframes checkStroke {
-  100% {
-    stroke-dashoffset: 0;
-  }
-}
-
-/* ============================================================
-   TEXT BLOCK
-   ============================================================ */
-
+/* TITLE */
 .success-text-block {
-  margin-bottom: 36px;
+  margin-bottom: 32px;
   opacity: 0;
   animation: fadeInUp 0.6s ease 0.9s forwards;
 }
 
 .success-title {
   font-family: var(--font-serif);
-  font-size: 2.4rem;
+  font-size: 2.2rem;
   font-weight: 600;
   color: var(--os-text);
-  margin: 0 0 10px;
-  letter-spacing: 0.5px;
+  margin: 0 0 6px;
 }
 
 .success-subtitle {
   font-family: var(--font-sans);
-  font-size: 1rem;
+  font-size: 0.95rem;
   color: var(--os-text-muted);
   margin: 0;
-  letter-spacing: 0.3px;
 }
 
-/* ============================================================
-   ORDER NUMBER CARD
-   ============================================================ */
-
-.order-number-card {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+/* ORDER CARD */
+.order-card {
   background: var(--os-surface);
   border: 1px solid var(--os-border);
   border-radius: 3px;
-  padding: 24px 32px;
-  margin: 0 auto 32px;
-  max-width: 360px;
+  padding: 24px 28px;
+  margin: 0 auto 28px;
+  text-align: left;
   opacity: 0;
   animation: fadeInUp 0.6s ease 1.1s forwards;
 }
 
-.order-number-label {
+.order-card-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0ee;
+}
+
+.order-card-row:last-child {
+  border-bottom: none;
+}
+
+.order-card-label {
   font-family: var(--font-sans);
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  color: var(--os-text-muted);
+  font-size: 0.78rem;
   font-weight: 600;
+  color: var(--os-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.order-number-value {
+.order-card-value {
   font-family: var(--font-sans);
-  font-size: 1.4rem;
-  font-weight: 700;
+  font-size: 0.88rem;
+  font-weight: 500;
   color: var(--os-text);
-  letter-spacing: 1.5px;
 }
 
-/* ============================================================
-   INFO TEXT
-   ============================================================ */
+.order-number {
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
 
+.order-total {
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+/* INFO */
 .success-info {
   font-family: var(--font-sans);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: var(--os-text-muted);
   line-height: 1.7;
-  max-width: 400px;
-  margin: 0 auto 40px;
+  max-width: 380px;
+  margin: 0 auto 32px;
   opacity: 0;
   animation: fadeInUp 0.6s ease 1.3s forwards;
 }
 
-/* ============================================================
-   ACTION BUTTONS
-   ============================================================ */
-
+/* BUTTONS */
 .success-actions {
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
+  flex-wrap: wrap;
   opacity: 0;
   animation: fadeInUp 0.6s ease 1.5s forwards;
+}
+
+.btn-view-order {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 24px;
+  background: var(--os-surface);
+  color: var(--os-text);
+  border: 1px solid var(--os-border);
+  border-radius: 3px;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.btn-view-order:hover {
+  border-color: var(--os-gold);
+  color: var(--os-gold);
+}
+
+.btn-view-order .material-icons {
+  font-size: 17px;
 }
 
 .btn-continue-shopping {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 14px 36px;
-  background: linear-gradient(135deg, var(--os-gold) 0%, var(--os-gold-dark) 100%);
-  color: #ffffff;
+  gap: 6px;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, var(--os-gold), var(--os-gold-dark));
+  color: #fff;
   border: none;
   border-radius: 3px;
   font-family: var(--font-sans);
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 1.5px;
+  letter-spacing: 1px;
   text-decoration: none;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 16px rgba(205, 127, 50, 0.25);
+  transition: all 0.3s;
+  box-shadow: 0 4px 14px rgba(205, 127, 50, 0.25);
 }
 
 .btn-continue-shopping:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(205, 127, 50, 0.35);
-  color: #ffffff;
+  box-shadow: 0 6px 18px rgba(205, 127, 50, 0.35);
+  color: #fff;
 }
 
 .btn-continue-shopping .material-icons {
-  font-size: 18px;
+  font-size: 17px;
 }
 
-/* ============================================================
-   ANIMATIONS
-   ============================================================ */
-
+/* ANIMATION */
 @keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ============================================================
-   RESPONSIVE
-   ============================================================ */
-
+/* RESPONSIVE */
 @media (max-width: 640px) {
-  .success-page {
-    padding: 40px 16px;
-  }
-
-  .success-title {
-    font-size: 2rem;
-  }
-
-  .order-number-value {
-    font-size: 1.2rem;
-  }
-
-  .checkmark-svg {
-    width: 64px;
-    height: 64px;
-  }
-
-  .btn-continue-shopping {
-    width: 100%;
-    justify-content: center;
-  }
+  .success-page { padding: 40px 16px; }
+  .success-title { font-size: 1.8rem; }
+  .checkmark-svg { width: 64px; height: 64px; }
+  .order-card { padding: 20px 20px; }
+  .success-actions { flex-direction: column; }
+  .btn-view-order,
+  .btn-continue-shopping { width: 100%; justify-content: center; }
 }

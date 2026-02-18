@@ -1,6 +1,6 @@
 /**
  * Payment Logic
- * Handles selection between COD and Wallet
+ * Handles selection between COD, Wallet, and Razorpay
  */
 function selectPayment(method) {
     CheckoutState.selectedPaymentMethod = method;
@@ -11,8 +11,12 @@ function selectPayment(method) {
     });
 
     // Add selected class to the chosen card
-    const cardId = method === 'cod' ? 'pay-cod' : 'pay-wallet';
-    const selectedCard = document.getElementById(cardId);
+    const cardMap = {
+        'cod': 'pay-cod',
+        'wallet': 'pay-wallet',
+        'razorpay': 'pay-razorpay',
+    };
+    const selectedCard = document.getElementById(cardMap[method]);
     if (selectedCard) {
         selectedCard.classList.add('selected');
     }
