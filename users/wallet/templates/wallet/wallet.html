@@ -36,54 +36,107 @@
             {% endif %}
         </div>
 
+        <!-- TAB TOGGLE -->
+        <div class="wallet-tabs">
+            <a href="?tab=wallet"
+               class="wallet-tab {% if active_tab == 'wallet' %}active{% endif %}">
+                <span class="material-icons">account_balance_wallet</span>
+                Wallet
+            </a>
+            <a href="?tab=all"
+               class="wallet-tab {% if active_tab == 'all' %}active{% endif %}">
+                <span class="material-icons">receipt_long</span>
+                All Transactions
+            </a>
+        </div>
+
         <!-- TRANSACTION HISTORY -->
         {% if transactions %}
             <div class="txn-list">
-                <div class="txn-table-header">
-                    <span class="col-date">Date</span>
-                    <span class="col-type">Type</span>
-                    <span class="col-desc">Description</span>
-                    <span class="col-amount">Amount</span>
-                    <span class="col-balance">Balance</span>
-                </div>
-                {% for txn in transactions %}
-                    <div class="txn-row">
-                        <div class="txn-row-date">
-                            <span class="txn-date">{{ txn.created_at|date:"d M Y" }}</span>
-                            <span class="txn-time">{{ txn.created_at|date:"h:i A" }}</span>
-                        </div>
-                        <div class="txn-row-type">
-                            <span class="txn-type-badge txn-{{ txn.label|lower }}">
-                                {{ txn.label }}
-                            </span>
-                        </div>
-                        <div class="txn-row-desc">
-                            {% if txn.transaction %}
-                                <span class="txn-desc-main">{{ txn.transaction.get_transaction_type_display }}</span>
-                                <span class="txn-desc-id">{{ txn.transaction.transaction_id|truncatechars:18 }}</span>
-                            {% else %}
-                                <span class="txn-desc-main">Wallet Transaction</span>
-                            {% endif %}
-                        </div>
-                        <div class="txn-row-amount">
-                            {% if txn.label == "CREDIT" %}
-                                <span class="amount-credit">+₹{{ txn.transaction.amount|floatformat:0|intcomma }}</span>
-                            {% else %}
-                                <span class="amount-debit">-₹{{ txn.transaction.amount|floatformat:0|intcomma }}</span>
-                            {% endif %}
-                        </div>
-                        <div class="txn-row-balance">
-                            <span class="balance-after">₹{{ txn.balance_after|floatformat:2|intcomma }}</span>
-                        </div>
+
+                {% if active_tab == "wallet" %}
+                    <!-- WALLET TAB HEADER -->
+                    <div class="txn-table-header">
+                        <span class="col-date">Date</span>
+                        <span class="col-type">Type</span>
+                        <span class="col-desc">Description</span>
+                        <span class="col-amount">Amount</span>
+                        <span class="col-balance">Balance</span>
                     </div>
-                {% endfor %}
+                    {% for txn in transactions %}
+                        <a href="{% if txn.transaction %}{% url 'user_transaction_detail' txn.transaction.transaction_id %}{% else %}#{% endif %}"
+                           class="txn-row txn-row-link">
+                            <div class="txn-row-date">
+                                <span class="txn-date">{{ txn.created_at|date:"d M Y" }}</span>
+                                <span class="txn-time">{{ txn.created_at|date:"h:i A" }}</span>
+                            </div>
+                            <div class="txn-row-type">
+                                <span class="txn-type-badge txn-{{ txn.label|lower }}">
+                                    {{ txn.label }}
+                                </span>
+                            </div>
+                            <div class="txn-row-desc">
+                                {% if txn.transaction %}
+                                    <span class="txn-desc-main">{{ txn.transaction.get_transaction_type_display }}</span>
+                                    <span class="txn-desc-id">{{ txn.transaction.transaction_id }}</span>
+                                {% else %}
+                                    <span class="txn-desc-main">Wallet Transaction</span>
+                                {% endif %}
+                            </div>
+                            <div class="txn-row-amount">
+                                {% if txn.label == "CREDIT" %}
+                                    <span class="amount-credit">+₹{{ txn.transaction.amount|floatformat:0|intcomma }}</span>
+                                {% else %}
+                                    <span class="amount-debit">-₹{{ txn.transaction.amount|floatformat:0|intcomma }}</span>
+                                {% endif %}
+                            </div>
+                            <div class="txn-row-balance">
+                                <span class="balance-after">₹{{ txn.balance_after|floatformat:2|intcomma }}</span>
+                            </div>
+                        </a>
+                    {% endfor %}
+
+                {% else %}
+                    <!-- ALL TRANSACTIONS TAB HEADER -->
+                    <div class="txn-table-header txn-header-all">
+                        <span class="col-date">Date</span>
+                        <span class="col-type-all">Type</span>
+                        <span class="col-method">Method</span>
+                        <span class="col-amount">Amount</span>
+                        <span class="col-status">Status</span>
+                    </div>
+                    {% for txn in transactions %}
+                        <a href="{% url 'user_transaction_detail' txn.transaction_id %}"
+                           class="txn-row txn-row-all txn-row-link">
+                            <div class="txn-row-date">
+                                <span class="txn-date">{{ txn.created_at|date:"d M Y" }}</span>
+                                <span class="txn-time">{{ txn.created_at|date:"h:i A" }}</span>
+                            </div>
+                            <div class="txn-row-type-all">
+                                <span class="txn-desc-main">{{ txn.get_transaction_type_display }}</span>
+                                <span class="txn-desc-id">{{ txn.transaction_id }}</span>
+                            </div>
+                            <div class="txn-row-method">
+                                <span class="txn-method-badge">{{ txn.get_payment_method_display }}</span>
+                            </div>
+                            <div class="txn-row-amount">
+                                <span class="amount-value">₹{{ txn.amount|floatformat:0|intcomma }}</span>
+                            </div>
+                            <div class="txn-row-status">
+                                <span class="txn-status-badge status-{{ txn.status|lower }}">
+                                    {{ txn.get_status_display }}
+                                </span>
+                            </div>
+                        </a>
+                    {% endfor %}
+                {% endif %}
             </div>
 
             <!-- PAGINATION -->
             {% if page_obj.has_other_pages %}
                 <nav class="wallet-pagination">
                     {% if page_obj.has_previous %}
-                        <a href="?page={{ page_obj.previous_page_number }}"
+                        <a href="?tab={{ active_tab }}&page={{ page_obj.previous_page_number }}"
                            class="pagination-btn prev">
                             <span class="material-icons">chevron_left</span>
                             Previous
@@ -94,16 +147,16 @@
                             {% if page_obj.number == num %}
                                 <span class="pagination-page active">{{ num }}</span>
                             {% elif num > page_obj.number|add:"-3" and num < page_obj.number|add:"3" %}
-                                <a href="?page={{ num }}" class="pagination-page">{{ num }}</a>
+                                <a href="?tab={{ active_tab }}&page={{ num }}" class="pagination-page">{{ num }}</a>
                             {% elif num == 1 or num == page_obj.paginator.num_pages %}
-                                <a href="?page={{ num }}" class="pagination-page">{{ num }}</a>
+                                <a href="?tab={{ active_tab }}&page={{ num }}" class="pagination-page">{{ num }}</a>
                             {% elif num == page_obj.number|add:"-3" or num == page_obj.number|add:"3" %}
                                 <span class="pagination-ellipsis">…</span>
                             {% endif %}
                         {% endfor %}
                     </div>
                     {% if page_obj.has_next %}
-                        <a href="?page={{ page_obj.next_page_number }}"
+                        <a href="?tab={{ active_tab }}&page={{ page_obj.next_page_number }}"
                            class="pagination-btn next">
                             Next
                             <span class="material-icons">chevron_right</span>
@@ -116,7 +169,13 @@
             <div class="wallet-empty">
                 <span class="material-icons empty-icon">receipt_long</span>
                 <h2>No transactions yet</h2>
-                <p>Your wallet transaction history will appear here once you make a purchase or receive a refund.</p>
+                <p>
+                    {% if active_tab == "wallet" %}
+                        Your wallet transaction history will appear here once you receive a refund or make a wallet payment.
+                    {% else %}
+                        You don't have any transactions yet. They will appear here after you place an order.
+                    {% endif %}
+                </p>
             </div>
         {% endif %}
     </div>

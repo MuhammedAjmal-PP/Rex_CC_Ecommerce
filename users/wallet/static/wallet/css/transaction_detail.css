@@ -1,0 +1,349 @@
+/* ============================================================
+   REX CC — USER TRANSACTION DETAIL PAGE
+   Luxury theme matching wallet/order detail design system
+   ============================================================ */
+
+:root {
+  --td-bg: #faf9f7;
+  --td-surface: #ffffff;
+  --td-text: #2c2c2c;
+  --td-text-muted: #7a7a7a;
+  --td-border: #e8e6e2;
+  --td-gold: #cd7f32;
+  --td-gold-light: #bfa15f;
+  --td-gold-dark: #b06825;
+  --td-credit: #16a34a;
+  --td-credit-bg: #f0fdf4;
+  --td-debit: #dc2626;
+  --td-debit-bg: #fef2f2;
+
+  --font-serif: "Playfair Display", serif;
+  --font-sans: "Montserrat", sans-serif;
+}
+
+/* ============================================================
+   PAGE CONTAINER
+   ============================================================ */
+
+.td-page {
+  min-height: calc(100vh - 200px);
+  padding: 40px 60px 80px;
+}
+
+.td-page * {
+  box-sizing: border-box;
+}
+
+/* ============================================================
+   BREADCRUMBS
+   ============================================================ */
+
+.td-breadcrumb {
+  max-width: 1200px;
+  margin: 0 auto 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--td-text-muted);
+  font-family: var(--font-sans);
+}
+
+.td-breadcrumb a {
+  color: var(--td-text-muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.td-breadcrumb a:hover {
+  color: var(--td-gold);
+}
+
+.td-breadcrumb-sep {
+  color: var(--td-gold-dark);
+  user-select: none;
+}
+
+.td-breadcrumb-current {
+  color: var(--td-text);
+  font-weight: 500;
+}
+
+/* ============================================================
+   PAGE HEADER
+   ============================================================ */
+
+.td-header {
+  max-width: 1200px;
+  margin: 0 auto 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.td-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.td-title {
+  font-family: var(--font-serif);
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--td-text);
+  margin: 0;
+}
+
+.td-subtitle {
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  color: var(--td-text-muted);
+  letter-spacing: 0.3px;
+}
+
+/* ============================================================
+   MAIN GRID
+   ============================================================ */
+
+.td-grid {
+  max-width: 1200px;
+  margin: 0 auto 32px;
+  display: grid;
+  grid-template-columns: 7fr 5fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.td-right-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ============================================================
+   CARDS
+   ============================================================ */
+
+.td-card {
+  background: var(--td-surface);
+  border: 1px solid var(--td-border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.td-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--td-border);
+  background: #faf9f7;
+}
+
+.td-card-header .material-icons {
+  font-size: 20px;
+  color: var(--td-gold);
+}
+
+.td-card-title {
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--td-text);
+}
+
+.td-card-body {
+  padding: 20px 24px;
+}
+
+/* ============================================================
+   KEY-VALUE ROWS
+   ============================================================ */
+
+.td-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f0f0;
+  gap: 16px;
+}
+
+.td-row:last-child {
+  border-bottom: none;
+}
+
+.td-label {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--td-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
+
+.td-value {
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--td-text);
+  text-align: right;
+}
+
+.td-mono {
+  font-size: 0.82rem;
+  letter-spacing: 0.3px;
+}
+
+.td-amount {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--td-text);
+}
+
+/* ============================================================
+   BADGES
+   ============================================================ */
+
+.td-type-badge {
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 4px 12px;
+  border-radius: 3px;
+  background: #f3f2ef;
+  color: var(--td-text);
+  display: inline-block;
+}
+
+.td-status-badge {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 5px 14px;
+  border-radius: 3px;
+  display: inline-block;
+}
+
+.status-paid,
+.status-completed {
+  background: #f0fdf4;
+  color: #16a34a;
+}
+
+.status-pending {
+  background: #fefce8;
+  color: #a16207;
+}
+
+.status-failed {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+/* Wallet label badges */
+.txn-type-badge {
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 4px 10px;
+  border-radius: 3px;
+  display: inline-block;
+}
+
+.txn-credit {
+  background: var(--td-credit-bg);
+  color: var(--td-credit);
+}
+
+.txn-debit {
+  background: var(--td-debit-bg);
+  color: var(--td-debit);
+}
+
+/* ============================================================
+   BACK BUTTON
+   ============================================================ */
+
+.td-back {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.td-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--td-text-muted);
+  text-decoration: none;
+  border: 1px solid var(--td-border);
+  border-radius: 3px;
+  background: var(--td-surface);
+  transition: all 0.2s ease;
+}
+
+.td-back-btn .material-icons {
+  font-size: 18px;
+}
+
+.td-back-btn:hover {
+  border-color: var(--td-gold);
+  color: var(--td-gold);
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 900px) {
+  .td-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .td-page {
+    padding: 24px 16px 60px;
+  }
+
+  .td-header {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .td-title {
+    font-size: 1.4rem;
+  }
+
+  .td-card-body {
+    padding: 16px 18px;
+  }
+
+  .td-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .td-value {
+    text-align: left;
+  }
+}

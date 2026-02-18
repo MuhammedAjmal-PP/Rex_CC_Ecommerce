@@ -10,9 +10,15 @@ from users.wallet.service import credit_wallet
 # Create Transaction Record
 # ────────────────────────────────────────────
 
+
 def create_transaction(
-    user, txn_type, method, amount, status="PENDING",
-    content_object=None, note="",
+    user,
+    txn_type,
+    method,
+    amount,
+    status="PENDING",
+    content_object=None,
+    note="",
 ):
     """
     Create a universal Transaction record.
@@ -40,6 +46,7 @@ def create_transaction(
 # Refund Operations (admin-controlled)
 # ────────────────────────────────────────────
 
+
 def initiate_refund(order, user, amount, txn_type, content_object=None, note=""):
     """
     Create a PENDING refund Transaction.
@@ -49,7 +56,7 @@ def initiate_refund(order, user, amount, txn_type, content_object=None, note="")
     return create_transaction(
         user=user,
         txn_type=txn_type,
-        method=order.payment.payment_method,
+        method="WALLET",
         amount=amount,
         status="PENDING",
         content_object=content_object or order,
@@ -84,9 +91,7 @@ def complete_refund(transaction, wallet_reason="WALLET_CREDIT"):
 def fail_refund(transaction, note=""):
     """Admin rejects a refund → FAILED."""
     if transaction.status != "PENDING":
-        raise ValueError(
-            f"Cannot fail refund — current status is {transaction.status}"
-        )
+        raise ValueError(f"Cannot fail refund — current status is {transaction.status}")
     transaction.status = "FAILED"
     if note:
         transaction.note = note
@@ -98,12 +103,11 @@ def fail_refund(transaction, note=""):
 # Status Helpers
 # ────────────────────────────────────────────
 
+
 def complete_transaction(transaction):
     """Mark a PENDING transaction as COMPLETED."""
     if transaction.status != "PENDING":
-        raise ValueError(
-            f"Cannot complete — current status is {transaction.status}"
-        )
+        raise ValueError(f"Cannot complete — current status is {transaction.status}")
     transaction.status = "COMPLETED"
     transaction.save(update_fields=["status", "updated_at"])
     return transaction
@@ -112,9 +116,7 @@ def complete_transaction(transaction):
 def fail_transaction(transaction, note=""):
     """Mark a PENDING transaction as FAILED."""
     if transaction.status != "PENDING":
-        raise ValueError(
-            f"Cannot fail — current status is {transaction.status}"
-        )
+        raise ValueError(f"Cannot fail — current status is {transaction.status}")
     transaction.status = "FAILED"
     if note:
         transaction.note = note

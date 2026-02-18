@@ -27,7 +27,7 @@ def build_cart_summary(cart_items):
 
     for item in cart_items:
         variant = item.product_variant
-        image = variant.images.filter(is_primary=True).first()
+        image = variant.primary_image
 
         products.append(
             {

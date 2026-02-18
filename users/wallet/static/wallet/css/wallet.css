@@ -136,7 +136,7 @@
 }
 
 .balance-amount {
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   font-size: 2rem;
   color: var(--wl-text);
   font-weight: 700;
@@ -157,6 +157,55 @@
 }
 
 /* ============================================================
+   TAB TOGGLE
+   ============================================================ */
+
+.wallet-tabs {
+  max-width: 1400px;
+  margin: 0 auto 20px;
+  display: flex;
+  gap: 10px;
+}
+
+.wallet-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  text-decoration: none;
+  border: 1px solid var(--wl-border);
+  border-radius: 3px;
+  color: var(--wl-text-muted);
+  background: var(--wl-surface);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.wallet-tab .material-icons {
+  font-size: 18px;
+}
+
+.wallet-tab:hover {
+  border-color: var(--wl-gold);
+  color: var(--wl-gold);
+}
+
+.wallet-tab.active {
+  background: linear-gradient(135deg, var(--wl-gold), var(--wl-gold-dark));
+  border-color: var(--wl-gold);
+  color: #fff;
+}
+
+.wallet-tab.active:hover {
+  color: #fff;
+}
+
+/* ============================================================
    TRANSACTION LIST
    ============================================================ */
 
@@ -169,6 +218,7 @@
   overflow: hidden;
 }
 
+/* -- Wallet tab header -- */
 .txn-table-header {
   display: grid;
   grid-template-columns: 130px 90px 1fr 120px 120px;
@@ -184,6 +234,12 @@
   color: var(--wl-text-muted);
 }
 
+/* -- All-tab header -- */
+.txn-header-all {
+  grid-template-columns: 130px 1fr 140px 120px 110px;
+}
+
+/* -- Wallet tab rows -- */
 .txn-row {
   display: grid;
   grid-template-columns: 130px 90px 1fr 120px 120px;
@@ -193,12 +249,24 @@
   transition: background 0.15s;
 }
 
-.txn-row:last-child {
-  border-bottom: none;
+/* -- All-tab rows -- */
+.txn-row-all {
+  grid-template-columns: 130px 1fr 140px 120px 110px;
 }
 
-.txn-row:hover {
+/* -- Clickable rows -- */
+.txn-row-link {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.txn-row-link:hover {
   background: #faf9f7;
+}
+
+.txn-row:last-child {
+  border-bottom: none;
 }
 
 /* Date */
@@ -244,7 +312,8 @@
 }
 
 /* Description */
-.txn-row-desc {
+.txn-row-desc,
+.txn-row-type-all {
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -259,9 +328,18 @@
 }
 
 .txn-desc-id {
-  font-family: "Courier New", monospace;
+  font-family: var(--font-sans);
   font-size: 0.72rem;
   color: var(--wl-text-muted);
+  letter-spacing: 0.3px;
+}
+
+/* Method badge (All tab) */
+.txn-method-badge {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--wl-text);
 }
 
 /* Amount */
@@ -283,8 +361,44 @@
   color: var(--wl-debit);
 }
 
+.amount-value {
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--wl-text);
+}
+
+/* Status badges (All tab) */
+.txn-status-badge {
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 4px 10px;
+  border-radius: 3px;
+  display: inline-block;
+}
+
+.status-paid,
+.status-completed {
+  background: var(--wl-credit-bg);
+  color: var(--wl-credit);
+}
+
+.status-pending {
+  background: #fefce8;
+  color: #a16207;
+}
+
+.status-failed {
+  background: var(--wl-debit-bg);
+  color: var(--wl-debit);
+}
+
 /* Balance After */
-.txn-row-balance {
+.txn-row-balance,
+.txn-row-status {
   text-align: right;
 }
 
@@ -425,25 +539,29 @@
     font-size: 1.5rem;
   }
 
+  .wallet-tabs {
+    gap: 8px;
+  }
+
+  .wallet-tab {
+    padding: 8px 14px;
+    font-size: 0.72rem;
+  }
+
   .txn-table-header {
     display: none;
   }
 
-  .txn-row {
+  .txn-row,
+  .txn-row-all {
     grid-template-columns: 1fr;
     gap: 8px;
     padding: 16px 20px;
   }
 
   .txn-row-amount,
-  .txn-row-balance {
+  .txn-row-balance,
+  .txn-row-status {
     text-align: left;
-  }
-
-  .col-amount::before {
-    content: "Amount: ";
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    color: var(--wl-text-muted);
   }
 }

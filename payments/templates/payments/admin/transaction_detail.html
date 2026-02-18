@@ -9,7 +9,7 @@
 {% endblock extra_css %}
 
 {% block header_title %}Transaction Detail{% endblock header_title %}
-{% block header_subtitle %}{{ txn.transaction_id }}{% endblock header_subtitle %}
+{% block header_subtitle %}<span style="font-family: 'Montserrat', sans-serif;">{{ txn.transaction_id }}</span>{% endblock header_subtitle %}
 
 {% block content %}
 
@@ -22,125 +22,130 @@
     </div>
 
     <div class="td-grid">
-        <!-- Transaction Info Card -->
-        <div class="td-card">
-            <div class="td-card-header">
-                <span class="material-icons">receipt</span>
-                <h3>Transaction Info</h3>
-            </div>
-            <div class="td-card-body">
-                <div class="td-row">
-                    <span class="td-label">Transaction ID</span>
-                    <span class="td-value td-mono">{{ txn.transaction_id }}</span>
-                </div>
-                <div class="td-row">
-                    <span class="td-label">Type</span>
-                    <span class="td-value">
-                        <span class="txn-type-badge type-{{ txn.transaction_type|lower }}">
-                            {{ txn.get_transaction_type_display }}
-                        </span>
-                    </span>
-                </div>
-                <div class="td-row">
-                    <span class="td-label">Payment Method</span>
-                    <span class="td-value">{{ txn.get_payment_method_display }}</span>
-                </div>
-                <div class="td-row">
-                    <span class="td-label">Amount</span>
-                    <span class="td-value td-amount">₹{{ txn.amount|floatformat:0|intcomma }}</span>
-                </div>
-                <div class="td-row">
-                    <span class="td-label">Status</span>
-                    <span class="td-value">
-                        <span class="status-badge status-{{ txn.status|lower }}">
-                            {{ txn.get_status_display }}
-                        </span>
-                    </span>
-                </div>
-                {% if txn.note %}
-                    <div class="td-row">
-                        <span class="td-label">Note</span>
-                        <span class="td-value">{{ txn.note }}</span>
-                    </div>
-                {% endif %}
-                <div class="td-row">
-                    <span class="td-label">Created</span>
-                    <span class="td-value">{{ txn.created_at|date:"d M Y, h:i A" }}</span>
-                </div>
-                <div class="td-row">
-                    <span class="td-label">Updated</span>
-                    <span class="td-value">{{ txn.updated_at|date:"d M Y, h:i A" }}</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- User Info Card -->
-        <div class="td-card">
-            <div class="td-card-header">
-                <span class="material-icons">person</span>
-                <h3>User Info</h3>
-            </div>
-            <div class="td-card-body">
-                <div class="td-row">
-                    <span class="td-label">Name</span>
-                    <span class="td-value">{{ txn.user.first_name }} {{ txn.user.last_name }}</span>
-                </div>
-                <div class="td-row">
-                    <span class="td-label">Email</span>
-                    <span class="td-value">{{ txn.user.email }}</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Linked Object Card -->
-        {% if linked_object %}
+        <!-- LEFT COLUMN: Transaction Info -->
+        <div class="td-column">
             <div class="td-card">
                 <div class="td-card-header">
-                    <span class="material-icons">link</span>
-                    <h3>Linked Object</h3>
+                    <span class="material-icons">receipt</span>
+                    <h3>Transaction Info</h3>
                 </div>
                 <div class="td-card-body">
+                    <div class="td-row">
+                        <span class="td-label">Transaction ID</span>
+                        <span class="td-value td-mono">{{ txn.transaction_id }}</span>
+                    </div>
                     <div class="td-row">
                         <span class="td-label">Type</span>
-                        <span class="td-value">{{ txn.content_type }}</span>
-                    </div>
-                    <div class="td-row">
-                        <span class="td-label">Object</span>
-                        <span class="td-value">{{ linked_object }}</span>
-                    </div>
-                </div>
-            </div>
-        {% endif %}
-
-        <!-- Wallet Transaction Card -->
-        {% if wallet_txn %}
-            <div class="td-card">
-                <div class="td-card-header">
-                    <span class="material-icons">account_balance_wallet</span>
-                    <h3>Wallet Transaction</h3>
-                </div>
-                <div class="td-card-body">
-                    <div class="td-row">
-                        <span class="td-label">Label</span>
                         <span class="td-value">
-                            <span class="wt-label wt-{{ wallet_txn.label|lower }}">{{ wallet_txn.label }}</span>
+                            <span class="txn-type-badge type-{{ txn.transaction_type|lower }}">
+                                {{ txn.get_transaction_type_display }}
+                            </span>
                         </span>
                     </div>
                     <div class="td-row">
-                        <span class="td-label">Balance Before</span>
-                        <span class="td-value">₹{{ wallet_txn.balance_before|floatformat:2|intcomma }}</span>
+                        <span class="td-label">Payment Method</span>
+                        <span class="td-value">{{ txn.get_payment_method_display }}</span>
                     </div>
                     <div class="td-row">
-                        <span class="td-label">Balance After</span>
-                        <span class="td-value">₹{{ wallet_txn.balance_after|floatformat:2|intcomma }}</span>
+                        <span class="td-label">Amount</span>
+                        <span class="td-value td-amount">₹{{ txn.amount|floatformat:0|intcomma }}</span>
                     </div>
                     <div class="td-row">
-                        <span class="td-label">Date</span>
-                        <span class="td-value">{{ wallet_txn.created_at|date:"d M Y, h:i A" }}</span>
+                        <span class="td-label">Status</span>
+                        <span class="td-value">
+                            <span class="status-badge status-{{ txn.status|lower }}">
+                                {{ txn.get_status_display }}
+                            </span>
+                        </span>
+                    </div>
+                    {% if txn.note %}
+                        <div class="td-row">
+                            <span class="td-label">Note</span>
+                            <span class="td-value">{{ txn.note }}</span>
+                        </div>
+                    {% endif %}
+                    <div class="td-row">
+                        <span class="td-label">Created</span>
+                        <span class="td-value">{{ txn.created_at|date:"d M Y, h:i A" }}</span>
+                    </div>
+                    <div class="td-row">
+                        <span class="td-label">Updated</span>
+                        <span class="td-value">{{ txn.updated_at|date:"d M Y, h:i A" }}</span>
                     </div>
                 </div>
             </div>
-        {% endif %}
+        </div>
+
+        <!-- RIGHT COLUMN: User Info + Linked Object + Wallet -->
+        <div class="td-column">
+            <!-- User Info Card -->
+            <div class="td-card">
+                <div class="td-card-header">
+                    <span class="material-icons">person</span>
+                    <h3>User Info</h3>
+                </div>
+                <div class="td-card-body">
+                    <div class="td-row">
+                        <span class="td-label">Name</span>
+                        <span class="td-value">{{ txn.user.first_name }} {{ txn.user.last_name }}</span>
+                    </div>
+                    <div class="td-row">
+                        <span class="td-label">Email</span>
+                        <span class="td-value">{{ txn.user.email }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Linked Object Card -->
+            {% if linked_object %}
+                <div class="td-card">
+                    <div class="td-card-header">
+                        <span class="material-icons">link</span>
+                        <h3>Linked Object</h3>
+                    </div>
+                    <div class="td-card-body">
+                        <div class="td-row">
+                            <span class="td-label">Type</span>
+                            <span class="td-value">{{ txn.content_type }}</span>
+                        </div>
+                        <div class="td-row">
+                            <span class="td-label">Object</span>
+                            <span class="td-value">{{ linked_object }}</span>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- Wallet Transaction Card -->
+            {% if wallet_txn %}
+                <div class="td-card">
+                    <div class="td-card-header">
+                        <span class="material-icons">account_balance_wallet</span>
+                        <h3>Wallet Transaction</h3>
+                    </div>
+                    <div class="td-card-body">
+                        <div class="td-row">
+                            <span class="td-label">Label</span>
+                            <span class="td-value">
+                                <span class="wt-label wt-{{ wallet_txn.label|lower }}">{{ wallet_txn.label }}</span>
+                            </span>
+                        </div>
+                        <div class="td-row">
+                            <span class="td-label">Balance Before</span>
+                            <span class="td-value">₹{{ wallet_txn.balance_before|floatformat:2|intcomma }}</span>
+                        </div>
+                        <div class="td-row">
+                            <span class="td-label">Balance After</span>
+                            <span class="td-value">₹{{ wallet_txn.balance_after|floatformat:2|intcomma }}</span>
+                        </div>
+                        <div class="td-row">
+                            <span class="td-label">Date</span>
+                            <span class="td-value">{{ wallet_txn.created_at|date:"d M Y, h:i A" }}</span>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
     </div>
 
 {% endblock content %}

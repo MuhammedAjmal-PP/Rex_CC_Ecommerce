@@ -5,7 +5,6 @@ from django.db import transaction
 from django.http import HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from django.utils import timezone
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_POST
 from catalog.service import update_stock
@@ -14,8 +13,6 @@ from payments.service import create_transaction
 from users.cart.models import Cart, CartItem
 from users.user_profile.models import Address
 from users.wallet.service import (
-    InsufficientBalanceError,
-    WalletInactiveError,
     can_pay_with_wallet,
     debit_wallet,
 )
@@ -76,7 +73,10 @@ def place_order_view(request):
     # Pre-check wallet balance to avoid database lock if insufficient
     if payment_method == "WALLET":
         if not can_pay_with_wallet(request.user, cart.grand_total):
-            messages.error(request, "Insufficient wallet balance. Please choose another payment method.")
+            messages.error(
+                request,
+                "Insufficient wallet balance. Please choose another payment method.",
+            )
             return redirect(reverse("checkout") + "?step=2")
 
     with transaction.atomic():
@@ -139,7 +139,7 @@ def place_order_view(request):
 
         # 6 Payment handling
         if payment_method == "WALLET":
-            
+
             # Create Transaction record first
             txn = create_transaction(
                 user=request.user,
@@ -156,8 +156,8 @@ def place_order_view(request):
                 amount=order.grand_total,
                 transaction_obj=txn,
             )
-        
-        else:
+
+        if payment_method == "COD":
             # COD — record the payment transaction as PENDING
             txn = create_transaction(
                 user=request.user,

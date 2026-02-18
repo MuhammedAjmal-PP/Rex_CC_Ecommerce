@@ -20,7 +20,11 @@ def cancel_order(request, order_number):
     order = get_object_or_404(Order, user=request.user, order_number=order_number)
     order_items = (
         OrderItem.objects.filter(order=order)
-        .select_related("product_variant", "product_variant__product", "product_variant__product__brand")
+        .select_related(
+            "product_variant",
+            "product_variant__product",
+            "product_variant__product__brand",
+        )
         .prefetch_related("product_variant__images", "status")
     )
 
@@ -33,7 +37,7 @@ def cancel_order(request, order_number):
     context = {
         "order": order,
         "order_items": order_items,
-        "cancellable_items": cancellable_items,
+        # "cancellable_items": cancellable_items,
         "cancellable_item_ids": {item.id for item in cancellable_items},
         "has_cancellable_items": bool(cancellable_items),
     }

@@ -1,0 +1,144 @@
+{% extends "core/user/base_user.html" %}
+{% load static %}
+{% load humanize %}
+{% block head_title %}Transaction Detail | REX CC{% endblock %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'wallet/css/transaction_detail.css' %}">
+{% endblock %}
+{% block content %}
+    <div class="td-page">
+        <!-- BREADCRUMBS -->
+        <nav class="td-breadcrumb">
+            <a href="{% url 'user_profile' %}">My Account</a>
+            <span class="td-breadcrumb-sep">›</span>
+            <a href="{% url 'user_wallet' %}">Wallet</a>
+            <span class="td-breadcrumb-sep">›</span>
+            <span class="td-breadcrumb-current">Transaction</span>
+        </nav>
+
+        <!-- PAGE HEADER -->
+        <div class="td-header">
+            <div class="td-header-left">
+                <h1 class="td-title">{{ txn.get_transaction_type_display }}</h1>
+                <span class="td-subtitle">{{ txn.transaction_id }}</span>
+            </div>
+            <div class="td-header-right">
+                <span class="td-status-badge status-{{ txn.status|lower }}">
+                    {{ txn.get_status_display }}
+                </span>
+            </div>
+        </div>
+
+        <!-- MAIN GRID -->
+        <div class="td-grid">
+            <!-- LEFT: Transaction Info -->
+            <div class="td-card">
+                <div class="td-card-header">
+                    <span class="material-icons">receipt_long</span>
+                    <span class="td-card-title">Transaction Info</span>
+                </div>
+                <div class="td-card-body">
+                    <div class="td-row">
+                        <span class="td-label">Transaction ID</span>
+                        <span class="td-value td-mono">{{ txn.transaction_id }}</span>
+                    </div>
+                    <div class="td-row">
+                        <span class="td-label">Type</span>
+                        <span class="td-value">
+                            <span class="td-type-badge">{{ txn.get_transaction_type_display }}</span>
+                        </span>
+                    </div>
+                    <div class="td-row">
+                        <span class="td-label">Payment Method</span>
+                        <span class="td-value">{{ txn.get_payment_method_display }}</span>
+                    </div>
+                    <div class="td-row">
+                        <span class="td-label">Amount</span>
+                        <span class="td-value td-amount">₹{{ txn.amount|floatformat:2|intcomma }}</span>
+                    </div>
+                    <div class="td-row">
+                        <span class="td-label">Status</span>
+                        <span class="td-value">
+                            <span class="td-status-badge status-{{ txn.status|lower }}">{{ txn.get_status_display }}</span>
+                        </span>
+                    </div>
+                    {% if txn.note %}
+                        <div class="td-row">
+                            <span class="td-label">Note</span>
+                            <span class="td-value">{{ txn.note }}</span>
+                        </div>
+                    {% endif %}
+                    <div class="td-row">
+                        <span class="td-label">Created</span>
+                        <span class="td-value">{{ txn.created_at|date:"d M Y, h:i A" }}</span>
+                    </div>
+                    <div class="td-row">
+                        <span class="td-label">Updated</span>
+                        <span class="td-value">{{ txn.updated_at|date:"d M Y, h:i A" }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN -->
+            <div class="td-right-stack">
+                {% if wallet_txn %}
+                    <!-- Wallet Impact -->
+                    <div class="td-card">
+                        <div class="td-card-header">
+                            <span class="material-icons">account_balance_wallet</span>
+                            <span class="td-card-title">Wallet Impact</span>
+                        </div>
+                        <div class="td-card-body">
+                            <div class="td-row">
+                                <span class="td-label">Direction</span>
+                                <span class="td-value">
+                                    <span class="txn-type-badge txn-{{ wallet_txn.label|lower }}">{{ wallet_txn.label }}</span>
+                                </span>
+                            </div>
+                            <div class="td-row">
+                                <span class="td-label">Balance Before</span>
+                                <span class="td-value">₹{{ wallet_txn.balance_before|floatformat:2|intcomma }}</span>
+                            </div>
+                            <div class="td-row">
+                                <span class="td-label">Balance After</span>
+                                <span class="td-value td-amount">₹{{ wallet_txn.balance_after|floatformat:2|intcomma }}</span>
+                            </div>
+                            <div class="td-row">
+                                <span class="td-label">Date</span>
+                                <span class="td-value">{{ wallet_txn.created_at|date:"d M Y, h:i A" }}</span>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
+                {% if linked_obj %}
+                    <!-- Linked Object -->
+                    <div class="td-card">
+                        <div class="td-card-header">
+                            <span class="material-icons">link</span>
+                            <span class="td-card-title">Linked Record</span>
+                        </div>
+                        <div class="td-card-body">
+                            <div class="td-row">
+                                <span class="td-label">Type</span>
+                                <span class="td-value">{{ txn.content_type }}</span>
+                            </div>
+                            <div class="td-row">
+                                <span class="td-label">Reference</span>
+                                <span class="td-value">{{ linked_obj }}</span>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- BACK LINK -->
+        <div class="td-back">
+            <a href="{% url 'user_wallet' %}" class="td-back-btn">
+                <span class="material-icons">arrow_back</span>
+                Back to Wallet
+            </a>
+        </div>
+    </div>
+{% endblock %}

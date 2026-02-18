@@ -1,160 +1,227 @@
 /* ============================================================
    REX CC ADMIN — TRANSACTION DETAIL
+   Follows admin_ui_style_guide.md
+   Matches order_details.css design system
    ============================================================ */
 
-/* Action Bar */
+:root {
+    --td-black: #000000;
+    --td-dark: #1A1A1A;
+    --td-gray: #666666;
+    --td-gray-light: #999999;
+    --td-border: #e0e0e0;
+    --td-bg: #F5F5F5;
+    --td-white: #FFFFFF;
+    --td-row-border: #f0f0f0;
+    --td-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+/* ========================================
+   ACTION BAR
+   ======================================== */
+
 .td-action-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 24px 40px;
+    padding: 20px 28px;
+    background: var(--td-white);
+    box-shadow: var(--td-shadow);
+    border: 1px solid var(--td-border);
 }
 
 .td-back-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  border: 1px solid #ddd;
-  border-radius: 3px;
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: #555;
-  text-decoration: none;
-  background: #fff;
-  transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border: 1px solid var(--td-border);
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--td-gray);
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background: var(--td-white);
+    transition: all 0.3s ease;
 }
 
 .td-back-btn:hover {
-  border-color: #b06825;
-  color: #b06825;
+    background: var(--td-black);
+    color: var(--td-white);
+    border-color: var(--td-black);
 }
 
 .td-back-btn .material-icons {
-  font-size: 18px;
+    font-size: 18px;
 }
 
-/* Grid */
+/* ========================================
+   GRID LAYOUT
+   ======================================== */
+
 .td-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
+    display: grid;
+    grid-template-columns: 7fr 5fr;
+    gap: 24px;
+    margin: 0 40px 24px 40px;
+    align-items: start;
 }
 
-/* Cards */
+.td-column {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* ========================================
+   CARDS
+   ======================================== */
+
 .td-card {
-  background: #fff;
-  border: 1px solid #e8e6e2;
-  border-radius: 3px;
-  overflow: hidden;
+    background: var(--td-white);
+    box-shadow: var(--td-shadow);
+    border: 1px solid var(--td-border);
 }
 
 .td-card-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 16px 20px;
-  background: #f9f8f6;
-  border-bottom: 1px solid #e8e6e2;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 20px 28px;
+    border-bottom: 1px solid var(--td-border);
 }
 
 .td-card-header .material-icons {
-  font-size: 20px;
-  color: #b06825;
+    font-size: 20px;
+    color: var(--td-black);
 }
 
 .td-card-header h3 {
-  font-size: 0.92rem;
-  font-weight: 600;
-  color: #2c2c2c;
-  margin: 0;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--td-black);
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
+
+/* ========================================
+   CARD BODY & INFO ROWS
+   ======================================== */
 
 .td-card-body {
-  padding: 4px 0;
+    padding: 24px 28px;
 }
 
-/* Rows */
 .td-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 20px;
-  border-bottom: 1px solid #f3f2ef;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--td-row-border);
 }
 
 .td-row:last-child {
-  border-bottom: none;
+    border-bottom: none;
 }
 
 .td-label {
-  font-size: 0.82rem;
-  color: #888;
-  font-weight: 500;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--td-gray);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
 }
 
 .td-value {
-  font-size: 0.88rem;
-  color: #2c2c2c;
-  font-weight: 500;
-  text-align: right;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--td-black);
+    text-align: right;
 }
 
 .td-mono {
-  font-family: "Courier New", monospace;
-  font-size: 0.78rem;
+    font-family: 'Courier New', Courier, monospace;
+    letter-spacing: -0.5px;
+    font-size: 0.85rem;
 }
 
 .td-amount {
-  font-size: 1rem;
-  font-weight: 700;
+    font-size: 1.1rem;
+    font-weight: 700;
 }
 
-/* Type badges (reused from list) */
-.txn-type-badge {
-  display: inline-block;
-  padding: 3px 8px;
-  border-radius: 3px;
-  font-size: 0.72rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
+/* ========================================
+   BADGES — UNIFIED STYLE
+   All badges share the same height/padding
+   ======================================== */
+
+.txn-type-badge,
+.status-badge,
+.wt-label {
+    display: inline-block;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    line-height: 1;
 }
 
+/* Type badges */
 .type-order_payment { background: #eef2ff; color: #4f46e5; }
 .type-cancellation_refund { background: #fff7ed; color: #c2410c; }
 .type-return_refund { background: #fef3c7; color: #92400e; }
 
 /* Status badges */
-.status-badge {
-  display: inline-block;
-  padding: 3px 10px;
-  border-radius: 3px;
-  font-size: 0.72rem;
-  font-weight: 600;
-  text-transform: uppercase;
-}
-
 .status-pending { background: #fffbeb; color: #b45309; }
 .status-paid { background: #f0fdf4; color: #16a34a; }
 .status-completed { background: #f0fdf4; color: #16a34a; }
 .status-failed { background: #fef2f2; color: #dc2626; }
 
-/* Wallet label */
-.wt-label {
-  display: inline-block;
-  padding: 3px 8px;
-  border-radius: 3px;
-  font-size: 0.72rem;
-  font-weight: 600;
-  text-transform: uppercase;
-}
-
+/* Wallet label badges */
 .wt-credit { background: #f0fdf4; color: #16a34a; }
 .wt-debit { background: #fef2f2; color: #dc2626; }
 
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+
+@media (max-width: 1200px) {
+    .td-grid {
+        grid-template-columns: 1fr;
+        margin: 0 20px 16px 20px;
+    }
+
+    .td-action-bar {
+        margin: 16px 20px;
+    }
+}
+
 @media (max-width: 768px) {
-  .td-grid {
-    grid-template-columns: 1fr;
-  }
+    .td-grid {
+        margin: 0 16px 16px 16px;
+    }
+
+    .td-column {
+        gap: 16px;
+    }
+
+    .td-action-bar {
+        margin: 12px 16px;
+        padding: 16px 20px;
+    }
+
+    .td-card-header {
+        padding: 16px 20px;
+    }
+
+    .td-card-body {
+        padding: 16px 20px;
+    }
 }

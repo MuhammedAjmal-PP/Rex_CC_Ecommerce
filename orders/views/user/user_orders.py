@@ -9,7 +9,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django.views.decorators.cache import never_cache
-from orders.models import Order, OrderItem, Return
+from orders.models import Order, OrderItem
 from weasyprint import HTML
 
 
@@ -20,7 +20,11 @@ def order_list(request):
     search = request.GET.get("q", "").strip()
     date_filter = request.GET.get("date_filter", "").strip().lower()
 
-    orders = Order.objects.filter(user=request.user).select_related("payment").prefetch_related("status")
+    orders = (
+        Order.objects.filter(user=request.user)
+        .select_related("payment")
+        .prefetch_related("status")
+    )
 
     if search:
         orders = orders.filter(
@@ -63,12 +67,16 @@ def order_detail(request, order_number):
 
     order_items = (
         OrderItem.objects.filter(order=order)
-        .select_related("product_variant", "product_variant__product", "product_variant__product__brand")
+        .select_related(
+            "product_variant",
+            "product_variant__product",
+            "product_variant__product__brand",
+        )
         .prefetch_related("product_variant__images", "status")
     )
 
     order_status = order.current_status
-    is_cancellable = order_status and order_status.status in ("PLACED", "CONFIRMED")
+    is_cancellable = order_status.status in ("PLACED", "CONFIRMED")
 
     context = {
         "order": order,
@@ -83,10 +91,18 @@ def order_detail(request, order_number):
 @login_required
 @never_cache
 def order_invoice(request, order_number):
-    order = get_object_or_404(Order.objects.select_related("payment"), user=request.user, order_number=order_number)
+    order = get_object_or_404(
+        Order.objects.select_related("payment"),
+        user=request.user,
+        order_number=order_number,
+    )
     order_items = (
         OrderItem.objects.filter(order=order)
-        .select_related("product_variant", "product_variant__product", "product_variant__product__brand")
+        .select_related(
+            "product_variant",
+            "product_variant__product",
+            "product_variant__product__brand",
+        )
         .prefetch_related("product_variant__images")
     )
 
@@ -123,14 +139,19 @@ def orderitem_detail(request, order_number, item_id):
     order = get_object_or_404(Order, user=request.user, order_number=order_number)
     order_item = get_object_or_404(
         OrderItem.objects.select_related(
-            "order", "product_variant", "product_variant__product", "product_variant__product__brand"
-        ).select_related("return_request").prefetch_related("status", "transactions", "return_request__transactions"),
+            "order",
+            "product_variant",
+            "product_variant__product",
+            "product_variant__product__brand",
+        )
+        .select_related("return_request")
+        .prefetch_related("status", "transactions", "return_request__transactions"),
         id=item_id,
         order=order,
     )
 
     timeline = order_item.status.all().order_by("-created_at")
-    return_entry = getattr(order_item, 'return_request', None)
+    return_entry = getattr(order_item, "return_request", None)
 
     context = {
         "order": order,
