@@ -23,12 +23,10 @@ class Cart(models.Model):
         return sum(item.total_amount for item in self.items.all())
 
     @property
-    def total_quantity(self):
-        return sum(item.quantity for item in self.items.all())
-
-    @property
     def shipping_fee(self):
-        return Decimal("100.00") * self.total_quantity
+        return Decimal(
+            sum([item.quantity * settings.SHIPPING_CHARGE for item in self.items.all()])
+        )
 
     @property
     def total_amount(self):

@@ -1,4 +1,5 @@
 from decimal import Decimal
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -91,6 +92,16 @@ def add_cart(request, slug, sku):
         new_quantity = quantity
 
     # Stock validation
+
+    if new_quantity > settings.MAX_QUNATITY_PURCHASE_PER_ITEM:
+        return JsonResponse(
+            {
+                "success": False,
+                "message": f"You can purchase a maximum of {settings.MAX_QUNATITY_PURCHASE_PER_ITEM} units of this item per order.",
+            },
+            status=400,
+        )
+
     if new_quantity > variant.stock:
         return JsonResponse(
             {
@@ -163,6 +174,15 @@ def update_cart(request, slug, sku):
     if remove or quantity <= 0:
         cart_item.delete()
         return redirect("user_cart")
+
+    if quantity > settings.MAX_QUNATITY_PURCHASE_PER_ITEM:
+        return JsonResponse(
+            {
+                "success": False,
+                "message": f"You can purchase a maximum of {settings.MAX_QUNATITY_PURCHASE_PER_ITEM} units of this item per order.",
+            },
+            status=400,
+        )
 
     if quantity > variant.stock:
         return JsonResponse(

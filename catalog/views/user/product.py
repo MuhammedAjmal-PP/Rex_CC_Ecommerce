@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
@@ -290,6 +291,7 @@ def product_detail(request, slug, sku):
         "selected_variant": variant,
         "variant_images": variant_images,
         "primary_image": primary_image,
+        "max_qunatity_purchase": settings.MAX_QUNATITY_PURCHASE_PER_ITEM,
         "stock_status": stock_status,
         "stock_message": stock_message,
         "price": final_price,

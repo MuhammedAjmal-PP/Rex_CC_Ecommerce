@@ -69,6 +69,7 @@ INSTALLED_APPS = [
     "cloudinary",
     "cloudinary_storage",
     "phonenumber_field",
+    # "django_extensions",
     # localapps
     "core",
     "catalog",
@@ -244,6 +245,10 @@ SOCIALACCOUNT_PROVIDERS = {
 CSRF_TRUSTED_ORIGINS = env("CSRF_TRUSTED_ORIGINS").split(",")
 
 MAX_ADDRESSES_PER_USER = 5
+
+MAX_QUNATITY_PURCHASE_PER_ITEM = 5
+
+SHIPPING_CHARGE = 100
 
 # ---------------------------------------------------------------
 # TAX

@@ -69,12 +69,13 @@
                                     <input type="number"
                                            class="qty-input"
                                            value="{{ item.quantity }}"
+                                           data-max="{{ item.allowed_max }}"
                                            readonly
                                            aria-label="Quantity">
                                     <button type="button"
                                             class="qty-btn"
                                             data-action="increase"
-                                            {% if not item.variant.is_in_stock or item.quantity >= item.variant.stock %}disabled{% endif %}>
+                                            {% if not item.variant.is_in_stock or item.quantity >= item.allowed_max %}disabled{% endif %}>
                                         +
                                     </button>
                                 </div>
@@ -127,8 +128,7 @@
                             <span>₹{{ order_summary.total_amount_to_pay|floatformat:0|intcomma }}</span>
                         </div>
                         <div class="summary-actions">
-                            <a href="{% url 'checkout' %}"
-                               class="btn-checkout">Proceed to Checkout</a>
+                            <a href="{% url 'checkout' %}" class="btn-checkout">Proceed to Checkout</a>
                             <a href="{% url 'product_list' %}" class="btn-continue">Continue Shopping</a>
                         </div>
                         <p class="summary-note">

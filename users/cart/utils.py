@@ -1,5 +1,7 @@
-from decimal import Decimal
+from django.conf import settings
 from users.cart.models import CartItem
+
+max_purchase_limit = settings.MAX_QUNATITY_PURCHASE_PER_ITEM
 
 
 def fetch_cart(cart):
@@ -44,6 +46,7 @@ def build_cart_summary(cart_items):
                     "is_in_stock": variant.stock > 0,
                     "image": image.image.url,
                 },
+                "allowed_max": min(variant.stock, max_purchase_limit),
                 "quantity": item.quantity,
                 "total_amount": item.total_amount,
                 "total_discount": item.total_discount,
