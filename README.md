@@ -2,6 +2,7 @@
   <img src="https://img.shields.io/badge/Django-6.0-092E20?style=for-the-badge&logo=django&logoColor=white" alt="Django">
   <img src="https://img.shields.io/badge/PostgreSQL-15-316192?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL">
   <img src="https://img.shields.io/badge/Cloudinary-Media-3448C5?style=for-the-badge&logo=cloudinary&logoColor=white" alt="Cloudinary">
+  <img src="https://img.shields.io/badge/Razorpay-Payments-0C2451?style=for-the-badge&logo=razorpay&logoColor=white" alt="Razorpay">
   <img src="https://img.shields.io/badge/Bootstrap-5.3-7952B3?style=for-the-badge&logo=bootstrap&logoColor=white" alt="Bootstrap">
 </p>
 
@@ -24,6 +25,8 @@
 - [Cart Management](#-cart-management)
 - [Wishlist System](#-wishlist-system)
 - [Checkout & Orders](#-checkout--orders)
+- [Payments & Transactions](#-payments--transactions)
+- [Wallet System](#-wallet-system)
 - [Inventory Management](#-inventory-management)
 - [Tech Stack](#-tech-stack)
 - [Project Structure](#-project-structure)
@@ -43,10 +46,12 @@
 | Cart | ✅ Complete | Real-time stock, Guest handling, Wishlist sync |
 | Wishlist | ✅ Complete | Offcanvas UI, AJAX toggle, Persistent storage |
 | Checkout | ✅ Complete | 3-step stepper, Address selection, Order summary |
-| Order Placement | ✅ Complete | COD, Atomic transactions, Stock deduction |
+| Order Placement | ✅ Complete | COD, Razorpay, Wallet — Atomic transactions |
+| Payments | ✅ Complete | Razorpay gateway, Transaction ledger, Refund management |
+| Wallet | ✅ Complete | Credit/Debit, Balance snapshots, Transaction history |
 | Inventory | ✅ Complete | Centralized stock service, Audit logs |
-| Order Management (User) | ✅ Complete | Order history, Item tracking, Returns, Invoice PDF |
-| Order Management (Admin) | ✅ Complete | Status cascade, Return review, Order detail |
+| Order Management (User) | ✅ Complete | Order history, Item tracking, Cancellation, Returns, Invoice PDF |
+| Order Management (Admin) | ✅ Complete | Status cascade, Return review, Refund approve/reject |
 
 ---
 
@@ -111,6 +116,18 @@
 - **Admin Review**: Approve/reject with status cascade back to item
 </details>
 
+<details>
+<summary><strong>💳 Transaction & Refund Administration</strong></summary>
+
+**Location:** `payments/views.py`
+
+- **Transaction List**: Paginated view of all transactions with search and type/status/method filters
+- **Transaction Detail**: Full detail view with linked order/item, gateway IDs, audit timestamps
+- **Refund List**: Filtered view of refund-type transactions (cancellation + return refunds) with status tracking
+- **Refund Detail**: Admin detail page with approve/reject action buttons
+- **Refund Actions**: Approve (credits user wallet) or reject pending refunds
+</details>
+
 ---
 
 ## 👤 User Features
@@ -173,7 +190,7 @@ A **3-step stepper** UI guides the user through:
 | Step | Feature | Details |
 |------|---------|---------|
 | 1. **Address** | Select/Add delivery address | Saved addresses with default selection, inline address form |
-| 2. **Payment** | Choose payment method | COD supported (Razorpay/Stripe planned) |
+| 2. **Payment** | Choose payment method | COD, Razorpay, Wallet |
 | 3. **Review** | Final order review | Item summary, pricing breakdown, confirm & place |
 
 ### Order Placement
@@ -182,30 +199,50 @@ A **3-step stepper** UI guides the user through:
 
 | Function | Description |
 |----------|-------------|
-| `place_order_view()` | `@require_POST` — Atomic transaction: creates Order + OrderItems, decrements stock, clears cart |
+| `place_order_view()` | `@require_POST` — Handles COD, Wallet, and Razorpay order creation. For Razorpay: returns JSON with gateway order data |
+| `razorpay_callback()` | Verifies Razorpay signature via HMAC-SHA256 and completes the transaction |
+| `razorpay_payment_failed()` | Marks transaction as FAILED when user dismisses modal or Razorpay reports failure |
 | `order_success_view()` | Animated success page with order number, guards against invalid access |
+| `order_failure_view()` | Payment failure page shown when Razorpay payment fails |
 
 **Transaction Flow (Atomic):**
-1. Validate address, payment method, cart items, and stock
-2. Create `Order` with address snapshots (JSONField) and totals
-3. Create `OrderItem` for each cart item with initial `PENDING` status
-4. Decrement stock via `update_stock()` service (creates `InventoryLog`)
-5. Set initial `PLACED` status on the Order via `StatusTimeline`
-6. Clear purchased items from cart
-7. Redirect to animated order success page
+1. Validate address, payment method, cart items, and stock (with `select_for_update` row locking)
+2. Create `Transaction` record via payments service
+3. Create `Order` with address snapshots (JSONField) and totals, linked to Transaction
+4. Create `OrderItem` for each cart item with initial `PENDING` status
+5. Decrement stock via `update_stock()` service (creates `InventoryLog`)
+6. Set initial `PLACED` status on the Order via `StatusTimeline`
+7. **COD/Wallet**: Complete transaction immediately; **Razorpay**: Return gateway order data for frontend checkout modal
+8. Clear purchased items from cart
+9. Redirect to order success/failure page
+
+### Order Cancellation
+
+**Location:** `orders/views/user/cancel_order.py`
+
+| Function | Description |
+|----------|-------------|
+| `cancel_order()` | `@require_GET` — Displays cancellable items with checkboxes |
+| `cancel_order_submit()` | `@require_POST` — Processes selected item cancellations atomically |
+
+**Cancellation Logic:**
+- **Item-level cancellation**: Users select individual items to cancel (items in PENDING, CONFIRMED, PACKING, or READY status)
+- **Stock restoration**: Cancelled items' stock is restored via inventory service
+- **Refund initiation**: For prepaid orders (Razorpay/Wallet), a PENDING refund `Transaction` is created. COD orders skip refund since no payment was collected
+- **Reason tracking**: User provides a cancellation reason, recorded in status timeline
 
 ### Order Models
 
 | Model | Description |
 |-------|-------------|
-| `Order` | User, address snapshots (JSON), totals, payment method, auto-generated order number |
+| `Order` | User, address snapshots (JSON), totals, linked Transaction (OneToOne), auto-generated order number |
 | `OrderItem` | Links Order ↔ ProductVariant with quantity and price |
 | `StatusTimeline` | **Generic relation** — tracks status history for both Order and OrderItem with actor audit |
-| `Return` | Return request linked to OrderItem with reason code, comment, status (REQUESTED/APPROVED/REJECTED) |
+| `Return` | Return request linked to OrderItem with reason code, comment, status (REQUESTED/APPROVED/REJECTED/COMPLETED) |
 | `ReturnImage` | Photos uploaded as return evidence (up to 3 per return) |
 
 **Status Flows:**
-- **Order**: PLACED → CONFIRMED → SHIPPED → OUT_FOR_DELIVERY → DELIVERED (+ CANCELLED)
+- **Order**: PLACED → CONFIRMED → SHIPPED → OUT_FOR_DELIVERY → DELIVERED (+ CANCELLED, FAILED)
 - **OrderItem**: PENDING → CONFIRMED → PACKING → READY → SHIPPED → IN_TRANSIT → OUT_FOR_DELIVERY → DELIVERED (+ CANCELLED, RETURN_REQUESTED, RETURNED, FAILED, RTS)
 
 **Status Service** (`orders/service/status.py`):
@@ -220,8 +257,84 @@ A **3-step stepper** UI guides the user through:
 | Order List | Tabular history with status badges, date, payment method |
 | Order Detail | Items table (qty, price, total, status), address, summary, timeline, invoice download |
 | Order Item Detail | Product info, vertical status timeline, return button (if eligible) |
+| Cancel Order | Item-selection form with checkboxes, reason input, cancel confirmation |
 | Return Form | Reason dropdown, comments, styled photo upload with inline preview |
 | Invoice PDF | WeasyPrint-generated luxury-themed PDF with meta info, items, GST breakdown |
+
+---
+
+## 💳 Payments & Transactions
+
+### Transaction Ledger
+
+**Location:** `payments/models.py` + `payments/service.py`
+
+A universal `Transaction` model records every financial event in the system:
+
+| Field | Description |
+|-------|-------------|
+| `transaction_id` | UUID — unique identifier |
+| `transaction_type` | ORDER_PAYMENT, CANCELLATION_REFUND, RETURN_REFUND, WALLET_CREDIT, WALLET_DEBIT |
+| `payment_method` | COD, WALLET, RAZORPAY |
+| `status` | PENDING → PAID / COMPLETED / FAILED |
+| `content_object` | GenericFK linking to the source (Order, OrderItem, Return, etc.) |
+| `gateway_*` | Razorpay-specific fields (order_id, payment_id, signature) |
+
+**Service Functions:**
+
+```python
+create_transaction(user, txn_type, method, amount, status, content_object, note)
+initiate_refund(order, user, amount, txn_type, content_object, note)
+complete_refund(transaction)      # → marks COMPLETED + credits wallet
+fail_refund(transaction, note)    # → marks FAILED (admin rejects)
+complete_transaction(transaction) # → PENDING → COMPLETED
+fail_transaction(transaction)     # → PENDING → FAILED
+```
+
+### Razorpay Integration
+
+**Location:** `payments/razorpay_service.py`
+
+| Function | Description |
+|----------|-------------|
+| `create_razorpay_order()` | Creates a Razorpay order (amount in paise, auto-capture enabled) |
+| `verify_razorpay_signature()` | HMAC-SHA256 signature verification of Razorpay callback |
+
+**Flow**: Place order → Create Razorpay order → Frontend opens checkout modal → Razorpay callback verifies → Transaction marked PAID → Order confirmed
+
+---
+
+## 💰 Wallet System
+
+**Location:** `users/wallet/`
+
+### Models
+
+| Model | Description |
+|-------|-------------|
+| `Wallet` | One-per-user, stores `balance` with `is_active` flag |
+| `WalletTransaction` | Balance snapshots (`balance_before` / `balance_after`), linked to universal `Transaction` via OneToOne |
+
+### Service Layer
+
+```python
+get_or_create_wallet(user)           # Auto-provision wallet
+can_pay_with_wallet(user, amount)    # Balance check
+credit_wallet(user, amount, txn)     # Add funds (refunds, rewards)
+debit_wallet(user, amount, txn)      # Deduct funds (order payment)
+```
+
+**Safety Features:**
+- `select_for_update()` row locking prevents race conditions
+- `InsufficientBalanceError` / `WalletInactiveError` custom exceptions
+- Every operation creates a `WalletTransaction` with balance snapshots
+
+### User Pages
+
+| Page | Description |
+|------|-------------|
+| Wallet Page | Balance display + tabbed transaction history (Wallet / All Transactions) with pagination |
+| Transaction Detail | Full detail of a transaction with linked order/item info |
 
 ---
 
@@ -256,11 +369,11 @@ Every stock change is recorded with:
 ## 🏗️ Tech Stack
 
 ```
-Backend          Frontend           Storage          Tools
-─────────────    ─────────────      ─────────────    ─────────────
-Django 6.0       Bootstrap 5.3     PostgreSQL       Black (formatter)
-django-allauth   Vanilla CSS       Cloudinary       djLint (templates)
-                 Cropper.js                         Git
+Backend          Frontend           Storage          Payments         Tools
+─────────────    ─────────────      ─────────────    ─────────────    ─────────────
+Django 6.0       Bootstrap 5.3     PostgreSQL       Razorpay         Black (formatter)
+django-allauth   Vanilla CSS       Cloudinary                        djLint (templates)
+WeasyPrint       Cropper.js                                          Git
                  Material Icons
 ```
 
@@ -284,16 +397,27 @@ Rex_CC_Ecommerce/
 │
 ├── orders/                # Order lifecycle
 │   ├── models.py          # Order, OrderItem, StatusTimeline, Return, ReturnImage
-│   ├── service/           # Status transitions, returns eligibility
+│   ├── service/           # Status transitions, returns, stock validation
 │   │   ├── status.py      # Progressive cascade, sync, transition validation
-│   │   └── returns.py     # Return eligibility checks
+│   │   ├── returns.py     # Return eligibility checks
+│   │   └── stock.py       # Stock locking & validation for order placement
 │   ├── forms.py           # ReturnForm
-│   ├── views/user/        # Checkout, Place Order, Order Detail, Returns
+│   ├── views/user/        # Checkout, Place Order, Cancel, Returns, Order Detail
 │   └── views/admin/       # Order list/detail, Return list/detail
+│
+├── payments/              # Financial transactions
+│   ├── models.py          # Transaction (universal ledger)
+│   ├── service.py         # create_transaction, refund ops, status helpers
+│   ├── razorpay_service.py # Razorpay order creation & signature verification
+│   └── views.py           # Admin transaction/refund management
 │
 ├── users/                 # User domain
 │   ├── cart/              # Cart logic, utils, computed properties
 │   ├── wishlist/          # Wishlist toggle, offcanvas
+│   ├── wallet/            # Wallet balance, credit/debit, transaction history
+│   │   ├── models.py      # Wallet, WalletTransaction
+│   │   ├── service.py     # credit_wallet, debit_wallet, balance checks
+│   │   └── views.py       # User wallet page, transaction detail
 │   └── user_profile/      # Address (with pincode validation), Profile
 │
 └── rexcc_project/         # Project settings & URL conf
@@ -307,6 +431,7 @@ Rex_CC_Ecommerce/
 - Python 3.11+
 - PostgreSQL 15+
 - Cloudinary Account
+- Razorpay Account (for online payments)
 
 ### Installation
 
@@ -324,7 +449,9 @@ pip install -r requirements.txt
 
 # Configure environment
 cp .env.example .env
-# Edit .env with your credentials
+# Edit .env with your credentials:
+#   DATABASE_URL, CLOUDINARY_*, EMAIL_*,
+#   RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET
 
 # Run migrations
 python manage.py migrate
@@ -362,11 +489,21 @@ python manage.py runserver
 - [x] Admin Order Management (Status Cascade, Return Review, Detail View)
 - [x] Return System (Eligibility Rules, Photo Upload, Admin Approve/Reject)
 
-### Phase 3 — Payments & Growth
-- [ ] Razorpay/Stripe Integration
+### Phase 3 — Payments & Financial (✅ Complete)
+- [x] Transaction Ledger (Universal model, GenericFK, audit trail)
+- [x] Razorpay Integration (Order creation, Signature verification, Callback handling)
+- [x] Wallet System (Credit/Debit, Balance snapshots, Row locking)
+- [x] Order Cancellation (Item-level, Stock restore, Auto-refund initiation)
+- [x] Refund Management (Admin approve/reject, Auto wallet credit)
+- [x] Payment Failure Handling (FAILED status, Failure page)
+- [x] Admin Transaction Dashboard (List, Detail, Search, Filters)
+- [x] User Wallet Page (Balance, Transaction history, Tabs)
+
+### Phase 4 — Growth & Optimization
 - [ ] Coupon System
-- [ ] Wallet & Rewards
 - [ ] Referral Program
+- [ ] Sales Analytics Dashboard
+- [ ] Email Notifications (Order updates, Refund status)
 
 ---
 
