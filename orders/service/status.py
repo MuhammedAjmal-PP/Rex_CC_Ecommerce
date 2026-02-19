@@ -3,7 +3,7 @@ class InvalidTransitionError(Exception):
 
 
 ORDER_ALLOWED_TRANSITIONS = {
-    "PLACED": {"CONFIRMED", "CANCELLED","FAILED"},
+    "PLACED": {"CONFIRMED", "CANCELLED", "FAILED"},
     "CONFIRMED": {"SHIPPED", "CANCELLED"},
     "SHIPPED": {"OUT_FOR_DELIVERY"},
     "OUT_FOR_DELIVERY": {"DELIVERED"},
@@ -13,7 +13,7 @@ ORDER_ALLOWED_TRANSITIONS = {
 }
 
 ORDER_ITEM_ALLOWED_TRANSITIONS = {
-    "PENDING": {"CONFIRMED", "CANCELLED","FAILED"},
+    "PENDING": {"CONFIRMED", "CANCELLED", "FAILED"},
     "CONFIRMED": {"PACKING", "CANCELLED"},
     "PACKING": {"READY", "CANCELLED"},
     "READY": {"SHIPPED", "CANCELLED"},
@@ -52,8 +52,14 @@ INITIAL_STATUS_BY_MODEL = {
 
 # Ordered item status progression (happy path)
 ITEM_STATUS_CHAIN = [
-    "PENDING", "CONFIRMED", "PACKING", "READY",
-    "SHIPPED", "IN_TRANSIT", "OUT_FOR_DELIVERY", "DELIVERED",
+    "PENDING",
+    "CONFIRMED",
+    "PACKING",
+    "READY",
+    "SHIPPED",
+    "IN_TRANSIT",
+    "OUT_FOR_DELIVERY",
+    "DELIVERED",
 ]
 
 # Order status → target item status for cascade
@@ -63,7 +69,7 @@ ORDER_TO_ITEM_TARGET = {
     "OUT_FOR_DELIVERY": "OUT_FOR_DELIVERY",
     "DELIVERED": "DELIVERED",
     "CANCELLED": "CANCELLED",  # special: direct jump
-    "FAILED": "FAILED",        # special: direct jump (payment failure)
+    "FAILED": "FAILED",  # special: direct jump (payment failure)
 }
 
 
@@ -119,6 +125,8 @@ def _sync_order_status(order, *, actor=None):
 
     item_statuses = {get_current_status(item) for item in items}
 
+    # print(item_statuses)
+
     current_order_status = get_current_status(order)
 
     # Post-delivery statuses (return flow): treated as "delivered" for order sync
@@ -131,16 +139,26 @@ def _sync_order_status(order, *, actor=None):
     elif item_statuses == {"FAILED"}:
         target = "FAILED"
     # Rule 2: ALL items delivered/returned/cancelled (at least one post-delivery) → deliver
-    elif item_statuses <= (_POST_DELIVERY | {"CANCELLED"}) and item_statuses & _POST_DELIVERY:
+    elif (
+        item_statuses <= (_POST_DELIVERY | {"CANCELLED"})
+        and item_statuses & _POST_DELIVERY
+    ):
         target = "DELIVERED"
     # Rule 3: Any item out-for-delivery (rest delivered/cancelled) → out for delivery
-    elif item_statuses <= ({"OUT_FOR_DELIVERY"} | _POST_DELIVERY | {"CANCELLED"}) and "OUT_FOR_DELIVERY" in item_statuses:
+    elif (
+        item_statuses <= ({"OUT_FOR_DELIVERY"} | _POST_DELIVERY | {"CANCELLED"})
+        and "OUT_FOR_DELIVERY" in item_statuses
+    ):
         target = "OUT_FOR_DELIVERY"
     # Rule 4: Any item shipped/in-transit (rest further along or cancelled) → shipped
     elif item_statuses & {"SHIPPED", "IN_TRANSIT"}:
         target = "SHIPPED"
     # Rule 5: All items confirmed+ (none pending) → confirmed
-    elif "PENDING" not in item_statuses and item_statuses & {"CONFIRMED", "PACKING", "READY"}:
+    elif "PENDING" not in item_statuses and item_statuses & {
+        "CONFIRMED",
+        "PACKING",
+        "READY",
+    }:
         target = "CONFIRMED"
     else:
         return  # No auto-change needed
@@ -175,7 +193,7 @@ def _cascade_order_to_items(order, to_status, *, actor=None):
 
     for item in order.items.all():
         item_status = get_current_status(item)
-        if not item_status or item_status == "CANCELLED":
+        if item_status == "CANCELLED":
             continue
 
         # CANCELLED / FAILED: direct jump (no walk needed)
@@ -195,7 +213,10 @@ def _cascade_order_to_items(order, to_status, *, actor=None):
             continue
 
         # Progressive walk: find current and target positions in chain
-        if item_status not in ITEM_STATUS_CHAIN or target_item_status not in ITEM_STATUS_CHAIN:
+        if (
+            item_status not in ITEM_STATUS_CHAIN
+            or target_item_status not in ITEM_STATUS_CHAIN
+        ):
             continue
 
         current_idx = ITEM_STATUS_CHAIN.index(item_status)
@@ -228,15 +249,15 @@ def change_order_status(*, order, to_status, actor=None, note=""):
         actor=actor,
         note=note,
     )
-    
+
     # Auto-update COD payment status to PAID upon delivery
     if to_status == "DELIVERED" and order.payment:
-        # Re-fetch payment to ensure we have latest status if needed, 
+        # Re-fetch payment to ensure we have latest status if needed,
         # or just check current state. order.payment is cached on the instance.
         payment = order.payment
         if payment.payment_method == "COD" and payment.status == "PENDING":
-             payment.status = "PAID"
-             payment.save(update_fields=["status", "updated_at"])
+            payment.status = "PAID"
+            payment.save(update_fields=["status", "updated_at"])
 
     _cascade_order_to_items(order, to_status, actor=actor)
     return result

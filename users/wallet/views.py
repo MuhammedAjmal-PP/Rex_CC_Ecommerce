@@ -24,10 +24,7 @@ def wallet_page(request):
             .order_by("-created_at")
         )
     else:
-        qs = (
-            Transaction.objects.filter(user=request.user)
-            .order_by("-created_at")
-        )
+        qs = Transaction.objects.filter(user=request.user).order_by("-created_at")
 
     page_obj = Paginator(qs, 15).get_page(request.GET.get("page"))
 
@@ -51,9 +48,13 @@ def wallet_transaction_detail(request, transaction_id):
     )
 
     # Check if there's a linked wallet transaction
-    wallet_txn = WalletTransaction.objects.filter(
-        transaction=txn,
-    ).select_related("wallet").first()
+    wallet_txn = (
+        WalletTransaction.objects.filter(
+            transaction=txn,
+        )
+        .select_related("wallet")
+        .first()
+    )
 
     # Resolve linked object info
     linked_obj = None

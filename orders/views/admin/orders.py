@@ -109,13 +109,9 @@ def order_detail(request, order_number):
     items_with_transitions = []
     for item in order_items:
         item_current = item.current_status.status if item.current_status else None
-        item_next = sorted(
-            ADMIN_ITEM_ALLOWED_TRANSITIONS.get(item_current, set())
-        )
+        item_next = sorted(ADMIN_ITEM_ALLOWED_TRANSITIONS.get(item_current, set()))
         # Per-item timeline: oldest → newest for horizontal display
-        item_timeline = list(
-            item.status.select_related("actor").order_by("created_at")
-        )
+        item_timeline = list(item.status.select_related("actor").order_by("created_at"))
         items_with_transitions.append(
             {
                 "item": item,
