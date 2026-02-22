@@ -76,7 +76,7 @@
                             </div>
 
                             <!-- Price -->
-                            <div class="co-item-price">₹{{ item.total_price|floatformat:0|intcomma }}</div>
+                            <div class="co-item-price">₹{{ item.total_price|floatformat:2|intcomma }}</div>
 
                             <!-- Status -->
                             {% if istatus %}

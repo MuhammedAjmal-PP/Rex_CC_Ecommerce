@@ -148,13 +148,13 @@
                             </td>
                             <td>
                                 <div class="payment-method-wrapper">
-                                    <span class="payment-method">{{ order.payment.get_payment_method_display }}</span>
+                                    <span class="payment-method">{{ order.payment_transaction.get_payment_method_display }}</span>
                                 </div>
                             </td>
                             <td>
-                                {% if order.payment %}
-                                    <span class="payment-status-badge payment-status-{{ order.payment.status|lower }}">
-                                        {{ order.payment.get_status_display }}
+                                {% if order.payment_transaction %}
+                                    <span class="payment-status-badge payment-status-{{ order.payment_transaction.status|lower }}">
+                                        {{ order.payment_transaction.get_status_display }}
                                     </span>
                                 {% else %}
                                     —

@@ -168,7 +168,7 @@
                                         <span class="refund-status-badge refund-status-{{ refund_txn.status|lower }}">
                                             {{ refund_txn.get_status_display }}
                                         </span>
-                                        <div class="refund-amount">₹{{ refund_txn.amount|floatformat:0 }}</div>
+                                        <div class="refund-amount">₹{{ refund_txn.amount|floatformat:2 }}</div>
                                     {% else %}
                                         <span class="no-refund">—</span>
                                     {% endif %}

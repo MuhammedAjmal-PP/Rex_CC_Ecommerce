@@ -22,8 +22,7 @@ class Transaction(models.Model):
         ("ORDER_PAYMENT", "Order Payment"),
         ("CANCELLATION_REFUND", "Cancellation Refund"),
         ("RETURN_REFUND", "Return Refund"),
-        ("WALLET_CREDIT", "Wallet Credit"),
-        ("WALLET_DEBIT", "Wallet Debit"),
+        ("WALLET_TOPUP", "Wallet Topup"),
     )
 
     # ── How (payment method) ───────────────────
@@ -39,6 +38,7 @@ class Transaction(models.Model):
         ("PAID", "Paid"),
         ("COMPLETED", "Completed"),
         ("FAILED", "Failed"),
+        ("CANCELLED", "Cancelled"),
     )
 
     # ── Core Fields ────────────────────────────

@@ -88,9 +88,9 @@
                 </div>
                 <!-- PRICE -->
                 <div class="pdp-price-box width-fit">
-                    <span class="pdp-price-final width-fit">₹{{ price|floatformat:0|intcomma }}</span>
+                    <span class="pdp-price-final width-fit">₹{{ price|floatformat:2|intcomma }}</span>
                     {% if discount_percentage > 0 %}
-                        <span class="pdp-price-original width-fit">₹{{ original_price|floatformat:0|intcomma }}</span>
+                        <span class="pdp-price-original width-fit">₹{{ original_price|floatformat:2|intcomma }}</span>
                         <span class="pdp-discount-badge width-fit">-{{ discount_percentage }}% OFF</span>
                     {% endif %}
                 </div>

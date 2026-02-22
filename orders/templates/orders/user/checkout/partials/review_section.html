@@ -43,9 +43,9 @@
                          <div class="review-item-sku">SKU: {{ item.variant.sku }}</div>
                          <div class="review-pricing-unit">
                              {% if item.variant.price > item.variant.final_price %}
-                                <span class="original-price">₹{{ item.variant.price|floatformat:0|intcomma }}</span>
+                                <span class="original-price">₹{{ item.variant.price|floatformat:2|intcomma }}</span>
                              {% endif %}
-                             <span class="final-price">₹{{ item.variant.final_price|floatformat:0|intcomma }}<span class="per-unit">/unit</span></span>
+                             <span class="final-price">₹{{ item.variant.final_price|floatformat:2|intcomma }}<span class="per-unit">/unit</span></span>
                          </div>
                     </div>
 
@@ -63,7 +63,7 @@
                              </div>
                              <div class="review-pricing-row saving-row">
                                  <span class="pricing-label">Saved:</span>
-                                 <span class="pricing-value">₹{{ item.total_discount|floatformat:0|intcomma }}</span>
+                                 <span class="pricing-value">₹{{ item.total_discount|floatformat:2|intcomma }}</span>
                              </div>
                          {% endif %}
 
@@ -73,7 +73,7 @@
                     <!-- 4. Final Total -->
                     <div class="review-col-total">
                         <div class="total-label">Subtotal</div>
-                        <div class="total-amount">₹{{ item.total_amount|floatformat:0|intcomma }}</div>
+                        <div class="total-amount">₹{{ item.total_amount|floatformat:2|intcomma }}</div>
                     </div>
 
                 </div>

@@ -32,12 +32,12 @@
                 </div>
                 <div class="failure-info-row">
                     <span class="failure-info-label">Amount</span>
-                    <span class="failure-info-value">₹{{ order.grand_total|floatformat:0|intcomma }}</span>
+                    <span class="failure-info-value">₹{{ order.grand_total|floatformat:2|intcomma }}</span>
                 </div>
-                {% if order.payment %}
+                {% if order.payment_transaction %}
                     <div class="failure-info-row">
                         <span class="failure-info-label">Method</span>
-                        <span class="failure-info-value">{{ order.payment.get_payment_method_display }}</span>
+                        <span class="failure-info-value">{{ order.payment_transaction.get_payment_method_display }}</span>
                     </div>
                 {% endif %}
             </div>

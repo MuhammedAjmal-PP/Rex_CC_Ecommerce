@@ -141,7 +141,7 @@
                             </td>
                             <td>{{ txn.get_payment_method_display }}</td>
                             <td class="text-end">
-                                <span class="txn-amount">₹{{ txn.amount|floatformat:0|intcomma }}</span>
+                                <span class="txn-amount">₹{{ txn.amount|floatformat:2|intcomma }}</span>
                             </td>
                             <td>
                                 <span class="status-badge status-{{ txn.status|lower }}">

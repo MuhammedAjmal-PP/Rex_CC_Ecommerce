@@ -1,5 +1,6 @@
 from decimal import Decimal
 import uuid
+from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
@@ -131,12 +132,9 @@ class Order(models.Model):
     shipping_fee = models.DecimalField(max_digits=10, decimal_places=2)
     grand_total = models.DecimalField(max_digits=10, decimal_places=2)
 
-    payment = models.OneToOneField(
+    payment = GenericRelation(
         "payments.Transaction",
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name="order",
+        related_query_name="orders",
     )
 
     status = GenericRelation(
@@ -166,6 +164,11 @@ class Order(models.Model):
     @property
     def current_status(self):
         return self.status.first()
+
+    @property
+    def payment_transaction(self):
+        """Return the primary payment Transaction (or None)."""
+        return self.payment.first()
 
     @property
     def can_generate_invoice(self):
@@ -212,12 +215,21 @@ class OrderItem(models.Model):
         related_query_name="order_items",
     )
 
-    
     @property
     def total_price(self):
-        if self.price is None or self.quantity is None:
-            return Decimal("0")
         return self.price * self.quantity
+
+    @property
+    def total_cancel(self):
+        shipping_fee = Decimal(self.quantity * 100)
+        total = self.total_price + shipping_fee
+        tax = total * Decimal(settings.GST_RATE) / Decimal(100)
+        return total + tax
+
+    @property
+    def total_return(self):
+        tax = self.total_price * Decimal(settings.GST_RATE) / Decimal(100)
+        return self.total_price + tax
 
     @property
     def current_status(self):
@@ -235,7 +247,11 @@ class OrderItem(models.Model):
         if not current or current.status != "DELIVERED":
             return False
 
-        if hasattr(self, 'return_request') and self.return_request.status in ("REQUESTED", "APPROVED", "REJECTED"):
+        if hasattr(self, "return_request") and self.return_request.status in (
+            "REQUESTED",
+            "APPROVED",
+            "REJECTED",
+        ):
             return False
 
         delivered_entry = self.status.filter(status="DELIVERED").first()
@@ -244,7 +260,6 @@ class OrderItem(models.Model):
 
         days_since = (timezone.now() - delivered_entry.created_at).days
         return days_since <= 7
-
 
     def __str__(self):
         return f"OrderItem #{self.id} ({self.product_variant})"

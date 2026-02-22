@@ -262,7 +262,7 @@ STORE_STATE_CODE = "32"
 DEFAULT_WATCH_HSN = "9102"
 
 # Standard GST rate for watches
-GST_RATE = 18.0
+GST_RATE = 18
 
 # ---------------------------------------------------------------
 # RAZORPAY

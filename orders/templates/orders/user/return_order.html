@@ -58,7 +58,7 @@
             <div class="ro-product-meta">
                 Qty: {{ order_item.quantity }}
                 <span class="ro-product-meta-dot">·</span>
-                ₹{{ order_item.total_price|floatformat:0|intcomma }}
+                ₹{{ order_item.total_price|floatformat:2|intcomma }}
             </div>
         </div>
     </div>

@@ -140,9 +140,7 @@ def return_status_update(request, return_number):
             return_obj.admin_note = admin_note
         return_obj.save(update_fields=["status", "admin_note"])
 
-        messages.success(
-            request, f"Return {return_obj.return_number} approved."
-        )
+        messages.success(request, f"Return {return_obj.return_number} approved.")
 
     # ── REJECT ───────────────────────────────────────
     elif action == "REJECT":
@@ -173,9 +171,7 @@ def return_status_update(request, return_number):
             )
             return redirect(fallback_url)
 
-        messages.success(
-            request, f"Return {return_obj.return_number} rejected."
-        )
+        messages.success(request, f"Return {return_obj.return_number} rejected.")
 
     # ── COMPLETE ─────────────────────────────────────
     elif action == "COMPLETE":
@@ -225,7 +221,7 @@ def return_status_update(request, return_number):
         initiate_refund(
             order=order,
             user=order.user,
-            amount=order_item.total_price,
+            amount=order_item.total_return,
             txn_type="RETURN_REFUND",
             content_object=return_obj,
             note=f"Return refund — return #{return_obj.return_number}",

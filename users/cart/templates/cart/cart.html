@@ -48,13 +48,13 @@
                                     <span class="cart-item-sku">SKU: {{ item.variant.sku }}</span>
                                     <!-- Mobile Price Display -->
                                     <div class="cart-item-price-mobile">
-                                        <span class="final-price">₹{{ item.variant.final_price|floatformat:0|intcomma }}</span>
+                                        <span class="final-price">₹{{ item.variant.final_price|floatformat:2|intcomma }}</span>
                                         {% if item.variant.price > item.variant.final_price %}
                                             <span class="original-price"
                                                   style="text-decoration: line-through;
                                                          color: #999;
                                                          font-size: 0.85em;
-                                                         margin-left: 5px">₹{{ item.variant.price|floatformat:0|intcomma }}</span>
+                                                         margin-left: 5px">₹{{ item.variant.price|floatformat:2|intcomma }}</span>
                                         {% endif %}
                                     </div>
                                 </div>
@@ -86,9 +86,9 @@
                             </div>
                             <!-- Total -->
                             <div class="cart-item-total">
-                                ₹{{ item.total_amount|floatformat:0|intcomma }}
+                                ₹{{ item.total_amount|floatformat:2|intcomma }}
                                 {% if item.total_discount > 0 %}
-                                    <div class="cart-item-savings">Saved ₹{{ item.total_discount|floatformat:0|intcomma }}</div>
+                                    <div class="cart-item-savings">Saved ₹{{ item.total_discount|floatformat:2|intcomma }}</div>
                                 {% endif %}
                             </div>
                             <!-- Remove -->
@@ -106,11 +106,11 @@
                         <h2 class="summary-title">Order Summary</h2>
                         <div class="summary-row">
                             <span>Subtotal ({{ order_summary.products_count }} items)</span>
-                            <span>₹{{ order_summary.sub_total|floatformat:0|intcomma }}</span>
+                            <span>₹{{ order_summary.sub_total|floatformat:2|intcomma }}</span>
                         </div>
                         <div class="summary-row {% if order_summary.total_discount > 0 %}discount{% endif %}">
                             <span>Discount</span>
-                            <span>−₹{{ order_summary.total_discount|floatformat:0|intcomma }}</span>
+                            <span>−₹{{ order_summary.total_discount|floatformat:2|intcomma }}</span>
                         </div>
                         <div class="summary-row">
                             <span>Shipping</span>
@@ -118,14 +118,14 @@
                                 {% if order_summary.shipping_fee == 0 %}
                                     Free
                                 {% else %}
-                                    ₹{{ order_summary.shipping_fee|floatformat:0|intcomma }}
+                                    ₹{{ order_summary.shipping_fee|floatformat:2|intcomma }}
                                 {% endif %}
                             </span>
                         </div>
                         <div class="summary-divider"></div>
                         <div class="summary-row total">
                             <span>Total</span>
-                            <span>₹{{ order_summary.total_amount_to_pay|floatformat:0|intcomma }}</span>
+                            <span>₹{{ order_summary.total_amount_to_pay|floatformat:2|intcomma }}</span>
                         </div>
                         <div class="summary-actions">
                             <a href="{% url 'checkout' %}" class="btn-checkout">Proceed to Checkout</a>

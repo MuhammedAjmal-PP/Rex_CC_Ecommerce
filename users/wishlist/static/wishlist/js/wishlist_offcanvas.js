@@ -381,7 +381,7 @@
   // HELPERS
   // ===============================
   function formatPrice(price) {
-    return `₹${parseFloat(price).toLocaleString("en-IN")}`;
+    return `₹${parseFloat(price).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   }
 
   function getCSRFToken() {

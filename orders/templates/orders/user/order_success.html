@@ -31,11 +31,11 @@
                 </div>
                 <div class="order-card-row">
                     <span class="order-card-label">Total</span>
-                    <span class="order-card-value order-total">₹{{ order.grand_total|floatformat:0|intcomma }}</span>
+                    <span class="order-card-value order-total">₹{{ order.grand_total|floatformat:2|intcomma }}</span>
                 </div>
                 <div class="order-card-row">
                     <span class="order-card-label">Payment</span>
-                    <span class="order-card-value">{{ order.payment.get_payment_method_display }}</span>
+                    <span class="order-card-value">{{ order.payment_transaction.get_payment_method_display }}</span>
                 </div>
                 <div class="order-card-row">
                     <span class="order-card-label">Date</span>

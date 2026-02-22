@@ -37,10 +37,10 @@
         </div>
         <div class="product-card__pricing">
             {% if variant.discount_percentage and variant.discount_percentage > 0 %}
-                <span class="product-card__price">₹{{ variant.final_price|floatformat:0 }}</span>
-                <span class="product-card__original-price">₹{{ variant.price|floatformat:0 }}</span>
+                <span class="product-card__price">₹{{ variant.final_price|floatformat:2 }}</span>
+                <span class="product-card__original-price">₹{{ variant.price|floatformat:2 }}</span>
             {% else %}
-                <span class="product-card__price">₹{{ variant.price|floatformat:0 }}</span>
+                <span class="product-card__price">₹{{ variant.final_price|floatformat:2 }}</span>
             {% endif %}
         </div>
     </div>

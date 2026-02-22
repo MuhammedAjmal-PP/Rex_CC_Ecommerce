@@ -23,7 +23,7 @@
             <div class="rd-actions">
                 <form method="post" action="{% url 'admin_refund_action' txn.transaction_id %}"
                       class="rd-approve-form"
-                      onsubmit="return confirm('Approve this refund? ₹{{ txn.amount|floatformat:0|intcomma }} will be credited to {{ txn.user.email }}\'s wallet.')">
+                      onsubmit="return confirm('Approve this refund? ₹{{ txn.amount|floatformat:2|intcomma }} will be credited to {{ txn.user.email }}\'s wallet.')">
                     {% csrf_token %}
                     <input type="hidden" name="action" value="APPROVE">
                     <button type="submit" class="rd-btn rd-btn-approve">
@@ -111,7 +111,7 @@
                     </div>
                     <div class="rd-row">
                         <span class="rd-label">Amount</span>
-                        <span class="rd-value rd-amount">₹{{ txn.amount|floatformat:0|intcomma }}</span>
+                        <span class="rd-value rd-amount">₹{{ txn.amount|floatformat:2|intcomma }}</span>
                     </div>
                     <div class="rd-row">
                         <span class="rd-label">Status</span>

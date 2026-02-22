@@ -85,9 +85,9 @@
                             </div>
                             <div class="txn-row-amount">
                                 {% if txn.label == "CREDIT" %}
-                                    <span class="amount-credit">+₹{{ txn.transaction.amount|floatformat:0|intcomma }}</span>
+                                    <span class="amount-credit">+₹{{ txn.transaction.amount|floatformat:2|intcomma }}</span>
                                 {% else %}
-                                    <span class="amount-debit">-₹{{ txn.transaction.amount|floatformat:0|intcomma }}</span>
+                                    <span class="amount-debit">-₹{{ txn.transaction.amount|floatformat:2|intcomma }}</span>
                                 {% endif %}
                             </div>
                             <div class="txn-row-balance">
@@ -120,7 +120,7 @@
                                 <span class="txn-method-badge">{{ txn.get_payment_method_display }}</span>
                             </div>
                             <div class="txn-row-amount">
-                                <span class="amount-value">₹{{ txn.amount|floatformat:0|intcomma }}</span>
+                                <span class="amount-value">₹{{ txn.amount|floatformat:2|intcomma }}</span>
                             </div>
                             <div class="txn-row-status">
                                 <span class="txn-status-badge status-{{ txn.status|lower }}">

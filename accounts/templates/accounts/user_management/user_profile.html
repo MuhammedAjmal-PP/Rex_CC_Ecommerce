@@ -161,7 +161,7 @@
                             <span class="order-date">{{ order.date }}</span>
                         </div>
                         <div class="order-details">
-                            <span class="order-amount">${{ order.amount|floatformat:0|intcomma }}</span>
+                            <span class="order-amount">${{ order.amount|floatformat:2|intcomma }}</span>
                             <span class="order-status status-{{ order.status }}">{{ order.status }}</span>
                         </div>
                     </div>
@@ -182,7 +182,7 @@
             </div>
             <div class="wallet-balance">
                 <p class="balance-label">Current Balance</p>
-                <h2 class="balance-amount">${{ wallet_balance|floatformat:0|intcomma }}</h2>
+                <h2 class="balance-amount">${{ wallet_balance|floatformat:2|intcomma }}</h2>
             </div>
             <!-- Wallet Transactions inside wallet card -->
             <div class="wallet-transactions-list">
@@ -203,7 +203,7 @@
                         </div>
                         <span class="transaction-amount {% if transaction.type == 'credit' %}credit{% else %}debit{% endif %}">
                             {% if transaction.amount > 0 %}+{% endif %}
-                            ${{ transaction.amount|floatformat:0|intcomma }}
+                            ${{ transaction.amount|floatformat:2|intcomma }}
                         </span>
                     </div>
                 {% endfor %}
@@ -243,7 +243,7 @@
                     </div>
                     <span class="transaction-amount {% if transaction.type == 'refund' %}credit{% else %}payment{% endif %}">
                         {% if transaction.type == 'refund' %}+{% endif %}
-                        ${{ transaction.amount|floatformat:0|intcomma }}
+                        ${{ transaction.amount|floatformat:2|intcomma }}
                     </span>
                 </div>
             {% endfor %}
@@ -275,7 +275,7 @@
                         <tr>
                             <td>{{ reward.date }}</td>
                             <td>{{ reward.referred_user }}</td>
-                            <td class="reward-amount">+${{ reward.amount }}</td>
+                            <td class="reward-amount">+${{ reward.amount|floatformat:2 }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>

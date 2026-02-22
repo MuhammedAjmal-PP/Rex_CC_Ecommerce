@@ -58,7 +58,7 @@
                     <div class="order-row">
                         <div class="order-row-order">
                             <span class="order-number">{{ order.order_number }}</span>
-                            <span class="order-total-inline">₹{{ order.grand_total|floatformat:0|intcomma }}</span>
+                            <span class="order-total-inline">₹{{ order.grand_total|floatformat:2|intcomma }}</span>
                         </div>
                         <div class="order-row-date">
                             <span class="order-date">{{ order.created_at|date:"d M Y" }}</span>
@@ -66,14 +66,16 @@
                         </div>
                         <div class="order-row-payment">
                             <span class="order-payment-method">
-                                <span class="material-icons">payment</span>
-                                {{ order.payment.get_payment_method_display }}
+                                <div>
+                                    <div>
+                                        <span class="material-icons">payment</span>
+                                        <span>{{ order.payment_transaction.get_payment_method_display }}</span>
+                                    </div>
+                                    <span class="order-payment-status status-{{ order.payment_transaction.status|lower }}">
+                                        {{ order.payment_transaction.get_status_display }}
+                                    </span>
+                                </div>
                             </span>
-                            {% if order.payment %}
-                                <span class="order-payment-status status-{{ order.payment.status|lower }}">
-                                    {{ order.payment.get_status_display }}
-                                </span>
-                            {% endif %}
                         </div>
                         <div class="order-row-status">
                             {% with status=order.current_status %}
@@ -99,7 +101,9 @@
                             {% endwith %}
                         </div>
                         <div class="order-row-action">
-                            <a href="{% url 'user_order_details' order.order_number %}" class="btn-view-order" title="View Order">
+                            <a href="{% url 'user_order_details' order.order_number %}"
+                               class="btn-view-order"
+                               title="View Order">
                                 <span class="material-icons">visibility</span>
                             </a>
                         </div>

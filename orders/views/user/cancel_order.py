@@ -7,7 +7,7 @@ from django.views.decorators.http import require_GET, require_POST
 from catalog.service import update_stock
 from orders.models import Order, OrderItem
 from orders.service import InvalidTransitionError, change_order_item_status
-from payments.service import initiate_refund
+from payments.service import initiate_refund, update_transaction
 
 
 CANCELLABLE_ITEM_STATUSES = {"PENDING", "CONFIRMED", "PACKING", "READY"}
@@ -101,14 +101,23 @@ def cancel_order_submit(request, order_number):
 
                 # Create PENDING refund transaction only for prepaid orders
                 # COD orders haven't collected money, so no refund needed
-                if order.payment and order.payment.payment_method != "COD":
+                if (
+                    order.payment_transaction
+                    and order.payment_transaction.payment_method != "COD"
+                ):
                     initiate_refund(
                         order=order,
                         user=request.user,
-                        amount=item.total_price,
+                        amount=item.total_cancel,
                         txn_type="CANCELLATION_REFUND",
                         content_object=item,
                         note=note,
+                    )
+                else:
+                    update_transaction(
+                        order=order,
+                        amount=item.total_cancel,
+                        note="Adjusted for partial cancellation.",
                     )
 
                 cancelled_count += 1

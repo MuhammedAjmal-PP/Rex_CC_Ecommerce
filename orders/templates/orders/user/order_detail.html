@@ -97,10 +97,10 @@
                     <div class="od-item-qty">{{ item.quantity }}</div>
 
                     <!-- Price -->
-                    <div class="od-item-price">₹{{ item.price|floatformat:0|intcomma }}</div>
+                    <div class="od-item-price">₹{{ item.price|floatformat:2|intcomma }}</div>
 
                     <!-- Total -->
-                    <div class="od-item-total">₹{{ item.total_price|floatformat:0|intcomma }}</div>
+                    <div class="od-item-total">₹{{ item.total_price|floatformat:2|intcomma }}</div>
 
                     <!-- Item Status -->
                     {% with istatus=item.current_status %}
@@ -162,39 +162,39 @@
             <div class="od-info-card-title">Order Summary</div>
             <div class="od-summary-row">
                 <span class="od-summary-label">Sub Total</span>
-                <span class="od-summary-value">₹{{ order.sub_total|floatformat:0|intcomma }}</span>
+                <span class="od-summary-value">₹{{ order.sub_total|floatformat:2|intcomma }}</span>
             </div>
             {% if order.discount > 0 %}
                 <div class="od-summary-row">
                     <span class="od-summary-label">Discount</span>
-                    <span class="od-summary-value od-discount">-₹{{ order.discount|floatformat:0|intcomma }}</span>
+                    <span class="od-summary-value od-discount">-₹{{ order.discount|floatformat:2|intcomma }}</span>
                 </div>
             {% endif %}
             <div class="od-summary-row">
                 <span class="od-summary-label">Shipping</span>
-                <span class="od-summary-value">₹{{ order.shipping_fee|floatformat:0|intcomma }}</span>
+                <span class="od-summary-value">₹{{ order.shipping_fee|floatformat:2|intcomma }}</span>
             </div>
             <div class="od-summary-row">
                 <span class="od-summary-label">Tax (GST {{gst_rate}}%)</span>
-                <span class="od-summary-value">₹{{ order.tax|floatformat:0|intcomma }}</span>
+                <span class="od-summary-value">₹{{ order.tax|floatformat:2|intcomma }}</span>
             </div>
             <div class="od-summary-row od-summary-total">
                 <span class="od-summary-label">Grand Total</span>
-                <span class="od-summary-value">₹{{ order.grand_total|floatformat:0|intcomma }}</span>
+                <span class="od-summary-value">₹{{ order.grand_total|floatformat:2|intcomma }}</span>
             </div>
-            {% if order.payment %}
+            {% if order.payment_transaction %}
                 <div class="od-summary-row" style="margin-top:12px; padding-top:12px; border-top:1px solid var(--border,#e8e6e2);">
                     <span class="od-summary-label">Payment Method</span>
-                    <span class="od-summary-value">{{ order.payment.get_payment_method_display }}</span>
+                    <span class="od-summary-value">{{ order.payment_transaction.get_payment_method_display }}</span>
                 </div>
                 <div class="od-summary-row">
                     <span class="od-summary-label">Transaction ID</span>
-                    <span class="od-summary-value" style="font-size:0.82rem; font-family:monospace;">{{ order.payment.transaction_id|truncatechars:18 }}</span>
+                    <span class="od-summary-value" style="font-size:0.82rem; font-family:monospace;">{{ order.payment_transaction.transaction_id|truncatechars:18 }}</span>
                 </div>
                 <div class="od-summary-row">
                     <span class="od-summary-label">Payment Status</span>
-                    <span class="od-payment-status od-status-{{ order.payment.status|lower }}">
-                        {{ order.payment.get_status_display }}
+                    <span class="od-payment-status od-status-{{ order.payment_transaction.status|lower }}">
+                        {{ order.payment_transaction.get_status_display }}
                     </span>
                 </div>
             {% endif %}

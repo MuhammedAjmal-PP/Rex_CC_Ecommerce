@@ -47,11 +47,11 @@
                             <h3 class="summary-title">Order Summary</h3>
                             <div class="summary-row">
                                 <span class="summary-label">Subtotal ({{ order_summary.items_count }} items)</span>
-                                <span class="summary-value">₹{{ order_summary.sub_total|floatformat:0|intcomma }}</span>
+                                <span class="summary-value">₹{{ order_summary.sub_total|floatformat:2|intcomma }}</span>
                             </div>
                             <div class="summary-row">
                                 <span class="summary-label">Discount</span>
-                                <span class="summary-value">-₹{{ order_summary.discount|floatformat:0|intcomma }}</span>
+                                <span class="summary-value">-₹{{ order_summary.discount|floatformat:2|intcomma }}</span>
                             </div>
                             <div class="summary-row">
                                 <span class="summary-label">Shipping</span>
@@ -59,17 +59,17 @@
                                     {% if order_summary.shipping_charge == 0 %}
                                         Free
                                     {% else %}
-                                        ₹{{ order_summary.shipping_charge|floatformat:0|intcomma }}
+                                        ₹{{ order_summary.shipping_charge|floatformat:2|intcomma }}
                                     {% endif %}
                                 </span>
                             </div>
                             <div class="summary-row">
                                 <span class="summary-label">Tax (GST {{ order_summary.gst_rate }}%)</span>
-                                <span class="summary-value">₹{{ order_summary.tax|default:0|floatformat:0|intcomma }}</span>
+                                <span class="summary-value">₹{{ order_summary.tax|default:0|floatformat:2|intcomma }}</span>
                             </div>
                             <div class="summary-row total">
                                 <span class="summary-label">Total</span>
-                                <span class="summary-value">₹{{ order_summary.total|floatformat:0|intcomma }}</span>
+                                <span class="summary-value">₹{{ order_summary.total|floatformat:2|intcomma }}</span>
                             </div>
                             <!-- Secure Badge -->
                             <div style="margin-top: 20px;

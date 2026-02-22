@@ -53,10 +53,10 @@
             <div class="oid-product-meta">
                 <span>Qty: {{ order_item.quantity }}</span>
                 <span class="oid-product-meta-dot">·</span>
-                <span>₹{{ order_item.price|floatformat:0|intcomma }}/unit</span>
+                <span>₹{{ order_item.price|floatformat:2|intcomma }}/unit</span>
             </div>
 
-            <div class="oid-product-total">₹{{ order_item.total_price|floatformat:0|intcomma }}</div>
+            <div class="oid-product-total">₹{{ order_item.total_price|floatformat:2|intcomma }}</div>
         </div>
 
         <div class="oid-product-status">
@@ -136,7 +136,7 @@
                                 </div>
                                 <div class="oid-return-row">
                                     <span class="oid-return-label">Amount</span>
-                                    <span class="oid-return-value">₹{{ txn.amount|floatformat:0|intcomma }}</span>
+                                    <span class="oid-return-value">₹{{ txn.amount|floatformat:2|intcomma }}</span>
                                 </div>
                             {% endfor %}
                         </div>
@@ -166,7 +166,7 @@
                         </div>
                         <div class="oid-return-row">
                             <span class="oid-return-label">Amount</span>
-                            <span class="oid-return-value">₹{{ txn.amount|floatformat:0|intcomma }}</span>
+                            <span class="oid-return-value">₹{{ txn.amount|floatformat:2|intcomma }}</span>
                         </div>
                         <div class="oid-return-row">
                             <span class="oid-return-label">Method</span>

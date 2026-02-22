@@ -46,7 +46,7 @@ ADMIN_ITEM_ALLOWED_TRANSITIONS = {
 }
 
 INITIAL_STATUS_BY_MODEL = {
-    "order": "PLACED",
+    "order": ["PLACED", "CONFIRMED"],
     "orderitem": "PENDING",
 }
 
@@ -87,7 +87,7 @@ def can_transition(*, model_type, from_status, to_status):
         return False
 
     if from_status is None:
-        return to_status == INITIAL_STATUS_BY_MODEL.get(model_type)
+        return to_status in INITIAL_STATUS_BY_MODEL.get(model_type, set())
 
     return to_status in transitions.get(from_status, set())
 
@@ -251,10 +251,8 @@ def change_order_status(*, order, to_status, actor=None, note=""):
     )
 
     # Auto-update COD payment status to PAID upon delivery
-    if to_status == "DELIVERED" and order.payment:
-        # Re-fetch payment to ensure we have latest status if needed,
-        # or just check current state. order.payment is cached on the instance.
-        payment = order.payment
+    payment = order.payment_transaction
+    if to_status == "DELIVERED" and payment:
         if payment.payment_method == "COD" and payment.status == "PENDING":
             payment.status = "PAID"
             payment.save(update_fields=["status", "updated_at"])

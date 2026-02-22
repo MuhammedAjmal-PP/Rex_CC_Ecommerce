@@ -396,14 +396,14 @@
             <td class="inv-meta-value">{{ order.order_number }}</td>
             <td class="inv-meta-spacer"></td>
             <td class="inv-meta-label">Payment</td>
-            <td class="inv-meta-value">{{ order.payment.get_payment_method_display }}</td>
+            <td class="inv-meta-value">{{ order.payment_transaction.get_payment_method_display }}</td>
         </tr>
         <tr>
             <td class="inv-meta-label">Txn ID</td>
-            <td class="inv-meta-value mono">{{ order.payment.transaction_id|default:"-"|truncatechars:18 }}</td>
+            <td class="inv-meta-value mono">{{ order.payment_transaction.transaction_id|default:"-"|truncatechars:18 }}</td>
             <td class="inv-meta-spacer"></td>
             <td class="inv-meta-label">Status</td>
-            <td class="inv-meta-value upper">{{ order.payment.get_status_display }}</td>
+            <td class="inv-meta-value upper">{{ order.payment_transaction.get_status_display }}</td>
         </tr>
         <tr>
             <td class="inv-meta-label">HSN Code</td>

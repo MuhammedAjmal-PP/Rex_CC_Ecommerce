@@ -123,6 +123,7 @@ def place_order_view(request):
             )
 
             # 3 Initial ORDER ITEM status
+
             change_order_item_status(
                 order_item=order_item,
                 to_status="PENDING",
@@ -141,12 +142,20 @@ def place_order_view(request):
             )
 
         # 5 Initial ORDER status
-        change_order_status(
-            order=order,
-            to_status="PLACED",
-            note="Order placed by customer",
-            actor=request.user,
-        )
+        if payment_method == "COD":
+            change_order_status(
+                order=order,
+                to_status="PLACED",
+                note="Order placed by customer",
+                actor=request.user,
+            )
+        else:
+            change_order_status(
+                order=order,
+                to_status="CONFIRMED",
+                note="Order placed by customer",
+                actor=request.user,
+            )
 
         # 6 Payment handling
         if payment_method == "WALLET":
@@ -193,9 +202,7 @@ def place_order_view(request):
             txn.gateway_order_id = rz_order["id"]
             txn.save(update_fields=["gateway_order_id"])
 
-        # Link the payment transaction to the order
-        order.payment = txn
-        order.save(update_fields=["payment"])
+        # Payment is auto-linked via content_object=order in create_transaction
 
         # 7 Clear cart
         cart_items.delete()
@@ -346,7 +353,7 @@ def order_success_view(request, order_number):
     """Order success page — shows order summary details."""
 
     order = get_object_or_404(
-        Order.objects.select_related("payment"),
+        Order.objects.prefetch_related("payment"),
         user=request.user,
         order_number=order_number,
     )
@@ -354,7 +361,15 @@ def order_success_view(request, order_number):
     current_status = order.current_status.status
 
     # Sanity check: order must be in PLACED state
-    if current_status != "PLACED":
+    payment = order.payment_transaction
+    if (
+        payment
+        and payment.payment_method == "COD"
+        and current_status != "PLACED"
+        or payment
+        and payment.payment_method != "COD"
+        and current_status != "CONFIRMED"
+    ):
         return redirect("user_order_list")
 
     return render(
@@ -372,7 +387,7 @@ def order_failure_view(request, order_number):
     """Order failure page — shown when payment fails."""
 
     order = get_object_or_404(
-        Order.objects.select_related("payment"),
+        Order.objects.prefetch_related("payment"),
         user=request.user,
         order_number=order_number,
     )
