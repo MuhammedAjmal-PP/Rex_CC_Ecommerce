@@ -1,6 +1,6 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Django-6.0-092E20?style=for-the-badge&logo=django&logoColor=white" alt="Django">
-  <img src="https://img.shields.io/badge/PostgreSQL-15-316192?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL">
+  <img src="https://img.shields.io/badge/PostgreSQL-18-316192?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL">
   <img src="https://img.shields.io/badge/Cloudinary-Media-3448C5?style=for-the-badge&logo=cloudinary&logoColor=white" alt="Cloudinary">
   <img src="https://img.shields.io/badge/Razorpay-Payments-0C2451?style=for-the-badge&logo=razorpay&logoColor=white" alt="Razorpay">
   <img src="https://img.shields.io/badge/Bootstrap-5.3-7952B3?style=for-the-badge&logo=bootstrap&logoColor=white" alt="Bootstrap">
@@ -191,7 +191,7 @@ A **3-step stepper** UI guides the user through:
 |------|---------|---------|
 | 1. **Address** | Select/Add delivery address | Saved addresses with default selection, inline address form |
 | 2. **Payment** | Choose payment method | COD, Razorpay, Wallet |
-| 3. **Review** | Final order review | Item summary, pricing breakdown, confirm & place |
+| 3. **Review** | Final order review | Item summary, pricing breakdown, dynamic payment method display, confirm & place |
 
 ### Order Placement
 
@@ -228,14 +228,14 @@ A **3-step stepper** UI guides the user through:
 **Cancellation Logic:**
 - **Item-level cancellation**: Users select individual items to cancel (items in PENDING, CONFIRMED, PACKING, or READY status)
 - **Stock restoration**: Cancelled items' stock is restored via inventory service
-- **Refund initiation**: For prepaid orders (Razorpay/Wallet), a PENDING refund `Transaction` is created. COD orders skip refund since no payment was collected
+- **Instant Refunds**: For prepaid orders (Razorpay/Wallet), cancellations trigger an **instant** refund directly to the user's wallet. COD orders skip refund since no payment was collected
 - **Reason tracking**: User provides a cancellation reason, recorded in status timeline
 
 ### Order Models
 
 | Model | Description |
 |-------|-------------|
-| `Order` | User, address snapshots (JSON), totals, linked Transaction (OneToOne), auto-generated order number |
+| `Order` | User, address snapshots (JSON), totals, linked Transaction (`GenericRelation`), auto-generated order number |
 | `OrderItem` | Links Order ↔ ProductVariant with quantity and price |
 | `StatusTimeline` | **Generic relation** — tracks status history for both Order and OrderItem with actor audit |
 | `Return` | Return request linked to OrderItem with reason code, comment, status (REQUESTED/APPROVED/REJECTED/COMPLETED) |
@@ -276,7 +276,7 @@ A universal `Transaction` model records every financial event in the system:
 | `transaction_id` | UUID — unique identifier |
 | `transaction_type` | ORDER_PAYMENT, CANCELLATION_REFUND, RETURN_REFUND, WALLET_CREDIT, WALLET_DEBIT |
 | `payment_method` | COD, WALLET, RAZORPAY |
-| `status` | PENDING → PAID / COMPLETED / FAILED |
+| `status` | PENDING → PAID / COMPLETED / FAILED / CANCELLED |
 | `content_object` | GenericFK linking to the source (Order, OrderItem, Return, etc.) |
 | `gateway_*` | Razorpay-specific fields (order_id, payment_id, signature) |
 
@@ -494,10 +494,11 @@ python manage.py runserver
 - [x] Razorpay Integration (Order creation, Signature verification, Callback handling)
 - [x] Wallet System (Credit/Debit, Balance snapshots, Row locking)
 - [x] Order Cancellation (Item-level, Stock restore, Auto-refund initiation)
-- [x] Refund Management (Admin approve/reject, Auto wallet credit)
+- [x] Refund Management (Admin approve/reject, **Instant cancel refunds** to wallet)
 - [x] Payment Failure Handling (FAILED status, Failure page)
 - [x] Admin Transaction Dashboard (List, Detail, Search, Filters)
 - [x] User Wallet Page (Balance, Transaction history, Tabs)
+- [x] Consistent Monetary Formatting (`floatformat:2` everywhere)
 
 ### Phase 4 — Growth & Optimization
 - [ ] Coupon System
