@@ -7,6 +7,24 @@ function populateReview() {
     document.getElementById('review-addr-name').innerText = data.name || '-';
     document.getElementById('review-addr-details').innerText = data.address || '-';
     document.getElementById('review-addr-phone').innerText = data.phone || '-';
+
+    const payMethod = CheckoutState.selectedPaymentMethod;
+    const payTextEl = document.getElementById('review-pay-method');
+    const payIconEl = document.getElementById('review-pay-icon');
+
+    if (payMethod === 'cod') {
+        payTextEl.innerText = 'Cash on Delivery (COD)';
+        payIconEl.innerText = 'local_shipping';
+    } else if (payMethod === 'wallet') {
+        payTextEl.innerText = 'Wallet';
+        payIconEl.innerText = 'account_balance_wallet';
+    } else if (payMethod === 'razorpay') {
+        payTextEl.innerText = 'Razorpay (Online Payment)';
+        payIconEl.innerText = 'credit_card';
+    } else {
+        payTextEl.innerText = payMethod.toUpperCase();
+        payIconEl.innerText = 'payments';
+    }
 }
 
 function placeOrder() {
