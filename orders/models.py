@@ -168,7 +168,7 @@ class Order(models.Model):
     @property
     def payment_transaction(self):
         """Return the primary payment Transaction (or None)."""
-        return self.payment.first()
+        return self.payment.filter(transaction_type="ORDER_PAYMENT").first()
 
     @property
     def can_generate_invoice(self):

@@ -1,7 +1,6 @@
 from decimal import Decimal
 from django.contrib.contenttypes.models import ContentType
 from django.db import transaction as db_transaction
-from orders.models import Order
 from payments.models import Transaction
 from users.wallet.service import credit_wallet
 
@@ -49,14 +48,13 @@ def update_transaction(*, order, amount, note=""):
     """
     txn = order.payment_transaction
     if txn and txn.status == "PENDING":
-        txn_amount = txn.amount
-        txn_amount -= amount
+        new_amount = txn.amount - amount
 
-        if txn_amount <= 0:
+        if new_amount <= 0:
             txn.status = "CANCELLED"
             txn.note = f"{txn.note} | Order cancelled"
         else:
-            txn.amount = txn_amount
+            txn.amount = new_amount
             txn.note = f"{txn.note} | {note}"
 
         txn.save(update_fields=["amount", "note", "updated_at", "status"])

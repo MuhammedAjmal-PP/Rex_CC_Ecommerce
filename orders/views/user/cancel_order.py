@@ -7,7 +7,7 @@ from django.views.decorators.http import require_GET, require_POST
 from catalog.service import update_stock
 from orders.models import Order, OrderItem
 from orders.service import InvalidTransitionError, change_order_item_status
-from payments.service import initiate_refund, update_transaction
+from payments.service import complete_refund, initiate_refund, update_transaction
 
 
 CANCELLABLE_ITEM_STATUSES = {"PENDING", "CONFIRMED", "PACKING", "READY"}
@@ -105,7 +105,7 @@ def cancel_order_submit(request, order_number):
                     order.payment_transaction
                     and order.payment_transaction.payment_method != "COD"
                 ):
-                    initiate_refund(
+                    refund_txn = initiate_refund(
                         order=order,
                         user=request.user,
                         amount=item.total_cancel,
@@ -113,6 +113,13 @@ def cancel_order_submit(request, order_number):
                         content_object=item,
                         note=note,
                     )
+                    
+                    # Instantly credit the wallet
+                    complete_refund(
+                        transaction=refund_txn,
+                        wallet_reason="CANCELLATION_REFUND"
+                    )
+
                 else:
                     update_transaction(
                         order=order,
