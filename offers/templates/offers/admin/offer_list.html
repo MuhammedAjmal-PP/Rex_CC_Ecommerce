@@ -1,0 +1,245 @@
+{% extends 'core/admin/base_admin.html' %}
+{% load static %}
+{% block title %}Offers{% endblock title %}
+{% block extra_css %}
+    <link rel="stylesheet"
+          href="{% static 'core/admin/css/shared/admin_search_filter.css' %}">
+    <link rel="stylesheet"
+          href="{% static 'core/admin/css/shared/admin_table_listing.css' %}">
+    <link rel="stylesheet"
+          href="{% static 'offers/admin/css/offer_list.css' %}">
+{% endblock extra_css %}
+{% block header_title %}Offers{% endblock header_title %}
+{% block header_subtitle %}Manage product, category and brand offers{% endblock header_subtitle %}
+{% block content %}
+
+    {# ── Stat Cards (clickable status filters) ── #}
+    <div class="stats-container">
+        <a href="?{% if search_query %}q={{ search_query }}&{% endif %}{% if selected_type %}offer_type={{ selected_type }}&{% endif %}"
+           class="stat-card {% if not status_filter %}active{% endif %}">
+            <div class="stat-icon"><span class="material-icons fs-2">local_offer</span></div>
+            <div class="stat-content">
+                <p class="stat-label">Total Offers</p>
+                <h3 class="stat-value">{{ total_offers }}</h3>
+            </div>
+        </a>
+        <a href="?status=active{% if search_query %}&q={{ search_query }}{% endif %}{% if selected_type %}&offer_type={{ selected_type }}{% endif %}"
+           class="stat-card {% if status_filter == 'active' %}active{% endif %}">
+            <div class="stat-icon"><span class="material-icons fs-2">toggle_on</span></div>
+            <div class="stat-content">
+                <p class="stat-label">Active</p>
+                <h3 class="stat-value">{{ active_offers }}</h3>
+            </div>
+        </a>
+        <a href="?status=inactive{% if search_query %}&q={{ search_query }}{% endif %}{% if selected_type %}&offer_type={{ selected_type }}{% endif %}"
+           class="stat-card {% if status_filter == 'inactive' %}active{% endif %}">
+            <div class="stat-icon"><span class="material-icons fs-2">toggle_off</span></div>
+            <div class="stat-content">
+                <p class="stat-label">Inactive</p>
+                <h3 class="stat-value">{{ inactive_offers }}</h3>
+            </div>
+        </a>
+        <a href="?status=valid{% if search_query %}&q={{ search_query }}{% endif %}{% if selected_type %}&offer_type={{ selected_type }}{% endif %}"
+           class="stat-card {% if status_filter == 'valid' %}active{% endif %}">
+            <div class="stat-icon"><span class="material-icons fs-2">verified</span></div>
+            <div class="stat-content">
+                <p class="stat-label">Valid Now</p>
+                <h3 class="stat-value">{{ valid_offers }}</h3>
+            </div>
+        </a>
+        <a href="?status=expired{% if search_query %}&q={{ search_query }}{% endif %}{% if selected_type %}&offer_type={{ selected_type }}{% endif %}"
+           class="stat-card {% if status_filter == 'expired' %}active{% endif %}">
+            <div class="stat-icon"><span class="material-icons fs-2">timer_off</span></div>
+            <div class="stat-content">
+                <p class="stat-label">Expired</p>
+                <h3 class="stat-value">{{ expired_offers }}</h3>
+            </div>
+        </a>
+    </div>
+
+    {# ── Offer Type Card Tabs ── #}
+    <div class="type-filter-bar">
+        <a href="?{% if search_query %}q={{ search_query }}&{% endif %}{% if status_filter %}status={{ status_filter }}{% endif %}"
+           class="type-card {% if not selected_type %}active{% endif %}">
+            <span class="material-icons">apps</span>
+            <span>All Types</span>
+        </a>
+        <a href="?offer_type=PRODUCT{% if search_query %}&q={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}"
+           class="type-card {% if selected_type == 'PRODUCT' %}active{% endif %}">
+            <span class="material-icons">inventory_2</span>
+            <span>Product</span>
+        </a>
+        <a href="?offer_type=CATEGORY{% if search_query %}&q={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}"
+           class="type-card {% if selected_type == 'CATEGORY' %}active{% endif %}">
+            <span class="material-icons">category</span>
+            <span>Category</span>
+        </a>
+        <a href="?offer_type=BRAND{% if search_query %}&q={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}"
+           class="type-card {% if selected_type == 'BRAND' %}active{% endif %}">
+            <span class="material-icons">storefront</span>
+            <span>Brand</span>
+        </a>
+    </div>
+
+    {# ── Search Bar ── #}
+    <div class="search-filter-bar">
+        <div class="search-box" style="flex:1;">
+            <form method="get" class="search-form">
+                <input type="hidden" name="offer_type" value="{{ selected_type }}">
+                <input type="hidden" name="status" value="{{ status_filter }}">
+                <div class="search-input-wrapper">
+                    <input type="text"
+                           name="q"
+                           placeholder="Search by offer name, product, brand or category..."
+                           value="{{ search_query }}"
+                           class="form-control">
+                    <button type="submit" class="search-btn">
+                        <span class="material-icons">search</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+        <div class="create-btn">
+            <a href="{% url 'admin_offer_add' %}">
+                <span class="material-icons">add</span>
+                Add Offer
+            </a>
+        </div>
+    </div>
+
+    {# ── Table ── #}
+    <div class="table-container">
+        {% if offers %}
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Offer</th>
+                        <th>Type</th>
+                        <th>Discount</th>
+                        <th>Target</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for offer in offers %}
+                        <tr>
+                            <td><div class="offer-name">{{ offer.name }}</div></td>
+                            <td>
+                                <span class="offer-type-badge offer-type-{{ offer.offer_type|lower }}">{{ offer.get_offer_type_display }}</span>
+                            </td>
+                            <td><span class="discount-value">{{ offer.discount_value }}%</span></td>
+                            <td>
+                                <div class="target-list">
+                                    {% if offer.offer_type == "PRODUCT" %}
+                                        {% for product in offer.products.all|slice:":3" %}<span class="target-chip">{{ product.name }}</span>{% endfor %}
+                                        {% if offer.products.count > 3 %}<span class="target-chip more">+{{ offer.products.count|add:"-3" }} more</span>{% endif %}
+                                    {% elif offer.offer_type == "CATEGORY" %}
+                                        {% for cat in offer.categories.all|slice:":3" %}<span class="target-chip">{{ cat.name }}</span>{% endfor %}
+                                        {% if offer.categories.count > 3 %}<span class="target-chip more">+{{ offer.categories.count|add:"-3" }} more</span>{% endif %}
+                                    {% elif offer.offer_type == "BRAND" %}
+                                        {% for brand in offer.brands.all|slice:":3" %}<span class="target-chip">{{ brand.name }}</span>{% endfor %}
+                                        {% if offer.brands.count > 3 %}<span class="target-chip more">+{{ offer.brands.count|add:"-3" }} more</span>{% endif %}
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td>
+                                <div class="date-time">
+                                    <span class="date">{{ offer.start_date|date:"Y-m-d" }}</span>
+                                    <span class="time">{{ offer.start_date|date:"h:i A" }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="date-time">
+                                    <span class="date">{{ offer.end_date|date:"Y-m-d" }}</span>
+                                    <span class="time">{{ offer.end_date|date:"h:i A" }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                {% if offer.is_valid %}
+                                    <span class="status-badge offer-valid">Valid</span>
+                                {% elif offer.is_active %}
+                                    <span class="status-badge offer-active">Active</span>
+                                {% else %}
+                                    <span class="status-badge offer-inactive">Inactive</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="action-btns">
+                                    <a href="{% url 'admin_offer_edit' offer.pk %}"
+                                       class="action-btn" title="Edit">
+                                        <span class="material-icons fs-6">edit</span>
+                                    </a>
+                                    <form method="post"
+                                          action="{% url 'admin_offer_delete' offer.pk %}"
+                                          class="d-inline"
+                                          onsubmit="return confirm('Delete offer \'{{ offer.name }}\'?');">
+                                        {% csrf_token %}
+                                        <button type="submit" class="action-btn action-btn-danger" title="Delete">
+                                            <span class="material-icons fs-6">delete</span>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            {# ── Pagination ── #}
+            {% if offers.paginator.num_pages > 1 %}
+                <div class="pagination-container">
+                    <div class="pagination-info">
+                        Showing {{ offers.start_index }}–{{ offers.end_index }} of {{ offers.paginator.count }} offers
+                    </div>
+                    <div class="pagination">
+                        {% if offers.has_previous %}
+                            <a href="?page={{ offers.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if selected_type %}&offer_type={{ selected_type }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}"
+                               class="page-btn-nav" aria-label="Previous page">
+                                <span class="material-icons">chevron_left</span>
+                            </a>
+                        {% else %}
+                            <button class="page-btn-nav" disabled aria-label="Previous page (disabled)">
+                                <span class="material-icons">chevron_left</span>
+                            </button>
+                        {% endif %}
+                        {% for num in offers.paginator.page_range %}
+                            {% if offers.number == num %}
+                                <span class="page-btn active" aria-current="page">{{ num }}</span>
+                            {% elif num > offers.number|add:"-3" and num < offers.number|add:"3" %}
+                                <a href="?page={{ num }}{% if search_query %}&q={{ search_query }}{% endif %}{% if selected_type %}&offer_type={{ selected_type }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}"
+                                   class="page-btn" aria-label="Page {{ num }}">{{ num }}</a>
+                            {% endif %}
+                        {% endfor %}
+                        {% if offers.has_next %}
+                            <a href="?page={{ offers.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if selected_type %}&offer_type={{ selected_type }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}"
+                               class="page-btn-nav" aria-label="Next page">
+                                <span class="material-icons">chevron_right</span>
+                            </a>
+                        {% else %}
+                            <button class="page-btn-nav" disabled aria-label="Next page (disabled)">
+                                <span class="material-icons">chevron_right</span>
+                            </button>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="empty-state">
+                <span class="material-icons" style="font-size: 64px;">local_offer</span>
+                <h3>No offers found</h3>
+                <p>
+                    {% if search_query or selected_type or status_filter %}
+                        Try adjusting your search or clearing the filters.
+                    {% else %}
+                        No offers have been created yet.
+                        <a href="{% url 'admin_offer_add' %}">Create the first offer.</a>
+                    {% endif %}
+                </p>
+            </div>
+        {% endif %}
+    </div>
+
+{% endblock content %}

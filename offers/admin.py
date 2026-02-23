@@ -1,3 +1,10 @@
 from django.contrib import admin
+from offers.forms import OfferForm
+from offers.models import Offer
 
-# Register your models here.
+
+class OfferAdmin(admin.ModelAdmin):
+    form = OfferForm
+
+
+admin.site.register(Offer, OfferAdmin)
