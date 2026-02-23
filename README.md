@@ -21,6 +21,7 @@
 - [Features Overview](#-features-overview)
 - [Authentication System](#-authentication-system)
 - [Admin Panel](#-admin-panel)
+- [Offers & Discounts](#-offers--discounts)
 - [User Features](#-user-features)
 - [Cart Management](#-cart-management)
 - [Wishlist System](#-wishlist-system)
@@ -50,6 +51,7 @@
 | Payments | ✅ Complete | Razorpay gateway, Transaction ledger, Refund management |
 | Wallet | ✅ Complete | Credit/Debit, Balance snapshots, Transaction history |
 | Inventory | ✅ Complete | Centralized stock service, Audit logs |
+| Offers & Discounts | ✅ Complete | Product/Category/Brand offers, Best-offer pricing, Admin CRUD |
 | Order Management (User) | ✅ Complete | Order history, Item tracking, Cancellation, Returns, Invoice PDF |
 | Order Management (Admin) | ✅ Complete | Status cascade, Return review, Refund approve/reject |
 
@@ -91,7 +93,19 @@
 - **Variants**:
     - **Dynamic Formsets**: Add/edit variants without page reloads using JavaScript.
     - **Strict Validation**: Enforces minimum 3 images and exactly 1 primary image per variant.
+    - **Offer-Aware Pricing**: Variant `discount_percentage` automatically resolves the best rate across own discount, product offers, category offers, and brand offers.
     - **Optimized UI**: Horizontal scrolling tables for complex data, unified form templates.
+</details>
+
+<details>
+<summary><strong>🏷️ Offer Management</strong></summary>
+
+**Location:** `offers/views/admin/views.py`
+
+- **Offer List**: Paginated listing with search, filter by type (Product/Category/Brand) and status (Active/Inactive/Valid/Expired), stat cards
+- **Add / Edit Offer**: Form with date-range picker, percentage discount value, dynamic M2M target selection (products, categories, or brands based on offer type)
+- **Delete Offer**: POST-only hard delete
+- **Form Validation**: Enforces single-target-type rule (e.g., a Product offer cannot link to categories or brands), date ordering, and max percentage cap
 </details>
 
 <details>
@@ -127,6 +141,45 @@
 - **Refund Detail**: Admin detail page with approve/reject action buttons
 - **Refund Actions**: Approve (credits user wallet) or reject pending refunds
 </details>
+
+---
+
+## 🏷️ Offers & Discounts
+
+**Location:** `offers/`
+
+### Offer Model
+
+| Field | Description |
+|-------|-------------|
+| `name` | Human-readable label (min 3 chars) |
+| `offer_type` | PRODUCT, CATEGORY, or BRAND |
+| `discount_type` | PERCENTAGE (extensible to FIXED in future) |
+| `discount_value` | Percentage value (0–100) |
+| `start_date` / `end_date` | Validity window (datetime) |
+| `is_active` | Manual on/off toggle |
+| `products` / `categories` / `brands` | M2M relations — attach offer to targets |
+
+### Pricing Integration
+
+The `ProductVariant.discount_percentage` property automatically resolves the **best available discount** across all sources:
+
+```
+1. Variant's own `discount_rate`
+2. Active Product offers linked to the variant's product
+3. Active Category offers linked to any of the product's categories
+4. Active Brand offers linked to the product's brand
+```
+
+The highest rate wins, and `final_price` = `price − discount_amount`.
+
+### Validation Rules
+
+- A **Product offer** must link to at least one product and cannot link to categories or brands
+- A **Category offer** must link to at least one category and cannot link to products or brands
+- A **Brand offer** must link to at least one brand and cannot link to products or categories
+- `end_date` must be after `start_date`
+- Percentage discount capped at 100%
 
 ---
 
@@ -395,6 +448,11 @@ Rex_CC_Ecommerce/
 │   ├── service.py         # update_stock(), draft management
 │   └── views/admin/       # Full catalog CRUD
 │
+├── offers/                # Offers & Discounts
+│   ├── models.py          # Offer (Product/Category/Brand, M2M targets)
+│   ├── forms.py           # OfferForm with type-specific validation
+│   └── views/admin/       # Offer list, add, edit, delete
+│
 ├── orders/                # Order lifecycle
 │   ├── models.py          # Order, OrderItem, StatusTimeline, Return, ReturnImage
 │   ├── service/           # Status transitions, returns, stock validation
@@ -500,7 +558,9 @@ python manage.py runserver
 - [x] User Wallet Page (Balance, Transaction history, Tabs)
 - [x] Consistent Monetary Formatting (`floatformat:2` everywhere)
 
-### Phase 4 — Growth & Optimization
+### Phase 4 — Offers & Growth (🔄 In Progress)
+- [x] Offers & Discounts (Product/Category/Brand offers, best-offer pricing)
+- [x] Admin Offer Management (List, Add, Edit, Delete with filters & stat cards)
 - [ ] Coupon System
 - [ ] Referral Program
 - [ ] Sales Analytics Dashboard
