@@ -148,28 +148,28 @@
 
             <!-- Pagination -->
             {% if refunds.paginator.num_pages > 1 %}
-                <div class="table-footer">
-                    <div class="showing-text">
+                <div class="pagination-container">
+                    <div class="pagination-info">
                         Showing {{ refunds.start_index }} to {{ refunds.end_index }} of {{ refunds.paginator.count }} refunds
                     </div>
-                    <nav class="pagination-nav">
+                    <nav class="pagination">
                         {% if refunds.has_previous %}
                             <a href="?page={{ refunds.previous_page_number }}{% if search_query %}&qs={{ search_query }}{% endif %}{% if status_filter != 'ALL' %}&status={{ status_filter|lower }}{% endif %}"
-                               class="pagination-btn">
+                               class="page-btn-nav">
                                 <span class="material-icons">chevron_left</span>
                             </a>
                         {% endif %}
                         {% for num in refunds.paginator.page_range %}
                             {% if refunds.number == num %}
-                                <span class="pagination-btn active">{{ num }}</span>
+                                <span class="page-btn active">{{ num }}</span>
                             {% elif num > refunds.number|add:'-3' and num < refunds.number|add:'3' %}
                                 <a href="?page={{ num }}{% if search_query %}&qs={{ search_query }}{% endif %}{% if status_filter != 'ALL' %}&status={{ status_filter|lower }}{% endif %}"
-                                   class="pagination-btn">{{ num }}</a>
+                                   class="page-btn">{{ num }}</a>
                             {% endif %}
                         {% endfor %}
                         {% if refunds.has_next %}
                             <a href="?page={{ refunds.next_page_number }}{% if search_query %}&qs={{ search_query }}{% endif %}{% if status_filter != 'ALL' %}&status={{ status_filter|lower }}{% endif %}"
-                               class="pagination-btn">
+                               class="page-btn-nav">
                                 <span class="material-icons">chevron_right</span>
                             </a>
                         {% endif %}

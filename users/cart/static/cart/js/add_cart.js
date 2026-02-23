@@ -193,28 +193,6 @@ async function updateCartBadge() {
   }
 }
 
-/* ===============================
-   QTY INCREASE / DECREASE (PDP)
-================================ */
-document.addEventListener("click", function (e) {
-  if (e.target.matches(".pdp-qty-btn")) {
-    const action = e.target.dataset.action;
-    const input = e.target
-      .closest(".pdp-qty-wrapper")
-      .querySelector(".pdp-qty-input");
-
-    let current = parseInt(input.value);
-    const max = parseInt(input.getAttribute("max")) || 99;
-
-    if (action === "increase" && current < max) {
-      input.value = current + 1;
-    }
-
-    if (action === "decrease" && current > 1) {
-      input.value = current - 1;
-    }
-  }
-});
 
 /* ===============================
    TOAST NOTIFICATION

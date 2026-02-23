@@ -167,28 +167,28 @@
 
             <!-- Pagination -->
             {% if transactions.paginator.num_pages > 1 %}
-                <div class="table-footer">
-                    <div class="showing-text">
+                <div class="pagination-container">
+                    <div class="pagination-info">
                         Showing {{ transactions.start_index }} to {{ transactions.end_index }} of {{ transactions.paginator.count }} transactions
                     </div>
-                    <nav class="pagination-nav">
+                    <nav class="pagination">
                         {% if transactions.has_previous %}
                             <a href="?page={{ transactions.previous_page_number }}{% if search_query %}&qs={{ search_query }}{% endif %}{% if status_filter != 'ALL' %}&status={{ status_filter|lower }}{% endif %}{% if type_filter != 'ALL' %}&type={{ type_filter|lower }}{% endif %}"
-                               class="pagination-btn">
+                               class="page-btn-nav">
                                 <span class="material-icons">chevron_left</span>
                             </a>
                         {% endif %}
                         {% for num in transactions.paginator.page_range %}
                             {% if transactions.number == num %}
-                                <span class="pagination-btn active">{{ num }}</span>
+                                <span class="page-btn active">{{ num }}</span>
                             {% elif num > transactions.number|add:'-3' and num < transactions.number|add:'3' %}
                                 <a href="?page={{ num }}{% if search_query %}&qs={{ search_query }}{% endif %}{% if status_filter != 'ALL' %}&status={{ status_filter|lower }}{% endif %}{% if type_filter != 'ALL' %}&type={{ type_filter|lower }}{% endif %}"
-                                   class="pagination-btn">{{ num }}</a>
+                                   class="page-btn">{{ num }}</a>
                             {% endif %}
                         {% endfor %}
                         {% if transactions.has_next %}
                             <a href="?page={{ transactions.next_page_number }}{% if search_query %}&qs={{ search_query }}{% endif %}{% if status_filter != 'ALL' %}&status={{ status_filter|lower }}{% endif %}{% if type_filter != 'ALL' %}&type={{ type_filter|lower }}{% endif %}"
-                               class="pagination-btn">
+                               class="page-btn-nav">
                                 <span class="material-icons">chevron_right</span>
                             </a>
                         {% endif %}
