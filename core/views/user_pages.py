@@ -22,8 +22,7 @@ def home(request):
     # Get brands with logos for featured brands section
     brands = Brand.objects.filter(is_active=True, logo__isnull=False)[:5]
 
-    # Get new arrivals - latest 8 variants
-    new_arrivals = (
+    product_variant = (
         ProductVariant.objects.filter(
             product__is_drafted=False,
             product__is_deleted=False,
@@ -33,23 +32,13 @@ def home(request):
         )
         .select_related("product", "product__brand")
         .prefetch_related("images")
-        .order_by("-created_at")[:8]
     )
 
-    # Get featured variants
-    featured_variants = (
-        ProductVariant.objects.filter(
-            product__is_drafted=False,
-            product__is_deleted=False,
-            is_drafted=False,
-            is_deleted=False,
-            is_featured=True,
-            stock__gt=0,
-        )
-        .select_related("product", "product__brand")
-        .prefetch_related("images")
-        .order_by("-created_at")[:4]
-    )
+    new_arrivals = product_variant.order_by("-created_at")[:8]
+
+    featured_variants = product_variant.filter(is_featured=True).order_by(
+        "-created_at"
+    )[:8]
 
     now = timezone.now()
     active_offers = Offer.objects.filter(
@@ -62,18 +51,8 @@ def home(request):
         | Q(brand__offers__in=active_offers)
     ).distinct()
 
-    # Get offer variants (variants with active discounts)
-    offer_variants = (
-        ProductVariant.objects.filter(
-            product__is_drafted=False,
-            product__is_deleted=False,
-            is_drafted=False,
-            is_deleted=False,
-            stock__gt=0,
-        )
-        .filter(Q(discount_rate__gt=0) | Q(product__in=offer_products))
-        .select_related("product", "product__brand")
-        .prefetch_related("images")
+    offer_variants = product_variant.filter(
+        Q(discount_rate__gt=0) | Q(product__in=offer_products)
     )
 
     offer_variants = list(offer_variants)
