@@ -25,12 +25,12 @@ def view_cart(request):
     products = build_cart_summary(cart_items)
 
     # order summay variables
-    total_discount = Decimal("0.00")
 
     order_summary = {
         "products_count": cart.items_count,
+        "total": cart.total,
+        "discount": cart.discount,
         "sub_total": cart.sub_total,
-        "total_discount": total_discount,
         "shipping_fee": cart.shipping_fee,
         "total_amount_to_pay": cart.total_amount,
     }

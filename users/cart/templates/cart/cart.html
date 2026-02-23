@@ -105,15 +105,19 @@
                     <div class="cart-summary">
                         <h2 class="summary-title">Order Summary</h2>
                         <div class="summary-row">
-                            <span>Subtotal ({{ order_summary.products_count }} items)</span>
-                            <span>₹{{ order_summary.sub_total|floatformat:2|intcomma }}</span>
+                            <span>Total({{ order_summary.products_count }} items)</span>
+                            <span>₹{{ order_summary.total|floatformat:2|intcomma }}</span>
                         </div>
-                        <div class="summary-row {% if order_summary.total_discount > 0 %}discount{% endif %}">
+                        <div class="summary-row {% if order_summary.discount > 0 %}discount{% endif %}">
                             <span>Discount</span>
-                            <span>−₹{{ order_summary.total_discount|floatformat:2|intcomma }}</span>
+                            <span>−₹{{ order_summary.discount|floatformat:2|intcomma }}</span>
                         </div>
                         <div class="summary-row">
-                            <span>Shipping</span>
+                            <span>Subtotal</span>
+                            <span>₹{{ order_summary.sub_total|floatformat:2|intcomma }}</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Shipping Fee</span>
                             <span>
                                 {% if order_summary.shipping_fee == 0 %}
                                     Free
@@ -124,7 +128,7 @@
                         </div>
                         <div class="summary-divider"></div>
                         <div class="summary-row total">
-                            <span>Total</span>
+                            <span>Total Payable</span>
                             <span>₹{{ order_summary.total_amount_to_pay|floatformat:2|intcomma }}</span>
                         </div>
                         <div class="summary-actions">

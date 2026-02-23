@@ -23,6 +23,14 @@ class Cart(models.Model):
         return sum(item.total_amount for item in self.items.all())
 
     @property
+    def total(self):
+        return sum(item.total_base for item in self.items.all())
+
+    @property
+    def discount(self):
+        return sum(item.total_discount for item in self.items.all())
+
+    @property
     def shipping_fee(self):
         return Decimal(
             sum([item.quantity * settings.SHIPPING_CHARGE for item in self.items.all()])
@@ -63,6 +71,10 @@ class CartItem(models.Model):
     @property
     def total_amount(self):
         return self.product_variant.final_price * self.quantity
+
+    @property
+    def total_base(self):
+        return self.product_variant.price * self.quantity
 
     @property
     def item_price(self):

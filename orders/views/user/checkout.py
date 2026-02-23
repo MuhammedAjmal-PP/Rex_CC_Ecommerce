@@ -51,12 +51,11 @@ def checkoutview(request):
     can_add_address = addresses.count() < settings.MAX_ADDRESSES_PER_USER
     address_form = AddressForm() if can_add_address else None
 
-    discount = Decimal("0")
-
     order_summary = {
         "items_count": cart.items_count,
+        "total": cart.total,
+        "discount": cart.discount,
         "sub_total": cart.sub_total,
-        "discount": discount,
         "shipping_charge": cart.shipping_fee,
         "gst_rate": settings.GST_RATE,
         "tax": cart.tax,
