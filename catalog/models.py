@@ -207,7 +207,7 @@ class ProductVariant(models.Model):
     )
 
     price = models.DecimalField(max_digits=12, decimal_places=2)
-    discount_percentage = models.PositiveIntegerField(
+    discount_rate = models.PositiveIntegerField(
         default=0,
         validators=[MaxValueValidator(100), MinValueValidator(0)],
         help_text="Discount percentage (0–100)",
@@ -236,7 +236,32 @@ class ProductVariant(models.Model):
         return self.images.first()
 
     @property
+    def discount_percentage(self):
+        from offers.models import Offer
+        from django.utils import timezone
+
+        now = timezone.now()
+
+        # Collect all active offers linked to this variant's product, categories, or brand
+        offers = Offer.objects.filter(
+            is_active=True,
+            start_date__lte=now,
+            end_date__gte=now,
+        ).filter(
+            models.Q(products=self.product)
+            | models.Q(categories__in=self.product.category.all())
+            | models.Q(brands=self.product.brand)
+        ).distinct()
+
+        # Build a list of all discount rates (offer rates + variant's own rate)
+        discount_rates = [int(offer.discount_value) for offer in offers]
+        discount_rates.append(self.discount_rate)
+
+        return max(discount_rates)
+
+    @property
     def discount_amount(self):
+        
         if self.discount_percentage > 0:
             return self.price * Decimal(self.discount_percentage) / Decimal(100)
         return Decimal("0.00")

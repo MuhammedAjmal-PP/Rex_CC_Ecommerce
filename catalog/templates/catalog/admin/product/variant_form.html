@@ -186,16 +186,16 @@
                                     <label class="form-label">Discount (%)</label>
                                     <div class="input-wrapper suffix">
                                         <input type="number"
-                                               name="discount_percentage"
+                                               name="discount_rate"
                                                class="form-input with-suffix"
                                                placeholder="0"
                                                min="0"
                                                max="100"
-                                               value="{% if variant %}{{ variant.discount_percentage }}{% else %}{{ variantform.discount_percentage.value|default:'0' }}{% endif %}">
+                                               value="{% if variant %}{{ variant.discount_rate }}{% else %}{{ variantform.discount_rate.value|default:'0' }}{% endif %}">
                                         <span class="input-suffix">%</span>
                                     </div>
-                                    {% if variantform.discount_percentage.errors %}
-                                        <span class="error-text">{{ variantform.discount_percentage.errors.0 }}</span>
+                                    {% if variantform.discount_rate.errors %}
+                                        <span class="error-text">{{ variantform.discount_rate.errors.0 }}</span>
                                     {% endif %}
                                 </div>
                             </div>

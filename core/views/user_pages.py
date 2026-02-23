@@ -1,13 +1,15 @@
 from django.shortcuts import render
 from django.views.decorators.cache import never_cache
-from catalog.models import Category, Brand, ProductVariant
+from catalog.models import Category, Brand, ProductVariant, Product
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
 from users.wishlist.utils import get_session_wishlist
 from users.wishlist.models import WishlistItem
+from django.db.models import Q
+from offers.models import Offer
+from django.utils import timezone
 
 # Create your views here.
-
 
 
 @never_cache
@@ -46,8 +48,19 @@ def home(request):
         )
         .select_related("product", "product__brand")
         .prefetch_related("images")
-        .order_by("-created_at")[:8]
+        .order_by("-created_at")[:4]
     )
+
+    now = timezone.now()
+    active_offers = Offer.objects.filter(
+        is_active=True, start_date__lte=now, end_date__gte=now
+    )
+
+    offer_products = Product.objects.filter(
+        Q(offers__in=active_offers)
+        | Q(category__offers__in=active_offers)
+        | Q(brand__offers__in=active_offers)
+    ).distinct()
 
     # Get offer variants (variants with active discounts)
     offer_variants = (
@@ -57,12 +70,15 @@ def home(request):
             is_drafted=False,
             is_deleted=False,
             stock__gt=0,
-            discount_percentage__gt=0,
         )
+        .filter(Q(discount_rate__gt=0) | Q(product__in=offer_products))
         .select_related("product", "product__brand")
         .prefetch_related("images")
-        .order_by("-discount_percentage")[:8]
     )
+
+    offer_variants = list(offer_variants)
+    offer_variants.sort(key=lambda v: v.discount_percentage, reverse=True)
+    offer_variants = offer_variants[:8]
 
     wishlist_ids = []
     if request.user.is_authenticated:
@@ -143,17 +159,13 @@ def get_mega_menu_data(request):
     Used for global access across all pages.
     """
     categories = list(
-        Category.objects.filter(is_active=True)
-        .values("name", "slug")[:5]
+        Category.objects.filter(is_active=True).values("name", "slug")[:5]
     )
 
     brands = list(
-        Brand.objects.filter(is_active=True, logo__isnull=False)
-        .values("name", "slug")[:6]
+        Brand.objects.filter(is_active=True, logo__isnull=False).values("name", "slug")[
+            :6
+        ]
     )
 
-    return JsonResponse({
-        "success": True,
-        "categories": categories,
-        "brands": brands
-    })
+    return JsonResponse({"success": True, "categories": categories, "brands": brands})

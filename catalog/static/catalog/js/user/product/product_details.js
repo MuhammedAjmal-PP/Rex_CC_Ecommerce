@@ -163,7 +163,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (input.getAttribute("max") > stock) {
           input.setAttribute("max", stock);
-          // console.log(input.getAttribute("max"));
+          console.log(input.getAttribute("max"));
         }
         // Clamp existing valueinput.getAttribute("max")
         if (parseInt(input.value) > stock) {

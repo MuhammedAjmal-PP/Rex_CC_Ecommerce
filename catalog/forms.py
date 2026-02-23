@@ -104,7 +104,7 @@ class ProductVariantForm(forms.ModelForm):
             "stock",
             "is_featured",
             "is_drafted",
-            "discount_percentage",
+            "discount_rate",
         ]
 
     def __init__(self, *args, **kwargs):
