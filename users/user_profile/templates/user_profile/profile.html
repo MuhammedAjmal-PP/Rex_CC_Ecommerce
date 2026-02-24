@@ -1,138 +1,170 @@
 {% extends "core/user/base_user.html" %}
 {% load static %}
 {% block head_title %}
-    My Account | REX CC
+    My Hub | REX CC
 {% endblock head_title %}
 {% block extra_css %}
     <link rel="stylesheet" href="{% static 'user_profile/css/profile.css' %}">
 {% endblock extra_css %}
 {% block content %}
-    <div class="profile-page-centered">
-        <!-- HEADER -->
-        <header class="profile-header-center">
-            <!-- AVATAR -->
-            <div class="profile-avatar-wrapper">
-                {% if user.avatar %}
-                    <img src="{{ user.avatar.url }}"
-                         alt="{{ user.first_name }}"
-                         class="profile-avatar-large">
-                {% else %}
-                    <div class="profile-avatar-placeholder-large">
-                        <span class="material-icons">person</span>
+    <div class="lux-hub-wrapper">
+
+        <!-- HEADER / USER INFO -->
+        <header class="hub-header">
+            <div class="hub-user-info">
+                <div class="hub-avatar-wrap">
+                    {% if user.avatar %}
+                        <img src="{{ user.avatar.url }}" alt="{{ user.first_name }}" class="hub-avatar">
+                    {% else %}
+                        <div class="hub-avatar-placeholder">
+                            <span class="material-icons">person</span>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="hub-user-details">
+
+                    <h1 class="hub-name">
+                        {{ user.first_name }} {% if user.last_name %}{{ user.last_name }}{% endif %}
+                    </h1>
+                    <div class="hub-contact">
+                        <span>{{ user.email }}</span>
+                        {% if user.phone_number %}
+                            <span class="hub-dot">•</span>
+                            <span>{{ user.phone_number }}</span>
+                        {% endif %}
                     </div>
-                {% endif %}
+                </div>
             </div>
-            <!-- INFO -->
-            <h1 class="profile-user-name">
-                {{ user.first_name }}
-                {% if user.last_name %}{{ user.last_name }}{% endif %}
-            </h1>
-            <div class="profile-meta-info">
-                <span class="meta-item">
-                    <span class="material-icons">email</span>
-                    {{ user.email }}
-                </span>
-                {% if user.phone_number %}
-                    <span class="meta-separator">•</span>
-                    <span class="meta-item">
-                        <span class="material-icons">phone</span>
-                        {{ user.phone_number }}
-                    </span>
-                {% endif %}
-            </div>
-            <div class="profile-actions-center">
-                <a href="{% url 'account_logout' %}" class="btn-text-danger">
-                    <span class="material-icons">logout</span> Sign Out
+            <div class="hub-header-actions">
+                <a href="{% url 'edit_profile' %}" class="hub-btn-outline">
+                    Edit Profile
+                </a>
+                <a href="{% url 'account_logout' %}" class="hub-btn-text">
+                    Sign Out
                 </a>
             </div>
         </header>
-        <!-- MAIN DASHBOARD GRID -->
-        <div class="profile-dashboard-container">
-            <!-- STATUS / NAVIGATION CARDS -->
-            <section class="profile-nav-grid">
-                <!-- Orders -->
-                <a href="{% url 'user_order_list' %}" class="nav-card">
-                    <span class="material-icons nav-icon">inventory_2</span>
-                    <span class="nav-label">Orders</span>
-                </a>
-                <!-- Wishlist -->
-                <a href="{% url 'user_wishlist' %}" class="nav-card">
-                    <div class="nav-icon-wrapper">
-                        <span class="material-icons nav-icon">favorite</span>
-                        <!-- ID PRESERVED FOR JS -->
-                        <span id="profileWishlistBadge"
-                              class="nav-badge"
-                              {% if user.wishlist.items.count == 0 %}style="display:none"{% endif %}>
-                            {{ user.wishlist.items.count }}
-                        </span>
+
+        <!-- HIGHLIGHT CARDS (WALLET & REFERRAL) -->
+        <div class="hub-highlights">
+            
+            <!-- WALLET CARD -->
+            <div class="hub-card wallet-card">
+                <div class="wc-header">
+                    <h3>REX CC Wallet</h3>
+                    <span class="material-icons">account_balance_wallet</span>
+                </div>
+                <div class="wc-balance">
+                    <span class="wc-currency">₹</span>
+                    <span class="wc-amount">{% if user.wallet %}{{ user.wallet.balance }}{% else %}0.00{% endif %}</span>
+                </div>
+                <p class="wc-desc">Available for your next timepiece.</p>
+                <div class="wc-actions">
+                    <a href="{% url 'user_wallet' %}" class="hub-btn-light">View Transactions</a>
+                </div>
+                <!-- Decorative background elements -->
+                <div class="wc-pattern"></div>
+            </div>
+
+            <!-- REFERRAL CARD (STATIC FOR NOW) -->
+            <div class="hub-card referral-card">
+                <div class="rc-content">
+                    <div class="rc-badge">New</div>
+                    <h3>Invite & Earn Rewards</h3>
+                    <p>Share your exclusive link. Earn ₹500 in your wallet when a friend makes their first secure purchase.</p>
+                    
+                    <div class="rc-link-wrap">
+                        <input type="text" class="rc-input" value="https://rexcc.com/ref/RC{{ user.id|default:'1024' }}" readonly id="referralInput">
+                        <button class="rc-copy-btn" onclick="copyReferralLink()" aria-label="Copy Link">
+                            <span class="material-icons" id="copyIcon">content_copy</span>
+                        </button>
                     </div>
-                    <span class="nav-label">Wishlist</span>
-                </a>
-                <!-- Cart -->
-                <a href="{% url 'user_cart' %}" class="nav-card">
-                    <div class="nav-icon-wrapper">
-                        <span class="material-icons nav-icon">local_mall</span>
-                        <!-- ID PRESERVED FOR JS -->
-                        <span id="profileCartBadge"
-                              class="nav-badge"
-                              {% if user.cart.items.count == 0 %}style="display:none"{% endif %}>
-                            {{ user.cart.items.count }}
-                        </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- NAVIGATION GRID -->
+        <div class="hub-nav-section">
+            <h2 class="hub-section-title">Manage Account</h2>
+            <div class="hub-grid">
+                
+                <a href="{% url 'user_order_list' %}" class="hub-grid-item">
+                    <div class="hgi-icon"><span class="material-icons">inventory_2</span></div>
+                    <div class="hgi-text">
+                        <h4>Order History</h4>
+                        <p>Track, return, or buy again</p>
                     </div>
-                    <span class="nav-label">Cart</span>
                 </a>
-                <!-- Wallet -->
-                <a href="{% url 'user_wallet' %}" class="nav-card">
-                    <span class="material-icons nav-icon">account_balance_wallet</span>
-                    <span class="nav-label">Wallet</span>
-                </a>
-                <!-- Addresses (Moved from Sidebar) -->
-                <a href="{% url 'user_address' %}" class="nav-card">
-                    <span class="material-icons nav-icon">place</span>
-                    <span class="nav-label">Addresses</span>
-                </a>
-                <!-- Settings/Profile (Moved from Sidebar) -->
-                <a href="{% url 'edit_profile' %}" class="nav-card">
-                    <span class="material-icons nav-icon">settings</span>
-                    <span class="nav-label">Settings</span>
-                </a>
-            </section>
-            <!-- RECENT ACTIVITY / DASHBOARD CONTENT -->
-            <div class="dashboard-sections">
-                <!-- DEFAULT ADDRESS PREVIEW -->
-                <section class="content-section">
-                    <div class="section-header">
-                        <h3 class="section-title">Default Shipping</h3>
-                        <a href="{% url 'user_address' %}" class="section-link">Manage</a>
+
+                <a href="{% url 'user_wishlist' %}" class="hub-grid-item">
+                    <div class="hgi-icon">
+                        <span class="material-icons">favorite_border</span>
+                        <span class="hgi-badge" id="profileWishlistBadge" {% if user.wishlist.items.count == 0 %}style="display:none"{% endif %}>{{ user.wishlist.items.count }}</span>
                     </div>
-                    {% if addresses %}
-                        {% for address in addresses %}
-                            {% if address.is_default %}
-                                <div class="address-card-dashboard">
-                                    <div class="address-tag">DEFAULT</div>
-                                    <span class="address-name">{{ address.full_name }}</span>
-                                    <p>
-                                        {{ address.address_line_1 }}
-                                        {% if address.address_line_2 %}, {{ address.address_line_2 }}{% endif %}
-                                    </p>
-                                    <p>{{ address.city }}, {{ address.state }} {{ address.postal_code }}</p>
-                                    <p>{{ address.country }}</p>
-                                </div>
-                            {% endif %}
-                        {% endfor %}
-                    {% else %}
-                        <div class="address-card-dashboard"
-                             style="text-align: center;
-                                    padding: 40px">
-                            <p style="color:#999; margin-bottom: 20px;">No default address set.</p>
-                            <a href="{% url 'add_address' %}" class="btn btn-outline-dark btn-sm">Add Address</a>
-                        </div>
-                    {% endif %}
-                </section>
+                    <div class="hgi-text">
+                        <h4>My Wishlist</h4>
+                        <p>Your curated collection</p>
+                    </div>
+                </a>
+
+                <a href="{% url 'user_cart' %}" class="hub-grid-item">
+                    <div class="hgi-icon">
+                        <span class="material-icons">local_mall</span>
+                        <span class="hgi-badge" id="profileCartBadge" {% if user.cart.items.count == 0 %}style="display:none"{% endif %}>{{ user.cart.items.count }}</span>
+                    </div>
+                    <div class="hgi-text">
+                        <h4>Shopping Cart</h4>
+                        <p>Checkout selected items</p>
+                    </div>
+                </a>
+
+                <a href="{% url 'user_address' %}" class="hub-grid-item">
+                    <div class="hgi-icon"><span class="material-icons">place</span></div>
+                    <div class="hgi-text">
+                        <h4>Addresses</h4>
+                        <p>Manage shipping locations</p>
+                    </div>
+                </a>
+
+                <a href="{% url 'edit_profile' %}" class="hub-grid-item">
+                    <div class="hgi-icon"><span class="material-icons">security</span></div>
+                    <div class="hgi-text">
+                        <h4>Security</h4>
+                        <p>Passwords and authentication</p>
+                    </div>
+                </a>
+
+                <a href="#" class="hub-grid-item">
+                    <div class="hgi-icon"><span class="material-icons">support_agent</span></div>
+                    <div class="hgi-text">
+                        <h4>Client Care</h4>
+                        <p>Contact your concierge</p>
+                    </div>
+                </a>
+
             </div>
         </div>
     </div>
 {% endblock content %}
+
 {% block extra_js %}
-    <script src="{% static 'user_profile/js/profile.js' %}"></script>
+<script>
+    function copyReferralLink() {
+        var copyText = document.getElementById("referralInput");
+        var icon = document.getElementById("copyIcon");
+        
+        copyText.select();
+        copyText.setSelectionRange(0, 99999); // For mobile devices
+        
+        navigator.clipboard.writeText(copyText.value);
+        
+        icon.textContent = "check";
+        icon.style.color = "#4caf50";
+        setTimeout(() => {
+            icon.textContent = "content_copy";
+            icon.style.color = "inherit";
+        }, 2000);
+    }
+</script>
+<script src="{% static 'user_profile/js/profile.js' %}"></script>
 {% endblock extra_js %}

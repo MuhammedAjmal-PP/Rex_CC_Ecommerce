@@ -1,122 +1,130 @@
 {% extends "core/user/base_user.html" %}
 {% load static %}
 {% load humanize %}
-{% block head_title %}Checkout | REX CC{% endblock %}
+{% block head_title %}Secure Checkout | REX CC{% endblock %}
+
 {% block extra_css %}
     <!-- Checkout Scoped CSS -->
-    <link rel="stylesheet"
-          href="{% static 'orders/user/checkout/css/checkout.css' %}">
-    <link rel="stylesheet"
-          href="{% static 'orders/user/checkout/css/checkout_stepper.css' %}">
-    <link rel="stylesheet"
-          href="{% static 'orders/user/checkout/css/address_section.css' %}">
-    <link rel="stylesheet"
-          href="{% static 'orders/user/checkout/css/payment_section.css' %}">
-    <link rel="stylesheet"
-          href="{% static 'orders/user/checkout/css/review_section.css' %}">
+    <link rel="stylesheet" href="{% static 'orders/user/checkout/css/checkout.css' %}?v=1.1">
+    <link rel="stylesheet" href="{% static 'orders/user/checkout/css/checkout_stepper.css' %}?v=1.1">
+    <link rel="stylesheet" href="{% static 'orders/user/checkout/css/address_section.css' %}?v=1.1">
+    <link rel="stylesheet" href="{% static 'orders/user/checkout/css/payment_section.css' %}?v=1.1">
+    <link rel="stylesheet" href="{% static 'orders/user/checkout/css/review_section.css' %}?v=1.1">
     <!-- Shared Address Form Styles -->
-    <link rel="stylesheet"
-          href="{% static 'user_profile/css/address_form.css' %}">
+    <link rel="stylesheet" href="{% static 'user_profile/css/address_form.css' %}?v=1.1">
 {% endblock %}
+
 {% block content %}
-    <div class="checkout-page">
-        <div class="checkout-container">
-            <!-- LEFT COLUMN: Main Process -->
-            <main class="checkout-main">
-                <!-- 1. Stepper -->
-                {% include "orders/user/checkout/partials/checkout_stepper.html" %}
-                <!-- 2. Step Content Area -->
-                <div class="content-area">
-                    <div class="checkout-step-container">
-                        <!-- STEP 1: Address -->
-                        <div id="step-address" class="checkout-step active">
-                            {% include "orders/user/checkout/partials/address_section.html" %}
-                        </div>
-                        <!-- STEP 2: Payment -->
-                        <div id="step-payment" class="checkout-step" style="display:none;">
-                            {% include "orders/user/checkout/partials/payment_section.html" %}
-                        </div>
-                        <!-- STEP 3: Review -->
-                        <div id="step-review" class="checkout-step" style="display:none;">
-                            {% include "orders/user/checkout/partials/review_section.html" %}
-                        </div>
-                    </div>
-                    <!-- RIGHT COLUMN: Order Summary -->
-                    <aside class="checkout-sidebar">
-                        <div class="summary-card">
-                            <h3 class="summary-title">Order Summary</h3>
-                            <div class="summary-row">
-                                <span class="summary-label">Total ({{ order_summary.items_count }} items)</span>
-                                <span class="summary-value">₹{{ order_summary.mrp_total|floatformat:2|intcomma }}</span>
-                            </div>
-                            <div class="summary-row">
-                                <span class="summary-label">Discount</span>
-                                <span class="summary-value">-₹{{ order_summary.discount|floatformat:2|intcomma }}</span>
-                            </div>
-                            <div class="summary-row">
-                                <span class="summary-label">Subtotal ({{ order_summary.items_count }} items)</span>
-                                <span class="summary-value">₹{{ order_summary.sub_total|floatformat:2|intcomma }}</span>
-                            </div>
-                            <div class="summary-row">
-                                <span class="summary-label">Shipping</span>
-                                <span class="summary-value">
-                                    {% if order_summary.shipping_charge == 0 %}
-                                        Free
-                                    {% else %}
-                                        ₹{{ order_summary.shipping_charge|floatformat:2|intcomma }}
-                                    {% endif %}
-                                </span>
-                            </div>
-                            <div class="summary-row">
-                                <span class="summary-label">Tax (GST {{ order_summary.gst_rate }}%)</span>
-                                <span class="summary-value">₹{{ order_summary.tax|default:0|floatformat:2|intcomma }}</span>
-                            </div>
-                            <div class="summary-row total">
-                                <span class="summary-label">Total Payable</span>
-                                <span class="summary-value">₹{{ order_summary.grand_total|floatformat:2|intcomma }}</span>
-                            </div>
-                            <!-- Secure Badge -->
-                            <div style="margin-top: 20px;
-                                        text-align: center;
-                                        color: #888;
-                                        font-size: 0.8rem;
-                                        display: flex;
-                                        align-items: center;
-                                        justify-content: center;
-                                        gap: 5px">
-                                <span class="material-icons" style="font-size: 14px;">lock</span>
-                                Secure Checkout
-                            </div>
-                        </div>
-                    </aside>
+<div class="lux-hub-wrapper">
+    <!-- HEADER -->
+    <div class="hub-header" style="margin-bottom: 32px; text-align: center; display: block;">
+        <h1 class="hub-title" style="margin-bottom: 8px;">Secure Checkout</h1>
+        <p style="font-family: 'Montserrat', sans-serif; font-size: 0.9rem; color: #666; margin: 0;">
+            Complete your order in 3 simple steps
+        </p>
+    </div>
+
+    <!-- MAIN GRID: Left (Steps) + Right (Summary) -->
+    <div class="chk-grid">
+        
+        <!-- LEFT: STEPPER + CONTENT -->
+        <div class="chk-main">
+            <!-- STEPPER -->
+            {% include "orders/user/checkout/partials/checkout_stepper.html" %}
+
+            <!-- STEP CONTENT CARDS -->
+            <div class="chk-steps-container">
+                <!-- STEP 1: Address -->
+                <div id="step-address" class="chk-step active">
+                    {% include "orders/user/checkout/partials/address_section.html" %}
                 </div>
-            </main>
+                <!-- STEP 2: Payment -->
+                <div id="step-payment" class="chk-step" style="display:none;">
+                    {% include "orders/user/checkout/partials/payment_section.html" %}
+                </div>
+                <!-- STEP 3: Review -->
+                <div id="step-review" class="chk-step" style="display:none;">
+                    {% include "orders/user/checkout/partials/review_section.html" %}
+                </div>
+            </div>
         </div>
-        <!-- Forms (Hidden) for JS Actions -->
-        {% csrf_token %}
-    {% endblock %}
-    {% block extra_js %}
-        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-        <script src="{% static 'orders/user/checkout/js/address.js' %}"></script>
-        <script src="{% static 'orders/user/checkout/js/payment.js' %}"></script>
-        <script src="{% static 'orders/user/checkout/js/review.js' %}"></script>
-        <script src="{% static 'orders/user/checkout/js/checkout.js' %}"></script>
-        <script>
-            document.addEventListener('DOMContentLoaded', () => {
-                const urlParams = new URLSearchParams(window.location.search);
-                if (urlParams.get('step') === '2') {
-                    // Slight delay to ensure initCheckout has run and selected default address
-                    setTimeout(() => {
-                         // Check if address is selected (auto-selected by initCheckout)
-                         // If not, we can't force step 2 because validation will fail.
-                         // But we try anyway; if validation fails, it stays on step 1 which is correct behavior.
-                         if (window.CheckoutState && window.CheckoutState.selectedAddressId) {
-                             goToStep(2);
-                         } else {
-                             console.warn("Cannot auto-navigate to payment: No address selected.");
-                         }
-                    }, 100);
-                }
-            });
-        </script>
-    {% endblock %}
+
+        <!-- RIGHT: SUMMARY SIDEBAR -->
+        <aside class="chk-sidebar">
+            <div class="hub-card" style="padding: 24px; position: sticky; top: 100px;">
+                <h3 style="font-family: 'Playfair Display', serif; font-size: 1.2rem; color: #111; margin: 0 0 20px 0; border-bottom: 1px solid #eaeaea; padding-bottom: 16px;">Order Summary</h3>
+                
+                <div style="font-family: 'Montserrat', sans-serif; font-size: 0.85rem; color: #555;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                        <span>Total ({{ order_summary.items_count }} items)</span>
+                        <span style="font-weight: 500; color: #111;">₹{{ order_summary.mrp_total|floatformat:2|intcomma }}</span>
+                    </div>
+                    {% if order_summary.discount > 0 %}
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                        <span>Discount</span>
+                        <span style="font-weight: 500; color: #2e7d32;">-₹{{ order_summary.discount|floatformat:2|intcomma }}</span>
+                    </div>
+                    {% endif %}
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                        <span>Subtotal</span>
+                        <span style="font-weight: 500; color: #111;">₹{{ order_summary.sub_total|floatformat:2|intcomma }}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                        <span>Shipping</span>
+                        <span style="font-weight: 500; color: #111;">
+                            {% if order_summary.shipping_charge == 0 %}
+                                Free
+                            {% else %}
+                                ₹{{ order_summary.shipping_charge|floatformat:2|intcomma }}
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
+                        <span>Tax (GST {{ order_summary.gst_rate }}%)</span>
+                        <span style="font-weight: 500; color: #111;">₹{{ order_summary.tax|default:0|floatformat:2|intcomma }}</span>
+                    </div>
+                    
+                    <div style="display: flex; justify-content: space-between; margin-top: 16px; padding-top: 16px; border-top: 1px dashed #eaeaea;">
+                        <span style="font-weight: 600; color: #111; text-transform: uppercase;">Total Payable</span>
+                        <span style="font-weight: 700; color: var(--color-gold-dark); font-size: 1.1rem;">₹{{ order_summary.grand_total|floatformat:2|intcomma }}</span>
+                    </div>
+                </div>
+
+                <!-- Secure Badge -->
+                <div style="margin-top: 24px; text-align: center; color: #888; font-size: 0.75rem; font-family: 'Montserrat', sans-serif; display: flex; align-items: center; justify-content: center; gap: 6px; background: rgba(250, 249, 247, 1); padding: 12px; border-radius: 2px;">
+                    <span class="material-icons" style="font-size: 16px; color: #cd7f32;">lock</span>
+                    100% Secure Checkout
+                </div>
+            </div>
+        </aside>
+
+    </div>
+</div>
+
+<!-- Forms (Hidden) for JS Actions -->
+{% csrf_token %}
+
+{% endblock %}
+
+{% block extra_js %}
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script src="{% static 'orders/user/checkout/js/address.js' %}"></script>
+    <script src="{% static 'orders/user/checkout/js/payment.js' %}"></script>
+    <script src="{% static 'orders/user/checkout/js/review.js' %}"></script>
+    <script src="{% static 'orders/user/checkout/js/checkout.js' %}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('step') === '2') {
+                // Slight delay to ensure initCheckout has run and selected default address
+                setTimeout(() => {
+                     if (window.CheckoutState && window.CheckoutState.selectedAddressId) {
+                         goToStep(2);
+                     } else {
+                         console.warn("Cannot auto-navigate to payment: No address selected.");
+                     }
+                }, 100);
+            }
+        });
+    </script>
+{% endblock %}

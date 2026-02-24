@@ -21,18 +21,9 @@ User = get_user_model()
 @login_required(login_url="account_login")
 def profile(request):
     """
-    Renders the user profile dashboard with addresses and email management.
+    profile dashboard.
     """
-    addresses = Address.active.filter(user=request.user).order_by(
-        "-is_default", "-created_at"
-    )
-    email_addresses = EmailAddress.objects.filter(user=request.user)
-    context = {
-        "addresses": addresses,
-        "email_addresses": email_addresses,
-    }
-
-    return render(request, "user_profile/profile.html", context)
+    return render(request, "user_profile/profile.html")
 
 
 @never_cache
@@ -43,6 +34,12 @@ def edit_profile(request):
     if request.method == "POST":
         form = ProfileEditForm(request.POST, request.FILES, instance=request.user)
         if form.is_valid():
+            
+            # Handle avatar removal
+            if request.POST.get("remove_avatar") == "true":
+                request.user.avatar.delete()
+                request.user.avatar = None
+                
             form.save()
             messages.success(request, "Profile updated successfully!")
             return redirect("user_profile")

@@ -8,90 +8,90 @@ My Addresses | REX CC
 <link rel="stylesheet" href="{% static 'user_profile/css/address.css' %}">
 {% endblock extra_css %}
 {% block content %}
-    <div class="profile-page-centered">
-        <!-- BREADCRUMBS -->
-        <nav class="breadcrumb-nav" style="max-width:1200px; margin:0 auto 20px;">
-            <a href="{% url 'user_profile' %}" class="breadcrumb-link">My Account</a>
-            <span class="breadcrumb-separator">›</span>
-            <span class="breadcrumb-current">Addresses</span>
-        </nav>
-        
-        <input type="hidden" id="global-csrf-token" value="{{ csrf_token }}">
+<div class="lux-hub-wrapper">
 
-        <div class="section-header" style="max-width:1200px; margin:0 auto 40px; display:flex; justify-content:space-between; align-items:center;">
-            <h1 class="section-title" style="font-size:2.2rem; margin:0;">My Addresses</h1>
-            <a href="{% url 'add_address' %}" class="btn-add-address" style="font-size: 0.8rem; padding: 10px 20px;">
-                <span class="material-icons" style="font-size: 16px;">add</span>
-                Add New
+    <!-- HEADER / NAVIGATION -->
+    <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 48px;">
+        <div>
+            <h1 class="hub-name" style="margin: 0 0 4px 0;">
+                My Addresses
+            </h1>
+            <p class="hub-contact" style="margin: 0;">
+                Manage your delivery locations
+            </p>
+        </div>
+        <div class="lux-address-actions" style="display: flex; gap: 16px;">
+            <a href="{% url 'user_profile' %}" class="hub-btn-outline">
+                <span class="material-icons" style="font-size: 18px; margin-right: 6px;">arrow_back</span>
+                Back to Hub
+            </a>
+            <a href="{% url 'add_address' %}" class="lux-btn-primary">
+                <span class="material-icons">add</span>
+                Add New Address
             </a>
         </div>
+    </header>
+
+    <div class="lux-address-layout">
+        <!-- Force Django to set CSRF cookie -->
+        <form id="csrf-form" style="display:none">{% csrf_token %}</form>
         
         <!-- ADDRESS GRID -->
         {% if addresses %}
-        <div class="address-grid">
+        <div class="hub-grid lux-address-grid">
             {% for address in addresses %}
-            <div class="delivery-label {% if address.is_default %}delivery-label-default{% endif %}"
-                id="address-{{ address.id }}">
-                <!-- Label Badge -->
-                <div class="label-badge">{{ address.label }}</div>
-                <!-- Default Indicator -->
-                {% if address.is_default %}
-                <div class="default-indicator">
-                    <span class="material-icons">verified</span>
-                    <span>Default</span>
+            <div class="hub-card lux-address-card {% if address.is_default %}is-default{% endif %}" id="address-{{ address.id }}">
+                
+                <div class="lux-address-header">
+                    <div class="lux-address-badge">{{ address.label }}</div>
+                    {% if address.is_default %}
+                    <div class="lux-address-default-badge">
+                        <span class="material-icons">check_circle</span>
+                        DEFAULT
+                    </div>
+                    {% endif %}
                 </div>
-                {% endif %}
-                <!-- Address Content -->
-                <div class="label-content">
-                    <p class="label-name">{{ address.full_name }}</p>
-                    <p class="label-address">
-                        {{ address.address_line_1 }}
-                        {% if address.address_line_2 %}, {{ address.address_line_2 }}{% endif %}
+
+                <div class="lux-address-body">
+                    <h3 class="lux-address-name">{{ address.full_name }}</h3>
+                    <p class="lux-address-lines">
+                        {{ address.address_line_1 }}<br>
+                        {% if address.address_line_2 %}{{ address.address_line_2 }}<br>{% endif %}
+                        {{ address.city }}, {{ address.state }} {{ address.postal_code }}<br>
+                        {{ address.country }}
                     </p>
-                    <p class="label-address">{{ address.city }}, {{ address.state }} {{ address.postal_code }}</p>
-                    <p class="label-address">{{ address.country }}</p>
-                    <p class="label-phone">
+                    <p class="lux-address-phone">
                         <span class="material-icons">phone</span>
                         {{ address.phone_number }}
                     </p>
                 </div>
-                <!-- Actions -->
-                <div class="label-actions">
+
+                <div class="lux-address-footer">
                     {% if not address.is_default %}
-                    <button type="button" onclick="setDefaultAddress(event, '{{ address.id }}')" class="action-link"
-                        data-url="{% url 'set_default_address' address.id %}" id="csrf-token" data-csrf="{{ csrf_token }}">
-                        <span class="material-icons">push_pin</span>
-                        <span>Set as Default</span>
+                    <button type="button" onclick="setDefaultAddress(this)" class="lux-action-btn"
+                        data-url="{% url 'set_default_address' address.id %}">
+                        Set Default
                     </button>
                     {% endif %}
-                    <a href="{% url 'address_edit' address.id %}" class="action-link">
-                        <span class="material-icons">edit</span>
-                        <span>Edit</span>
-                    </a>
-                    <button type="button" onclick="deleteAddress(event, '{{ address.id }}')"
-                        class="action-link action-link-delete" data-url="{% url 'address_delete' address.id %}">
-                        <span class="material-icons">delete_outline</span>
-                        <span>Remove</span>
+                    <a href="{% url 'address_edit' address.id %}" class="lux-action-btn">Edit</a>
+                    <button type="button" onclick="deleteAddress(this)"
+                        class="lux-action-btn delete-btn" data-url="{% url 'address_delete' address.id %}">
+                        Remove
                     </button>
                 </div>
             </div>
             {% endfor %}
         </div>
         {% else %}
-        <!-- ELEGANT EMPTY STATE -->
-        <div class="empty-state">
-            <div class="empty-icon">
-                <span class="material-icons">place</span>
-            </div>
-            <h3 class="empty-title">No Addresses Yet</h3>
-            <p class="empty-text">Add your first delivery address to make checkout seamless and secure</p>
-            <a href="{% url 'add_address' %}" class="btn-add-address">
-                <span class="material-icons">add</span>
-                <span>Add Address</span>
-            </a>
+        <!-- EMPTY STATE -->
+        <div class="lux-empty-state">
+            <span class="material-icons">place</span>
+            <h3>No Addresses Saved</h3>
+            <p>Add a delivery location for a seamless checkout experience.</p>
         </div>
         {% endif %}
     </div>
+</div>
 {% endblock content %}
 {% block extra_js %}
 <script src="{% static 'user_profile/js/address.js' %}"></script>

@@ -1,241 +1,266 @@
 {% extends "core/user/base_user.html" %}
 {% load static %}
 {% load humanize %}
-
-{% block head_title %}Item — {{ order.order_number }} | REX CC{% endblock %}
-
+{% block head_title %}Item | Order {{ order.order_number }} | REX CC{% endblock %}
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'orders/user/css/orderitem_detail.css' %}">
+    <link rel="stylesheet"
+          href="{% static 'orders/user/css/orderitem_detail.css' %}?v=1.0">
 {% endblock %}
-
 {% block content %}
-<div class="oid-page">
-
-    <!-- BREADCRUMBS -->
-    <nav class="oid-breadcrumb">
-        <a href="{% url 'user_profile' %}">My Account</a>
-        <span class="oid-breadcrumb-sep">›</span>
-        <a href="{% url 'user_order_list' %}">Orders</a>
-        <span class="oid-breadcrumb-sep">›</span>
-        <a href="{% url 'user_order_details' order.order_number %}">{{ order.order_number }}</a>
-        <span class="oid-breadcrumb-sep">›</span>
-        <span class="oid-breadcrumb-current">Item</span>
-    </nav>
-
-    <!-- PRODUCT CARD -->
-    <div class="oid-product-card">
-        {% if order_item.product_variant and order_item.product_variant.primary_image %}
-            <img src="{{ order_item.product_variant.primary_image.image.url }}"
-                 alt="{{ order_item.product_variant.product.name }}"
-                 class="oid-product-img">
-        {% else %}
-            <div class="oid-product-img-placeholder">
-                <span class="material-icons">watch</span>
+    <div class="lux-hub-wrapper">
+        <!-- BREADCRUMBS -->
+        <nav class="uc-breadcrumb" style="margin-bottom: 24px;">
+            <a href="{% url 'user_profile' %}">My Account</a>
+            <span class="uc-breadcrumb-sep">›</span>
+            <a href="{% url 'user_order_list' %}">Orders</a>
+            <span class="uc-breadcrumb-sep">›</span>
+            <a href="{% url 'user_order_details' order.order_number %}">{{ order.order_number }}</a>
+            <span class="uc-breadcrumb-sep">›</span>
+            <span class="uc-breadcrumb-current">Item Details</span>
+        </nav>
+        <!-- HEADER -->
+        <div class="hub-header" style="margin-bottom: 32px;">
+            <div class="hub-header-left">
+                <h1 class="hub-title" style="margin-bottom: 8px;">Item Details</h1>
+                <div style="display: flex;
+                            align-items: center;
+                            gap: 12px;
+                            font-family: 'Montserrat', sans-serif">
+                    <span class="od-order-date" style="font-size: 0.85rem; color: #666;">From Order <a href="{% url 'user_order_details' order.order_number %}"
+    style="color: #111;
+           font-weight: 500;
+           text-decoration: none">{{ order.order_number }}</a></span>
+                </div>
             </div>
-        {% endif %}
-
-        <div class="oid-product-info">
-            {% if order_item.product_variant and order_item.product_variant.product and order_item.product_variant.product.brand %}
-                <div class="oid-product-brand">{{ order_item.product_variant.product.brand.name }}</div>
-            {% endif %}
-            <h1 class="oid-product-name">
-                {% if order_item.product_variant and order_item.product_variant.product %}
-                    {{ order_item.product_variant.product.name }}
-                {% else %}
-                    Product unavailable
+            <div class="hub-header-right">
+                {% if order_item.can_return %}
+                    <a href="{% url 'user_return_order' order.order_number order_item.id %}"
+                       class="hub-btn-outline">
+                        <span class="material-icons" style="font-size: 18px; margin-right: 6px;">keyboard_return</span>
+                        Request Return
+                    </a>
                 {% endif %}
-            </h1>
-
-            {% if order_item.product_variant %}
-                <div class="oid-product-sku">{{ order_item.product_variant.sku }}</div>
-            {% endif %}
-
-            <div class="oid-product-meta">
-                <span>Qty: {{ order_item.quantity }}</span>
-                <span class="oid-product-meta-dot">·</span>
-                <span>₹{{ order_item.price|floatformat:2|intcomma }}/unit</span>
             </div>
-
-            <div class="oid-product-total">₹{{ order_item.total_price|floatformat:2|intcomma }}</div>
         </div>
-
-        <div class="oid-product-status">
-            {% with istatus=order_item.current_status %}
-                {% if istatus %}
-                    <span class="oid-status-badge oid-status-{{ istatus.status|lower }}">
-                        {% if istatus.status == "PENDING" %}Pending
-                        {% elif istatus.status == "CONFIRMED" %}Confirmed
-                        {% elif istatus.status == "PACKING" %}Packing
-                        {% elif istatus.status == "READY" %}Ready
-                        {% elif istatus.status == "SHIPPED" %}Shipped
-                        {% elif istatus.status == "IN_TRANSIT" %}In Transit
-                        {% elif istatus.status == "OUT_FOR_DELIVERY" %}Out for Delivery
-                        {% elif istatus.status == "DELIVERED" %}Delivered
-                        {% elif istatus.status == "FAILED" %}Failed
-                        {% elif istatus.status == "CANCELLED" %}Cancelled
-                        {% elif istatus.status == "RETURN_REQUESTED" %}Return Requested
-                        {% elif istatus.status == "RETURNED" %}Returned
-                        {% elif istatus.status == "RTS" %}RTS
-                        {% else %}{{ istatus.status }}
-                        {% endif %}
-                    </span>
-                {% endif %}
-            {% endwith %}
+        <!-- ITEM TRACKING (Horizontal Timeline) -->
+        <div class="oid-section-wrapper" style="margin-bottom: 40px;">
+            <h2 class="oid-section-heading">Item Tracking</h2>
+            <div class="hub-card oid-timeline-card">
+                <div class="oid-timeline-track">
+                    {% comment %}
+                    Build a reversed timeline (oldest first) to show progress left-to-right.
+                    {% endcomment %}
+                    {% with timeline_items=timeline|dictsort:"created_at" %}
+                        {% for entry in timeline_items %}
+                            <div class="oid-timeline-step oid-step-done {% if forloop.last %}oid-step-current{% endif %}">
+                                <div class="oid-step-marker">
+                                    {% if entry.status == "DELIVERED" or entry.status == "RETURNED" %}
+                                        <span class="material-icons"
+                                              style="font-size: 14px;
+                                                     color: #fff;
+                                                     line-height: 16px">check</span>
+                                    {% elif entry.status == "CANCELLED" or entry.status == "FAILED" or entry.status == "RTS" %}
+                                        <span class="material-icons"
+                                              style="font-size: 14px;
+                                                     color: #fff;
+                                                     line-height: 16px">close</span>
+                                    {% elif entry.status == "RETURN_REQUESTED" %}
+                                        <span class="material-icons"
+                                              style="font-size: 14px;
+                                                     color: #fff;
+                                                     line-height: 16px">replay</span>
+                                    {% endif %}
+                                </div>
+                                <div class="oid-step-label">
+                                    {% if entry.status == "PENDING" %}
+                                        Pending
+                                    {% elif entry.status == "CONFIRMED" %}
+                                        Confirmed
+                                    {% elif entry.status == "PACKING" %}
+                                        Packing
+                                    {% elif entry.status == "READY" %}
+                                        Ready
+                                    {% elif entry.status == "SHIPPED" %}
+                                        Dispatched
+                                    {% elif entry.status == "IN_TRANSIT" %}
+                                        In Transit
+                                    {% elif entry.status == "OUT_FOR_DELIVERY" %}
+                                        Out for Delivery
+                                    {% elif entry.status == "DELIVERED" %}
+                                        Delivered
+                                    {% elif entry.status == "FAILED" %}
+                                        Failed
+                                    {% elif entry.status == "CANCELLED" %}
+                                        Cancelled
+                                    {% elif entry.status == "RETURN_REQUESTED" %}
+                                        Return Req
+                                    {% elif entry.status == "RETURNED" %}
+                                        Returned
+                                    {% elif entry.status == "RTS" %}
+                                        RTS
+                                    {% else %}
+                                        {{ entry.status }}
+                                    {% endif %}
+                                </div>
+                                <div class="oid-step-time">
+                                    {{ entry.created_at|date:"d M Y" }}
+                                    <br>
+                                    {{ entry.created_at|date:"h:i A" }}
+                                </div>
+                                {% if entry.note %}<div class="oid-step-note">{{ entry.note }}</div>{% endif %}
+                            </div>
+                        {% endfor %}
+                    {% endwith %}
+                </div>
+            </div>
         </div>
-    </div>
-
-    <!-- RETURN INFO (only if return_request exists) -->
-    {% if return_request %}
-        <div class="oid-section">
-            <div class="oid-section-title">Return Info</div>
-            {% with return_request as ret %}
-                <div class="oid-return-card">
-                    <div class="oid-return-header">
-                        <span class="oid-return-number">{{ ret.return_number }}</span>
-                        <span class="oid-status-badge oid-return-{{ ret.status|lower }}">
-                            {{ ret.get_status_display }}
-                        </span>
-                    </div>
-                    <div class="oid-return-details">
-                        <div class="oid-return-row">
-                            <span class="oid-return-label">Reason</span>
-                            <span class="oid-return-value">{{ ret.get_reason_code_display }}</span>
-                        </div>
-                        {% if ret.comment %}
-                            <div class="oid-return-row">
-                                <span class="oid-return-label">Comment</span>
-                                <span class="oid-return-value">{{ ret.comment }}</span>
+        <!-- MAIN CONTENT GRID -->
+        <div class="oid-content-grid"
+             style="display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 32px;
+                    margin-bottom: 40px">
+            <!-- LEFT COLUMN: PRODUCT DETAIL -->
+            <div class="oid-content-col">
+                <h2 class="oid-section-heading">Product Overview</h2>
+                <div class="hub-card oid-product-card">
+                    <div class="oid-product-img-box">
+                        {% if order_item.product_variant and order_item.product_variant.primary_image %}
+                            <img src="{{ order_item.product_variant.primary_image.image.url }}"
+                                 alt="{{ order_item.product_variant.product.name }}"
+                                 class="oid-product-img">
+                        {% else %}
+                            <div class="oid-product-img-placeholder">
+                                <span class="material-icons">image</span>
                             </div>
                         {% endif %}
-                        <div class="oid-return-row">
-                            <span class="oid-return-label">Submitted</span>
-                            <span class="oid-return-value">{{ ret.created_at|date:"d M Y, h:i A" }}</span>
+                    </div>
+                    <div class="oid-product-info">
+                        {% if order_item.product_variant and order_item.product_variant.product and order_item.product_variant.product.brand %}
+                            <div class="oid-product-brand">{{ order_item.product_variant.product.brand.name }}</div>
+                        {% endif %}
+                        <h2 class="oid-product-name">
+                            {% if order_item.product_variant and order_item.product_variant.product %}
+                                {{ order_item.product_variant.product.name }}
+                            {% else %}
+                                Product unavailable
+                            {% endif %}
+                        </h2>
+                        {% if order_item.product_variant %}
+                            <div class="oid-product-sku">SKU: {{ order_item.product_variant.sku }}</div>
+                        {% endif %}
+                        <div class="oid-product-price-breakdown">
+                            <div class="oid-price-row">
+                                <span class="oid-price-label">Unit Price</span>
+                                <span class="oid-price-val">₹{{ order_item.price|floatformat:2|intcomma }}</span>
+                            </div>
+                            <div class="oid-price-row">
+                                <span class="oid-price-label">Quantity</span>
+                                <span class="oid-price-val">{{ order_item.quantity }}</span>
+                            </div>
+                            <div class="oid-price-row oid-price-total-row">
+                                <span class="oid-price-label">Total Item Price</span>
+                                <span class="oid-price-val">₹{{ order_item.total_price|floatformat:2|intcomma }}</span>
+                            </div>
                         </div>
                     </div>
-                    {% if ret.admin_note %}
-                        <div class="oid-admin-note">
-                            <div class="oid-admin-note-label">Admin Note</div>
-                            <div class="oid-admin-note-text">{{ ret.admin_note }}</div>
+                </div>
+            </div>
+            <!-- RIGHT COLUMN: RETURNS & REFUNDS (If any) -->
+            <div class="oid-content-col">
+                {% if return_request or order_item.transactions.all %}
+                    {% if return_request %}
+                        <h2 class="oid-section-heading">Return Information</h2>
+                        <div class="hub-card oid-info-card" style="margin-bottom: 24px;">
+                            {% with ret=return_request %}
+                                <div class="oid-info-header">
+                                    <span class="oid-info-id">Return #{{ ret.return_number }}</span>
+                                    <span class="order-status-badge oid-return-{{ ret.status|lower }}">{{ ret.get_status_display }}</span>
+                                </div>
+                                <div class="oid-info-body">
+                                    <div class="oid-info-row">
+                                        <span class="oid-info-label">Reason</span>
+                                        <span class="oid-info-value">{{ ret.get_reason_code_display }}</span>
+                                    </div>
+                                    {% if ret.comment %}
+                                        <div class="oid-info-row">
+                                            <span class="oid-info-label">Comment</span>
+                                            <span class="oid-info-value">{{ ret.comment }}</span>
+                                        </div>
+                                    {% endif %}
+                                    <div class="oid-info-row">
+                                        <span class="oid-info-label">Submitted</span>
+                                        <span class="oid-info-value">{{ ret.created_at|date:"d M Y, h:i A" }}</span>
+                                    </div>
+                                    {% if ret.admin_note %}
+                                        <div class="oid-admin-note">
+                                            <span class="material-icons"
+                                                  style="font-size: 16px;
+                                                         color: var(--color-gold)">info</span>
+                                            <span><strong>Update from REX CC:</strong> {{ ret.admin_note }}</span>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endwith %}
                         </div>
                     {% endif %}
-
-                    {% if ret.transactions.all %}
-                        <div class="oid-return-divider"></div>
-                        <div class="oid-txn-section">
-                            <div class="oid-txn-title">Refund Details</div>
-                            {% for txn in ret.transactions.all %}
-                                <div class="oid-return-row">
-                                    <span class="oid-return-label">Txn ID</span>
-                                    <span class="oid-return-value" style="font-family:monospace;">{{ txn.transaction_id|truncatechars:12 }}</span>
+                    {% if order_item.transactions.all %}
+                        <h2 class="oid-section-heading">Refund Details</h2>
+                        {% for txn in order_item.transactions.all %}
+                            <div class="hub-card oid-info-card" style="margin-bottom: 12px;">
+                                <div class="oid-info-header">
+                                    <span class="oid-info-id"
+                                          style="font-family: monospace;
+                                                 font-size: 0.82rem">Txn: {{ txn.transaction_id|truncatechars:18 }}</span>
+                                    <span class="order-status-badge oid-return-{{ txn.status|lower }}">{{ txn.get_status_display }}</span>
                                 </div>
-                                <div class="oid-return-row">
-                                    <span class="oid-return-label">Status</span>
-                                    <div class="oid-status-badge oid-status-badge-sm oid-return-{{ txn.status|lower }}">
-                                        {{ txn.get_status_display }}
+                                <div class="oid-info-body">
+                                    <div class="oid-info-row">
+                                        <span class="oid-info-label">Type</span>
+                                        <span class="oid-info-value">{{ txn.get_transaction_type_display }}</span>
+                                    </div>
+                                    <div class="oid-info-row">
+                                        <span class="oid-info-label">Amount</span>
+                                        <span class="oid-info-value" style="font-weight: 600;">₹{{ txn.amount|floatformat:2|intcomma }}</span>
+                                    </div>
+                                    <div class="oid-info-row">
+                                        <span class="oid-info-label">Method</span>
+                                        <span class="oid-info-value">{{ txn.get_payment_method_display }}</span>
+                                    </div>
+                                    <div class="oid-info-row">
+                                        <span class="oid-info-label">Date Processed</span>
+                                        <span class="oid-info-value">{{ txn.created_at|date:"d M Y, h:i A" }}</span>
                                     </div>
                                 </div>
-                                <div class="oid-return-row">
-                                    <span class="oid-return-label">Amount</span>
-                                    <span class="oid-return-value">₹{{ txn.amount|floatformat:2|intcomma }}</span>
-                                </div>
-                            {% endfor %}
-                        </div>
+                            </div>
+                        {% endfor %}
                     {% endif %}
-                </div>
-            {% endwith %}
-        </div>
-    {% endif %}
-
-    <!-- REFUND / TRANSACTION INFO (only if transactions exist) -->
-    {% with txns=order_item.transactions.all %}
-    {% if txns %}
-        <div class="oid-section">
-            <div class="oid-section-title">Refund Info</div>
-            {% for txn in txns %}
-                <div class="oid-return-card">
-                    <div class="oid-return-header">
-                        <span class="oid-return-number" style="font-family:monospace; font-size:0.82rem;">{{ txn.transaction_id|truncatechars:18 }}</span>
-                        <span class="oid-status-badge oid-return-{{ txn.status|lower }}">
-                            {{ txn.get_status_display }}
-                        </span>
+                {% else %}
+                    <h2 class="oid-section-heading">Support</h2>
+                    <div class="hub-card oid-info-card"
+                         style="background: var(--color-bg);
+                                border: 1px dashed var(--color-border);
+                                text-align: center;
+                                padding: 48px 24px">
+                        <span class="material-icons"
+                              style="font-size: 48px;
+                                     color: var(--color-border);
+                                     margin-bottom: 16px">support_agent</span>
+                        <h3 style="font-family: 'Playfair Display', serif;
+                                   font-size: 1.2rem;
+                                   margin: 0 0 8px 0;
+                                   color: #111">Need Assistance?</h3>
+                        <p style="font-family: 'Montserrat', sans-serif;
+                                  font-size: 0.9rem;
+                                  color: #666;
+                                  margin: 0 0 24px 0;
+                                  line-height: 1.5">
+                            If you have any questions or concerns regarding this item, please contact our support team.
+                        </p>
+                        <a href="#" class="hub-btn-outline">Contact Support</a>
                     </div>
-                    <div class="oid-return-details">
-                        <div class="oid-return-row">
-                            <span class="oid-return-label">Type</span>
-                            <span class="oid-return-value">{{ txn.get_transaction_type_display }}</span>
-                        </div>
-                        <div class="oid-return-row">
-                            <span class="oid-return-label">Amount</span>
-                            <span class="oid-return-value">₹{{ txn.amount|floatformat:2|intcomma }}</span>
-                        </div>
-                        <div class="oid-return-row">
-                            <span class="oid-return-label">Method</span>
-                            <span class="oid-return-value">{{ txn.get_payment_method_display }}</span>
-                        </div>
-                        <div class="oid-return-row">
-                            <span class="oid-return-label">Date</span>
-                            <span class="oid-return-value">{{ txn.created_at|date:"d M Y, h:i A" }}</span>
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
-    {% endif %}
-    {% endwith %}
-
-    <!-- ITEM TIMELINE -->
-    <div class="oid-section">
-        <div class="oid-section-title">Item Timeline</div>
-        <div class="oid-timeline">
-            {% for entry in timeline %}
-                <div class="oid-tl-entry {% if forloop.first %}oid-tl-current{% endif %}">
-                    <div class="oid-tl-dot-col">
-                        <div class="oid-tl-dot"></div>
-                        {% if not forloop.last %}
-                            <div class="oid-tl-line"></div>
-                        {% endif %}
-                    </div>
-                    <div class="oid-tl-content">
-                        <div class="oid-tl-header">
-                            <span class="oid-status-badge oid-status-{{ entry.status|lower }}">
-                                {% if entry.status == "PENDING" %}Pending
-                                {% elif entry.status == "CONFIRMED" %}Confirmed
-                                {% elif entry.status == "PACKING" %}Packing
-                                {% elif entry.status == "READY" %}Ready
-                                {% elif entry.status == "SHIPPED" %}Shipped
-                                {% elif entry.status == "IN_TRANSIT" %}In Transit
-                                {% elif entry.status == "OUT_FOR_DELIVERY" %}Out for Delivery
-                                {% elif entry.status == "DELIVERED" %}Delivered
-                                {% elif entry.status == "FAILED" %}Failed
-                                {% elif entry.status == "CANCELLED" %}Cancelled
-                                {% elif entry.status == "RETURN_REQUESTED" %}Return Requested
-                                {% elif entry.status == "RETURNED" %}Returned
-                                {% elif entry.status == "RTS" %}RTS
-                                {% else %}{{ entry.status }}
-                                {% endif %}
-                            </span>
-                            <span class="oid-tl-date">{{ entry.created_at|date:"d M Y, h:i A" }}</span>
-                        </div>
-                        {% if entry.note %}
-                            <p class="oid-tl-note">{{ entry.note }}</p>
-                        {% endif %}
-                    </div>
-                </div>
-            {% empty %}
-                <p class="oid-tl-empty">No status updates yet.</p>
-            {% endfor %}
+                {% endif %}
+            </div>
         </div>
     </div>
-
-    <!-- RETURN ITEM (subtle link, bottom-right) -->
-    {% if order_item.can_return %}
-        <div class="oid-footer">
-            <a href="{% url 'user_return_order' order.order_number order_item.id %}"
-               class="oid-btn-return">
-                Return Item
-            </a>
-        </div>
-    {% endif %}
-
-</div>
 {% endblock %}

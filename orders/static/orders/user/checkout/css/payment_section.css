@@ -1,135 +1,97 @@
-.payment-methods-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  max-width: 600px;
+/* ===================================================================
+   REX CC - PAYMENT SECTION CHECKOUT
+   =================================================================== */
+
+.chk-payment-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
-.payment-card {
-  display: flex;
-  align-items: center;
-  padding: 20px;
-  border: 1px solid #e0e0e0;
-  border-radius: 3px;
-  background: #fff;
-  cursor: pointer;
-  transition: all 0.2s;
-  position: relative;
+.checkout-payment-card {
+    display: flex;
+    align-items: center;
+    padding: 24px;
+    cursor: pointer;
+    border: 1px solid #eaeaea;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    gap: 20px;
 }
 
-/* Icons */
+.checkout-payment-card:hover:not(.disabled) {
+    border-color: #ccc;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+}
+
+.checkout-payment-card.selected {
+    border-color: var(--color-gold-dark) !important;
+    background: rgba(250, 249, 247, 0.5) !important;
+}
+
 .pay-icon {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  background: #f9f9f9;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 20px;
-  color: #555;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #fdfdfd;
+    border: 1px solid #eaeaea;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-/* Info */
+.pay-icon .material-icons {
+    font-size: 24px;
+    color: #111;
+}
+
+.checkout-payment-card.selected .pay-icon {
+    border-color: var(--color-gold-light);
+    color: var(--color-gold-dark);
+}
+
+.checkout-payment-card.selected .pay-icon .material-icons {
+    color: var(--color-gold-dark);
+}
+
 .pay-info {
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
+    flex: 1;
 }
 
 .pay-name {
-  font-weight: 600;
-  color: var(--co-text);
-  font-size: 1rem;
+    display: block;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: #111;
+    margin-bottom: 4px;
 }
 
 .pay-desc {
-  font-size: 0.85rem;
-  color: var(--co-text-muted);
+    display: block;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.85rem;
+    color: #666;
 }
 
-/* Selected */
-.payment-card.selected {
-  border: 2px solid var(--co-gold);
-  background: rgba(205, 127, 50, 0.02);
-}
-
-.payment-card.selected .pay-icon {
-  background: #fff;
-  color: var(--co-gold);
-}
-/* Extracted Styles */
-.step-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.6rem;
-    margin-bottom: 24px;
-}
-
-.step-actions {
-    margin-top: 40px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.btn-back {
-    background: none;
-    border: none;
-    color: #777;
-    font-weight: 600;
+.pay-check-overlay {
+    color: var(--color-gold-dark);
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all 0.3s ease;
     display: flex;
     align-items: center;
-    gap: 5px;
-    cursor: pointer;
 }
 
-.btn-primary-step {
-    background: linear-gradient(135deg, #cd7f32, #b06825);
-    color: #fff;
-    border: none;
-    padding: 12px 32px;
-    font-weight: 600;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    cursor: pointer;
-    border-radius: 3px; /* Consistent radius */
-    transition: transform 0.2s;
+.checkout-payment-card.selected .pay-check-overlay {
+    opacity: 1;
+    transform: scale(1);
 }
 
-.btn-primary-step:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(205,127,50,0.2);
-}
-
-.btn-primary-step:disabled {
+/* Disabled Next Button */
+#btn-next-review:disabled {
     background: #ccc;
+    border-color: #ccc;
     cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
-}
-.pay-check {
-  color: var(--co-gold);
-  display: none;
-}
-
-.payment-card.selected .pay-check {
-  display: block;
-}
-
-/* Disabled */
-.payment-card.disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  background: #fafafa;
-}
-
-.pay-badge {
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  background: #eee;
-  padding: 4px 8px;
-  border-radius: 3px;
-  color: #777;
-  font-weight: 600;
-  letter-spacing: 0.5px;
+    opacity: 0.7;
 }

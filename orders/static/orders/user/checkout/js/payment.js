@@ -6,7 +6,7 @@ function selectPayment(method) {
     CheckoutState.selectedPaymentMethod = method;
 
     // Remove selected class from all payment cards
-    document.querySelectorAll('.payment-card:not(.disabled)').forEach(card => {
+    document.querySelectorAll('.checkout-payment-card:not(.disabled)').forEach(card => {
         card.classList.remove('selected');
     });
 

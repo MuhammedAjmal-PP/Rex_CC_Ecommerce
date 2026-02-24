@@ -43,9 +43,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const cityInput = document.getElementById('city'); 
     const stateInput = document.getElementById('state');
     const feedbackElement = document.createElement('div');
-    feedbackElement.className = 'form-text text-muted';
-    feedbackElement.style.fontSize = '0.85rem';
-    feedbackElement.style.marginTop = '4px';
+    feedbackElement.className = 'lux-optional';
+    feedbackElement.style.marginTop = '6px';
     
     if (postalCodeInput) {
         postalCodeInput.parentNode.appendChild(feedbackElement);
@@ -56,8 +55,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Show loading state
                 feedbackElement.textContent = 'Fetching details from India Post...';
-                feedbackElement.style.color = '#666';
-                postalCodeInput.classList.remove('is-invalid');
+                feedbackElement.style.color = '#999';
+                postalCodeInput.style.borderColor = '';
                 
                 // Fetch from Public API
                 fetch(`https://api.postalpincode.in/pincode/${pin}`)
@@ -79,10 +78,9 @@ document.addEventListener('DOMContentLoaded', function() {
                                  cityInput.removeAttribute('readonly');
                             }
                             
-                            // Success: Clear any error messages, but don't show "State detected" text clutter
+                            // Success: Clear any error messages
                             feedbackElement.textContent = '';
-                            postalCodeInput.classList.remove('is-invalid');
-                            postalCodeInput.classList.add('is-valid');
+                            postalCodeInput.style.borderColor = '#bfa15f';
                         } else {
                             throw new Error('Invalid Pincode');
                         }
@@ -90,8 +88,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     .catch(error => {
                         console.error('Error:', error);
                         feedbackElement.textContent = 'Invalid Postal Code. Please enter a valid code.';
-                        feedbackElement.style.color = '#d9534f'; 
-                        postalCodeInput.classList.add('is-invalid');
+                        feedbackElement.style.color = '#d32f2f'; 
+                        postalCodeInput.style.borderColor = '#d32f2f';
                         
                         // Strict Mode: Keep State locked/empty if invalid? 
                         // Or allow fallback? User said "user must be enter valid postal_code".
@@ -103,11 +101,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
             } else if (pin.length > 0) {
                  feedbackElement.textContent = 'Postal code must be 6 digits.';
-                 feedbackElement.style.color = '#d9534f';
-                 postalCodeInput.classList.add('is-invalid');
+                 feedbackElement.style.color = '#d32f2f';
+                 postalCodeInput.style.borderColor = '#d32f2f';
             } else {
                 feedbackElement.textContent = '';
-                postalCodeInput.classList.remove('is-invalid', 'is-valid');
+                postalCodeInput.style.borderColor = '';
                 if (stateInput && !stateInput.value) {
                      stateInput.removeAttribute('readonly');
                 }

@@ -22,125 +22,45 @@
 }
 
 /* ============================================================
-   PAGE CONTAINER
+   WALLET BALANCE HEADER CHIC
    ============================================================ */
 
-.wallet-page {
-  min-height: calc(100vh - 200px);
-  padding: 40px 60px 80px;
-}
-
-/* ============================================================
-   BREADCRUMBS
-   ============================================================ */
-
-.breadcrumb-nav {
-  max-width: 1400px;
-  margin: 0 auto 20px;
+.wallet-balance-chic {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 0.85rem;
-  color: var(--wl-text-muted);
+  gap: 16px;
+  background: #faf9f7;
+  padding: 12px 20px;
+  border-radius: 4px;
+  border: 1px solid #eaeaea;
+}
+
+.wallet-balance-label {
   font-family: var(--font-sans);
-}
-
-.breadcrumb-link {
-  color: var(--wl-text-muted);
-  text-decoration: none;
-  transition: color 0.2s;
-}
-
-.breadcrumb-link:hover {
-  color: var(--wl-gold);
-}
-
-.breadcrumb-separator {
-  color: var(--wl-gold-dark);
-  user-select: none;
-}
-
-.breadcrumb-current {
-  color: var(--wl-text);
-  font-weight: 500;
-}
-
-/* ============================================================
-   PAGE HEADER
-   ============================================================ */
-
-.page-header {
-  max-width: 1400px;
-  margin: 0 auto 32px;
-}
-
-.page-title {
-  font-family: var(--font-serif);
-  font-size: 1.8rem;
-  color: var(--wl-text);
-  margin: 0 0 4px;
-  font-weight: 600;
-}
-
-.page-subtitle {
-  font-family: var(--font-sans);
-  font-size: 0.9rem;
-  color: var(--wl-text-muted);
-  margin: 0;
-}
-
-/* ============================================================
-   BALANCE CARD
-   ============================================================ */
-
-.wallet-balance-card {
-  max-width: 1400px;
-  margin: 0 auto 36px;
-  background: var(--wl-surface);
-  border: 1px solid var(--wl-border);
-  border-radius: 3px;
-  padding: 32px 36px;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-.balance-icon {
-  width: 56px;
-  height: 56px;
-  background: linear-gradient(135deg, var(--wl-gold), var(--wl-gold-dark));
-  border-radius: 3px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.balance-icon .material-icons {
-  font-size: 28px;
-  color: #fff;
-}
-
-.balance-info {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.balance-label {
-  font-family: var(--font-sans);
-  font-size: 0.82rem;
+  font-size: 0.75rem;
   color: var(--wl-text-muted);
   text-transform: uppercase;
   letter-spacing: 1px;
-  font-weight: 500;
+  font-weight: 600;
 }
 
-.balance-amount {
+.wallet-balance-amount {
   font-family: var(--font-sans);
-  font-size: 2rem;
+  font-size: 1.25rem;
   color: var(--wl-text);
   font-weight: 700;
-  line-height: 1.2;
+}
+
+.wallet-inactive-badge {
+  font-family: var(--font-sans);
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 4px 8px;
+  border-radius: 3px;
+  background: var(--wl-debit-bg);
+  color: var(--wl-debit);
 }
 
 .wallet-inactive-badge {
@@ -157,52 +77,47 @@
 }
 
 /* ============================================================
-   TAB TOGGLE
+   TAB TOGGLE (LUXURY)
    ============================================================ */
 
-.wallet-tabs {
-  max-width: 1400px;
-  margin: 0 auto 20px;
+.lux-tabs-container {
+  margin-bottom: 24px;
   display: flex;
-  gap: 10px;
+  gap: 24px;
+  border-bottom: 1px solid #eaeaea;
 }
 
-.wallet-tab {
+.lux-tab {
+  padding: 12px 0;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--wl-text-muted);
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  transition: all 0.3s ease;
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 10px 20px;
-  font-family: var(--font-sans);
-  font-size: 0.8rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  text-decoration: none;
-  border: 1px solid var(--wl-border);
-  border-radius: 3px;
-  color: var(--wl-text-muted);
-  background: var(--wl-surface);
-  transition: all 0.2s ease;
-  cursor: pointer;
 }
 
-.wallet-tab .material-icons {
-  font-size: 18px;
+.lux-tab .material-icons {
+  font-size: 16px;
+  vertical-align: text-bottom;
 }
 
-.wallet-tab:hover {
-  border-color: var(--wl-gold);
-  color: var(--wl-gold);
+.lux-tab:hover {
+  color: var(--wl-text);
 }
 
-.wallet-tab.active {
-  background: linear-gradient(135deg, var(--wl-gold), var(--wl-gold-dark));
-  border-color: var(--wl-gold);
-  color: #fff;
+.lux-tab.active {
+  color: var(--wl-text);
+  border-bottom-color: var(--wl-text);
 }
 
-.wallet-tab.active:hover {
-  color: #fff;
+.lux-tab[href="?tab=all"] {
+  margin-left: auto;
 }
 
 /* ============================================================
@@ -210,12 +125,7 @@
    ============================================================ */
 
 .txn-list {
-  max-width: 1400px;
-  margin: 0 auto;
-  background: var(--wl-surface);
-  border: 1px solid var(--wl-border);
-  border-radius: 3px;
-  overflow: hidden;
+  width: 100%;
 }
 
 /* -- Wallet tab header -- */
@@ -488,39 +398,7 @@
   color: var(--wl-text-muted);
 }
 
-/* ============================================================
-   EMPTY STATE
-   ============================================================ */
 
-.wallet-empty {
-  max-width: 1400px;
-  margin: 0 auto;
-  text-align: center;
-  padding: 80px 40px;
-  background: var(--wl-surface);
-  border: 1px solid var(--wl-border);
-  border-radius: 3px;
-}
-
-.wallet-empty .empty-icon {
-  font-size: 56px;
-  color: var(--wl-border);
-  margin-bottom: 16px;
-}
-
-.wallet-empty h2 {
-  font-family: var(--font-serif);
-  font-size: 1.3rem;
-  color: var(--wl-text);
-  margin: 0 0 8px;
-}
-
-.wallet-empty p {
-  font-family: var(--font-sans);
-  font-size: 0.9rem;
-  color: var(--wl-text-muted);
-  margin: 0;
-}
 
 /* ============================================================
    RESPONSIVE

@@ -6,47 +6,50 @@
     <link rel="stylesheet" href="{% static 'orders/user/css/order_list.css' %}">
 {% endblock %}
 {% block content %}
-    <div class="orders-page">
+    <div class="lux-hub-wrapper">
         <!-- BREADCRUMBS -->
-        <nav class="breadcrumb-nav">
-            <a href="{% url 'user_profile' %}" class="breadcrumb-link">My Account</a>
-            <span class="breadcrumb-separator">›</span>
-            <span class="breadcrumb-current">Orders</span>
+        <nav class="uc-breadcrumb">
+            <a href="{% url 'user_profile' %}">My Account</a>
+            <span class="uc-breadcrumb-sep">›</span>
+            <span class="uc-breadcrumb-current">Orders</span>
         </nav>
+
         <!-- PAGE HEADER -->
-        <header class="page-header">
-            <div class="header-content">
-                <h1 class="page-title">My Orders</h1>
-                <p class="page-subtitle">Track and manage your timepiece acquisitions</p>
+        <div class="hub-header">
+            <div class="hub-header-left">
+                <h1 class="hub-title">My Orders</h1>
+                <p class="hub-subtitle">Track and manage your timepiece acquisitions</p>
             </div>
-        </header>
-        <!-- SEARCH & FILTERS -->
-        <div class="orders-toolbar">
-            <form class="orders-search-form" method="get" action="">
-                <span class="material-icons search-icon">search</span>
-                <input type="text"
-                       name="q"
-                       class="orders-search-input"
-                       placeholder="Search by order number, product, or SKU..."
-                       value="{{ q|default:'' }}">
-                {% if date_filter %}<input type="hidden" name="date_filter" value="{{ date_filter }}">{% endif %}
-            </form>
-            <div class="orders-filters">
-                <a href="?{% if q %}q={{ q }}{% endif %}"
-                   class="filter-pill {% if not date_filter %}active{% endif %}">All</a>
-                <a href="?date_filter=today{% if q %}&q={{ q }}{% endif %}"
-                   class="filter-pill {% if date_filter == 'today' %}active{% endif %}">Today</a>
-                <a href="?date_filter=7d{% if q %}&q={{ q }}{% endif %}"
-                   class="filter-pill {% if date_filter == '7d' %}active{% endif %}">7 Days</a>
-                <a href="?date_filter=30d{% if q %}&q={{ q }}{% endif %}"
-                   class="filter-pill {% if date_filter == '30d' %}active{% endif %}">30 Days</a>
-                <a href="?date_filter=last_year{% if q %}&q={{ q }}{% endif %}"
-                   class="filter-pill {% if date_filter == 'last_year' %}active{% endif %}">Last Year</a>
+            <div class="hub-header-right">
+                <form class="lux-search-form" method="get" action="">
+                    <span class="material-icons search-icon">search</span>
+                    <input type="text"
+                           name="q"
+                           class="lux-search-input"
+                           placeholder="Search by order number or product..."
+                           value="{{ q|default:'' }}">
+                    {% if date_filter %}<input type="hidden" name="date_filter" value="{{ date_filter }}">{% endif %}
+                </form>
             </div>
         </div>
+
+        <!-- FILTERS -->
+        <div class="lux-filters-container">
+            <a href="?{% if q %}q={{ q }}{% endif %}"
+               class="lux-filter-pill {% if not date_filter %}active{% endif %}">All Time</a>
+            <a href="?date_filter=today{% if q %}&q={{ q }}{% endif %}"
+               class="lux-filter-pill {% if date_filter == 'today' %}active{% endif %}">Today</a>
+            <a href="?date_filter=7d{% if q %}&q={{ q }}{% endif %}"
+               class="lux-filter-pill {% if date_filter == '7d' %}active{% endif %}">Last 7 Days</a>
+            <a href="?date_filter=30d{% if q %}&q={{ q }}{% endif %}"
+               class="lux-filter-pill {% if date_filter == '30d' %}active{% endif %}">Last 30 Days</a>
+            <a href="?date_filter=last_year{% if q %}&q={{ q }}{% endif %}"
+               class="lux-filter-pill {% if date_filter == 'last_year' %}active{% endif %}">Last Year</a>
+        </div>
+
         {% if orders %}
-            <!-- ORDERS TABLE HEADER -->
-            <div class="orders-list">
+            <div class="hub-card">
+                <!-- ORDERS TABLE HEADER -->
                 <div class="orders-table-header">
                     <span class="col-order">Order</span>
                     <span class="col-date">Date</span>
@@ -54,91 +57,95 @@
                     <span class="col-status">Status</span>
                     <span class="col-action"></span>
                 </div>
-                {% for order in orders %}
-                    <div class="order-row">
-                        <div class="order-row-order">
-                            <span class="order-number">{{ order.order_number }}</span>
-                            <span class="order-total-inline">₹{{ order.grand_total|floatformat:2|intcomma }}</span>
-                        </div>
-                        <div class="order-row-date">
-                            <span class="order-date">{{ order.created_at|date:"d M Y" }}</span>
-                            <span class="order-time">{{ order.created_at|date:"h:i A" }}</span>
-                        </div>
-                        <div class="order-row-payment">
-                            <span class="order-payment-method">
-                                <div>
-                                    <div>
-                                        <span class="material-icons">payment</span>
-                                        <span>{{ order.payment_transaction.get_payment_method_display }}</span>
+                
+                <div class="orders-list">
+                    {% for order in orders %}
+                        <div class="order-row">
+                            <div class="order-row-order">
+                                <span class="order-number">{{ order.order_number }}</span>
+                                <span class="order-total-inline">₹{{ order.grand_total|floatformat:2|intcomma }}</span>
+                            </div>
+                            <div class="order-row-date">
+                                <span class="order-date">{{ order.created_at|date:"d M Y" }}</span>
+                                <span class="order-time">{{ order.created_at|date:"h:i A" }}</span>
+                            </div>
+                            <div class="order-row-payment">
+                                <span class="order-payment-method">
+                                    <div class="payment-method-container">
+                                        <div class="payment-method-name">
+                                            <span class="material-icons">payment</span>
+                                            <span>{{ order.payment_transaction.get_payment_method_display }}</span>
+                                        </div>
+                                        <span class="order-payment-status status-{{ order.payment_transaction.status|lower }}">
+                                            {{ order.payment_transaction.get_status_display }}
+                                        </span>
                                     </div>
-                                    <span class="order-payment-status status-{{ order.payment_transaction.status|lower }}">
-                                        {{ order.payment_transaction.get_status_display }}
-                                    </span>
-                                </div>
-                            </span>
+                                </span>
+                            </div>
+                            <div class="order-row-status">
+                                {% with status=order.current_status %}
+                                    {% if status %}
+                                        <span class="order-status-badge status-{{ status.status|lower }}">
+                                            {% if status.status == "PLACED" %}
+                                                Pending Review
+                                            {% elif status.status == "CONFIRMED" %}
+                                                Confirmed
+                                            {% elif status.status == "SHIPPED" %}
+                                                Shipped
+                                            {% elif status.status == "OUT_FOR_DELIVERY" %}
+                                                Out for Delivery
+                                            {% elif status.status == "DELIVERED" %}
+                                                Delivered
+                                            {% elif status.status == "CANCELLED" %}
+                                                Cancelled
+                                            {% else %}
+                                                {{ status.status }}
+                                            {% endif %}
+                                        </span>
+                                    {% endif %}
+                                {% endwith %}
+                            </div>
+                            <div class="order-row-action">
+                                <a href="{% url 'user_order_details' order.order_number %}"
+                                   class="btn-view-order"
+                                   title="View Order">
+                                    <span class="material-icons">chevron_right</span>
+                                </a>
+                            </div>
                         </div>
-                        <div class="order-row-status">
-                            {% with status=order.current_status %}
-                                {% if status %}
-                                    <span class="order-status-badge status-{{ status.status|lower }}">
-                                        {% if status.status == "PLACED" %}
-                                            Pending Review
-                                        {% elif status.status == "CONFIRMED" %}
-                                            Confirmed
-                                        {% elif status.status == "SHIPPED" %}
-                                            Shipped
-                                        {% elif status.status == "OUT_FOR_DELIVERY" %}
-                                            Out for Delivery
-                                        {% elif status.status == "DELIVERED" %}
-                                            Delivered
-                                        {% elif status.status == "CANCELLED" %}
-                                            Cancelled
-                                        {% else %}
-                                            {{ status.status }}
-                                        {% endif %}
-                                    </span>
-                                {% endif %}
-                            {% endwith %}
-                        </div>
-                        <div class="order-row-action">
-                            <a href="{% url 'user_order_details' order.order_number %}"
-                               class="btn-view-order"
-                               title="View Order">
-                                <span class="material-icons">visibility</span>
-                            </a>
-                        </div>
-                    </div>
-                {% endfor %}
+                    {% endfor %}
+                </div>
             </div>
+
             <!-- PAGINATION -->
             {% if page_obj.has_other_pages %}
-                <nav class="orders-pagination">
+                <nav class="lux-pagination">
                     {% if page_obj.has_previous %}
                         <a href="?page={{ page_obj.previous_page_number }}{% if q %}&q={{ q }}{% endif %}{% if date_filter %}&date_filter={{ date_filter }}{% endif %}"
-                           class="pagination-btn prev">
+                           class="lux-page-btn">
                             <span class="material-icons">chevron_left</span>
-                            Previous
                         </a>
                     {% endif %}
-                    <div class="pagination-pages">
+                    
+                    <div class="lux-page-numbers">
                         {% for num in page_obj.paginator.page_range %}
                             {% if page_obj.number == num %}
-                                <span class="pagination-page active">{{ num }}</span>
+                                <span class="lux-page-num active">{{ num }}</span>
                             {% elif num > page_obj.number|add:"-3" and num < page_obj.number|add:"3" %}
                                 <a href="?page={{ num }}{% if q %}&q={{ q }}{% endif %}{% if date_filter %}&date_filter={{ date_filter }}{% endif %}"
-                                   class="pagination-page">{{ num }}</a>
+                                   class="lux-page-num">{{ num }}</a>
                             {% elif num == 1 or num == page_obj.paginator.num_pages %}
                                 <a href="?page={{ num }}{% if q %}&q={{ q }}{% endif %}{% if date_filter %}&date_filter={{ date_filter }}{% endif %}"
-                                   class="pagination-page">{{ num }}</a>
+                                   class="lux-page-num">{{ num }}</a>
                             {% elif num == page_obj.number|add:"-3" or num == page_obj.number|add:"3" %}
-                                <span class="pagination-ellipsis">…</span>
+                                <span class="lux-page-dots">…</span>
                             {% endif %}
                         {% endfor %}
                     </div>
+
                     {% if page_obj.has_next %}
                         <a href="?page={{ page_obj.next_page_number }}{% if q %}&q={{ q }}{% endif %}{% if date_filter %}&date_filter={{ date_filter }}{% endif %}"
-                           class="pagination-btn next">
-                            Next
+                           class="lux-page-btn">
                             <span class="material-icons">chevron_right</span>
                         </a>
                     {% endif %}
@@ -146,10 +153,10 @@
             {% endif %}
         {% else %}
             <!-- EMPTY STATE -->
-            <div class="orders-empty">
+            <div class="lux-empty-state">
                 <span class="material-icons empty-icon">receipt_long</span>
                 <h2>No orders yet</h2>
-                <p>Once you make a purchase, your order history will appear here.</p>
+                <p>Your order history will appear here once you place your first order.</p>
                 <a href="{% url 'product_list' %}" class="btn-shop-now">Explore Collection</a>
             </div>
         {% endif %}

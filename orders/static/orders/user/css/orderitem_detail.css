@@ -1,459 +1,366 @@
-/* ============================================================
-   REX CC — ORDER ITEM DETAIL PAGE
-   Luxury theme matching site design system
-   ============================================================ */
+/* ===================================================================
+   REX CC - ORDER ITEM DETAIL STYLES
+   =================================================================== */
 
-:root {
-  --oid-bg: #faf9f7;
-  --oid-surface: #ffffff;
-  --oid-text: #2c2c2c;
-  --oid-text-muted: #7a7a7a;
-  --oid-border: #e8e6e2;
-  --oid-gold: #cd7f32;
-  --oid-gold-light: #bfa15f;
-  --oid-gold-dark: #b06825;
-
-  --font-serif: "Playfair Display", serif;
-  --font-sans: "Montserrat", sans-serif;
-}
-
-/* ============================================================
-   PAGE CONTAINER
-   ============================================================ */
-
-.oid-page {
-  min-height: calc(100vh - 200px);
-  padding: 40px 60px 80px;
-}
-
-.oid-page * {
-  box-sizing: border-box;
-}
-
-/* ============================================================
-   BREADCRUMBS
-   ============================================================ */
-
-.oid-breadcrumb {
-  max-width: 1200px;
-  margin: 0 auto 24px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.85rem;
-  color: var(--oid-text-muted);
-  font-family: var(--font-sans);
-}
-
-.oid-breadcrumb a {
-  color: var(--oid-text-muted);
-  text-decoration: none;
-  transition: color 0.2s;
-}
-
-.oid-breadcrumb a:hover {
-  color: var(--oid-gold);
-}
-
-.oid-breadcrumb-sep {
-  color: var(--oid-gold-dark);
-  user-select: none;
-}
-
-.oid-breadcrumb-current {
-  color: var(--oid-text);
+/* ---------------------------------------------------------
+   COMMON UTILITIES
+   --------------------------------------------------------- */
+.oid-section-heading {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
   font-weight: 500;
+  color: #111;
+  margin: 0 0 16px 0;
 }
 
-/* ============================================================
-   PRODUCT CARD
-   ============================================================ */
+/* ---------------------------------------------------------
+   ITEM TRACKING TIMELINE
+   --------------------------------------------------------- */
+.oid-timeline-card {
+  padding: 40px;
+  overflow-x: auto;
+}
 
-.oid-product-card {
-  max-width: 1200px;
-  margin: 0 auto 28px;
-  background: var(--oid-surface);
-  border: 1px solid var(--oid-border);
-  border-radius: 3px;
-  padding: 28px;
+.oid-timeline-track {
   display: flex;
-  gap: 28px;
-  align-items: flex-start;
+  justify-content: space-between;
+  position: relative;
+  min-width: 600px;
 }
 
-.oid-product-img {
-  width: 120px;
-  height: 120px;
-  object-fit: cover;
-  border-radius: 3px;
-  background: var(--oid-bg);
-  flex-shrink: 0;
+/* The connecting line */
+.oid-timeline-track::before {
+  content: '';
+  position: absolute;
+  top: 10px;
+  left: 30px;
+  right: 30px;
+  height: 2px;
+  background: #eee;
+  z-index: 1;
 }
 
-.oid-product-img-placeholder {
-  width: 120px;
-  height: 120px;
-  border-radius: 3px;
-  background: var(--oid-bg);
+.oid-timeline-step {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  flex: 1;
+}
+
+.oid-step-marker {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid #ddd;
+  margin: 0 auto 16px;
+  transition: all 0.3s;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
 }
 
+/* Status: Done (Green) */
+.oid-step-done .oid-step-marker {
+  border-color: #2e7d32;
+  background: #2e7d32;
+}
+
+/* Status: Current (Gold) */
+.oid-timeline-step.oid-step-done:last-child .oid-step-marker {
+  border-color: var(--color-gold);
+  background: var(--color-gold);
+  box-shadow: 0 0 0 4px rgba(191, 161, 95, 0.2);
+}
+
+/* Status: Failed/Cancelled/RTS/Returned (Red) */
+.oid-timeline-step.oid-step-done:last-child .oid-step-marker:has(.material-icons:contains("close")),
+.oid-timeline-step.oid-step-done:last-child .oid-step-marker:has(.material-icons:contains("replay")) {
+  border-color: #d32f2f;
+  background: #d32f2f;
+  box-shadow: 0 0 0 4px rgba(211, 47, 47, 0.2);
+}
+
+.oid-step-label {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 6px;
+}
+
+.oid-step-time {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.8rem;
+  color: #888;
+  line-height: 1.4;
+  margin-bottom: 4px;
+}
+
+.oid-step-note {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.75rem;
+  color: #666;
+  max-width: 150px;
+  margin: 0 auto;
+  line-height: 1.3;
+  background: rgba(0,0,0,0.03);
+  padding: 4px 8px;
+  border-radius: 2px;
+}
+
+/* Connecting line progress */
+.oid-step-done + .oid-step-done::before {
+  content: '';
+  position: absolute;
+  top: 10px;
+  right: 50%;
+  width: 100%;
+  height: 2px;
+  background: #2e7d32;
+  z-index: -1;
+}
+
+/* ---------------------------------------------------------
+   PRODUCT OVERVIEW CARD
+   --------------------------------------------------------- */
+.oid-product-card {
+  padding: 32px;
+  display: flex;
+  gap: 32px;
+  align-items: flex-start;
+}
+
+.oid-product-img-box {
+  width: 140px;
+  height: 140px;
+  background: #fdfdfd;
+  border-radius: 2px;
+  border: 1px solid #eaeaea;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.oid-product-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.oid-product-img-placeholder {
+  color: #ccc;
+}
 .oid-product-img-placeholder .material-icons {
   font-size: 40px;
-  color: var(--oid-text-muted);
-  opacity: 0.3;
 }
 
 .oid-product-info {
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
 }
 
 .oid-product-brand {
-  font-family: var(--font-sans);
-  font-size: 0.65rem;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.75rem;
   font-weight: 600;
+  color: var(--color-muted);
   text-transform: uppercase;
   letter-spacing: 1px;
-  color: var(--oid-text-muted);
-  margin-bottom: 2px;
+  margin-bottom: 6px;
 }
 
 .oid-product-name {
-  font-family: var(--font-serif);
+  font-family: 'Playfair Display', serif;
   font-size: 1.4rem;
-  font-weight: 600;
-  color: var(--oid-text);
-  margin: 0;
+  color: #111;
+  margin: 0 0 8px 0;
   line-height: 1.3;
 }
 
 .oid-product-sku {
-  font-family: var(--font-sans);
-  font-size: 0.78rem;
-  color: var(--oid-text-muted);
-  letter-spacing: 0.5px;
-}
-
-.oid-product-meta {
-  font-family: var(--font-sans);
+  font-family: monospace;
   font-size: 0.85rem;
-  color: var(--oid-text-muted);
+  color: #888;
+  margin-bottom: 24px;
+}
+
+.oid-product-price-breakdown {
   display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 4px;
+  flex-direction: column;
+  gap: 12px;
+  border-top: 1px dashed #eaeaea;
+  padding-top: 20px;
 }
 
-.oid-product-meta-dot {
-  color: var(--oid-border);
-}
-
-.oid-product-total {
-  font-family: var(--font-sans);
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: var(--oid-gold-dark);
-  margin-top: 4px;
-}
-
-.oid-product-status {
-  margin-top: auto;
-  align-self: flex-end;
-}
-
-/* Status badge */
-.oid-status-badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 5px 14px;
-  border-radius: 3px;
-  font-family: var(--font-sans);
-  font-size: 0.7rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  white-space: nowrap;
-}
-
-.oid-status-pending        { color: #8d6e63; background: rgba(141,110,99,0.08); border: 1px solid rgba(141,110,99,0.2); }
-.oid-status-confirmed      { color: #1565c0; background: rgba(21,101,192,0.08); border: 1px solid rgba(21,101,192,0.2); }
-.oid-status-packing        { color: #6a1b9a; background: rgba(106,27,154,0.08); border: 1px solid rgba(106,27,154,0.2); }
-.oid-status-ready          { color: #00838f; background: rgba(0,131,143,0.08); border: 1px solid rgba(0,131,143,0.2); }
-.oid-status-shipped        { color: #4527a0; background: rgba(69,39,160,0.08); border: 1px solid rgba(69,39,160,0.2); }
-.oid-status-in_transit     { color: #4527a0; background: rgba(69,39,160,0.08); border: 1px solid rgba(69,39,160,0.2); }
-.oid-status-out_for_delivery { color: #e65100; background: rgba(230,81,0,0.08); border: 1px solid rgba(230,81,0,0.2); }
-.oid-status-delivered      { color: #2e7d32; background: rgba(46,125,50,0.08); border: 1px solid rgba(46,125,50,0.2); }
-.oid-status-failed         { color: #bf360c; background: rgba(191,54,12,0.08); border: 1px solid rgba(191,54,12,0.2); }
-.oid-status-cancelled      { color: #d32f2f; background: rgba(211,47,47,0.08); border: 1px solid rgba(211,47,47,0.2); }
-.oid-status-return_requested { color: #e65100; background: rgba(230,81,0,0.08); border: 1px solid rgba(230,81,0,0.2); }
-.oid-status-returned       { color: #1565c0; background: rgba(21,101,192,0.08); border: 1px solid rgba(21,101,192,0.2); }
-.oid-status-rts            { color: #d32f2f; background: rgba(211,47,47,0.08); border: 1px solid rgba(211,47,47,0.2); }
-
-/* Return status badges */
-.oid-return-requested      { color: #e65100; background: rgba(230,81,0,0.08); border: 1px solid rgba(230,81,0,0.2); }
-.oid-return-approved       { color: #1565c0; background: rgba(21,101,192,0.08); border: 1px solid rgba(21,101,192,0.2); }
-.oid-return-rejected       { color: #d32f2f; background: rgba(211,47,47,0.08); border: 1px solid rgba(211,47,47,0.2); }
-.oid-return-completed      { color: #2e7d32; background: rgba(46,125,50,0.08); border: 1px solid rgba(46,125,50,0.2); }
-
-/* ============================================================
-   SECTION UTILITIES
-   ============================================================ */
-
-.oid-section {
-  max-width: 1200px;
-  margin: 0 auto 28px;
-}
-
-.oid-section-title {
-  font-family: var(--font-sans);
-  font-size: 0.72rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  color: var(--oid-text-muted);
-  margin-bottom: 12px;
-}
-
-/* ============================================================
-   RETURN INFO CARD
-   ============================================================ */
-
-.oid-return-card {
-  background: var(--oid-surface);
-  border: 1px solid var(--oid-border);
-  border-radius: 3px;
-  padding: 24px;
-  margin-bottom: 12px;
-}
-
-.oid-return-header {
+.oid-price-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  font-family: 'Montserrat', sans-serif;
 }
 
-.oid-return-number {
-  font-family: var(--font-sans);
-  font-size: 0.92rem;
+.oid-price-label {
+  font-size: 0.95rem;
+  color: #555;
+}
+
+.oid-price-val {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #111;
+}
+
+.oid-price-total-row {
+  margin-top: 8px;
+  padding-top: 12px;
+  border-top: 1px solid #eaeaea;
+}
+
+.oid-price-total-row .oid-price-label {
+  font-size: 1.05rem;
   font-weight: 600;
-  color: var(--oid-text);
-  letter-spacing: 0.3px;
+  color: #111;
 }
 
-.oid-return-details {
+.oid-price-total-row .oid-price-val {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-gold-dark);
+}
+
+/* ---------------------------------------------------------
+   INFO CARDS (Returns & Refunds)
+   --------------------------------------------------------- */
+.oid-info-card {
+  padding: 24px;
+}
+
+.oid-info-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.oid-info-id {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #111;
+}
+
+.oid-info-body {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-}
-
-.oid-return-row {
-  display: flex;
   gap: 12px;
-  font-family: var(--font-sans);
-  font-size: 0.85rem;
 }
 
-.oid-return-label {
-  font-weight: 600;
-  color: var(--oid-text-muted);
-  min-width: 90px;
-  font-size: 0.78rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+.oid-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  font-family: 'Montserrat', sans-serif;
 }
 
-.oid-return-value {
-  color: var(--oid-text);
+.oid-info-label {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.oid-info-value {
+  font-size: 0.95rem;
+  color: #111;
+  text-align: right;
+  max-width: 60%;
 }
 
 .oid-admin-note {
   margin-top: 12px;
-  padding: 12px;
-  background: rgba(250, 249, 247, 0.8);
-  border-left: 2px solid var(--oid-gold-light);
-  border-radius: 0 3px 3px 0;
-}
-
-.oid-admin-note-label {
-  font-family: var(--font-sans);
-  font-size: 0.7rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--oid-gold-dark);
-  margin-bottom: 4px;
-}
-
-.oid-admin-note-text {
-  font-family: var(--font-sans);
+  padding: 12px 16px;
+  background: rgba(191, 161, 95, 0.05);
+  border-left: 3px solid var(--color-gold);
+  font-family: 'Montserrat', sans-serif;
   font-size: 0.85rem;
-  color: var(--oid-text);
+  color: #111;
   line-height: 1.5;
-}
-
-/* ============================================================
-   TIMELINE (vertical)
-   ============================================================ */
-
-.oid-timeline {
-  background: var(--oid-surface);
-  border: 1px solid var(--oid-border);
-  border-radius: 3px;
-  padding: 28px 24px;
-}
-
-.oid-tl-entry {
   display: flex;
-  gap: 16px;
-  align-items: stretch;
-}
-
-.oid-tl-dot-col {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex-shrink: 0;
-  width: 20px;
-}
-
-.oid-tl-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: var(--oid-border);
-  border: 2px solid var(--oid-border);
-  flex-shrink: 0;
-  margin-top: 5px;
-}
-
-.oid-tl-current .oid-tl-dot {
-  background: var(--oid-gold);
-  border-color: var(--oid-gold-dark);
-  box-shadow: 0 0 0 4px rgba(205, 127, 50, 0.15);
-}
-
-.oid-tl-line {
-  width: 2px;
-  flex: 1;
-  background: var(--oid-border);
-  min-height: 16px;
-}
-
-.oid-tl-content {
-  flex: 1;
-  padding-bottom: 20px;
-}
-
-.oid-tl-header {
-  display: flex;
-  align-items: center;
   gap: 12px;
-  flex-wrap: wrap;
+  align-items: flex-start;
 }
 
-.oid-tl-date {
-  font-family: var(--font-sans);
-  font-size: 0.78rem;
-  color: var(--oid-text-muted);
+/* Status badge specific overrides for return states */
+.oid-return-requested      { color: #e65100; background: rgba(230,81,0,0.08); border: 1px solid rgba(230,81,0,0.2); }
+.oid-return-approved       { color: #1565c0; background: rgba(21,101,192,0.08); border: 1px solid rgba(21,101,192,0.2); }
+.oid-return-rejected       { color: #d32f2f; background: rgba(211,47,47,0.08); border: 1px solid rgba(211,47,47,0.2); }
+.oid-return-completed      { color: #2e7d32; background: rgba(46,125,50,0.08); border: 1px solid rgba(46,125,50,0.2); }
+.oid-return-refund_pending { color: #f57f17; background: rgba(245,127,23,0.08); border: 1px solid rgba(245,127,23,0.2); }
+
+
+/* ---------------------------------------------------------
+   RESPONSIVE DESIGN 
+   --------------------------------------------------------- */
+@media (max-width: 992px) {
+  .oid-content-grid {
+    grid-template-columns: 1fr !important;
+  }
 }
-
-.oid-tl-note {
-  margin: 6px 0 0;
-  font-family: var(--font-sans);
-  font-size: 0.82rem;
-  color: var(--oid-text-muted);
-  line-height: 1.5;
-}
-
-.oid-tl-empty {
-  font-family: var(--font-sans);
-  font-size: 0.85rem;
-  color: var(--oid-text-muted);
-  text-align: center;
-  padding: 20px 0;
-}
-
-/* ============================================================
-   FOOTER — RETURN LINK (subtle)
-   ============================================================ */
-
-.oid-footer {
-  max-width: 1200px;
-  margin: 0 auto;
-  display: flex;
-  justify-content: flex-end;
-  padding-top: 4px;
-}
-
-.oid-btn-return {
-  font-family: var(--font-sans);
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--oid-text-muted);
-  text-decoration: none;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  padding: 6px 0;
-  transition: color 0.2s;
-}
-
-.oid-btn-return:hover {
-  color: var(--oid-gold);
-}
-
-/* Return Transactions */
-.oid-return-divider {
-  margin: 16px 0;
-  border-top: 1px dashed var(--oid-border);
-}
-
-.oid-txn-title {
-  font-family: var(--font-sans);
-  font-size: 0.7rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--oid-text-muted);
-  margin-bottom: 8px;
-}
-
-.oid-status-badge-sm {
-  padding: 2px 8px;
-  font-size: 0.65rem;
-}
-
-/* ============================================================
-   RESPONSIVE
-   ============================================================ */
 
 @media (max-width: 768px) {
-  .oid-page {
-    padding: 24px 16px 60px;
-  }
-
   .oid-product-card {
     flex-direction: column;
     align-items: center;
     text-align: center;
   }
-
-  .oid-product-status {
-    align-self: center;
-    margin-top: 12px;
+  
+  .oid-product-img-box {
+    width: 180px;
+    height: 180px;
   }
-
-  .oid-product-meta {
-    justify-content: center;
+  
+  .oid-price-row {
+    text-align: left;
   }
-
-  .oid-tl-content {
-    padding-bottom: 14px;
+  
+  .oid-timeline-track {
+    flex-direction: column;
+    gap: 32px;
+    min-width: 0;
+  }
+  
+  .oid-timeline-track::before {
+    top: 0;
+    bottom: 0;
+    left: 20px;
+    width: 2px;
+    height: 100%;
+  }
+  
+  .oid-timeline-step {
+    display: flex;
+    align-items: flex-start;
+    text-align: left;
+    gap: 16px;
+  }
+  
+  .oid-step-marker {
+    margin: 0;
+    flex-shrink: 0;
+  }
+  
+  .oid-step-done + .oid-step-done::before {
+    top: -32px;
+    bottom: 50%;
+    left: 10px;
+    width: 2px;
+    height: 32px;
+  }
+  
+  .oid-step-note {
+    margin: 4px 0 0 0;
+    max-width: none;
   }
 }

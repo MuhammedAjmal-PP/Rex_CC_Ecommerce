@@ -94,7 +94,7 @@
         const template = itemTemplate.content.cloneNode(true);
         // The root is a document fragment, we need the column div
         const colWrapper = template.querySelector("div");
-        const card = colWrapper.querySelector(".product-card");
+        const card = colWrapper.querySelector(".hub-card");
 
         // Set ID for easy removal on the wrapper/col
         colWrapper.dataset.variantId = product.variant;

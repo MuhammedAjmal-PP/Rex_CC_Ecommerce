@@ -30,8 +30,8 @@ function goToStep(stepNum) {
     if (!validateStep(CheckoutState.step, stepNum)) return;
 
     // Update UI Steps
-    document.querySelectorAll('.checkout-step').forEach(el => el.style.display = 'none');
-    document.querySelectorAll('.step-item').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.chk-step').forEach(el => el.style.display = 'none');
+    document.querySelectorAll('.chk-step-item').forEach(el => el.classList.remove('active'));
 
     // Show Content
     if (stepNum === 1) document.getElementById('step-address').style.display = 'block';
@@ -56,9 +56,9 @@ function updateStepper(activeStep) {
     const s2 = document.getElementById('stepper-payment');
     const s3 = document.getElementById('stepper-review');
 
-    s1.className = 'step-item'; 
-    s2.className = 'step-item';
-    s3.className = 'step-item';
+    s1.className = 'chk-step-item'; 
+    s2.className = 'chk-step-item';
+    s3.className = 'chk-step-item';
 
     // Set logic
     if (activeStep >= 1) s1.classList.add('active'); // Address is always "active" or "completed" if passed

@@ -1,21 +1,28 @@
-<div class="address-section">
-    <h3 class="step-title">Select Delivery Address</h3>
+<div class="chk-step-wrapper">
+    <h3 class="chk-section-title">Select Delivery Address</h3>
+    
     <!-- Billing Info Alert -->
-    <div class="alert-info-billing">
-        <span class="material-icons">info</span>
+    <div style="background: rgba(250, 249, 247, 1); border: 1px dashed #eaeaea; border-radius: 2px; padding: 16px; margin-bottom: 24px; display: flex; align-items: center; gap: 12px; font-family: 'Montserrat', sans-serif; font-size: 0.85rem; color: #555;">
+        <span class="material-icons" style="color: #cd7f32; font-size: 20px;">info</span>
         The default address will be used as the billing address.
     </div>
 
     <!-- SAVED ADDRESSES GRID -->
     {% if addresses %}
-        <div class="address-grid" id="address-grid">
+        <div class="chk-address-grid" id="address-grid">
             {% for address in addresses %}
-                <div class="checkout-address-card {% if address.is_default %}selected default-selection{% endif %}"
+                <div class="hub-card checkout-address-card {% if address.is_default %}selected default-selection{% endif %}"
                      data-address-id="{{ address.id }}"
                      onclick="selectAddress(this, '{{ address.id }}')">
+                    
                     <div class="addr-header">
-                        <span class="addr-type">{{ address.label }}</span>
-                        {% if address.is_default %}<span class="badge-default">Default</span>{% endif %}
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span class="addr-type">{{ address.label }}</span>
+                            {% if address.is_default %}
+                                <span class="order-status-badge oid-return-completed" style="font-size: 0.65rem; padding: 2px 6px;">Default</span>
+                            {% endif %}
+                        </div>
+                        
                         <div class="addr-controls">
                             {% if not address.is_default %}
                                 <span class="material-icons btn-addr-action-icon default-icon"
@@ -27,47 +34,56 @@
                                   onclick="editAddress(event, '{{ address.id }}')">edit</span>
                         </div>
                     </div>
+                    
                     <div class="addr-name">{{ address.full_name }}</div>
                     <div class="addr-details">
-                        {{ address.address_line_1 }}
-                        <br>
-                        {% if address.address_line_2 %}
-                            {{ address.address_line_2 }}
-                            <br>
-                        {% endif %}
-                        {{ address.city }}, {{ address.state }} - {{ address.postal_code }}
-                        <br>
+                        {{ address.address_line_1 }}<br>
+                        {% if address.address_line_2 %}{{ address.address_line_2 }}<br>{% endif %}
+                        {{ address.city }}, {{ address.state }} - {{ address.postal_code }}<br>
                         {{ address.country }}
                     </div>
                     <div class="addr-phone">Phone: {{ address.phone_number }}</div>
+                    
+                    <!-- Selection Indicator (Absolute Overlay) -->
+                    <div class="addr-check-overlay">
+                        <span class="material-icons">check_circle</span>
+                    </div>
                 </div>
             {% endfor %}
         </div>
+    {% else %}
+        <div style="text-align: center; padding: 40px 20px; border: 1px dashed #eaeaea; margin-bottom: 24px;">
+            <span class="material-icons" style="font-size: 32px; color: #ccc; margin-bottom: 12px;">location_off</span>
+            <p style="font-family: 'Montserrat', sans-serif; font-size: 0.9rem; color: #666; margin: 0;">You have no saved addresses. Please add a new address to continue.</p>
+        </div>
     {% endif %}
+
     <!-- ACTIONS -->
-    <div class="step-actions-right">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 32px; padding-top: 24px; border-top: 1px solid #eaeaea; gap: 16px; flex-wrap: wrap;">
         <!-- Add New (Conditionally) -->
         {% if can_add_address %}
             <button type="button"
-                    class="btn-add-new"
+                    class="hub-btn-outline"
                     id="btn-show-address-form"
                     onclick="showAddAddressForm()">
-                <span class="material-icons">add</span> Add New Address
+                <span class="material-icons" style="font-size: 18px; margin-right: 6px;">add</span> Add New Address
             </button>
         {% else %}
-            <a href="{% url 'user_address' %}" class="btn-manage">Manage Addresses</a>
+            <a href="{% url 'user_address' %}" class="hub-btn-outline">Manage Addresses</a>
         {% endif %}
+        
         <!-- Continue Button -->
         <button type="button"
-                class="btn-primary-step"
+                class="lux-btn-primary"
                 id="btn-next-payment"
                 disabled
-                onclick="goToStep(2)">Proceed to Payment</button>
+                onclick="goToStep(2)" style="min-width: 200px;">Proceed to Payment</button>
     </div>
+
     <!-- HIDDEN ADD FORM CONTAINER (Populated by JS) -->
-    <div id="checkout-address-form-container" style="display:none;">
+    <div id="checkout-address-form-container" style="display:none; margin-top: 32px; padding-top: 32px; border-top: 1px dashed #eaeaea;">
         <div class="address-form-wrapper">
-            <h4 class="address-form-title">
+            <h4 class="chk-section-title" style="font-size: 1.1rem;">
                 {% if address_id %}
                     Edit Address
                 {% else %}

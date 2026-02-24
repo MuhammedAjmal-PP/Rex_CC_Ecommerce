@@ -1,275 +1,48 @@
-/* ============================================================
-   REX CC — ORDER DETAIL PAGE
-   Luxury theme matching order list design system
-   ============================================================ */
+/* ===================================================================
+   REX CC - ORDER DETAIL STYLES
+   =================================================================== */
 
-:root {
-  --od-bg: #faf9f7;
-  --od-surface: #ffffff;
-  --od-text: #2c2c2c;
-  --od-text-muted: #7a7a7a;
-  --od-border: #e8e6e2;
-  --od-gold: #cd7f32;
-  --od-gold-light: #bfa15f;
-  --od-gold-dark: #b06825;
-
-  --font-serif: "Playfair Display", serif;
-  --font-sans: "Montserrat", sans-serif;
-}
-
-/* ============================================================
-   PAGE CONTAINER
-   ============================================================ */
-
-.od-page {
-  min-height: calc(100vh - 200px);
-  padding: 40px 60px 80px;
-}
-
-.od-page * {
-  box-sizing: border-box;
-}
-
-/* ============================================================
-   BREADCRUMBS
-   ============================================================ */
-
-.od-breadcrumb {
-  max-width: 1200px;
-  margin: 0 auto 20px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.85rem;
-  color: var(--od-text-muted);
-  font-family: var(--font-sans);
-}
-
-.od-breadcrumb a {
-  color: var(--od-text-muted);
-  text-decoration: none;
-  transition: color 0.2s;
-}
-
-.od-breadcrumb a:hover {
-  color: var(--od-gold);
-}
-
-.od-breadcrumb-sep {
-  color: var(--od-gold-dark);
-  user-select: none;
-}
-
-.od-breadcrumb-current {
-  color: var(--od-text);
+/* ---------------------------------------------------------
+   COMMON UTILITIES
+   --------------------------------------------------------- */
+.od-section-heading {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
   font-weight: 500;
+  color: #111;
+  margin: 0 0 16px 0;
 }
 
-/* ============================================================
-   PAGE HEADER
-   ============================================================ */
-
-.od-header {
-  max-width: 1200px;
-  margin: 0 auto 32px;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-
-.od-header-left {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.od-order-number {
-  font-family: var(--font-sans);
-  font-size: 1.8rem;
-  font-weight: 600;
-  color: var(--od-text);
-  margin: 0;
-  letter-spacing: 0.3px;
-}
-
-.od-order-date {
-  font-family: var(--font-sans);
-  font-size: 0.85rem;
-  color: var(--od-text-muted);
-}
-
-.od-header-right {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.od-btn-invoice {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 20px;
-  font-family: var(--font-sans);
-  font-size: 0.78rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  color: var(--od-text);
-  text-decoration: none;
-  border: 1px solid var(--od-border);
-  border-radius: 3px;
-  transition: all 0.25s;
-  background: var(--od-surface);
-}
-
-.od-btn-invoice:hover {
-  border-color: var(--od-gold-light);
-  color: var(--od-gold);
-}
-
-.od-btn-invoice .material-icons {
-  font-size: 16px;
-}
-
-/* ============================================================
-   STATUS BADGE (reuse from order list)
-   ============================================================ */
-
-.od-status-badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 5px 14px;
-  border-radius: 3px;
-  font-family: var(--font-sans);
-  font-size: 0.7rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  white-space: nowrap;
-}
-
-.od-status-placed {
-  color: #cd7f32;
-  background: rgba(205, 127, 50, 0.08);
-  border: 1px solid rgba(205, 127, 50, 0.2);
-}
-
-.od-status-confirmed {
-  color: #1565c0;
-  background: rgba(21, 101, 192, 0.08);
-  border: 1px solid rgba(21, 101, 192, 0.2);
-}
-
-.od-status-shipped {
-  color: #4527a0;
-  background: rgba(69, 39, 160, 0.08);
-  border: 1px solid rgba(69, 39, 160, 0.2);
-}
-
-.od-status-out_for_delivery {
-  color: #e65100;
-  background: rgba(230, 81, 0, 0.08);
-  border: 1px solid rgba(230, 81, 0, 0.2);
-}
-
-.od-status-delivered {
-  color: #2e7d32;
-  background: rgba(46, 125, 50, 0.08);
-  border: 1px solid rgba(46, 125, 50, 0.2);
-}
-
-.od-status-cancelled {
-  color: #d32f2f;
-  background: rgba(211, 47, 47, 0.08);
-  border: 1px solid rgba(211, 47, 47, 0.2);
-}
-
-/* item-level statuses */
-.od-status-pending      { color: #8d6e63; background: rgba(141,110,99,0.08); border: 1px solid rgba(141,110,99,0.2); }
-.od-status-packing      { color: #6a1b9a; background: rgba(106,27,154,0.08); border: 1px solid rgba(106,27,154,0.2); }
-.od-status-ready        { color: #00838f; background: rgba(0,131,143,0.08); border: 1px solid rgba(0,131,143,0.2); }
-.od-status-in_transit   { color: #4527a0; background: rgba(69,39,160,0.08); border: 1px solid rgba(69,39,160,0.2); }
-.od-status-failed       { color: #bf360c; background: rgba(191,54,12,0.08); border: 1px solid rgba(191,54,12,0.2); }
-.od-status-return_requested { color: #e65100; background: rgba(230,81,0,0.08); border: 1px solid rgba(230,81,0,0.2); }
-.od-status-returned     { color: #1565c0; background: rgba(21,101,192,0.08); border: 1px solid rgba(21,101,192,0.2); }
-.od-status-rts          { color: #d32f2f; background: rgba(211,47,47,0.08); border: 1px solid rgba(211,47,47,0.2); }
-
-/* Payment Statuses */
-.od-payment-status {
-  display: inline-flex;
-  align-items: center;
-  padding: 3px 8px;
-  border-radius: 3px;
-  font-family: var(--font-sans);
-  font-size: 0.72rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  white-space: nowrap;
-}
-
-.od-status-paid, .od-status-completed {
-  color: #2e7d32;
-  background: rgba(46, 125, 50, 0.08);
-  border: 1px solid rgba(46, 125, 50, 0.2);
-}
-
-.od-status-pending-payment { /* Distinct from order pending */
-  color: #f57f17;
-  background: rgba(245, 127, 23, 0.08);
-  border: 1px solid rgba(245, 127, 23, 0.2);
-}
-
-/* ============================================================
-   ITEMS SECTION
-   ============================================================ */
-
-.od-section {
-  max-width: 1200px;
-  margin: 0 auto 28px;
-}
-
-.od-section-title {
-  font-family: var(--font-sans);
-  font-size: 0.72rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  color: var(--od-text-muted);
-  margin-bottom: 12px;
-}
-
+/* ---------------------------------------------------------
+   ORDER ITEMS LIST 
+   --------------------------------------------------------- */
 .od-items-card {
-  background: var(--od-surface);
-  border: 1px solid var(--od-border);
-  border-radius: 3px;
-  overflow: hidden;
+  overflow-x: auto;
 }
 
 .od-items-header {
   display: grid;
-  grid-template-columns: 60px 2fr 0.6fr 0.8fr 0.8fr 1fr 50px;
-  padding: 14px 24px;
-  border-bottom: 1px solid var(--od-border);
-  background: rgba(250, 249, 247, 0.6);
-  font-family: var(--font-sans);
-  font-size: 0.7rem;
+  grid-template-columns: 80px 2.5fr 80px 1.2fr 1.2fr 1fr 50px;
+  gap: 16px;
+  padding: 16px 24px;
+  background: #f8f8f8;
+  border-bottom: 1px solid var(--border, #eaeaea);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 1.2px;
-  color: var(--od-text-muted);
-  align-items: center;
+  letter-spacing: 0.5px;
+  color: var(--color-muted);
 }
 
 .od-item-row {
   display: grid;
-  grid-template-columns: 60px 2fr 0.6fr 0.8fr 0.8fr 1fr 50px;
-  padding: 16px 24px;
+  grid-template-columns: 80px 2.5fr 80px 1.2fr 1.2fr 1fr 50px;
+  gap: 16px;
+  padding: 24px;
   align-items: center;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
-  transition: background 0.2s;
+  border-bottom: 1px solid var(--border, #eaeaea);
+  transition: background-color 0.2s;
 }
 
 .od-item-row:last-child {
@@ -277,416 +50,414 @@
 }
 
 .od-item-row:hover {
-  background: rgba(250, 249, 247, 0.5);
+  background: rgba(0,0,0,0.01);
 }
 
 .od-item-img {
-  width: 48px;
-  height: 48px;
+  width: 80px;
+  height: 80px;
   object-fit: cover;
-  border-radius: 3px;
-  background: var(--od-bg);
+  border-radius: 2px;
+  background: #fdfdfd;
 }
 
 .od-item-img-placeholder {
-  width: 48px;
-  height: 48px;
-  border-radius: 3px;
-  background: var(--od-bg);
+  width: 80px;
+  height: 80px;
+  background: #f5f5f5;
   display: flex;
   align-items: center;
   justify-content: center;
+  color: #ccc;
+  border-radius: 2px;
 }
 
-.od-item-img-placeholder .material-icons {
-  font-size: 22px;
-  color: var(--od-text-muted);
-  opacity: 0.4;
+.od-item-details-col {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .od-item-brand {
-  font-family: var(--od-font-sans);
-  font-size: 0.65rem;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.75rem;
   font-weight: 600;
+  color: var(--color-muted);
   text-transform: uppercase;
   letter-spacing: 1px;
-  color: var(--od-text-muted);
-  margin-bottom: 1px;
+  margin-bottom: 4px;
 }
 
 .od-item-name {
-  font-family: var(--font-sans);
-  font-size: 0.88rem;
-  font-weight: 600;
-  color: var(--od-text);
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  color: #111;
+  margin-bottom: 6px;
+  line-height: 1.3;
 }
 
 .od-item-sku {
-  font-family: var(--font-sans);
-  font-size: 0.75rem;
-  color: var(--od-text-muted);
-  margin-top: 2px;
+  font-family: monospace;
+  font-size: 0.8rem;
+  color: #888;
 }
 
 .od-item-qty {
-  font-family: var(--font-sans);
-  font-size: 0.88rem;
-  color: var(--od-text);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #111;
   text-align: center;
 }
 
-.od-item-price,
-.od-item-total {
+.od-item-price, .od-item-total {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  font-family: 'Montserrat', sans-serif;
+  gap: 4px;
 }
 
-.od-item-price {
-  font-family: var(--font-sans);
-}
-
-.od-item-total {
-  font-family: var(--font-sans);
-}
-
-/* MRP — greyed strikethrough, only shown when discounted */
 .od-price-original {
-  font-size: 0.75rem;
-  color: var(--od-text-muted);
+  font-size: 0.85rem;
+  color: #999;
   text-decoration: line-through;
-  font-weight: 400;
 }
 
-/* Final / discounted price */
 .od-price-final {
-  font-size: 0.88rem;
-  font-weight: 700;
-  color: var(--od-gold-dark);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #111;
+}
+
+.od-item-action-col {
+  display: flex;
+  justify-content: flex-end;
 }
 
 .od-item-view {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  color: var(--od-text-muted);
+  color: var(--color-muted);
   text-decoration: none;
-  transition: all 0.25s;
-  border: 1px solid transparent;
+  background: #f5f5f5;
+  transition: all 0.2s;
 }
 
 .od-item-view:hover {
-  color: var(--od-gold);
-  background: rgba(205, 127, 50, 0.06);
-  border-color: rgba(205, 127, 50, 0.15);
+  background: var(--color-gold);
+  color: #fff;
 }
 
-.od-item-view .material-icons {
-  font-size: 18px;
-}
-
-/* ============================================================
-   ADDRESS + SUMMARY ROW
-   ============================================================ */
-
-.od-info-row {
-  max-width: 1200px;
-  margin: 0 auto 28px;
+/* ---------------------------------------------------------
+   INFO GRID (Address & Summary)
+   --------------------------------------------------------- */
+.od-info-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 24px;
 }
 
-.od-info-card {
-  background: var(--od-surface);
-  border: 1px solid var(--od-border);
-  border-radius: 3px;
-  padding: 24px;
-}
-
-.od-info-card-title {
-  font-family: var(--font-sans);
-  font-size: 0.72rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  color: var(--od-text-muted);
-  margin-bottom: 16px;
+.od-card-padded {
+  padding: 32px;
+  height: 100%; /* Make cards equal height */
 }
 
 .od-address-name {
-  font-family: var(--font-sans);
-  font-size: 0.92rem;
+  font-family: 'Playfair Display', serif;
+  font-size: 1.3rem;
   font-weight: 600;
-  color: var(--od-text);
-  margin-bottom: 8px;
+  color: #111;
+  margin-bottom: 12px;
 }
 
 .od-address-line {
-  font-family: var(--font-sans);
-  font-size: 0.85rem;
-  color: var(--od-text-muted);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.95rem;
+  color: #555;
   line-height: 1.6;
+  margin-bottom: 16px;
 }
 
 .od-address-phone {
-  font-family: var(--font-sans);
-  font-size: 0.85rem;
-  color: var(--od-text-muted);
-  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.od-address-phone .material-icons {
+  font-size: 18px;
+  color: var(--color-gold);
+}
+
+.od-summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 12px;
+  margin-bottom: 12px;
+  border-bottom: 1px dashed #eee;
+}
+
+.od-summary-row:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.od-summary-label {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.95rem;
+  color: #555;
+}
+
+.od-summary-value {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #111;
+}
+
+.od-discount {
+  color: #2e7d32;
+  font-weight: 600;
+}
+
+.od-summary-divider {
+  height: 1px;
+  background: #eaeaea;
+  margin: 16px 0;
+}
+
+.od-summary-total .od-summary-label {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #111;
+}
+
+.od-summary-total .od-summary-value {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--color-gold-dark);
+}
+
+.od-payment-info {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--color-border);
+}
+
+.payment-method-flex {
   display: flex;
   align-items: center;
   gap: 6px;
 }
 
-.od-address-phone .material-icons {
-  font-size: 16px;
-  color: var(--od-gold-light);
-}
-
-/* Summary */
-.od-summary-row {
-  display: flex;
-  justify-content: space-between;
-  font-family: var(--font-sans);
-  font-size: 0.85rem;
-  color: var(--od-text-muted);
-  padding: 6px 0;
-}
-
-.od-summary-row.od-summary-total {
-  border-top: 1px solid var(--od-border);
-  margin-top: 8px;
-  padding-top: 14px;
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: var(--od-text);
-}
-
-.od-summary-label {
-  font-weight: 500;
-}
-
-.od-summary-value {
-  font-weight: 600;
-  color: var(--od-text);
-}
-
-.od-summary-value.od-discount {
-  color: #2e7d32;
-}
-
-/* ============================================================
-   ORDER TIMELINE (horizontal squares)
-   ============================================================ */
-
-.od-timeline-section {
-  max-width: 1200px;
-  margin: 0 auto 28px;
-}
-
-.od-timeline {
-  background: var(--od-surface);
-  border: 1px solid var(--od-border);
-  border-radius: 3px;
-  padding: 32px 24px 28px;
-  overflow-x: auto;
+/* ---------------------------------------------------------
+   ORDER TRACKING / TIMELINE
+   --------------------------------------------------------- */
+.od-timeline-card {
+  padding: 40px;
 }
 
 .od-timeline-track {
   display: flex;
-  align-items: flex-start;
-  justify-content: flex-start;
-  gap: 0;
-  min-width: 0;
+  justify-content: space-between;
+  position: relative;
+}
+
+/* The connecting line */
+.od-timeline-track::before {
+  content: '';
+  position: absolute;
+  top: 10px;
+  left: 30px;
+  right: 30px;
+  height: 2px;
+  background: #eee;
+  z-index: 1;
 }
 
 .od-timeline-step {
-  flex: 0 0 120px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   position: relative;
-}
-
-/* Connector line between squares */
-.od-timeline-step:not(:last-child)::after {
-  content: "";
-  position: absolute;
-  top: 7px;
-  left: calc(50% + 9px);
-  right: calc(-50% + 9px);
-  height: 2px;
-  background: var(--od-border);
-}
-
-.od-timeline-step.od-step-done:not(:last-child)::after {
-  background: var(--od-gold);
-}
-
-/* Square marker */
-.od-step-marker {
-  width: 16px;
-  height: 16px;
-  border: 2px solid var(--od-border);
-  background: var(--od-surface);
-  position: relative;
-  z-index: 1;
-  flex-shrink: 0;
-}
-
-.od-step-done .od-step-marker {
-  background: var(--od-gold);
-  border-color: var(--od-gold);
-}
-
-.od-step-current .od-step-marker {
-  background: var(--od-gold);
-  border-color: var(--od-gold-dark);
-  box-shadow: 0 0 0 3px rgba(205, 127, 50, 0.15);
-}
-
-/* Labels below */
-.od-step-label {
-  margin-top: 10px;
-  font-family: var(--font-sans);
-  font-size: 0.72rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  color: var(--od-text-muted);
+  z-index: 2;
   text-align: center;
+  flex: 1;
 }
 
-.od-step-done .od-step-label,
-.od-step-current .od-step-label {
-  color: var(--od-text);
+.od-step-marker {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid #ddd;
+  margin: 0 auto 16px;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Status: Done (Green) */
+.od-step-done .od-step-marker {
+  border-color: #2e7d32;
+  background: #2e7d32;
+}
+
+/* Status: Current (Gold or fallback logic) */
+.od-timeline-step.od-step-done:last-child .od-step-marker {
+  border-color: var(--color-gold);
+  background: var(--color-gold);
+  box-shadow: 0 0 0 4px rgba(191, 161, 95, 0.2);
+}
+
+/* Status: Failed/Cancelled (Red) */
+.od-timeline-step.od-step-done:last-child .od-step-marker:has(.material-icons:contains("close")) {
+  border-color: #d32f2f;
+  background: #d32f2f;
+  box-shadow: 0 0 0 4px rgba(211, 47, 47, 0.2);
+}
+
+.od-step-label {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 6px;
 }
 
 .od-step-time {
-  margin-top: 4px;
-  font-family: var(--font-sans);
-  font-size: 0.7rem;
-  color: var(--od-text-muted);
-  text-align: center;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.8rem;
+  color: #888;
   line-height: 1.4;
 }
 
-/* ============================================================
-   CANCEL ORDER (subtle)
-   ============================================================ */
-
-.od-footer {
-  max-width: 1200px;
-  margin: 0 auto;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 16px;
-  padding-top: 4px;
+/* Connecting line progress (only if there is a next step that is also done) */
+.od-step-done + .od-step-done::before {
+  content: '';
+  position: absolute;
+  top: 10px;
+  right: 50%;
+  width: 100%;
+  height: 2px;
+  background: #2e7d32;
+  z-index: -1;
 }
 
-.od-btn-retry {
+/* ---------------------------------------------------------
+   FOOTER ACTIONS
+   --------------------------------------------------------- */
+.od-btn-cancel-outline {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 10px 24px;
-  background: linear-gradient(135deg, var(--od-gold) 0%, var(--od-gold-dark) 100%);
-  color: #ffffff;
-  border: none;
-  border-radius: 3px;
-  font-family: var(--font-sans);
-  font-size: 0.78rem;
+  justify-content: center;
+  padding: 12px 24px;
+  border: 1px solid #d32f2f;
+  color: #d32f2f;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.85rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.8px;
+  letter-spacing: 1px;
   text-decoration: none;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 16px rgba(205, 127, 50, 0.25);
+  background: transparent;
+  border-radius: 3px;
+  transition: all 0.2s;
 }
 
-.od-btn-retry:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(205, 127, 50, 0.35);
-  color: #ffffff;
+.od-btn-cancel-outline:hover {
+  background: #d32f2f;
+  color: #fff;
 }
 
-.od-btn-retry:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.od-btn-retry .material-icons {
-  font-size: 16px;
-}
-
-.od-btn-cancel {
-  font-family: var(--font-sans);
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--od-text-muted);
-  text-decoration: none;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  padding: 6px 0;
-  transition: color 0.2s;
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-
-.od-btn-cancel:hover {
-  color: #d32f2f;
-}
-
-/* ============================================================
-   RESPONSIVE
-   ============================================================ */
-
-@media (max-width: 1024px) {
-  .od-page {
-    padding: 30px 40px 60px;
+/* ---------------------------------------------------------
+   RESPONSIVE DESIGN 
+   --------------------------------------------------------- */
+@media (max-width: 992px) {
+  .od-info-grid {
+    grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 768px) {
-  .od-page {
-    padding: 24px 16px 60px;
-  }
-
-  .od-header {
-    flex-direction: column;
-  }
-
-  .od-order-number {
-    font-size: 1.4rem;
-  }
-
   .od-items-header {
-    display: none;
+    display: none; /* Hide table header on mobile */
   }
-
+  
   .od-item-row {
-    display: flex;
-    flex-wrap: wrap;
+    grid-template-columns: 80px 1fr;
+    grid-template-areas: 
+      "img details"
+      "img actions"
+      "stats stats";
     gap: 12px;
-    padding: 16px;
   }
-
-  .od-item-row > *:nth-child(2) {
-    flex: 1;
+  
+  .od-item-img {
+    grid-area: img;
   }
-
-  .od-info-row {
-    grid-template-columns: 1fr;
+  
+  .od-item-details-col {
+    grid-area: details;
   }
-
+  
+  .od-item-action-col {
+    grid-area: actions;
+    justify-content: flex-start;
+  }
+  
+  .od-item-qty, .od-item-price, .od-item-total, .od-item-status-col {
+    grid-area: stats;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 8px;
+    border-top: 1px dashed #eee;
+    text-align: right;
+  }
+  
+  .od-item-qty::before { content: "Qty: "; color: #888; }
+  .od-item-price::before { content: "Unit Price: "; color: #888; }
+  .od-item-total::before { content: "Total: "; color: #888; }
+  
   .od-timeline-track {
-    min-width: 500px;
+    flex-direction: column;
+    gap: 32px;
+  }
+  
+  .od-timeline-track::before {
+    top: 0;
+    bottom: 0;
+    left: 20px;
+    width: 2px;
+    height: 100%;
+  }
+  
+  .od-timeline-step {
+    display: flex;
+    align-items: flex-start;
+    text-align: left;
+    gap: 16px;
+  }
+  
+  .od-step-marker {
+    margin: 0;
+    flex-shrink: 0;
+  }
+  
+  .od-step-done + .od-step-done::before {
+    top: -32px;
+    bottom: 50%;
+    left: 10px;
+    width: 2px;
+    height: 32px;
   }
 }

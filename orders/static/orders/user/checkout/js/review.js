@@ -200,6 +200,6 @@ function _markRazorpayFailed(csrfToken, orderNumber, reason, btn) {
  * Reset the place order button
  */
 function _resetPlaceOrderBtn(btn) {
-    btn.innerHTML = '<span class="material-icons">lock</span> Place Order';
+    btn.innerHTML = 'Confirm & Place Order';
     btn.disabled = false;
 }

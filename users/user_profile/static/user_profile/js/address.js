@@ -3,28 +3,37 @@
 // static/user_profile/js/address.js
 
 function getCSRFToken() {
-  const globalToken = document.getElementById("global-csrf-token");
-  if (globalToken) return globalToken.value;
+  const csrfInput = document.querySelector('#csrf-form input[name="csrfmiddlewaretoken"]');
+  if (csrfInput) return csrfInput.value;
   
-  // Fallback (legacy)
-  const tokenInput = document.getElementById("csrf-token");
-  return tokenInput ? tokenInput.dataset.csrf : "";
+  // Fallback to cookie
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, 10) === ('csrftoken=')) {
+              cookieValue = decodeURIComponent(cookie.substring(10));
+              break;
+          }
+      }
+  }
+  return cookieValue;
 }
 
-function deleteAddress(event, addressId) {
+function deleteAddress(button) {
   if (!confirm("Are you sure you want to delete this address?")) return;
 
   // Get URL from button's data-url attribute
-  const url = event.currentTarget.getAttribute("data-url");
+  const url = button.getAttribute("data-url");
 
   if (!url) {
     showMessage("Invalid URL configuration.", "error");
     return;
   }
   
-  const button = event.currentTarget;
   button.disabled = true;
-  button.innerHTML = '<span class="material-icons">hourglass_empty</span> Removing...';
+  button.innerHTML = 'Removing...';
 
   fetch(url, {
     method: "POST",
@@ -43,19 +52,19 @@ function deleteAddress(event, addressId) {
       } else {
         alert("Failed to delete address.");
         button.disabled = false;
-        button.innerHTML = '<span class="material-icons">delete_outline</span> <span>Remove</span>';
+        button.innerHTML = 'Remove';
       }
     })
     .catch(() => {
       showMessage("Something went wrong. Please try again.", "error");
       button.disabled = false;
-      button.innerHTML = '<span class="material-icons">delete_outline</span> <span>Remove</span>';
+      button.innerHTML = 'Remove';
     });
 }
 
-function setDefaultAddress(event, addressId) {
+function setDefaultAddress(button) {
   // Get URL from button's data-url attribute
-  const url = event.currentTarget.getAttribute("data-url");
+  const url = button.getAttribute("data-url");
 
   if (!url) {
     showMessage("Invalid URL configuration.", "error");
@@ -63,9 +72,7 @@ function setDefaultAddress(event, addressId) {
   }
 
   // Show loading state
-  const button = event.currentTarget;
-  // const originalText = button.innerHTML; // Can use but simpler to hardcode restore if needed
-  button.innerHTML = '<span class="material-icons">hourglass_empty</span><span>Setting...</span>';
+  button.innerHTML = 'Setting...';
   button.disabled = true;
 
   fetch(url, {
@@ -85,13 +92,13 @@ function setDefaultAddress(event, addressId) {
         }, 1000);
       } else {
         showMessage("Unable to update default address.", "error");
-        button.innerHTML = '<span class="material-icons">push_pin</span><span>Set as Default</span>';
+        button.innerHTML = 'Set Default';
         button.disabled = false;
       }
     })
     .catch(() => {
       showMessage("Network error. Please try again.", "error");
-      button.innerHTML = '<span class="material-icons">push_pin</span><span>Set as Default</span>';
+      button.innerHTML = 'Set Default';
       button.disabled = false;
     });
 }
@@ -106,7 +113,7 @@ function showMessage(message, type) {
     container.className = "toast-container";
     
     // Updated selector to match address.html structure
-    const addressesPage = document.querySelector(".profile-page-centered");
+    const addressesPage = document.querySelector(".lux-hub-wrapper");
     
     if (addressesPage) {
         // Insert at the top of the content area
@@ -122,7 +129,7 @@ function showMessage(message, type) {
   toast.className = "toast-msg";
 
   const iconName = type === "success" ? "check_circle" : type === "error" ? "error" : "info";
-  const iconColor = type === "error" ? "#e74c3c" : "var(--co-gold)"; // Fixed variable name if it was wrong, assuming co-gold works
+  const iconColor = type === "error" ? "#e74c3c" : "#bfa15f";
 
   toast.innerHTML = `
     <span class="material-icons" style="color:${iconColor}">${iconName}</span>

@@ -1,79 +1,97 @@
 {% load humanize %}
-<div class="review-section">
-    <h3 class="step-title">Review Order</h3>
+<div class="chk-step-wrapper">
+    <h3 class="chk-section-title">Review Order</h3>
     
-    <!-- 1. Delivery Details (Read Only) -->
-    <div class="review-block">
-        <h4 class="review-section-header">Delivery Address</h4>
-        <div class="review-address-box">
-            <div id="review-addr-name" class="addr-name-text"></div>
-            <div id="review-addr-details" class="review-info-text"></div>
-            <div id="review-addr-phone" class="review-info-sub"></div>
+    <div class="chk-review-grid">
+        <!-- 1. Delivery Details (Read Only) -->
+        <div class="hub-card chk-review-block">
+            <h4 class="review-section-header">
+                <span class="material-icons" style="color: #cd7f32; font-size: 18px; margin-right: 6px;">local_shipping</span>
+                Delivery Address
+            </h4>
+            <div class="review-content-box">
+                <div id="review-addr-name" class="review-strong-text"></div>
+                <div id="review-addr-details" class="review-muted-text"></div>
+                <div id="review-addr-phone" class="review-info-sub"></div>
+            </div>
         </div>
-    </div>
 
-    <!-- 2. Payment Method -->
-    <div class="review-block">
-        <h4 class="review-section-header">Payment Method</h4>
-        <div class="review-payment-box review-payment-flex">
-            <span id="review-pay-icon" class="material-icons pay-icon-text">payments</span>
-            <span id="review-pay-method" class="pay-method-text">Cash on Delivery (COD)</span>
+        <!-- 2. Payment Method -->
+        <div class="hub-card chk-review-block">
+            <h4 class="review-section-header">
+                <span class="material-icons" style="color: #cd7f32; font-size: 18px; margin-right: 6px;">payment</span>
+                Payment Method
+            </h4>
+            <div class="review-content-box review-payment-flex">
+                <span id="review-pay-icon" class="material-icons pay-icon-text" style="font-size: 32px; color: #111;">payments</span>
+                <span id="review-pay-method" class="review-strong-text">Cash on Delivery (COD)</span>
+            </div>
         </div>
     </div>
 
     <!-- 3. Items Summary -->
-    <div class="review-block">
-        <h4 class="review-section-header">Order Items</h4>
+    <div class="hub-card chk-review-block" style="margin-top: 24px; padding: 24px;">
+        <h4 class="review-section-header" style="margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid #eaeaea;">
+            <span class="material-icons" style="color: #cd7f32; font-size: 18px; margin-right: 6px;">inventory_2</span>
+            Order Items
+        </h4>
         
         <div class="review-items-list">
             {% for item in items %}
-                <div class="review-item">
+                <div class="review-item-row">
                     
                     <!-- 1. Image -->
                     <div class="review-col-image">
-                        <img src="{{ item.variant.image }}" 
-                             alt="{{ item.variant.product_name }}"
-                             class="review-item-img">
+                        {% if item.variant.image %}
+                            <img src="{{ item.variant.image }}" 
+                                 alt="{{ item.variant.product_name }}"
+                                 class="review-item-img">
+                        {% else %}
+                            <div style="width: 72px; height: 72px; background: #fdfdfd; border: 1px solid #eaeaea; border-radius: 2px; display: flex; align-items: center; justify-content: center;">
+                                <span class="material-icons" style="color: #ccc;">image</span>
+                            </div>
+                        {% endif %}
                     </div>
 
                     <!-- 2. Product Info -->
                     <div class="review-col-info">
+                         {% if item.variant.brand %}
+                             <div class="review-item-brand">{{ item.variant.brand }}</div>
+                         {% endif %}
                          <div class="review-item-name">{{ item.variant.product_name }}</div>
-                         <div class="review-item-brand">{{ item.variant.brand }}</div>
                          <div class="review-item-sku">SKU: {{ item.variant.sku }}</div>
+                         
                          <div class="review-pricing-unit">
                              {% if item.variant.price > item.variant.final_price %}
-                                <span class="original-price">₹{{ item.variant.price|floatformat:2|intcomma }}</span>
+                                <span class="original-price" style="text-decoration: line-through; color: #aaa; margin-right: 8px; font-size: 0.8rem;">₹{{ item.variant.price|floatformat:2|intcomma }}</span>
                              {% endif %}
-                             <span class="final-price">₹{{ item.variant.final_price|floatformat:2|intcomma }}<span class="per-unit">/unit</span></span>
+                             <span class="final-price" style="font-weight: 600; color: #111;">₹{{ item.variant.final_price|floatformat:2|intcomma }}</span>
                          </div>
                     </div>
 
                     <!-- 3. Pricing Info -->
                     <div class="review-col-pricing">
-                         <div class="review-pricing-row">
-                             <span class="pricing-label">Qty:</span>
-                             <span class="pricing-value">{{ item.quantity }}</span>
+                         <div style="display: flex; justify-content: space-between; margin-bottom: 4px; font-family: 'Montserrat', sans-serif; font-size: 0.85rem; color: #555;">
+                             <span>Quantity:</span>
+                             <span style="font-weight: 500; color: #111;">{{ item.quantity }}</span>
                          </div>
                          
                          {% if item.total_discount > 0 %}
-                             <div class="review-pricing-row discount-row">
-                                 <span class="pricing-label">Discount:</span>
-                                 <span class="pricing-value badge-discount">{{ item.variant.discount_percentage|floatformat:0 }}% OFF</span>
+                             <div style="display: flex; justify-content: space-between; margin-bottom: 4px; font-family: 'Montserrat', sans-serif; font-size: 0.85rem; color: #555;">
+                                 <span>Discount:</span>
+                                 <span class="order-status-badge oid-status-delivered" style="padding: 2px 6px; font-size: 0.7rem;">{{ item.variant.discount_percentage|floatformat:0 }}% OFF</span>
                              </div>
-                             <div class="review-pricing-row saving-row">
-                                 <span class="pricing-label">Saved:</span>
-                                 <span class="pricing-value">₹{{ item.total_discount|floatformat:2|intcomma }}</span>
+                             <div style="display: flex; justify-content: space-between; font-family: 'Montserrat', sans-serif; font-size: 0.85rem; color: #555;">
+                                 <span>Saved:</span>
+                                 <span style="font-weight: 500; color: #2e7d32;">₹{{ item.total_discount|floatformat:2|intcomma }}</span>
                              </div>
                          {% endif %}
-
-                         
                     </div>
 
                     <!-- 4. Final Total -->
-                    <div class="review-col-total">
-                        <div class="total-label">Subtotal</div>
-                        <div class="total-amount">₹{{ item.total_amount|floatformat:2|intcomma }}</div>
+                    <div class="review-col-total" style="text-align: right;">
+                        <div style="font-family: 'Montserrat', sans-serif; font-size: 0.75rem; text-transform: uppercase; color: #999; margin-bottom: 4px; letter-spacing: 0.5px;">Subtotal</div>
+                        <div style="font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 600; color: var(--color-gold-dark);">₹{{ item.total_amount|floatformat:2|intcomma }}</div>
                     </div>
 
                 </div>
@@ -82,13 +100,15 @@
     </div>
 
     <!-- FINAL ACTION -->
-    <div class="review-actions">
-        <button type="button" class="btn-back" onclick="goToStep(2)">
-            <span class="material-icons btn-icon-sm">arrow_back</span> Back
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 32px; padding-top: 24px; border-top: 1px solid #eaeaea;">
+        <button type="button" class="hub-btn-outline" onclick="goToStep(2)">
+            <span class="material-icons" style="font-size: 18px; margin-right: 6px; vertical-align: middle;">arrow_back</span> Back
         </button>
         <button type="button"
-                class="btn-place-order"
+                class="lux-btn-primary"
                 id="btn-place-order"
-                onclick="placeOrder()">Confirm & Place Order</button>
+                onclick="placeOrder()" style="min-width: 200px; padding: 14px 24px; font-size: 1rem; background: var(--color-gold-dark);">
+            Confirm & Place Order
+        </button>
     </div>
 </div>

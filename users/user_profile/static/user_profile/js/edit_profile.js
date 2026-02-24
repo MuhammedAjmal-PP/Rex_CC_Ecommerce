@@ -189,7 +189,7 @@ function initAvatarCropping() {
 
     // Helper function to update avatar preview
     function updateAvatarPreview(imageUrl) {
-        const wrapper = avatarWrapper || document.querySelector('.avatar-wrapper');
+        const wrapper = avatarWrapper || document.querySelector('.lux-avatar-wrapper');
         const currentPreview = document.getElementById('avatar-preview'); // Re-query to avoid stale reference
 
         if (currentPreview) {
@@ -201,7 +201,7 @@ function initAvatarCropping() {
                 img.src = imageUrl;
                 img.alt = 'Profile Photo';
                 img.id = 'avatar-preview';
-                img.className = 'avatar-image';
+                img.className = 'lux-avatar-img';
                 currentPreview.replaceWith(img);
             }
         }
@@ -219,13 +219,13 @@ function initAvatarCropping() {
 
     // Helper function to reset avatar preview
     function resetAvatarPreview() {
-        const wrapper = avatarWrapper || document.querySelector('.avatar-wrapper');
+        const wrapper = avatarWrapper || document.querySelector('.lux-avatar-wrapper');
         const currentPreview = document.getElementById('avatar-preview');
 
         if (currentPreview && currentPreview.tagName === 'IMG') {
             // Replace image with placeholder
             const placeholder = document.createElement('div');
-            placeholder.className = 'avatar-placeholder';
+            placeholder.className = 'lux-avatar-placeholder';
             placeholder.id = 'avatar-preview';
             placeholder.innerHTML = '<span class="material-icons">person</span>';
             currentPreview.replaceWith(placeholder);

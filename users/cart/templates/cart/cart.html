@@ -1,180 +1,175 @@
 {% extends "core/user/base_user.html" %}
 {% load static %}
 {% load humanize %}
+
 {% block head_title %}My Cart | REX CC{% endblock %}
+
 {% block extra_css %}
     <link rel="stylesheet" href="{% static 'cart/css/cart.css' %}">
 {% endblock %}
+
 {% block content %}
-    <div class="cart-page">
-        <!-- BREADCRUMBS -->
-        <nav class="breadcrumb-nav">
-            <a href="{% url 'user_profile' %}" class="breadcrumb-link">My Account</a>
-            <span class="breadcrumb-separator">›</span>
-            <span class="breadcrumb-current">Cart</span>
-        </nav>
-        <!-- PAGE HEADER -->
-        <header class="page-header">
-            <div class="header-content">
-                <h1 class="page-title">My Cart</h1>
-                <p class="page-subtitle">Review your selection before securing your timepieces</p>
+<div class="lux-hub-wrapper">
+    <!-- Header -->
+    <header class="hub-header">
+        <div class="hub-user-info">
+            <div class="hub-user-details">
+                <h1 class="hub-name">My Cart</h1>
+                <div class="hub-contact">
+                    <span>Review your selection before securing your timepieces</span>
+                </div>
             </div>
-        </header>
-        {% if items %}
-            <div class="cart-layout">
-                <!-- Cart Items List -->
-                <div class="cart-items-container">
-                    <div class="cart-items-header">
-                        <span class="col-product">Product</span>
-                        <span class="col-qty">Quantity</span>
-                        <span class="col-total">Total</span>
-                        <span class="col-action"></span>
-                    </div>
-                    {% for item in items %}
-                        <div class="cart-item"
-                             data-slug="{{ item.variant.slug }}"
-                             data-sku="{{ item.variant.sku }}">
-                            <!-- Product Info -->
-                            <a href="{% url 'product_detail' item.variant.slug item.variant.sku %}"
-                               class="cart-item-info"
-                               style="text-decoration:none;
-                                      color:inherit">
-                                <div class="cart-item-image">
-                                    <img src="{{ item.variant.image }}" alt="{{ item.variant.product_name }}">
+        </div>
+        <div class="hub-header-actions">
+            <a href="{% url 'product_list' %}" class="hub-btn-outline">
+                <span class="material-icons" style="font-size: 18px; margin-right: 6px;">shopping_bag</span>
+                Continue Shopping
+            </a>
+        </div>
+    </header>
+
+    {% if items %}
+    <div class="lux-cart-layout">
+        <!-- Cart Items List -->
+        <div class="lux-cart-items">
+            {% for item in items %}
+            <div class="hub-card lux-cart-card cart-item" data-slug="{{ item.variant.slug }}" data-sku="{{ item.variant.sku }}">
+                <div class="lux-cart-inner">
+                    <!-- Image -->
+                    <a href="{% url 'product_detail' item.variant.slug item.variant.sku %}" class="lux-cart-img-wrap">
+                        <img src="{{ item.variant.image }}" alt="{{ item.variant.product_name }}" class="lux-cart-img">
+                    </a>
+
+                    <!-- Details -->
+                    <div class="lux-cart-details">
+                        <div class="lux-cart-header">
+                            <div>
+                                <span class="lux-cart-brand">{{ item.variant.brand }}</span>
+                                <h3 class="lux-cart-name">
+                                    <a href="{% url 'product_detail' item.variant.slug item.variant.sku %}">{{ item.variant.product_name }}</a>
+                                </h3>
+                                <span class="lux-cart-sku">SKU: {{ item.variant.sku }}</span>
+                            </div>
+                            <button type="button" class="remove-btn lux-cart-remove" aria-label="Remove item">
+                                <span class="material-icons">close</span>
+                            </button>
+                        </div>
+                        
+                        <!-- Pricing & Qty row -->
+                        <div class="lux-cart-actions-row">
+                            <div class="lux-cart-price-block">
+                                <span class="final-price">₹{{ item.variant.final_price|floatformat:2|intcomma }}</span>
+                                {% if item.variant.price > item.variant.final_price %}
+                                    <span class="original-price">₹{{ item.variant.price|floatformat:2|intcomma }}</span>
+                                {% endif %}
+                                <div class="lux-item-total">
+                                    Total: ₹{{ item.total_amount|floatformat:2|intcomma }}
                                 </div>
-                                <div class="cart-item-details">
-                                    <span class="cart-item-brand">{{ item.variant.brand }}</span>
-                                    <span class="cart-item-name">{{ item.variant.product_name }}</span>
-                                    <span class="cart-item-sku">SKU: {{ item.variant.sku }}</span>
-                                    <!-- Mobile Price Display -->
-                                    <div class="cart-item-price-mobile">
-                                        <span class="final-price">₹{{ item.variant.final_price|floatformat:2|intcomma }}</span>
-                                        {% if item.variant.price > item.variant.final_price %}
-                                            <span class="original-price"
-                                                  style="text-decoration: line-through;
-                                                         color: #999;
-                                                         font-size: 0.85em;
-                                                         margin-left: 5px">₹{{ item.variant.price|floatformat:2|intcomma }}</span>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                            </a>
-                            <!-- Quantity Control -->
-                            <div class="cart-item-qty">
+                            </div>
+                            
+                            <div class="lux-qty-wrapper cart-item-qty">
                                 <div class="qty-control">
-                                    <button type="button"
-                                            class="qty-btn"
-                                            data-action="decrease"
-                                            {% if item.quantity <= 1 %}disabled{% endif %}>−</button>
-                                    <input type="number"
-                                           class="qty-input"
-                                           value="{{ item.quantity }}"
-                                           data-max="{{ item.allowed_max }}"
-                                           readonly
-                                           aria-label="Quantity">
-                                    <button type="button"
-                                            class="qty-btn"
-                                            data-action="increase"
-                                            {% if not item.variant.is_in_stock or item.quantity >= item.allowed_max %}disabled{% endif %}>
-                                        +
-                                    </button>
+                                    <button type="button" class="qty-btn" data-action="decrease" {% if item.quantity <= 1 %}disabled{% endif %}>−</button>
+                                    <input type="number" class="qty-input" value="{{ item.quantity }}" data-max="{{ item.allowed_max }}" readonly aria-label="Quantity">
+                                    <button type="button" class="qty-btn" data-action="increase" {% if not item.variant.is_in_stock or item.quantity >= item.allowed_max %}disabled{% endif %}>+</button>
                                 </div>
                                 {% if item.variant.stock <= 5 and item.variant.stock > 0 %}
                                     <span class="stock-warning">Only {{ item.variant.stock }} left</span>
                                 {% endif %}
-                                {% if not item.variant.is_in_stock %}<span class="stock-error">Out of Stock</span>{% endif %}
-                            </div>
-                            <!-- Total -->
-                            <div class="cart-item-total">
-                                ₹{{ item.total_amount|floatformat:2|intcomma }}
-                                {% if item.total_discount > 0 %}
-                                    <div class="cart-item-savings">Saved ₹{{ item.total_discount|floatformat:2|intcomma }}</div>
+                                {% if not item.variant.is_in_stock %}
+                                    <span class="stock-error">Out of Stock</span>
                                 {% endif %}
                             </div>
-                            <!-- Remove -->
-                            <div class="cart-item-remove">
-                                <button type="button" class="remove-btn" aria-label="Remove item">
-                                    <span class="material-icons">close</span>
-                                </button>
-                            </div>
                         </div>
-                    {% endfor %}
-                </div>
-                <!-- Order Summary -->
-                <div class="cart-summary-container">
-                    <div class="cart-summary">
-                        <h2 class="summary-title">Order Summary</h2>
-                        <div class="summary-row">
-                            <span>Total({{ order_summary.products_count }} items)</span>
-                            <span>₹{{ order_summary.total|floatformat:2|intcomma }}</span>
-                        </div>
-                        <div class="summary-row {% if order_summary.discount > 0 %}discount{% endif %}">
-                            <span>Discount</span>
-                            <span>−₹{{ order_summary.discount|floatformat:2|intcomma }}</span>
-                        </div>
-                        <div class="summary-row">
-                            <span>Subtotal</span>
-                            <span>₹{{ order_summary.sub_total|floatformat:2|intcomma }}</span>
-                        </div>
-                        <div class="summary-row">
-                            <span>Shipping Fee</span>
-                            <span>
-                                {% if order_summary.shipping_fee == 0 %}
-                                    Free
-                                {% else %}
-                                    ₹{{ order_summary.shipping_fee|floatformat:2|intcomma }}
-                                {% endif %}
-                            </span>
-                        </div>
-                        <div class="summary-divider"></div>
-                        <div class="summary-row total">
-                            <span>Total Payable</span>
-                            <span>₹{{ order_summary.total_amount_to_pay|floatformat:2|intcomma }}</span>
-                        </div>
-                        <div class="summary-actions">
-                            <a href="{% url 'checkout' %}" class="btn-checkout">Proceed to Checkout</a>
-                            <a href="{% url 'product_list' %}" class="btn-continue">Continue Shopping</a>
-                        </div>
-                        <p class="summary-note">
-                            <span class="material-icons">lock</span> Secure Checkout confirmed
-                        </p>
                     </div>
                 </div>
             </div>
-        {% else %}
-            <!-- Empty State -->
-            <div class="cart-empty">
-                <span class="material-icons empty-icon">shopping_bag</span>
-                <h2>Your cart is empty</h2>
-                <p>Explore our collection to find your next timepiece.</p>
-                <a href="{% url 'product_list' %}" class="btn-shop-now">Explore Collection</a>
+            {% endfor %}
+        </div>
+
+        <!-- Order Summary -->
+        <div class="lux-cart-summary-wrap">
+            <div class="hub-card lux-cart-summary">
+                <h2 class="summary-title">Order Summary</h2>
+                
+                <div class="summary-row">
+                    <span>Total ({{ order_summary.products_count }} items)</span>
+                    <span>₹{{ order_summary.total|floatformat:2|intcomma }}</span>
+                </div>
+                
+                <div class="summary-row {% if order_summary.discount > 0 %}discount{% endif %}">
+                    <span>Discount</span>
+                    <span>−₹{{ order_summary.discount|floatformat:2|intcomma }}</span>
+                </div>
+                
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <span>₹{{ order_summary.sub_total|floatformat:2|intcomma }}</span>
+                </div>
+                
+                <div class="summary-row">
+                    <span>Shipping Fee</span>
+                    <span>
+                        {% if order_summary.shipping_fee == 0 %}
+                            Free
+                        {% else %}
+                            ₹{{ order_summary.shipping_fee|floatformat:2|intcomma }}
+                        {% endif %}
+                    </span>
+                </div>
+                
+                <div class="summary-divider"></div>
+                
+                <div class="summary-row total">
+                    <span>Total Payable</span>
+                    <span>₹{{ order_summary.total_amount_to_pay|floatformat:2|intcomma }}</span>
+                </div>
+                
+                <div class="summary-actions">
+                    <a href="{% url 'checkout' %}" class="lux-btn-primary">Proceed to Checkout</a>
+                </div>
+                <p class="summary-note">
+                    <span class="material-icons">lock</span> Secure Encrypted Checkout
+                </p>
             </div>
-        {% endif %}
-        <!-- Remove Confirmation Modal -->
-        <div class="modal fade cart-remove-modal"
-             id="removeConfirmModal"
-             tabindex="-1"
-             aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Remove Item</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">Are you sure you want to remove this timepiece from your collection?</div>
-                    <div class="modal-footer">
-                        <!-- <button type="button" class="btn btn-link btn-cancel" data-bs-dismiss="modal">CANCEL</button> -->
-                        <button type="button"
-                                id="confirmRemoveBtn"
-                                class="btn btn-danger btn-confirm-remove">REMOVE</button>
-                    </div>
+        </div>
+    </div>
+    {% else %}
+    <!-- Empty State -->
+    <div class="lux-empty-state" style="margin-top: 60px;">
+        <span class="material-icons empty-icon">shopping_bag</span>
+        <h2>Your cart is empty</h2>
+        <p>Explore our exclusive collection to find your next timepiece.</p>
+        <div style="margin-top: 30px;">
+             <a href="{% url 'product_list' %}" class="btn-primary">Explore Collection</a>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Remove Confirmation Modal (Redesigned as Small Luxury Card) -->
+    <div class="modal fade cart-remove-modal" id="removeConfirmModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content hub-card" style="padding: 24px; text-align: center; border: none; border-radius: 4px;">
+                <div class="modal-header" style="border: none; padding: 0 0 16px; justify-content: center; position: relative;">
+                    <h5 class="modal-title hub-name" style="font-size: 1.5rem; margin: 0; padding-top: 8px;">Remove Item</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="position: absolute; right: 0; top: 0;"></button>
+                </div>
+                <div class="modal-body" style="padding: 0 0 24px; font-family: 'Montserrat', sans-serif; color: #666; font-size: 0.95rem; line-height: 1.5;">
+                    Are you sure you want to remove this timepiece from your collection?
+                </div>
+                <div class="modal-footer" style="border: none; padding: 0; justify-content: center; gap: 12px;">
+                    <button type="button" id="confirmRemoveBtn" class="lux-btn-primary" style="background: #111; padding: 8px 20px; font-size: 0.8rem; box-shadow: none;">Confirm</button>
                 </div>
             </div>
         </div>
     </div>
-    <!-- Hidden form for updates (if needed for non-ajax fallback, but strict rules say API) -->
-    {% csrf_token %}
+</div>
+
+<!-- Hidden form for updates -->
+{% csrf_token %}
+
 {% endblock %}
+
 {% block extra_js %}
     <script src="{% static 'cart/js/cart.js' %}"></script>
 {% endblock %}

@@ -22,95 +22,10 @@
 }
 
 /* ============================================================
-   PAGE CONTAINER
-   ============================================================ */
-
-.td-page {
-  min-height: calc(100vh - 200px);
-  padding: 40px 60px 80px;
-}
-
-.td-page * {
-  box-sizing: border-box;
-}
-
-/* ============================================================
-   BREADCRUMBS
-   ============================================================ */
-
-.td-breadcrumb {
-  max-width: 1200px;
-  margin: 0 auto 20px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.85rem;
-  color: var(--td-text-muted);
-  font-family: var(--font-sans);
-}
-
-.td-breadcrumb a {
-  color: var(--td-text-muted);
-  text-decoration: none;
-  transition: color 0.2s;
-}
-
-.td-breadcrumb a:hover {
-  color: var(--td-gold);
-}
-
-.td-breadcrumb-sep {
-  color: var(--td-gold-dark);
-  user-select: none;
-}
-
-.td-breadcrumb-current {
-  color: var(--td-text);
-  font-weight: 500;
-}
-
-/* ============================================================
-   PAGE HEADER
-   ============================================================ */
-
-.td-header {
-  max-width: 1200px;
-  margin: 0 auto 32px;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-
-.td-header-left {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.td-title {
-  font-family: var(--font-serif);
-  font-size: 1.8rem;
-  font-weight: 600;
-  color: var(--td-text);
-  margin: 0;
-}
-
-.td-subtitle {
-  font-family: var(--font-sans);
-  font-size: 0.85rem;
-  color: var(--td-text-muted);
-  letter-spacing: 0.3px;
-}
-
-/* ============================================================
    MAIN GRID
    ============================================================ */
 
 .td-grid {
-  max-width: 1200px;
-  margin: 0 auto 32px;
   display: grid;
   grid-template-columns: 7fr 5fr;
   gap: 24px;
@@ -124,15 +39,8 @@
 }
 
 /* ============================================================
-   CARDS
+   CARD INTERNALS (OVERRIDING .hub-card)
    ============================================================ */
-
-.td-card {
-  background: var(--td-surface);
-  border: 1px solid var(--td-border);
-  border-radius: 3px;
-  overflow: hidden;
-}
 
 .td-card-header {
   display: flex;
@@ -320,19 +228,6 @@
 }
 
 @media (max-width: 768px) {
-  .td-page {
-    padding: 24px 16px 60px;
-  }
-
-  .td-header {
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .td-title {
-    font-size: 1.4rem;
-  }
-
   .td-card-body {
     padding: 16px 18px;
   }

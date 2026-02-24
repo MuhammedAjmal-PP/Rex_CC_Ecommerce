@@ -1,82 +1,99 @@
-/* Stepper Container */
-.checkout-stepper {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  position: relative;
-  margin-bottom: 20px;
-  padding: 0 20px;
+/* ===================================================================
+   REX CC - CHECKOUT STEPPER
+   =================================================================== */
+
+.chk-stepper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 40px;
+    background: #fff;
+    border: 1px solid #eaeaea;
+    border-radius: 2px;
+    padding: 24px 40px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.02);
 }
 
-/* Progress Bar Line background */
-.checkout-stepper::before {
-  content: "";
-  position: absolute;
-  top: 24px;
-  left: 40px;
-  right: 40px;
-  height: 2px;
-  background: #e0e0e0;
-  z-index: 1;
+.chk-step-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+    z-index: 2;
+    transition: all 0.3s ease;
 }
 
-/* Individual Step */
-.step-item {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  background: var(--co-bg); /* Mask line behind */
-  padding: 0 10px;
+.chk-step-circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #fdfdfd;
+    border: 2px solid #eaeaea;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #aaa;
+    transition: all 0.3s ease;
 }
 
-/* Step Circle */
-.step-circle {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: #fff;
-  border: 2px solid #e0e0e0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
-  color: #999;
-  transition: all 0.3s ease;
-  font-family: var(--font-sans);
+.chk-step-label {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #999;
+    transition: all 0.3s ease;
 }
 
-/* Step Label */
-.step-label {
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: #999;
-  font-weight: 600;
-  transition: all 0.3s;
+.chk-step-line {
+    flex: 1;
+    height: 2px;
+    background: #eaeaea;
+    margin: 0 16px;
+    transform: translateY(-12px);
+    transition: background 0.3s ease;
 }
 
-/* ACTIVE STATE */
-.step-item.active .step-circle {
-  border-color: var(--co-gold);
-  color: var(--co-gold);
-  background: #fff;
-  box-shadow: 0 4px 12px rgba(205, 127, 50, 0.2);
+/* Active state */
+.chk-step-item.active .chk-step-circle {
+    border-color: #cd7f32;
+    background: #cd7f32;
+    color: #fff;
+    box-shadow: 0 0 0 4px rgba(205, 127, 50, 0.1);
 }
 
-.step-item.active .step-label {
-  color: var(--co-gold);
+.chk-step-item.active .chk-step-label {
+    color: #111;
 }
 
-/* COMPLETED STATE */
-.step-item.completed .step-circle {
-  background: var(--co-gold);
-  border-color: var(--co-gold);
-  color: #fff;
+/* Completed state */
+.chk-step-item.completed .chk-step-circle {
+    border-color: #bfa15f;
+    background: #bfa15f;
+    color: #fff;
 }
 
-.step-item.completed .step-label {
-  color: var(--co-text);
+.chk-step-item.completed .chk-step-label {
+    color: #cd7f32;
+}
+
+/* Completed line */
+.chk-step-item.completed + .chk-step-line {
+    background: #bfa15f;
+}
+
+@media (max-width: 600px) {
+    .chk-stepper {
+        padding: 20px;
+        margin-bottom: 24px;
+    }
+    
+    .chk-step-label {
+        font-size: 0.7rem;
+    }
 }

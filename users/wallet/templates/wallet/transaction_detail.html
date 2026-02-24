@@ -6,33 +6,35 @@
     <link rel="stylesheet" href="{% static 'wallet/css/transaction_detail.css' %}">
 {% endblock %}
 {% block content %}
-    <div class="td-page">
-        <!-- BREADCRUMBS -->
-        <nav class="td-breadcrumb">
-            <a href="{% url 'user_profile' %}">My Account</a>
-            <span class="td-breadcrumb-sep">›</span>
-            <a href="{% url 'user_wallet' %}">Wallet</a>
-            <span class="td-breadcrumb-sep">›</span>
-            <span class="td-breadcrumb-current">Transaction</span>
-        </nav>
-
-        <!-- PAGE HEADER -->
-        <div class="td-header">
-            <div class="td-header-left">
-                <h1 class="td-title">{{ txn.get_transaction_type_display }}</h1>
-                <span class="td-subtitle">{{ txn.transaction_id }}</span>
+    <div class="lux-hub-wrapper">
+        <!-- HEADER -->
+        <div class="hub-header" style="align-items: flex-start;">
+            <div class="hub-user-info">
+                <div class="hub-user-details">
+                    <h1 class="hub-name">{{ txn.get_transaction_type_display }}</h1>
+                    <div class="hub-contact">
+                        <span style="font-family: 'Montserrat', sans-serif;">{{ txn.transaction_id }}</span>
+                    </div>
+                </div>
             </div>
-            <div class="td-header-right">
-                <span class="td-status-badge status-{{ txn.status|lower }}">
+            <div class="hub-header-actions">
+                <span class="td-status-badge status-{{ txn.status|lower }}" style="padding: 6px 14px; font-size: 0.75rem;">
                     {{ txn.get_status_display }}
                 </span>
             </div>
         </div>
 
+        <div class="td-back" style="margin-bottom: 24px;">
+            <a href="{% url 'user_wallet' %}" class="td-back-btn">
+                <span class="material-icons">arrow_back</span>
+                Back to Wallet
+            </a>
+        </div>
+
         <!-- MAIN GRID -->
         <div class="td-grid">
             <!-- LEFT: Transaction Info -->
-            <div class="td-card">
+            <div class="hub-card">
                 <div class="td-card-header">
                     <span class="material-icons">receipt_long</span>
                     <span class="td-card-title">Transaction Info</span>
@@ -83,7 +85,7 @@
             <div class="td-right-stack">
                 {% if wallet_txn %}
                     <!-- Wallet Impact -->
-                    <div class="td-card">
+                    <div class="hub-card">
                         <div class="td-card-header">
                             <span class="material-icons">account_balance_wallet</span>
                             <span class="td-card-title">Wallet Impact</span>
@@ -113,7 +115,7 @@
 
                 {% if linked_obj %}
                     <!-- Linked Object -->
-                    <div class="td-card">
+                    <div class="hub-card">
                         <div class="td-card-header">
                             <span class="material-icons">link</span>
                             <span class="td-card-title">Linked Record</span>
@@ -131,14 +133,6 @@
                     </div>
                 {% endif %}
             </div>
-        </div>
-
-        <!-- BACK LINK -->
-        <div class="td-back">
-            <a href="{% url 'user_wallet' %}" class="td-back-btn">
-                <span class="material-icons">arrow_back</span>
-                Back to Wallet
-            </a>
         </div>
     </div>
 {% endblock %}

@@ -1,153 +1,268 @@
 {% extends "core/user/base_user.html" %}
 {% load static %}
 {% load humanize %}
-
-{% block head_title %}Return Item — {{ order.order_number }} | REX CC{% endblock %}
-
+{% block head_title %}Return Item from Order {{ order.order_number }} | REX CC{% endblock %}
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'orders/user/css/return_order.css' %}">
+    <link rel="stylesheet"
+          href="{% static 'orders/user/css/return_order.css' %}?v=1.1">
 {% endblock %}
-
 {% block content %}
-<div class="ro-page">
-
-    <!-- BREADCRUMBS -->
-    <nav class="ro-breadcrumb">
-        <a href="{% url 'user_profile' %}">My Account</a>
-        <span class="ro-breadcrumb-sep">›</span>
-        <a href="{% url 'user_order_list' %}">Orders</a>
-        <span class="ro-breadcrumb-sep">›</span>
-        <a href="{% url 'user_order_details' order.order_number %}">{{ order.order_number }}</a>
-        <span class="ro-breadcrumb-sep">›</span>
-        <a href="{% url 'user_order_item_details' order.order_number order_item.id %}">Item</a>
-        <span class="ro-breadcrumb-sep">›</span>
-        <span class="ro-breadcrumb-current">Return</span>
-    </nav>
-
-    <!-- HEADER -->
-    <div class="ro-header">
-        <h1 class="ro-title">Return Item</h1>
-    </div>
-
-    <!-- ITEM BEING RETURNED -->
-    <div class="ro-product-card">
-        {% if primary_image %}
-            <img src="{{ primary_image.image.url }}"
-                 alt="{{ order_item.product_variant.product.name }}"
-                 class="ro-product-img">
-        {% else %}
-            <div class="ro-product-img-placeholder">
-                <span class="material-icons">watch</span>
-            </div>
-        {% endif %}
-
-        <div class="ro-product-info">
-            {% if order_item.product_variant and order_item.product_variant.product and order_item.product_variant.product.brand %}
-                <div class="ro-product-brand">{{ order_item.product_variant.product.brand.name }}</div>
-            {% endif %}
-            <div class="ro-product-name">
-                {% if order_item.product_variant and order_item.product_variant.product %}
-                    {{ order_item.product_variant.product.name }}
-                {% else %}
-                    Product unavailable
-                {% endif %}
-            </div>
-            {% if order_item.product_variant %}
-                <div class="ro-product-sku">{{ order_item.product_variant.sku }}</div>
-            {% endif %}
-            <div class="ro-product-meta">
-                Qty: {{ order_item.quantity }}
-                <span class="ro-product-meta-dot">·</span>
-                ₹{{ order_item.total_price|floatformat:2|intcomma }}
+    <div class="lux-hub-wrapper">
+        <!-- BREADCRUMBS -->
+        <nav class="uc-breadcrumb" style="margin-bottom: 24px;">
+            <a href="{% url 'user_profile' %}">My Account</a>
+            <span class="uc-breadcrumb-sep">›</span>
+            <a href="{% url 'user_order_list' %}">Orders</a>
+            <span class="uc-breadcrumb-sep">›</span>
+            <a href="{% url 'user_order_details' order.order_number %}">{{ order.order_number }}</a>
+            <span class="uc-breadcrumb-sep">›</span>
+            <a href="{% url 'user_order_item_details' order.order_number order_item.id %}">Item</a>
+            <span class="uc-breadcrumb-sep">›</span>
+            <span class="uc-breadcrumb-current">Return</span>
+        </nav>
+        <!-- HEADER -->
+        <div class="hub-header" style="margin-bottom: 24px;">
+            <div class="hub-header-left">
+                <h1 class="hub-title" style="margin-bottom: 4px;">Return Item</h1>
+                <p style="font-family: 'Montserrat', sans-serif;
+                          font-size: 0.9rem;
+                          color: #666;
+                          margin: 0">Provide details for returning this product from Order {{ order.order_number }}</p>
             </div>
         </div>
-    </div>
-
-    <!-- RETURN FORM -->
-    <form method="post"
-          action="{% url 'user_return_order_submit' order.order_number order_item.id %}"
-          enctype="multipart/form-data"
-          class="ro-form">
-        {% csrf_token %}
-
-        <div class="ro-form-card">
-            <div class="ro-section-title">Return Details</div>
-
-            <!-- REASON -->
-            <div class="ro-field">
-                <label class="ro-field-label" for="id_reason_code">
-                    Reason for return<span class="ro-required">*</span>
-                </label>
-                <select name="reason_code" id="id_reason_code" class="ro-select" required>
-                    <option value="">Select a reason</option>
-                    {% for code, label in form.fields.reason_code.choices %}
-                        {% if code %}
-                            <option value="{{ code }}"
-                                {% if form.reason_code.value == code %}selected{% endif %}>
-                                {{ label }}
-                            </option>
+        <div style="display: grid;
+                    grid-template-columns: 1fr 2fr;
+                    gap: 32px;
+                    align-items: start"
+             class="ro-grid">
+            <!-- LEFT: ITEM DETAILS -->
+            <div class="hub-card" style="padding: 24px;">
+                <h3 style="font-family: 'Playfair Display', serif;
+                           font-size: 1.1rem;
+                           color: #111;
+                           margin: 0 0 16px 0;
+                           border-bottom: 1px solid #eaeaea;
+                           padding-bottom: 12px">Item to Return</h3>
+                <div style="text-align: center; margin-bottom: 20px;">
+                    {% if primary_image %}
+                        <img src="{{ primary_image.image.url }}"
+                             alt="{{ order_item.product_variant.product.name }}"
+                             style="width: 140px;
+                                    height: 140px;
+                                    object-fit: contain;
+                                    background: #fff;
+                                    border: 1px solid #f0f0f0;
+                                    border-radius: 2px;
+                                    padding: 4px;
+                                    display: inline-block">
+                    {% else %}
+                        <div style="width: 140px;
+                                    height: 140px;
+                                    border: 1px solid #eaeaea;
+                                    border-radius: 2px;
+                                    background: #fdfdfd;
+                                    display: inline-flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    color: #ccc">
+                            <span class="material-icons" style="font-size: 40px;">image</span>
+                        </div>
+                    {% endif %}
+                </div>
+                <div style="text-align: center;">
+                    {% if order_item.product_variant and order_item.product_variant.product and order_item.product_variant.product.brand %}
+                        <div style="font-family: 'Montserrat', sans-serif;
+                                    font-size: 0.7rem;
+                                    font-weight: 600;
+                                    text-transform: uppercase;
+                                    letter-spacing: 1px;
+                                    color: #999;
+                                    margin-bottom: 4px">{{ order_item.product_variant.product.brand.name }}</div>
+                    {% endif %}
+                    <h4 style="font-family: 'Playfair Display', serif;
+                               font-size: 1.2rem;
+                               margin: 0 0 12px 0;
+                               color: #111">
+                        {% if order_item.product_variant and order_item.product_variant.product %}
+                            {{ order_item.product_variant.product.name }}
+                        {% else %}
+                            Product unavailable
                         {% endif %}
-                    {% endfor %}
-                </select>
-                {% if form.reason_code.errors %}
-                    {% for error in form.reason_code.errors %}
-                        <div class="ro-field-error">{{ error }}</div>
-                    {% endfor %}
-                {% endif %}
+                    </h4>
+                </div>
+                <div style="font-family: 'Montserrat', sans-serif;
+                            font-size: 0.85rem;
+                            color: #555;
+                            background: rgba(250, 249, 247, 1);
+                            border: 1px dashed #eaeaea;
+                            border-radius: 2px;
+                            padding: 16px">
+                    <div style="display: flex;
+                                justify-content: space-between;
+                                margin-bottom: 8px">
+                        <span style="color: #888;">SKU</span>
+                        <span style="font-weight: 500; font-family: monospace;">
+                            {% if order_item.product_variant %}{{ order_item.product_variant.sku }}{% endif %}
+                        </span>
+                    </div>
+                    <div style="display: flex;
+                                justify-content: space-between;
+                                margin-bottom: 8px">
+                        <span style="color: #888;">Purchased Quantity</span>
+                        <span style="font-weight: 500;">{{ order_item.quantity }}</span>
+                    </div>
+                    <div style="display: flex;
+                                justify-content: space-between;
+                                margin-top: 12px;
+                                padding-top: 12px;
+                                border-top: 1px dashed #e0e0e0">
+                        <span style="font-weight: 600; color: #111;">Refundable Amount</span>
+                        <span style="font-weight: 700;
+                                     color: var(--color-gold-dark);
+                                     font-size: 1rem">₹{{ order_item.total_return|floatformat:2|intcomma }}</span>
+                    </div>
+                </div>
             </div>
-
-            <!-- COMMENT -->
-            <div class="ro-field">
-                <label class="ro-field-label" for="id_comment">
-                    Additional Details
-                </label>
-                <textarea name="comment"
-                          id="id_comment"
-                          class="ro-textarea"
-                          maxlength="1000"
-                          placeholder="Tell us more about the issue...">{{ form.comment.value|default:"" }}</textarea>
-                {% if form.comment.errors %}
-                    {% for error in form.comment.errors %}
-                        <div class="ro-field-error">{{ error }}</div>
-                    {% endfor %}
-                {% endif %}
-            </div>
-
-            <!-- PHOTOS -->
-            <div class="ro-field">
-                <label class="ro-field-label">
-                    Photos
-                </label>
-                <input type="file"
-                       name="photos"
-                       id="id_photos"
-                       accept="image/*"
-                       multiple
-                       class="ro-file-input-hidden">
-                <button type="button" class="ro-upload-btn" id="uploadBtn">
-                    <span class="material-icons">add_photo_alternate</span>
-                    Add Photos
-                </button>
-                <div class="ro-file-hint">Upload up to 3 images (optional)</div>
-                {% if photo_errors %}
-                    <div class="ro-field-error">{{ photo_errors }}</div>
-                {% endif %}
-                <!-- Inline preview -->
-                <div class="ro-preview-grid" id="photoPreviewGrid"></div>
+            <!-- RIGHT: RETURN FORM -->
+            <div class="hub-card" style="padding: 32px;">
+                <form method="post"
+                      action="{% url 'user_return_order_submit' order.order_number order_item.id %}"
+                      enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <!-- REASON -->
+                    <div style="margin-bottom: 24px;">
+                        <label for="id_reason_code"
+                               style="display: block;
+                                      font-family: 'Montserrat', sans-serif;
+                                      font-size: 0.85rem;
+                                      font-weight: 600;
+                                      text-transform: uppercase;
+                                      color: #111;
+                                      margin-bottom: 8px">
+                            Reason for return <span style="color: #d32f2f;">*</span>
+                        </label>
+                        <div style="position: relative;">
+                            <select name="reason_code"
+                                    id="id_reason_code"
+                                    class="hub-input ro-select"
+                                    required>
+                                <option value="">Select a reason</option>
+                                {% for code, label in form.fields.reason_code.choices %}
+                                    {% if code %}
+                                        <option value="{{ code }}"
+                                                {% if form.reason_code.value == code %}selected{% endif %}>
+                                            {{ label }}
+                                        </option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                            <span class="material-icons"
+                                  style="position: absolute;
+                                         right: 12px;
+                                         top: 12px;
+                                         font-size: 20px;
+                                         color: #aaa;
+                                         pointer-events: none">expand_more</span>
+                        </div>
+                        {% if form.reason_code.errors %}
+                            {% for error in form.reason_code.errors %}
+                                <div style="font-family: 'Montserrat', sans-serif;
+                                            font-size: 0.8rem;
+                                            color: #d32f2f;
+                                            margin-top: 6px">{{ error }}</div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    <!-- COMMENT -->
+                    <div style="margin-bottom: 24px;">
+                        <label for="id_comment"
+                               style="display: block;
+                                      font-family: 'Montserrat', sans-serif;
+                                      font-size: 0.85rem;
+                                      font-weight: 600;
+                                      text-transform: uppercase;
+                                      color: #111;
+                                      margin-bottom: 8px">Additional Details</label>
+                        <textarea name="comment"
+                                  id="id_comment"
+                                  class="hub-input"
+                                  maxlength="1000"
+                                  style="min-height: 120px;
+                                         resize: vertical"
+                                  placeholder="Tell us more about the issue (defects, size mismatch, etc.)...">{{ form.comment.value|default:"" }}</textarea>
+                        {% if form.comment.errors %}
+                            {% for error in form.comment.errors %}
+                                <div style="font-family: 'Montserrat', sans-serif;
+                                            font-size: 0.8rem;
+                                            color: #d32f2f;
+                                            margin-top: 6px">{{ error }}</div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    <!-- PHOTOS -->
+                    <div style="margin-bottom: 32px;
+                                padding: 20px;
+                                border: 1px dashed #ccc;
+                                border-radius: 2px;
+                                background: #faf9f7">
+                        <label style="display: flex;
+                                      align-items: center;
+                                      gap: 8px;
+                                      font-family: 'Montserrat', sans-serif;
+                                      font-size: 0.85rem;
+                                      font-weight: 600;
+                                      text-transform: uppercase;
+                                      color: #111;
+                                      margin-bottom: 12px">
+                            <span class="material-icons" style="color: #888;">add_photo_alternate</span> Photos (Optional)
+                        </label>
+                        <p style="font-family: 'Montserrat', sans-serif;
+                                  font-size: 0.85rem;
+                                  color: #666;
+                                  margin: 0 0 16px 0">
+                            Uploading pictures detailing the issue speeds up the return approval process. Max 3 images.
+                        </p>
+                        <input type="file"
+                               name="photos"
+                               id="id_photos"
+                               accept="image/*"
+                               multiple
+                               style="display: none">
+                        <div style="display: flex; gap: 16px; align-items: start;">
+                            <button type="button"
+                                    class="hub-btn-outline"
+                                    id="uploadBtn"
+                                    style="border-color: #aaa;
+                                           color: #555;
+                                           font-size: 0.8rem;
+                                           padding: 8px 16px;
+                                           min-width: 140px">Browse Files</button>
+                            <div class="ro-preview-grid" id="photoPreviewGrid"></div>
+                        </div>
+                        {% if photo_errors %}
+                            <div style="font-family: 'Montserrat', sans-serif;
+                                        font-size: 0.8rem;
+                                        color: #d32f2f;
+                                        margin-top: 12px">{{ photo_errors }}</div>
+                        {% endif %}
+                    </div>
+                    <!-- SUBMIT -->
+                    <div style="display: flex;
+                                justify-content: flex-end;
+                                gap: 16px;
+                                padding-top: 20px;
+                                border-top: 1px solid #eaeaea">
+                        <a href="{% url 'user_order_item_details' order.order_number order_item.id %}"
+                           class="hub-btn-outline">Cancel</a>
+                        <button type="submit" class="lux-btn-primary">Submit Return Request</button>
+                    </div>
+                </form>
             </div>
         </div>
-
-        <!-- SUBMIT -->
-        <div class="ro-footer">
-            <button type="submit" class="ro-btn-submit">Submit Return Request</button>
-        </div>
-    </form>
-
-</div>
+    </div>
 {% endblock %}
-
 {% block extra_js %}
-<script>
+    <script>
 (function() {
     const input = document.getElementById('id_photos');
     const grid = document.getElementById('photoPreviewGrid');
@@ -201,5 +316,5 @@
         render();
     });
 })();
-</script>
+    </script>
 {% endblock %}
