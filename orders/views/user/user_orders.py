@@ -76,12 +76,21 @@ def order_detail(request, order_number):
     order_status = order.current_status
     is_cancellable = order_status.status in ("PLACED", "CONFIRMED")
 
+    payment = order.payment_transaction
+    is_razorpay_retryable = (
+        order_status.status == "FAILED"
+        and payment
+        and payment.payment_method == "RAZORPAY"
+    )
+
     context = {
         "order": order,
         "items": order_items,
         "order_status_timeline": order.status.all(),
         "gst_rate": settings.GST_RATE,
         "is_cancellable": is_cancellable,
+        "is_razorpay_retryable": is_razorpay_retryable,
+        "razorpay_key_id": settings.RAZORPAY_KEY_ID if is_razorpay_retryable else None,
     }
     return render(request, "orders/user/order_detail.html", context)
 

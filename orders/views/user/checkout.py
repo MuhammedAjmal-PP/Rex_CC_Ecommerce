@@ -35,10 +35,10 @@ def checkoutview(request):
         messages.error(request, "Your cart is empty.")
         return redirect("user_cart")
 
-    stock_lookup = build_unlocked_stock_lookup(cart_items=cart_items)
+    stock_lookup = build_unlocked_stock_lookup(items=cart_items)
 
     try:
-        validate_stock(cart_items=cart_items, stock_lookup=stock_lookup)
+        validate_stock(items=cart_items, stock_lookup=stock_lookup)
     except InsufficientStockError as error:
         messages.error(request, str(error))
         return redirect("user_cart")

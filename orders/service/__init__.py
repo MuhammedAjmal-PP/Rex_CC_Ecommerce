@@ -2,6 +2,7 @@ from .stock import (
     InsufficientStockError,
     build_unlocked_stock_lookup,
     lock_variants_for_update,
+    restore_order_stock,
     validate_stock,
 )
 from .status import (

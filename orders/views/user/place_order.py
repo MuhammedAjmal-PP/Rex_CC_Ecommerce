@@ -26,8 +26,11 @@ from orders.service import (
     change_order_item_status,
     change_order_status,
     lock_variants_for_update,
+    restore_order_stock,
     validate_stock,
 )
+
+
 
 
 @login_required
@@ -88,10 +91,10 @@ def place_order_view(request):
             return redirect(reverse("checkout") + "?step=2")
 
     with transaction.atomic():
-        locked_variants = lock_variants_for_update(cart_items=cart_items)
+        locked_variants = lock_variants_for_update(items=cart_items)
 
         try:
-            validate_stock(cart_items=cart_items, stock_lookup=locked_variants)
+            validate_stock(items=cart_items, stock_lookup=locked_variants)
         except InsufficientStockError as error:
             if payment_method == "RAZORPAY":
                 return JsonResponse({"error": str(error)}, status=400)
@@ -298,7 +301,7 @@ def razorpay_callback(request):
         txn.note = f"Signature verification failed. Payment ID: {razorpay_payment_id}"
         txn.save(update_fields=["status", "note", "updated_at"])
 
-        # Also cancel the order
+        # Mark order as FAILED and restore stock
         order = txn.content_object
         if order:
             change_order_status(
@@ -307,6 +310,7 @@ def razorpay_callback(request):
                 note="Payment verification failed",
                 actor=txn.user,
             )
+            restore_order_stock(order, actor=txn.user)
 
         return JsonResponse(
             {
@@ -346,7 +350,7 @@ def razorpay_payment_failed(request):
     txn.note = reason
     txn.save(update_fields=["status", "note", "updated_at"])
 
-    # Also cancel the order
+    # Mark order as FAILED and restore stock
     order = txn.content_object
     if order:
         change_order_status(
@@ -355,6 +359,7 @@ def razorpay_payment_failed(request):
             note=f"Payment failed: {reason}",
             actor=request.user,
         )
+        restore_order_stock(order, actor=request.user)
 
     return JsonResponse(
         {
@@ -405,10 +410,132 @@ def order_failure_view(request, order_number):
         order_number=order_number,
     )
 
+    payment = order.payment_transaction
+    is_razorpay_failed = (
+        order.current_status
+        and order.current_status.status == "FAILED"
+        and payment
+        and payment.payment_method == "RAZORPAY"
+    )
+
     return render(
         request,
         "orders/user/order_failure.html",
         {
             "order": order,
+            "is_razorpay_failed": is_razorpay_failed,
+            "razorpay_key_id": settings.RAZORPAY_KEY_ID if is_razorpay_failed else None,
         },
     )
+
+
+@csrf_exempt
+@login_required
+@require_POST
+def retry_razorpay_payment(request):
+    """
+    Retry a failed Razorpay payment.
+    1. Validates the order is FAILED + RAZORPAY
+    2. Validates stock is still available
+    3. Resets order → PLACED, items → PENDING
+    4. Creates a new Razorpay order + Transaction
+    5. Returns JSON for the frontend to open Razorpay checkout
+    """
+    order_number = request.POST.get("order_number", "")
+    if not order_number:
+        return JsonResponse({"error": "Missing order number."}, status=400)
+
+    order = get_object_or_404(Order, order_number=order_number, user=request.user)
+
+    # Validate order is in FAILED state and was RAZORPAY
+    current_status = order.current_status
+    payment = order.payment_transaction
+    if (
+        not current_status
+        or current_status.status != "FAILED"
+        or not payment
+        or payment.payment_method != "RAZORPAY"
+    ):
+        return JsonResponse(
+            {"error": "This order is not eligible for payment retry."},
+            status=400,
+        )
+
+    # Validate stock & lock variants
+    items = order.items.select_related("product_variant").all()
+
+    try:
+        with transaction.atomic():
+            # Lock variants for update to prevent race conditions
+            locked_variants = lock_variants_for_update(items=items)
+            validate_stock(items=items, stock_lookup=locked_variants)
+            # Reset order status: FAILED → PLACED
+            change_order_status(
+                order=order,
+                to_status="PLACED",
+                note="Payment retry initiated",
+                actor=request.user,
+            )
+
+            # Reset item statuses: FAILED → PENDING
+            for item in items:
+                item_status = item.current_status
+                if item_status and item_status.status == "FAILED":
+                    change_order_item_status(
+                        order_item=item,
+                        to_status="PENDING",
+                        note="Payment retry initiated",
+                        actor=request.user,
+                    )
+
+            # Re-deduct stock (was restored when payment failed)
+            for item in items:
+                if item.product_variant:
+                    update_stock(
+                        product_variant=item.product_variant,
+                        change=-item.quantity,
+                        reason="ORDER_PLACED",
+                        actor=request.user,
+                        reference_object=item,
+                        note=f"Stock re-deducted — payment retry for order {order.order_number}",
+                    )
+
+            # Create a new Razorpay order (old one is expired)
+            amount_paise = int(order.grand_total * 100)
+            rz_order = create_razorpay_order(
+                amount_paise=amount_paise,
+                receipt=order.order_number,
+            )
+
+            # Create a new PENDING transaction
+            txn = create_transaction(
+                user=request.user,
+                txn_type="ORDER_PAYMENT",
+                method="RAZORPAY",
+                amount=order.grand_total,
+                status="PENDING",
+                content_object=order,
+                note=f"Retry payment for order {order.order_number}",
+            )
+            txn.gateway_order_id = rz_order["id"]
+            txn.save(update_fields=["gateway_order_id"])
+
+        return JsonResponse(
+            {
+                "success": True,
+                "razorpay_key_id": settings.RAZORPAY_KEY_ID,
+                "razorpay_order_id": rz_order["id"],
+                "amount": rz_order["amount"],
+                "currency": rz_order["currency"],
+                "name": "REX CC",
+                "description": f"Retry payment for Order #{order.order_number}",
+                "order_number": order.order_number,
+                "prefill": {
+                    "email": request.user.email,
+                    "contact": str(request.user.phone_number or ""),
+                },
+            }
+        )
+
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)

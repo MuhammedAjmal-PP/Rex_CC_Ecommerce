@@ -45,11 +45,25 @@
             <!-- Help Text -->
             <p class="failure-help">
                 Don't worry — no money has been deducted from your account.
-                You can retry the payment or choose a different payment method.
+                {% if is_razorpay_failed %}
+                    Click "Retry Payment" to try again.
+                {% else %}
+                    You can view your order details for more information.
+                {% endif %}
             </p>
 
             <!-- Action Buttons -->
             <div class="failure-actions">
+                {% if is_razorpay_failed %}
+                    {% csrf_token %}
+                    <button type="button"
+                            class="btn-retry-payment"
+                            data-order-number="{{ order.order_number }}"
+                            onclick="retryRazorpayPayment(this)">
+                        <span class="material-icons">replay</span>
+                        Retry Payment
+                    </button>
+                {% endif %}
                 <a href="{% url 'user_order_details' order.order_number %}" class="btn-retry-payment">
                     <span class="material-icons">receipt_long</span>
                     View Order
@@ -62,3 +76,10 @@
         </div>
     </section>
 {% endblock %}
+{% block extra_js %}
+    {% if is_razorpay_failed %}
+        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+        <script src="{% static 'orders/user/js/retry_payment.js' %}"></script>
+    {% endif %}
+{% endblock %}
+

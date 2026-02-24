@@ -252,14 +252,32 @@
         </div>
     </div>
 
-    <!-- CANCEL ORDER (subtle, bottom-right) -->
-    {% if is_cancellable %}
+    <!-- CANCEL ORDER / RETRY PAYMENT (footer) -->
+    {% if is_cancellable or is_razorpay_retryable %}
         <div class="od-footer">
-            <a href="{% url 'user_cancel_order' order.order_number %}" class="od-btn-cancel">
-                Cancel Order
-            </a>
+            {% if is_razorpay_retryable %}
+                {% csrf_token %}
+                <button type="button"
+                        class="od-btn-retry"
+                        data-order-number="{{ order.order_number }}"
+                        onclick="retryRazorpayPayment(this)">
+                    <span class="material-icons">replay</span>
+                    Retry Payment
+                </button>
+            {% endif %}
+            {% if is_cancellable %}
+                <a href="{% url 'user_cancel_order' order.order_number %}" class="od-btn-cancel">
+                    Cancel Order
+                </a>
+            {% endif %}
         </div>
     {% endif %}
 
 </div>
+{% endblock %}
+{% block extra_js %}
+    {% if is_razorpay_retryable %}
+        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+        <script src="{% static 'orders/user/js/retry_payment.js' %}"></script>
+    {% endif %}
 {% endblock %}

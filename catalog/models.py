@@ -330,6 +330,7 @@ class InventoryLog(models.Model):
     REASON_CHOICES = (
         ("ORDER_PLACED", "Order Placed"),
         ("ORDER_CANCELLED", "Order Cancelled"),
+        ("PAYMENT_FAILED", "Payment Failed"),
         ("RETURNED", "Returned"),
         ("ADMIN_ADJUSTMENT", "Admin Adjustment"),
         ("SYSTEM_CORRECTION", "System Correction"),
