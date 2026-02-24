@@ -80,13 +80,23 @@ class Offer(models.Model):
     def __str__(self):
         return f"{self.name} ({self.offer_type})"
 
+    @property
+    def is_valid(self):
+        """
+        Check if offer is active and within date range.
+        """
+        now = timezone.now()
+        return self.is_active and self.start_date <= now <= self.end_date
+
     # ─────────────────────────────────────────────
-    
+
     def _date_changed(self, field_name):
         """Return True if the field was changed from its saved DB value (or is new)."""
         if not self.pk:
             return True
-        saved = Offer.objects.filter(pk=self.pk).values_list(field_name, flat=True).first()
+        saved = (
+            Offer.objects.filter(pk=self.pk).values_list(field_name, flat=True).first()
+        )
         return saved != getattr(self, field_name)
 
     def clean(self):
@@ -102,15 +112,15 @@ class Offer(models.Model):
             if self.end_date <= now:
                 errors["end_date"] = "End date must be in the future."
 
-        # Date ordering 
+        # Date ordering
         if self.start_date and self.end_date and self.start_date >= self.end_date:
             errors.setdefault("end_date", "End date must be after start date.")
 
-        # No zero-percent discounts 
+        # No zero-percent discounts
         if self.discount_value is not None and self.discount_value <= 0:
             errors["discount_value"] = "Discount value must be greater than 0."
 
-        # Percentage cap 
+        # Percentage cap
         if (
             self.discount_type == "PERCENTAGE"
             and self.discount_value is not None
