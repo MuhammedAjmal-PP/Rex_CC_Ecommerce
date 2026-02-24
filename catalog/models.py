@@ -237,6 +237,10 @@ class ProductVariant(models.Model):
 
     @property
     def discount_percentage(self):
+        # Instance-level cache: compute once per object lifecycle
+        if hasattr(self, '_cached_discount_percentage'):
+            return self._cached_discount_percentage
+
         from offers.models import Offer
         from django.utils import timezone
 
@@ -257,7 +261,8 @@ class ProductVariant(models.Model):
         discount_rates = [int(offer.discount_value) for offer in offers]
         discount_rates.append(self.discount_rate)
 
-        return max(discount_rates)
+        self._cached_discount_percentage = max(discount_rates)
+        return self._cached_discount_percentage
 
     @property
     def discount_amount(self):

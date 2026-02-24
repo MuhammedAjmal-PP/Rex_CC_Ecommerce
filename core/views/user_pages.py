@@ -5,9 +5,7 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_GET
 from users.wishlist.utils import get_session_wishlist
 from users.wishlist.models import WishlistItem
-from django.db.models import Q
-from offers.models import Offer
-from django.utils import timezone
+from offers.service import get_offer_variants
 
 # Create your views here.
 
@@ -40,24 +38,7 @@ def home(request):
         "-created_at"
     )[:8]
 
-    now = timezone.now()
-    active_offers = Offer.objects.filter(
-        is_active=True, start_date__lte=now, end_date__gte=now
-    )
-
-    offer_products = Product.objects.filter(
-        Q(offers__in=active_offers)
-        | Q(category__offers__in=active_offers)
-        | Q(brand__offers__in=active_offers)
-    ).distinct()
-
-    offer_variants = product_variant.filter(
-        Q(discount_rate__gt=0) | Q(product__in=offer_products)
-    )
-
-    offer_variants = list(offer_variants)
-    offer_variants.sort(key=lambda v: v.discount_percentage, reverse=True)
-    offer_variants = offer_variants[:8]
+    offer_variants = get_offer_variants(product_variant, limit=8)
 
     wishlist_ids = []
     if request.user.is_authenticated:

@@ -13,6 +13,7 @@
             {% endif %}
         </span>
     </button>
+    {% with disc=variant.discount_percentage fp=variant.final_price %}
     <a href="{% url 'product_detail' variant.product.slug variant.sku %}"
        class="product-card__image-box">
         {% with primary_image=variant.images.first %}
@@ -23,8 +24,8 @@
         {% endwith %}
         {% if variant.stock <= 0 %}
             <span class="product-card__stock-badge">Out of Stock</span>
-        {% elif variant.discount_percentage and variant.discount_percentage > 0 %}
-            <span class="product-card__discount-badge">-{{ variant.discount_percentage }}%</span>
+        {% elif disc and disc > 0 %}
+            <span class="product-card__discount-badge">-{{ disc }}%</span>
         {% endif %}
         <div class="product-card__overlay">Discover</div>
     </a>
@@ -36,12 +37,14 @@
             {% if variant.case_size_mm %}<span class="variant-attr">{{ variant.case_size_mm }}mm</span>{% endif %}
         </div>
         <div class="product-card__pricing">
-            {% if variant.discount_percentage and variant.discount_percentage > 0 %}
-                <span class="product-card__price">₹{{ variant.final_price|floatformat:2 }}</span>
+            {% if disc and disc > 0 %}
+                <span class="product-card__price">₹{{ fp|floatformat:2 }}</span>
                 <span class="product-card__original-price">₹{{ variant.price|floatformat:2 }}</span>
             {% else %}
-                <span class="product-card__price">₹{{ variant.final_price|floatformat:2 }}</span>
+                <span class="product-card__price">₹{{ fp|floatformat:2 }}</span>
             {% endif %}
         </div>
     </div>
+    {% endwith %}
 </div>
+
