@@ -1,4 +1,4 @@
-from decimal import Decimal
+from django.core.exceptions import ValidationError
 from django.core.validators import (
     MaxValueValidator,
     MinLengthValidator,
@@ -21,7 +21,11 @@ class Offer(models.Model):
         # ("FIXED", "Fixed Amount"), # Uncomment for future expansion
     )
 
-    name = models.CharField(max_length=100, validators=[MinLengthValidator(3)])
+    name = models.CharField(
+        max_length=100,
+        unique=True,
+        validators=[MinLengthValidator(3)],
+    )
 
     offer_type = models.CharField(
         max_length=20,
@@ -70,16 +74,56 @@ class Offer(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        ordering = ["-created_at"]
+
     def __str__(self):
         return f"{self.name} ({self.offer_type})"
 
-    @property
-    def is_valid(self):
-        """
-        Check if offer is active and within date range.
-        """
+    # ─────────────────────────────────────────────
+    
+    def _date_changed(self, field_name):
+        """Return True if the field was changed from its saved DB value (or is new)."""
+        if not self.pk:
+            return True
+        saved = Offer.objects.filter(pk=self.pk).values_list(field_name, flat=True).first()
+        return saved != getattr(self, field_name)
+
+    def clean(self):
+        errors = {}
         now = timezone.now()
-        return self.is_active and self.start_date <= now <= self.end_date
+
+        # Only enforced when the date is new or actually changed
+        if self.start_date and self._date_changed("start_date"):
+            if self.start_date < now:
+                errors["start_date"] = "Start date cannot be in the past."
+
+        if self.end_date and self._date_changed("end_date"):
+            if self.end_date <= now:
+                errors["end_date"] = "End date must be in the future."
+
+        # Date ordering 
+        if self.start_date and self.end_date and self.start_date >= self.end_date:
+            errors.setdefault("end_date", "End date must be after start date.")
+
+        # No zero-percent discounts 
+        if self.discount_value is not None and self.discount_value <= 0:
+            errors["discount_value"] = "Discount value must be greater than 0."
+
+        # Percentage cap 
+        if (
+            self.discount_type == "PERCENTAGE"
+            and self.discount_value is not None
+            and self.discount_value > 100
+        ):
+            errors["discount_value"] = "Percentage discount cannot exceed 100%."
+
+        if errors:
+            raise ValidationError(errors)
 
     def save(self, *args, **kwargs):
+        # Normalize name
+        if self.name:
+            self.name = self.name.strip()
+        self.full_clean()
         super().save(*args, **kwargs)
