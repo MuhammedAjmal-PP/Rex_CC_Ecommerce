@@ -1,5 +1,6 @@
 {% extends 'core/admin/base_admin.html' %}
 {% load static %}
+{% load humanize %}
 
 {% block title %}Order {{ order.order_number }}{% endblock title %}
 
@@ -126,24 +127,30 @@
             </div>
             <div class="od-card-body od-summary">
                 <div class="od-summary-row">
+                    <span>Total ({{ items_with_transitions|length }} items)</span>
+                    <span>₹{{ order.total|floatformat:2|intcomma }}</span>
+                </div>
+                {% if order.discount > 0 %}
+                    <div class="od-summary-row">
+                        <span>Discount</span>
+                        <span>−₹{{ order.discount|floatformat:2|intcomma }}</span>
+                    </div>
+                {% endif %}
+                <div class="od-summary-row">
                     <span>Subtotal</span>
-                    <span>₹{{ order.sub_total|floatformat:2 }}</span>
-                </div>
-                <div class="od-summary-row">
-                    <span>Tax</span>
-                    <span>₹{{ order.tax|floatformat:2 }}</span>
-                </div>
-                <div class="od-summary-row">
-                    <span>Discount</span>
-                    <span>-₹{{ order.discount|floatformat:2 }}</span>
+                    <span>₹{{ order.sub_total|floatformat:2|intcomma }}</span>
                 </div>
                 <div class="od-summary-row">
                     <span>Shipping</span>
-                    <span>₹{{ order.shipping_fee|floatformat:2 }}</span>
+                    <span>{% if order.shipping_fee == 0 %}Free{% else %}₹{{ order.shipping_fee|floatformat:2|intcomma }}{% endif %}</span>
+                </div>
+                <div class="od-summary-row">
+                    <span>Tax (GST {{ gst_rate }}%)</span>
+                    <span>₹{{ order.tax|floatformat:2|intcomma }}</span>
                 </div>
                 <div class="od-summary-row od-summary-total">
                     <span>Grand Total</span>
-                    <span>₹{{ order.grand_total|floatformat:2 }}</span>
+                    <span>₹{{ order.grand_total|floatformat:2|intcomma }}</span>
                 </div>
             </div>
         </div>
@@ -211,8 +218,20 @@
                                     </div>
                                 </td>
                                 <td class="od-td-center">{{ item.quantity }}</td>
-                                <td class="od-td-center">₹{{ item.price|floatformat:2 }}</td>
-                                <td class="od-td-center od-item-total">₹{{ item.total_price|floatformat:2 }}</td>
+                                <!-- Unit Price: MRP (struck) + final -->
+                                <td class="od-td-center">
+                                    {% if item.original_price and item.original_price > item.price %}
+                                        <span class="od-price-original">₹{{ item.original_price|floatformat:2|intcomma }}</span>
+                                    {% endif %}
+                                    <span class="od-price-final">₹{{ item.price|floatformat:2|intcomma }}</span>
+                                </td>
+                                <!-- Total: MRP total (struck) + final total -->
+                                <td class="od-td-center od-item-total">
+                                    {% if item.original_price and item.original_price > item.price %}
+                                        <span class="od-price-original">₹{{ item.total_original_price|floatformat:2|intcomma }}</span>
+                                    {% endif %}
+                                    <span class="od-price-final">₹{{ item.total_price|floatformat:2|intcomma }}</span>
+                                </td>
                                 <td class="od-td-center">
                                     <span class="status-badge item-status-{{ entry.current_status|lower }}">
                                         {{ entry.current_status }}

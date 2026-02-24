@@ -335,15 +335,31 @@
   text-align: center;
 }
 
+.od-item-price,
+.od-item-total {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
 .od-item-price {
   font-family: var(--font-sans);
-  font-size: 0.88rem;
-  font-weight: 600;
-  color: var(--od-text-muted);
 }
 
 .od-item-total {
   font-family: var(--font-sans);
+}
+
+/* MRP — greyed strikethrough, only shown when discounted */
+.od-price-original {
+  font-size: 0.75rem;
+  color: var(--od-text-muted);
+  text-decoration: line-through;
+  font-weight: 400;
+}
+
+/* Final / discounted price */
+.od-price-final {
   font-size: 0.88rem;
   font-weight: 700;
   color: var(--od-gold-dark);

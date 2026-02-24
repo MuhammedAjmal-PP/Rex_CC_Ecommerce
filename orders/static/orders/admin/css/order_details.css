@@ -489,6 +489,30 @@
     font-weight: 700;
 }
 
+/* Price display: stacked MRP + final */
+.od-td-center .od-price-original,
+.od-td-center .od-price-final,
+td .od-price-original,
+td .od-price-final {
+    display: block;
+    text-align: center;
+}
+
+/* MRP — greyed strikethrough */
+.od-price-original {
+    font-size: 0.72rem;
+    color: var(--od-gray-light);
+    text-decoration: line-through;
+    font-weight: 400;
+}
+
+/* Final / discounted price */
+.od-price-final {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--od-black);
+}
+
 /* Item Status Form */
 .od-item-status-form {
     display: inline-flex;

@@ -125,7 +125,7 @@ class Order(models.Model):
 
     billing_address = models.JSONField()
     shipping_address = models.JSONField()
-
+    total = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     sub_total = models.DecimalField(max_digits=10, decimal_places=2)
     tax = models.DecimalField(max_digits=10, decimal_places=2)
     discount = models.DecimalField(max_digits=10, decimal_places=2)
@@ -205,6 +205,12 @@ class OrderItem(models.Model):
 
     quantity = models.PositiveIntegerField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    original_price = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=Decimal("0.00"),
+        help_text="MRP / list price at the time the order was placed (before any offer discount)",
+    )
 
     status = GenericRelation(
         StatusTimeline,
@@ -218,6 +224,16 @@ class OrderItem(models.Model):
     @property
     def total_price(self):
         return self.price * self.quantity
+
+    @property
+    def total_original_price(self):
+        """MRP total for this item (original_price × qty)."""
+        return self.original_price * self.quantity
+
+    @property
+    def item_discount(self):
+        """Total saving for this item (MRP − final) × qty."""
+        return (self.original_price - self.price) * self.quantity
 
     @property
     def total_cancel(self):

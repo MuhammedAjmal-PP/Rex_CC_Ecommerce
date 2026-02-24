@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import user_passes_test
 from django.core.paginator import Paginator
@@ -132,6 +133,7 @@ def order_detail(request, order_number):
         "order_next": order_next,
         "items_with_transitions": items_with_transitions,
         "order_only_timeline": order_only_timeline,
+        "gst_rate": settings.GST_RATE,
     }
 
     return render(request, "orders/admin/order_details.html", context)

@@ -15,6 +15,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
+from django.conf import settings
 from django.contrib import admin
 from django.urls import path, include
 
@@ -36,3 +37,9 @@ urlpatterns = [
     path("adminpanel/", include("offers.urls.admin_urls")),
 ]
 
+# if settings.DEBUG:
+#     import debug_toolbar
+
+#     urlpatterns = [
+#         path("__debug__/", include(debug_toolbar.urls)),
+#     ] + urlpatterns

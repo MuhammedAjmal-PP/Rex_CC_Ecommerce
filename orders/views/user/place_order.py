@@ -77,8 +77,6 @@ def place_order_view(request):
         messages.error(request, "Your cart is empty.")
         return redirect("user_cart")
 
-    discount = Decimal("0")
-
     # Pre-check wallet balance to avoid database lock if insufficient
     if payment_method == "WALLET":
         if not can_pay_with_wallet(request.user, cart.grand_total):
@@ -104,9 +102,10 @@ def place_order_view(request):
             user=request.user,
             billing_address=billing_address.snapshot,
             shipping_address=shipping_address.snapshot,
+            total=cart.total,
             sub_total=cart.sub_total,
             tax=cart.tax,
-            discount=discount,
+            discount=cart.discount,
             shipping_fee=cart.shipping_fee,
             grand_total=cart.grand_total,
         )
@@ -119,7 +118,8 @@ def place_order_view(request):
                 order=order,
                 product_variant=locked_variant,
                 quantity=item.quantity,
-                price=item.item_price,
+                price=item.item_price,                        # discounted final price
+                original_price=locked_variant.price,          # MRP at time of order
             )
 
             # 3 Initial ORDER ITEM status

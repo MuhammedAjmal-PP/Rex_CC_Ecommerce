@@ -58,7 +58,7 @@
                 <span></span>
                 <span>Product</span>
                 <span style="text-align:center;">Qty</span>
-                <span>Price</span>
+                <span>Unit Price</span>
                 <span>Total</span>
                 <span>Status</span>
                 <span></span>
@@ -96,11 +96,21 @@
                     <!-- Qty -->
                     <div class="od-item-qty">{{ item.quantity }}</div>
 
-                    <!-- Price -->
-                    <div class="od-item-price">₹{{ item.price|floatformat:2|intcomma }}</div>
+                    <!-- Unit Price: MRP (struck) + final -->
+                    <div class="od-item-price">
+                        {% if item.original_price and item.original_price > item.price %}
+                            <span class="od-price-original">₹{{ item.original_price|floatformat:2|intcomma }}</span>
+                        {% endif %}
+                        <span class="od-price-final">₹{{ item.price|floatformat:2|intcomma }}</span>
+                    </div>
 
-                    <!-- Total -->
-                    <div class="od-item-total">₹{{ item.total_price|floatformat:2|intcomma }}</div>
+                    <!-- Total: MRP total (struck) + final total -->
+                    <div class="od-item-total">
+                        {% if item.original_price and item.original_price > item.price %}
+                            <span class="od-price-original">₹{{ item.total_original_price|floatformat:2|intcomma }}</span>
+                        {% endif %}
+                        <span class="od-price-final">₹{{ item.total_price|floatformat:2|intcomma }}</span>
+                    </div>
 
                     <!-- Item Status -->
                     {% with istatus=item.current_status %}
@@ -161,21 +171,27 @@
         <div class="od-info-card">
             <div class="od-info-card-title">Order Summary</div>
             <div class="od-summary-row">
-                <span class="od-summary-label">Sub Total</span>
-                <span class="od-summary-value">₹{{ order.sub_total|floatformat:2|intcomma }}</span>
+                <span class="od-summary-label">Total ({{ items|length }} items)</span>
+                <span class="od-summary-value">₹{{ order.total|floatformat:2|intcomma }}</span>
             </div>
             {% if order.discount > 0 %}
                 <div class="od-summary-row">
                     <span class="od-summary-label">Discount</span>
-                    <span class="od-summary-value od-discount">-₹{{ order.discount|floatformat:2|intcomma }}</span>
+                    <span class="od-summary-value od-discount">−₹{{ order.discount|floatformat:2|intcomma }}</span>
                 </div>
             {% endif %}
             <div class="od-summary-row">
-                <span class="od-summary-label">Shipping</span>
-                <span class="od-summary-value">₹{{ order.shipping_fee|floatformat:2|intcomma }}</span>
+                <span class="od-summary-label">Subtotal</span>
+                <span class="od-summary-value">₹{{ order.sub_total|floatformat:2|intcomma }}</span>
             </div>
             <div class="od-summary-row">
-                <span class="od-summary-label">Tax (GST {{gst_rate}}%)</span>
+                <span class="od-summary-label">Shipping</span>
+                <span class="od-summary-value">
+                    {% if order.shipping_fee == 0 %}Free{% else %}₹{{ order.shipping_fee|floatformat:2|intcomma }}{% endif %}
+                </span>
+            </div>
+            <div class="od-summary-row">
+                <span class="od-summary-label">Tax (GST {{ gst_rate }}%)</span>
                 <span class="od-summary-value">₹{{ order.tax|floatformat:2|intcomma }}</span>
             </div>
             <div class="od-summary-row od-summary-total">
