@@ -47,7 +47,7 @@
                             <h3 class="summary-title">Order Summary</h3>
                             <div class="summary-row">
                                 <span class="summary-label">Total ({{ order_summary.items_count }} items)</span>
-                                <span class="summary-value">₹{{ order_summary.total|floatformat:2|intcomma }}</span>
+                                <span class="summary-value">₹{{ order_summary.mrp_total|floatformat:2|intcomma }}</span>
                             </div>
                             <div class="summary-row">
                                 <span class="summary-label">Discount</span>
@@ -73,7 +73,7 @@
                             </div>
                             <div class="summary-row total">
                                 <span class="summary-label">Total Payable</span>
-                                <span class="summary-value">₹{{ order_summary.total|floatformat:2|intcomma }}</span>
+                                <span class="summary-value">₹{{ order_summary.grand_total|floatformat:2|intcomma }}</span>
                             </div>
                             <!-- Secure Badge -->
                             <div style="margin-top: 20px;

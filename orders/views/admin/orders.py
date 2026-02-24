@@ -1,13 +1,14 @@
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import user_passes_test
+from django.contrib.contenttypes.models import ContentType
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import Count, Q, Subquery, OuterRef
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_GET, require_POST
-from orders.models import Order, OrderItem
+from orders.models import Order, OrderItem, StatusTimeline
 from orders.service import (
     InvalidTransitionError,
     change_order_item_status,
@@ -25,9 +26,21 @@ def order_list(request):
     search_query = request.GET.get("search", "").strip()
     status_filter = request.GET.get("status", "all").strip().upper()
 
+    # Subquery: annotate each order with its latest status at DB level
+    order_ct = ContentType.objects.get_for_model(Order)
+    latest_status_sq = Subquery(
+        StatusTimeline.objects.filter(
+            content_type=order_ct,
+            object_id=OuterRef("pk"),
+        )
+        .order_by("-created_at")
+        .values("status")[:1]
+    )
+
     orders_qs = (
         Order.objects.select_related("user")
         .prefetch_related("payment", "status")
+        .annotate(current_status_value=latest_status_sq)
         .order_by("-created_at")
     )
 
@@ -39,49 +52,31 @@ def order_list(request):
             | Q(user__last_name__icontains=search_query)
         )
 
-    orders_list = list(orders_qs)
+    # DB-level status counts (computed on the searched but unfiltered queryset)
+    status_agg = orders_qs.aggregate(
+        total=Count("id"),
+        confirmed=Count("id", filter=Q(current_status_value="CONFIRMED")),
+        shipped=Count("id", filter=Q(current_status_value="SHIPPED")),
+        delivered=Count("id", filter=Q(current_status_value="DELIVERED")),
+        cancelled=Count("id", filter=Q(current_status_value="CANCELLED")),
+    )
 
+    # DB-level status filter
     if status_filter != "ALL":
-        orders_list = [
-            order
-            for order in orders_list
-            if order.current_status and order.current_status.status == status_filter
-        ]
+        orders_qs = orders_qs.filter(current_status_value=status_filter)
 
-    total_orders = len(orders_list)
-    confirmed_orders = sum(
-        1
-        for order in orders_list
-        if order.current_status and order.current_status.status == "CONFIRMED"
-    )
-    shipped_orders = sum(
-        1
-        for order in orders_list
-        if order.current_status and order.current_status.status == "SHIPPED"
-    )
-    delivered_orders = sum(
-        1
-        for order in orders_list
-        if order.current_status and order.current_status.status == "DELIVERED"
-    )
-    cancelled_orders = sum(
-        1
-        for order in orders_list
-        if order.current_status and order.current_status.status == "CANCELLED"
-    )
-
-    paginator = Paginator(orders_list, 12)
+    paginator = Paginator(orders_qs, 12)
     page_obj = paginator.get_page(request.GET.get("page", 1))
 
     context = {
         "orders": page_obj,
         "search_query": search_query,
         "status_filter": status_filter,
-        "total_orders": total_orders,
-        "confirmed_orders": confirmed_orders,
-        "shipped_orders": shipped_orders,
-        "delivered_orders": delivered_orders,
-        "cancelled_orders": cancelled_orders,
+        "total_orders": status_agg["total"],
+        "confirmed_orders": status_agg["confirmed"],
+        "shipped_orders": status_agg["shipped"],
+        "delivered_orders": status_agg["delivered"],
+        "cancelled_orders": status_agg["cancelled"],
     }
     return render(request, "orders/admin/order_list.html", context)
 

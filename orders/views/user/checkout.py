@@ -53,13 +53,13 @@ def checkoutview(request):
 
     order_summary = {
         "items_count": cart.items_count,
-        "total": cart.total,
+        "mrp_total": cart.total,
         "discount": cart.discount,
         "sub_total": cart.sub_total,
         "shipping_charge": cart.shipping_fee,
         "gst_rate": settings.GST_RATE,
         "tax": cart.tax,
-        "total": cart.grand_total,
+        "grand_total": cart.grand_total,
     }
 
     wallet = get_or_create_wallet(request.user)

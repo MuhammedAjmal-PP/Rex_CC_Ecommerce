@@ -62,3 +62,40 @@ def get_offer_variants(variant_queryset, *, limit=8):
 
     offer_variants.sort(key=lambda v: v._cached_discount_percentage, reverse=True)
     return offer_variants[:limit]
+
+
+def precompute_discounts(variants):
+    """
+    Batch-compute the effective discount percentage for a list of variants.
+
+    Injects `_cached_discount_percentage` on each variant so the model
+    `discount_percentage` property returns instantly (no per-variant query).
+
+    Args:
+        variants: An iterable of ProductVariant instances (must have
+                  `product`, `product.brand`, and `product.category`
+                  prefetch/select_related already applied).
+    """
+    now = timezone.now()
+    active_offers = Offer.objects.filter(
+        is_active=True, start_date__lte=now, end_date__gte=now
+    ).prefetch_related("products", "categories", "brands")
+
+    # Build per-offer lookup data in ONE pass
+    offer_data = []
+    for offer in active_offers:
+        d = int(offer.discount_value)
+        pids = set(offer.products.values_list("id", flat=True))
+        cids = set(offer.categories.values_list("id", flat=True))
+        bids = set(offer.brands.values_list("id", flat=True))
+        offer_data.append((d, pids, cids, bids))
+
+    for v in variants:
+        if hasattr(v, "_cached_discount_percentage"):
+            continue
+        cat_ids = set(v.product.category.values_list("id", flat=True))
+        best = v.discount_rate
+        for d, pids, cids, bids in offer_data:
+            if v.product_id in pids or cat_ids & cids or v.product.brand_id in bids:
+                best = max(best, d)
+        v._cached_discount_percentage = best

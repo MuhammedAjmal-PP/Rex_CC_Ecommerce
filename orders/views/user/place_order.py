@@ -8,6 +8,7 @@ from django.http import HttpResponseBadRequest, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.cache import never_cache
+from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from catalog.service import update_stock
 from orders.models import Order, OrderItem
@@ -142,17 +143,20 @@ def place_order_view(request):
             )
 
         # 5 Initial ORDER status
-        if payment_method == "COD":
-            change_order_status(
-                order=order,
-                to_status="PLACED",
-                note="Order placed by customer",
-                actor=request.user,
-            )
-        else:
+        if payment_method == "WALLET":
             change_order_status(
                 order=order,
                 to_status="CONFIRMED",
+                note="Order placed by customer (wallet payment)",
+                actor=request.user,
+            )
+        else:
+            # COD and RAZORPAY start as PLACED
+            # COD stays PLACED until admin confirms
+            # RAZORPAY moves to CONFIRMED after successful payment callback
+            change_order_status(
+                order=order,
+                to_status="PLACED",
                 note="Order placed by customer",
                 actor=request.user,
             )
@@ -228,6 +232,7 @@ def place_order_view(request):
     return redirect("order_success", order_number=order.order_number)
 
 
+@csrf_exempt
 @login_required
 @require_POST
 def razorpay_callback(request):
@@ -271,6 +276,17 @@ def razorpay_callback(request):
                 "updated_at",
             ]
         )
+
+        # Move order from PLACED → CONFIRMED now that payment is verified
+        order = txn.content_object
+        if order:
+            change_order_status(
+                order=order,
+                to_status="CONFIRMED",
+                note="Payment verified via Razorpay",
+                actor=request.user,
+            )
+
         return JsonResponse(
             {
                 "success": True,
@@ -300,6 +316,7 @@ def razorpay_callback(request):
         )
 
 
+@csrf_exempt
 @login_required
 @require_POST
 def razorpay_payment_failed(request):
@@ -360,17 +377,13 @@ def order_success_view(request, order_number):
 
     current_status = order.current_status.status
 
-    # Sanity check: order must be in PLACED state
+    # Sanity check: order must be in a valid post-placement state
     payment = order.payment_transaction
-    if (
-        payment
-        and payment.payment_method == "COD"
-        and current_status != "PLACED"
-        or payment
-        and payment.payment_method != "COD"
-        and current_status != "CONFIRMED"
-    ):
-        return redirect("user_order_list")
+    if payment:
+        if payment.payment_method == "COD" and current_status != "PLACED":
+            return redirect("user_order_list")
+        elif payment.payment_method != "COD" and current_status != "CONFIRMED":
+            return redirect("user_order_list")
 
     return render(
         request,

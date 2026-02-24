@@ -18,7 +18,7 @@
         </div>
 
         <!-- Wallet -->
-        {% if wallet_balance >= order_summary.total %}
+        {% if wallet_balance >= order_summary.grand_total %}
         <div class="payment-card" onclick="selectPayment('wallet')" id="pay-wallet">
             <div class="pay-icon">
                 <span class="material-icons">account_balance_wallet</span>
