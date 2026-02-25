@@ -22,6 +22,7 @@
 - [Authentication System](#-authentication-system)
 - [Admin Panel](#-admin-panel)
 - [Offers & Discounts](#-offers--discounts)
+- [Coupon System](#%EF%B8%8F-coupon-system)
 - [User Features](#-user-features)
 - [Cart Management](#-cart-management)
 - [Wishlist System](#-wishlist-system)
@@ -52,6 +53,7 @@
 | Wallet | ✅ Complete | Credit/Debit, Balance snapshots, Transaction history |
 | Inventory | ✅ Complete | Centralized stock service, Audit logs |
 | Offers & Discounts | ✅ Complete | Product/Category/Brand offers, Best-offer pricing, Admin CRUD |
+| Coupon System | ✅ Complete | Code-based coupons, checkout apply/remove, per-user limits, order integration |
 | Order Management (User) | ✅ Complete | Order history, Item tracking, Cancellation, Returns, Invoice PDF |
 | Order Management (Admin) | ✅ Complete | Status cascade, Return review, Refund approve/reject |
 
@@ -106,6 +108,17 @@
 - **Add / Edit Offer**: Form with date-range picker, percentage discount value, dynamic M2M target selection (products, categories, or brands based on offer type)
 - **Delete Offer**: POST-only hard delete
 - **Form Validation**: Enforces single-target-type rule (e.g., a Product offer cannot link to categories or brands), date ordering, and max percentage cap
+</details>
+
+<details>
+<summary><strong>🎟️ Coupon Management</strong></summary>
+
+**Location:** `coupons/views/admin/views.py`
+
+- **Coupon List**: Paginated listing with search, stat cards (Total/Active/Inactive/Valid/Expired), filter by status
+- **Add / Edit Coupon**: Two-column form with discount type/value, validity period, usage limits, per-user limit, min order amount, active toggle
+- **Delete Coupon**: POST-only hard delete with confirmation
+- **Form Validation**: Start/end date ordering, percentage cap, minimum order amount enforcement
 </details>
 
 <details>
@@ -180,6 +193,61 @@ The highest rate wins, and `final_price` = `price − discount_amount`.
 - A **Brand offer** must link to at least one brand and cannot link to products or categories
 - `end_date` must be after `start_date`
 - Percentage discount capped at 100%
+
+---
+
+## 🎟️ Coupon System
+
+**Location:** `coupons/`
+
+### Coupon Model
+
+| Field | Description |
+|-------|-------------|
+| `code` | Unique uppercase coupon code |
+| `description` | Optional human-readable description |
+| `discount_type` | PERCENTAGE or FIXED_AMOUNT |
+| `discount_value` | Discount amount (percentage or absolute) |
+| `min_order_amount` | Minimum cart subtotal required |
+| `max_discount_amount` | Cap on percentage discounts (optional) |
+| `usage_limit` | Global usage cap (null = unlimited) |
+| `per_user_limit` | Max uses per user (default: 1) |
+| `start_date` / `end_date` | Validity window |
+| `is_active` | Manual on/off toggle |
+| `used_count` | Tracks total redemptions |
+
+### CouponUsage Model
+
+Tracks individual coupon usage per user, linked to orders:
+- `coupon` → FK to Coupon
+- `user` → FK to User
+- `order` → FK to Order
+- `used_at` → Timestamp
+
+### Service Layer (`coupons/service.py`)
+
+```python
+validate_coupon(code, user, cart_subtotal)    # Full validation → (coupon, discount)
+apply_coupon_to_order(coupon, user, order)    # Record usage + increment count
+revoke_coupon_usage(order)                   # Undo usage on full cancellation
+```
+
+### Checkout Integration
+
+- **Session State**: Applied coupon stored in `request.session["applied_coupon"]`
+- **AJAX Endpoints**: `/coupon/apply/` and `/coupon/remove/` for real-time apply/remove
+- **Available Coupons**: Only shows coupons where user hasn't reached `per_user_limit`
+- **Server Re-validation**: Coupon re-validated at order placement to prevent stale usage
+- **Order Model**: `coupon` FK and `coupon_discount` field store applied coupon on the order
+- **Proportional Refunds**: `OrderItem.coupon_share` distributes coupon discount proportionally for per-item refunds
+
+### Validation Rules
+
+- Coupon must exist, be active, and within date range
+- Global `usage_limit` and per-user `per_user_limit` enforced
+- Cart subtotal must meet `min_order_amount`
+- Percentage discounts capped by `max_discount_amount`
+- Full cancellation revokes coupon usage (restores count)
 
 ---
 
@@ -453,6 +521,13 @@ Rex_CC_Ecommerce/
 │   ├── forms.py           # OfferForm with type-specific validation
 │   └── views/admin/       # Offer list, add, edit, delete
 │
+├── coupons/               # Coupon System
+│   ├── models.py          # Coupon, CouponUsage
+│   ├── forms.py           # CouponForm with validation
+│   ├── service.py         # validate, apply, revoke coupon logic
+│   ├── views/admin/       # Admin CRUD (list, add, edit, delete)
+│   └── views/user/        # AJAX apply/remove endpoints
+│
 ├── orders/                # Order lifecycle
 │   ├── models.py          # Order, OrderItem, StatusTimeline, Return, ReturnImage
 │   ├── service/           # Status transitions, returns, stock validation
@@ -561,7 +636,7 @@ python manage.py runserver
 ### Phase 4 — Offers & Growth (🔄 In Progress)
 - [x] Offers & Discounts (Product/Category/Brand offers, best-offer pricing)
 - [x] Admin Offer Management (List, Add, Edit, Delete with filters & stat cards)
-- [ ] Coupon System
+- [x] Coupon System (Code-based coupons, checkout integration, per-user limits, order integration, proportional refunds)
 - [ ] Referral Program
 - [ ] Sales Analytics Dashboard
 - [ ] Email Notifications (Order updates, Refund status)

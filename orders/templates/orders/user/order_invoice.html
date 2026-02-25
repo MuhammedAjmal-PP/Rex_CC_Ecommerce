@@ -369,6 +369,13 @@
             <td class="inv-s-value inv-s-discount">-₹{{ order.discount|floatformat:2 }}</td>
         </tr>
         {% endif %}
+        {% if order.coupon and order.coupon_discount > 0 %}
+        <tr>
+            <td></td>
+            <td class="inv-s-label">Coupon ({{ order.coupon.code }})</td>
+            <td class="inv-s-value inv-s-discount">-₹{{ order.coupon_discount|floatformat:2 }}</td>
+        </tr>
+        {% endif %}
         <tr>
             <td></td>
             <td class="inv-s-label">Shipping</td>

@@ -119,10 +119,14 @@ def place_order_view(request):
             messages.error(request, f"Coupon '{coupon_code}' is no longer valid: {e}")
             return redirect("checkout")
 
-    # Calculate adjusted grand total
-    adjusted_grand_total = cart.grand_total - coupon_discount
-    if adjusted_grand_total < 0:
-        adjusted_grand_total = Decimal("0.00")
+    # Calculate adjusted grand total with correct flow:
+    # sub_total → coupon → shipping → tax → grand_total
+    adjusted_sub = cart.sub_total - coupon_discount
+    if adjusted_sub < Decimal("0.00"):
+        adjusted_sub = Decimal("0.00")
+    adjusted_total_amount = adjusted_sub + cart.shipping_fee
+    adjusted_tax = (adjusted_total_amount * Decimal(settings.GST_RATE) / Decimal("100")).quantize(Decimal("0.01"))
+    adjusted_grand_total = adjusted_total_amount + adjusted_tax
 
     # Re-check wallet with adjusted total
     if payment_method == "WALLET" and coupon_obj:
@@ -152,7 +156,7 @@ def place_order_view(request):
             shipping_address=shipping_address.snapshot,
             total=cart.total,
             sub_total=cart.sub_total,
-            tax=cart.tax,
+            tax=adjusted_tax if coupon_obj else cart.tax,
             discount=cart.discount,
             shipping_fee=cart.shipping_fee,
             grand_total=adjusted_grand_total,

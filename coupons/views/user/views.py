@@ -41,10 +41,11 @@ def apply_coupon(request):
     except InvalidCouponError as e:
         return JsonResponse({"success": False, "message": str(e)}, status=400)
 
-    # Recalculate totals with coupon
-    new_grand_total = cart.grand_total - discount_amount
-    if new_grand_total < 0:
-        new_grand_total = Decimal("0.00")
+    # Recalculate totals: sub_total → coupon → shipping → tax → grand_total
+    adjusted_sub = max(cart.sub_total - discount_amount, Decimal("0.00"))
+    adjusted_total_amount = adjusted_sub + cart.shipping_fee
+    adjusted_tax = (adjusted_total_amount * Decimal(settings.GST_RATE) / Decimal("100")).quantize(Decimal("0.01"))
+    new_grand_total = adjusted_total_amount + adjusted_tax
 
     # Store in session
     request.session["applied_coupon"] = {
