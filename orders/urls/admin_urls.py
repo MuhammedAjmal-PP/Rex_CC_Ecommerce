@@ -11,6 +11,11 @@ from orders.views.admin.returns import (
     return_detail,
     return_status_update,
 )
+from orders.views.admin.sales_report import (
+    sales_report_view,
+    download_sales_report_pdf,
+    download_sales_report_excel,
+)
 
 
 urlpatterns = [
@@ -40,5 +45,17 @@ urlpatterns = [
         "returns/<str:return_number>/status/update/",
         return_status_update,
         name="admin_return_status_update",
+    ),
+    # ── Sales Report ──
+    path("sales-report/", sales_report_view, name="admin_sales_report"),
+    path(
+        "sales-report/download/pdf/",
+        download_sales_report_pdf,
+        name="admin_sales_report_pdf",
+    ),
+    path(
+        "sales-report/download/excel/",
+        download_sales_report_excel,
+        name="admin_sales_report_excel",
     ),
 ]

@@ -1,0 +1,248 @@
+{% extends 'core/admin/base_admin.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Sales Report{% endblock title %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'core/admin/css/shared/admin_search_filter.css' %}">
+    <link rel="stylesheet" href="{% static 'core/admin/css/shared/admin_table_listing.css' %}">
+    <link rel="stylesheet" href="{% static 'orders/admin/css/sales_report.css' %}">
+{% endblock extra_css %}
+
+{% block header_title %}Sales Report{% endblock header_title %}
+{% block header_subtitle %}Track revenue, discounts, and order performance{% endblock header_subtitle %}
+
+{% block content %}
+
+    <!-- ── Filter Bar ── -->
+    <div class="report-filter-bar">
+        <div class="quick-filters">
+            <a href="?filter=1_day"
+               class="quick-filter-btn {% if filter_type == '1_day' %}active{% endif %}">
+                <span class="material-icons">today</span> Today
+            </a>
+            <a href="?filter=1_week"
+               class="quick-filter-btn {% if filter_type == '1_week' %}active{% endif %}">
+                <span class="material-icons">date_range</span> This Week
+            </a>
+            <a href="?filter=1_month"
+               class="quick-filter-btn {% if filter_type == '1_month' %}active{% endif %}">
+                <span class="material-icons">calendar_month</span> This Month
+            </a>
+            <button type="button" id="customToggleBtn"
+                    class="quick-filter-btn {% if filter_type == 'custom' %}active{% endif %}">
+                <span class="material-icons">tune</span> Custom
+            </button>
+        </div>
+
+        <!-- Custom Date Range (hidden by default unless active) -->
+        <form method="get" id="customDateForm"
+              class="custom-date-form {% if filter_type == 'custom' %}visible{% endif %}">
+            <input type="hidden" name="filter" value="custom">
+            <div class="date-inputs">
+                <div class="date-field">
+                    <label for="startDate">From</label>
+                    <input type="date" id="startDate" name="start_date"
+                           value="{{ start_date }}" required>
+                </div>
+                <div class="date-field">
+                    <label for="endDate">To</label>
+                    <input type="date" id="endDate" name="end_date"
+                           value="{{ end_date }}" required>
+                </div>
+                <button type="submit" class="apply-btn">
+                    <span class="material-icons">search</span> Apply
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- ── Stats Cards ── -->
+    <div class="report-stats-container">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <span class="material-icons fs-2">shopping_bag</span>
+            </div>
+            <div class="stat-content">
+                <p class="stat-label">Total Orders</p>
+                <h3 class="stat-value">{{ total_orders }}</h3>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon revenue">
+                <span class="material-icons fs-2">payments</span>
+            </div>
+            <div class="stat-content">
+                <p class="stat-label">Order Amount</p>
+                <h3 class="stat-value">₹{{ total_order_amount|floatformat:2|intcomma }}</h3>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon discount">
+                <span class="material-icons fs-2">local_offer</span>
+            </div>
+            <div class="stat-content">
+                <p class="stat-label">Total Discount</p>
+                <h3 class="stat-value">₹{{ total_discount|floatformat:2|intcomma }}</h3>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon coupon">
+                <span class="material-icons fs-2">confirmation_number</span>
+            </div>
+            <div class="stat-content">
+                <p class="stat-label">Coupon Discount</p>
+                <h3 class="stat-value">₹{{ total_coupon_discount|floatformat:2|intcomma }}</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Download Buttons ── -->
+    <div class="download-bar">
+        <span class="download-label">
+            <span class="material-icons">download</span> Download Report
+        </span>
+        <div class="download-actions">
+            <a href="{% url 'admin_sales_report_pdf' %}?{{ filter_qs }}"
+               class="download-btn pdf-btn" id="pdfDownloadLink">
+                <span class="material-icons">picture_as_pdf</span> PDF
+            </a>
+            <a href="{% url 'admin_sales_report_excel' %}?{{ filter_qs }}"
+               class="download-btn excel-btn" id="excelDownloadLink">
+                <span class="material-icons">table_view</span> Excel
+            </a>
+        </div>
+    </div>
+
+    <!-- ── Orders Table ── -->
+    <div class="table-container">
+        {% if orders %}
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Order #</th>
+                        <th>Date</th>
+                        <th>Customer</th>
+                        <th>Payment</th>
+                        <th>Discount</th>
+                        <th>Coupon</th>
+                        <th>Grand Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'admin_order_details' order.order_number %}"
+                                   class="item-info-link">
+                                    <span class="order-number">{{ order.order_number }}</span>
+                                </a>
+                            </td>
+                            <td>
+                                <div class="date-time">
+                                    <span class="date">{{ order.created_at|date:"Y-m-d" }}</span>
+                                    <span class="time">{{ order.created_at|date:"h:i A" }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                {% if order.user %}
+                                    <div class="customer-info">
+                                        <span class="customer-name">
+                                            {% if order.user.first_name or order.user.last_name %}
+                                                {{ order.user.first_name }} {{ order.user.last_name }}
+                                            {% else %}
+                                                —
+                                            {% endif %}
+                                        </span>
+                                        <span class="customer-email">{{ order.user.email|truncatechars:28 }}</span>
+                                    </div>
+                                {% else %}
+                                    <span class="text-muted">Deleted user</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="payment-method">
+                                    {% if order.payment_transaction %}
+                                        {{ order.payment_transaction.get_payment_method_display }}
+                                    {% else %}
+                                        —
+                                    {% endif %}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="discount-value">₹{{ order.discount|floatformat:2 }}</span>
+                            </td>
+                            <td>
+                                <span class="coupon-value">
+                                    {% if order.coupon_discount %}
+                                        ₹{{ order.coupon_discount|floatformat:2 }}
+                                    {% else %}
+                                        —
+                                    {% endif %}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="order-total">₹{{ order.grand_total|floatformat:2 }}</span>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <!-- Pagination -->
+            {% if orders.paginator.num_pages > 1 %}
+                <div class="pagination-container">
+                    <div class="pagination-info">
+                        Showing {{ orders.start_index }} to {{ orders.end_index }} of {{ orders.paginator.count }} orders
+                    </div>
+                    <div class="pagination">
+                        {% if orders.has_previous %}
+                            <a href="?page={{ orders.previous_page_number }}&{{ filter_qs }}"
+                               class="page-btn-nav" aria-label="Previous page">
+                                <span class="material-icons">chevron_left</span>
+                            </a>
+                        {% else %}
+                            <button class="page-btn-nav" disabled aria-label="Previous page (disabled)">
+                                <span class="material-icons">chevron_left</span>
+                            </button>
+                        {% endif %}
+
+                        {% for num in orders.paginator.page_range %}
+                            {% if orders.number == num %}
+                                <span class="page-btn active" aria-current="page">{{ num }}</span>
+                            {% elif num > orders.number|add:'-3' and num < orders.number|add:'3' %}
+                                <a href="?page={{ num }}&{{ filter_qs }}"
+                                   class="page-btn" aria-label="Page {{ num }}">{{ num }}</a>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if orders.has_next %}
+                            <a href="?page={{ orders.next_page_number }}&{{ filter_qs }}"
+                               class="page-btn-nav" aria-label="Next page">
+                                <span class="material-icons">chevron_right</span>
+                            </a>
+                        {% else %}
+                            <button class="page-btn-nav" disabled aria-label="Next page (disabled)">
+                                <span class="material-icons">chevron_right</span>
+                            </button>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+
+        {% else %}
+            <!-- Empty State -->
+            <div class="empty-state">
+                <span class="material-icons" style="font-size: 64px;">assessment</span>
+                <h3>No orders found</h3>
+                <p>No orders were placed in the selected period. Try a different date range.</p>
+            </div>
+        {% endif %}
+    </div>
+
+{% endblock content %}
+
+{% block extra_js %}
+    <script src="{% static 'orders/admin/js/sales_report.js' %}"></script>
+{% endblock extra_js %}

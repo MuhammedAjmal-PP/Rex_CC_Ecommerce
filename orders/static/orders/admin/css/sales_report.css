@@ -1,0 +1,435 @@
+/* ============================================================
+   REX CC ADMIN — SALES REPORT STYLES
+   File: orders/static/orders/admin/css/sales_report.css
+   ============================================================ */
+
+/* ========================================
+   FILTER BAR
+   ======================================== */
+
+.report-filter-bar {
+    margin: 32px 40px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.quick-filters {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.quick-filter-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 20px;
+    border: 2px solid #e0e0e0;
+    background: #ffffff;
+    color: #333333;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    letter-spacing: 0.3px;
+}
+
+.quick-filter-btn .material-icons {
+    font-size: 18px;
+}
+
+.quick-filter-btn:hover {
+    border-color: #000000;
+    background: #f5f5f5;
+    color: #000000;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.quick-filter-btn.active {
+    background: #000000;
+    color: #ffffff;
+    border-color: #000000;
+}
+
+/* ========================================
+   CUSTOM DATE FORM
+   ======================================== */
+
+.custom-date-form {
+    display: none;
+    animation: slideDown 0.3s ease;
+}
+
+.custom-date-form.visible {
+    display: block;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.date-inputs {
+    display: flex;
+    align-items: flex-end;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.date-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.date-field label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #666666;
+}
+
+.date-field input[type="date"] {
+    padding: 10px 14px;
+    border: 2px solid #e0e0e0;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #1a1a1a;
+    background: #ffffff;
+    transition: border-color 0.3s ease;
+    outline: none;
+    min-width: 180px;
+}
+
+.date-field input[type="date"]:focus {
+    border-color: #000000;
+}
+
+.apply-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 24px;
+    background: #000000;
+    color: #ffffff;
+    border: 2px solid #000000;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    letter-spacing: 0.3px;
+}
+
+.apply-btn .material-icons {
+    font-size: 18px;
+}
+
+.apply-btn:hover {
+    background: #333333;
+    border-color: #333333;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* ========================================
+   STATS CARDS
+   ======================================== */
+
+.report-stats-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    margin: 24px 40px 0;
+}
+
+.report-stats-container .stat-card {
+    background: #ffffff;
+    padding: 28px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+}
+
+.report-stats-container .stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.16);
+    border-color: #000000;
+}
+
+.report-stats-container .stat-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    background: #000000;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+}
+
+.report-stats-container .stat-icon.revenue {
+    background: #1a6b3c;
+}
+
+.report-stats-container .stat-icon.discount {
+    background: #b45309;
+}
+
+.report-stats-container .stat-icon.coupon {
+    background: #6b21a8;
+}
+
+.report-stats-container .stat-card:hover .stat-icon {
+    transform: scale(1.05);
+}
+
+.report-stats-container .stat-content {
+    flex: 1;
+}
+
+.report-stats-container .stat-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #666666;
+    margin: 0 0 6px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.report-stats-container .stat-value {
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin: 0;
+    color: #000000;
+}
+
+/* ========================================
+   DOWNLOAD BAR
+   ======================================== */
+
+.download-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 24px 40px;
+    padding: 16px 24px;
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.download-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #333333;
+}
+
+.download-label .material-icons {
+    font-size: 20px;
+}
+
+.download-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.download-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    border: 2px solid;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    letter-spacing: 0.3px;
+}
+
+.download-btn .material-icons {
+    font-size: 18px;
+}
+
+.download-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.pdf-btn {
+    background: #ffffff;
+    color: #c0392b;
+    border-color: #c0392b;
+}
+
+.pdf-btn:hover {
+    background: #c0392b;
+    color: #ffffff;
+}
+
+.excel-btn {
+    background: #ffffff;
+    color: #27ae60;
+    border-color: #27ae60;
+}
+
+.excel-btn:hover {
+    background: #27ae60;
+    color: #ffffff;
+}
+
+/* ========================================
+   TABLE OVERRIDES
+   ======================================== */
+
+.discount-value,
+.coupon-value {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #333333;
+}
+
+.order-number {
+    font-weight: 700;
+    color: #000000;
+    font-size: 0.9rem;
+    letter-spacing: 0.3px;
+}
+
+.item-info-link:hover .order-number {
+    text-decoration: underline;
+}
+
+.customer-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.customer-name {
+    font-weight: 600;
+    color: #000000;
+    font-size: 0.9rem;
+}
+
+.customer-email {
+    font-size: 0.8rem;
+    color: #666666;
+}
+
+.payment-method {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #333333;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.order-total {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #000000;
+}
+
+.date-time {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.date-time .date {
+    font-weight: 600;
+    color: #1a1a1a;
+}
+
+.date-time .time {
+    font-size: 0.8rem;
+    color: #999999;
+}
+
+.admin-table tbody td {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.admin-table tbody td:first-child,
+.admin-table tbody td:nth-child(3) {
+    text-align: left;
+}
+
+/* ========================================
+   EMPTY STATE
+   ======================================== */
+
+.empty-state {
+    text-align: center;
+    padding: 80px 40px;
+    color: #999999;
+}
+
+.empty-state h3 {
+    margin: 16px 0 8px;
+    color: #333333;
+    font-size: 1.25rem;
+}
+
+.empty-state p {
+    font-size: 0.9rem;
+    color: #666666;
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+
+@media (max-width: 1400px) {
+    .report-stats-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .report-filter-bar,
+    .period-badge-container,
+    .report-stats-container,
+    .download-bar {
+        margin-left: 20px;
+        margin-right: 20px;
+    }
+
+    .report-stats-container {
+        grid-template-columns: 1fr;
+    }
+
+    .quick-filters {
+        flex-direction: column;
+    }
+
+    .date-inputs {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .download-bar {
+        flex-direction: column;
+        gap: 12px;
+    }
+}
