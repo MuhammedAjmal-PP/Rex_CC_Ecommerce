@@ -29,6 +29,11 @@ from orders.service import (
     restore_order_stock,
     validate_stock,
 )
+from coupons.service import (
+    InvalidCouponError,
+    validate_coupon,
+    apply_coupon_to_order,
+)
 
 
 
@@ -90,6 +95,45 @@ def place_order_view(request):
             )
             return redirect(reverse("checkout") + "?step=2")
 
+    # ── Coupon re-validation (server-side) ──────────────────
+    applied_coupon_session = request.session.get("applied_coupon")
+    coupon_obj = None
+    coupon_discount = Decimal("0.00")
+
+    if applied_coupon_session:
+        coupon_code = applied_coupon_session.get("code", "")
+        try:
+            coupon_obj, coupon_discount = validate_coupon(
+                coupon_code, request.user, cart.sub_total
+            )
+        except InvalidCouponError as e:
+            # Coupon no longer valid — clear session and redirect
+            if "applied_coupon" in request.session:
+                del request.session["applied_coupon"]
+                request.session.modified = True
+            if payment_method == "RAZORPAY":
+                return JsonResponse(
+                    {"error": f"Coupon '{coupon_code}' is no longer valid: {e}"},
+                    status=400,
+                )
+            messages.error(request, f"Coupon '{coupon_code}' is no longer valid: {e}")
+            return redirect("checkout")
+
+    # Calculate adjusted grand total
+    adjusted_grand_total = cart.grand_total - coupon_discount
+    if adjusted_grand_total < 0:
+        adjusted_grand_total = Decimal("0.00")
+
+    # Re-check wallet with adjusted total
+    if payment_method == "WALLET" and coupon_obj:
+        if not can_pay_with_wallet(request.user, adjusted_grand_total):
+            messages.error(
+                request,
+                "Insufficient wallet balance. Please choose another payment method.",
+            )
+            return redirect(reverse("checkout") + "?step=2")
+    # ────────────────────────────────────────────────────────
+
     with transaction.atomic():
         locked_variants = lock_variants_for_update(items=cart_items)
 
@@ -111,7 +155,9 @@ def place_order_view(request):
             tax=cart.tax,
             discount=cart.discount,
             shipping_fee=cart.shipping_fee,
-            grand_total=cart.grand_total,
+            grand_total=adjusted_grand_total,
+            coupon=coupon_obj,
+            coupon_discount=coupon_discount,
         )
 
         for item in cart_items:
@@ -213,6 +259,13 @@ def place_order_view(request):
 
         # 7 Clear cart
         cart_items.delete()
+
+        # 8 Apply coupon usage
+        if coupon_obj:
+            apply_coupon_to_order(coupon_obj, request.user, order)
+            if "applied_coupon" in request.session:
+                del request.session["applied_coupon"]
+                request.session.modified = True
 
     # For Razorpay, return JSON so frontend can launch the checkout modal
     if payment_method == "RAZORPAY":

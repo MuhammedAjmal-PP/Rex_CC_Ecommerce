@@ -1,0 +1,226 @@
+{% extends 'core/admin/base_admin.html' %}
+{% load static %}
+{% load humanize %}
+{% block title %}Coupons{% endblock title %}
+{% block extra_css %}
+    <link rel="stylesheet"
+          href="{% static 'core/admin/css/shared/admin_search_filter.css' %}">
+    <link rel="stylesheet"
+          href="{% static 'core/admin/css/shared/admin_table_listing.css' %}">
+    <link rel="stylesheet"
+          href="{% static 'coupons/admin/css/coupon_list.css' %}">
+{% endblock extra_css %}
+{% block header_title %}Coupons{% endblock header_title %}
+{% block header_subtitle %}Manage discount coupon codes{% endblock header_subtitle %}
+{% block content %}
+
+    {# ── Stat Cards ── #}
+    <div class="stats-container">
+        <a href="?{% if search_query %}q={{ search_query }}&{% endif %}"
+           class="stat-card {% if not status_filter %}active{% endif %}">
+            <div class="stat-icon"><span class="material-icons fs-2">confirmation_number</span></div>
+            <div class="stat-content">
+                <p class="stat-label">Total</p>
+                <h3 class="stat-value">{{ total_coupons }}</h3>
+            </div>
+        </a>
+        <a href="?status=active{% if search_query %}&q={{ search_query }}{% endif %}"
+           class="stat-card {% if status_filter == 'active' %}active{% endif %}">
+            <div class="stat-icon"><span class="material-icons fs-2">toggle_on</span></div>
+            <div class="stat-content">
+                <p class="stat-label">Active</p>
+                <h3 class="stat-value">{{ active_coupons }}</h3>
+            </div>
+        </a>
+        <a href="?status=inactive{% if search_query %}&q={{ search_query }}{% endif %}"
+           class="stat-card {% if status_filter == 'inactive' %}active{% endif %}">
+            <div class="stat-icon"><span class="material-icons fs-2">toggle_off</span></div>
+            <div class="stat-content">
+                <p class="stat-label">Inactive</p>
+                <h3 class="stat-value">{{ inactive_coupons }}</h3>
+            </div>
+        </a>
+        <a href="?status=valid{% if search_query %}&q={{ search_query }}{% endif %}"
+           class="stat-card {% if status_filter == 'valid' %}active{% endif %}">
+            <div class="stat-icon"><span class="material-icons fs-2">verified</span></div>
+            <div class="stat-content">
+                <p class="stat-label">Valid Now</p>
+                <h3 class="stat-value">{{ valid_coupons }}</h3>
+            </div>
+        </a>
+        <a href="?status=expired{% if search_query %}&q={{ search_query }}{% endif %}"
+           class="stat-card {% if status_filter == 'expired' %}active{% endif %}">
+            <div class="stat-icon"><span class="material-icons fs-2">timer_off</span></div>
+            <div class="stat-content">
+                <p class="stat-label">Expired</p>
+                <h3 class="stat-value">{{ expired_coupons }}</h3>
+            </div>
+        </a>
+    </div>
+
+    {# ── Search Bar ── #}
+    <div class="search-filter-bar">
+        <div class="search-box" style="flex:1;">
+            <form method="get" class="search-form">
+                <input type="hidden" name="status" value="{{ status_filter }}">
+                <div class="search-input-wrapper">
+                    <input type="text"
+                           name="q"
+                           placeholder="Search by coupon code or description..."
+                           value="{{ search_query }}"
+                           class="form-control">
+                    <button type="submit" class="search-btn">
+                        <span class="material-icons">search</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+        <div class="create-btn">
+            <a href="{% url 'admin_coupon_add' %}">
+                <span class="material-icons">add</span>
+                Add Coupon
+            </a>
+        </div>
+    </div>
+
+    {# ── Table ── #}
+    <div class="table-container">
+        {% if coupons %}
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Code</th>
+                        <th>Type</th>
+                        <th>Discount</th>
+                        <th>Min Order</th>
+                        <th>Usage</th>
+                        <th>Validity</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in coupons %}
+                        <tr>
+                            <td>
+                                <div class="coupon-code">{{ c.code }}</div>
+                                {% if c.description %}
+                                    <div class="coupon-desc">{{ c.description|truncatewords:8 }}</div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="offer-type-badge offer-type-{{ c.discount_type|lower }}">
+                                    {{ c.get_discount_type_display }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="discount-value">
+                                    {% if c.discount_type == "PERCENTAGE" %}
+                                        {{ c.discount_value }}%
+                                        {% if c.max_discount_amount %}
+                                            <small style="display:block; opacity:0.7;">max ₹{{ c.max_discount_amount|intcomma }}</small>
+                                        {% endif %}
+                                    {% else %}
+                                        ₹{{ c.discount_value|intcomma }}
+                                    {% endif %}
+                                </span>
+                            </td>
+                            <td>₹{{ c.min_order_amount|intcomma }}</td>
+                            <td>
+                                <span class="usage-info">{{ c.used_count }}{% if c.usage_limit %} / {{ c.usage_limit }}{% endif %}</span>
+                                <small style="display:block; opacity:0.7;">Per user: {{ c.per_user_limit }}</small>
+                            </td>
+                            <td>
+                                <div class="date-time">
+                                    <span class="date">{{ c.start_date|date:"Y-m-d" }}</span>
+                                    <span class="time">to</span>
+                                    <span class="date">{{ c.end_date|date:"Y-m-d" }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                {% if c.is_valid %}
+                                    <span class="status-badge offer-valid">Valid</span>
+                                {% elif c.is_expired %}
+                                    <span class="status-badge offer-inactive">Expired</span>
+                                {% elif c.is_active %}
+                                    <span class="status-badge offer-active">Active</span>
+                                {% else %}
+                                    <span class="status-badge offer-inactive">Inactive</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="action-btns">
+                                    <a href="{% url 'admin_coupon_edit' c.pk %}"
+                                       class="action-btn" title="Edit">
+                                        <span class="material-icons fs-6">edit</span>
+                                    </a>
+                                    <form method="post"
+                                          action="{% url 'admin_coupon_delete' c.pk %}"
+                                          class="d-inline"
+                                          onsubmit="return confirm('Delete coupon \'{{ c.code }}\'?');">
+                                        {% csrf_token %}
+                                        <button type="submit" class="action-btn action-btn-danger" title="Delete">
+                                            <span class="material-icons fs-6">delete</span>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            {# ── Pagination ── #}
+            {% if coupons.paginator.num_pages > 1 %}
+                <div class="pagination-container">
+                    <div class="pagination-info">
+                        Showing {{ coupons.start_index }}–{{ coupons.end_index }} of {{ coupons.paginator.count }} coupons
+                    </div>
+                    <div class="pagination">
+                        {% if coupons.has_previous %}
+                            <a href="?page={{ coupons.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}"
+                               class="page-btn-nav" aria-label="Previous page">
+                                <span class="material-icons">chevron_left</span>
+                            </a>
+                        {% else %}
+                            <button class="page-btn-nav" disabled aria-label="Previous page (disabled)">
+                                <span class="material-icons">chevron_left</span>
+                            </button>
+                        {% endif %}
+                        {% for num in coupons.paginator.page_range %}
+                            {% if coupons.number == num %}
+                                <span class="page-btn active" aria-current="page">{{ num }}</span>
+                            {% elif num > coupons.number|add:"-3" and num < coupons.number|add:"3" %}
+                                <a href="?page={{ num }}{% if search_query %}&q={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}"
+                                   class="page-btn" aria-label="Page {{ num }}">{{ num }}</a>
+                            {% endif %}
+                        {% endfor %}
+                        {% if coupons.has_next %}
+                            <a href="?page={{ coupons.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}"
+                               class="page-btn-nav" aria-label="Next page">
+                                <span class="material-icons">chevron_right</span>
+                            </a>
+                        {% else %}
+                            <button class="page-btn-nav" disabled aria-label="Next page (disabled)">
+                                <span class="material-icons">chevron_right</span>
+                            </button>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="empty-state">
+                <span class="material-icons" style="font-size: 64px;">confirmation_number</span>
+                <h3>No coupons found</h3>
+                <p>
+                    {% if search_query or status_filter %}
+                        Try adjusting your search or clearing the filters.
+                    {% else %}
+                        No coupons have been created yet.
+                    {% endif %}
+                </p>
+            </div>
+        {% endif %}
+    </div>
+
+{% endblock content %}

@@ -1,0 +1,190 @@
+{% extends 'core/admin/base_admin.html' %}
+{% load static %}
+{% block title %}
+    {% if coupon %}Edit Coupon{% else %}Add Coupon{% endif %}
+{% endblock title %}
+{% block extra_css %}
+    <link rel="stylesheet"
+          href="{% static 'coupons/admin/css/coupon_form.css' %}">
+{% endblock extra_css %}
+{% block header_title %}
+    {% if coupon %}Edit Coupon{% else %}Add Coupon{% endif %}
+{% endblock header_title %}
+{% block header_subtitle %}
+    {% if coupon %}Update coupon details{% else %}Create a new coupon code{% endif %}
+{% endblock header_subtitle %}
+{% block content %}
+    <div class="form-container">
+        <form method="post"
+              class="offer-form"
+              id="couponForm">
+            {% csrf_token %}
+
+            {# ── Non-field errors ── #}
+            {% if form.non_field_errors %}
+                <div class="form-errors">
+                    {% for error in form.non_field_errors %}
+                        <div class="error-item">
+                            <span class="material-icons">error_outline</span>
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="form-card">
+                <div class="form-layout">
+
+                    {# ── LEFT COLUMN ── #}
+                    <div class="form-column form-column-left">
+                        {# Basic Info #}
+                        <div class="form-section">
+                            <div class="section-title">
+                                <span class="material-icons">confirmation_number</span>
+                                <span>Coupon Details</span>
+                            </div>
+                            <div class="section-body">
+                                <div class="form-group">
+                                    <label class="form-label">Coupon Code</label>
+                                    {{ form.code }}
+                                    {% if form.code.errors %}<span class="error-text">{{ form.code.errors.0 }}</span>{% endif %}
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Description</label>
+                                    {{ form.description }}
+                                    {% if form.description.errors %}<span class="error-text">{{ form.description.errors.0 }}</span>{% endif %}
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">Discount Type</label>
+                                        <div class="select-wrapper">
+                                            {{ form.discount_type }}
+                                            <span class="material-icons">expand_more</span>
+                                        </div>
+                                        {% if form.discount_type.errors %}<span class="error-text">{{ form.discount_type.errors.0 }}</span>{% endif %}
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Discount Value</label>
+                                        {{ form.discount_value }}
+                                        {% if form.discount_value.errors %}<span class="error-text">{{ form.discount_value.errors.0 }}</span>{% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {# Date Range #}
+                        <div class="form-section">
+                            <div class="section-title">
+                                <span class="material-icons">date_range</span>
+                                <span>Validity Period</span>
+                            </div>
+                            <div class="section-body">
+                                <div class="form-group">
+                                    <label class="form-label">Start Date</label>
+                                    {{ form.start_date }}
+                                    {% if form.start_date.errors %}<span class="error-text">{{ form.start_date.errors.0 }}</span>{% endif %}
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">End Date</label>
+                                    {{ form.end_date }}
+                                    {% if form.end_date.errors %}<span class="error-text">{{ form.end_date.errors.0 }}</span>{% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {# ── RIGHT COLUMN ── #}
+                    <div class="form-column form-column-right">
+                        {# Limits & Conditions #}
+                        <div class="form-section">
+                            <div class="section-title">
+                                <span class="material-icons">tune</span>
+                                <span>Conditions & Limits</span>
+                            </div>
+                            <div class="section-body">
+                                <div class="form-group">
+                                    <label class="form-label">Minimum Order Amount (₹)</label>
+                                    {{ form.min_order_amount }}
+                                    {% if form.min_order_amount.errors %}<span class="error-text">{{ form.min_order_amount.errors.0 }}</span>{% endif %}
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Max Discount Amount (₹)</label>
+                                    {{ form.max_discount_amount }}
+                                    <small class="form-hint">Only for percentage coupons. Leave blank for no cap.</small>
+                                    {% if form.max_discount_amount.errors %}<span class="error-text">{{ form.max_discount_amount.errors.0 }}</span>{% endif %}
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">Total Usage Limit</label>
+                                        {{ form.usage_limit }}
+                                        <small class="form-hint">Blank = unlimited</small>
+                                        {% if form.usage_limit.errors %}<span class="error-text">{{ form.usage_limit.errors.0 }}</span>{% endif %}
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Per User Limit</label>
+                                        {{ form.per_user_limit }}
+                                        {% if form.per_user_limit.errors %}<span class="error-text">{{ form.per_user_limit.errors.0 }}</span>{% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {# Settings #}
+                        <div class="form-section">
+                            <div class="section-title">
+                                <span class="material-icons">settings</span>
+                                <span>Settings</span>
+                            </div>
+                            <div class="section-body">
+                                <div class="toggle-row">
+                                    <div class="toggle-info">
+                                        <span class="toggle-label">Active</span>
+                                        <span class="toggle-desc">Enable this coupon</span>
+                                    </div>
+                                    <label class="toggle-switch">
+                                        {{ form.is_active }}
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                {% if coupon %}
+                                    <div class="meta-row">
+                                        <span class="meta-label">Used</span>
+                                        <span class="meta-value">{{ coupon.used_count }} time{{ coupon.used_count|pluralize }}</span>
+                                    </div>
+                                    <div class="meta-row">
+                                        <span class="meta-label">Created</span>
+                                        <div class="date-time">
+                                            <span class="date">{{ coupon.created_at|date:"Y-m-d" }}</span>
+                                            <span class="time">{{ coupon.created_at|date:"h:i A" }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="meta-row">
+                                        <span class="meta-label">Updated</span>
+                                        <div class="date-time">
+                                            <span class="date">{{ coupon.updated_at|date:"Y-m-d" }}</span>
+                                            <span class="time">{{ coupon.updated_at|date:"h:i A" }}</span>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {# ── Form Actions ── #}
+            <div class="form-actions">
+                <a href="{% url 'admin_coupons' %}" class="btn-cancel">
+                    <span class="material-icons">arrow_back</span>
+                    Cancel
+                </a>
+                <button type="submit" class="btn-submit">
+                    <span class="material-icons">
+                        {% if coupon %}save{% else %}add{% endif %}
+                    </span>
+                    {% if coupon %}Save Changes{% else %}Create Coupon{% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+{% endblock content %}

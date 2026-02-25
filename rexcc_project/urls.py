@@ -35,6 +35,8 @@ urlpatterns = [
     path("adminpanel/", include("orders.urls.admin_urls")),
     path("adminpanel/", include("payments.urls")),
     path("adminpanel/", include("offers.urls.admin_urls")),
+    path("adminpanel/", include("coupons.urls.admin_urls")),
+    path("", include("coupons.urls.user_urls")),
 ]
 
 # if settings.DEBUG:

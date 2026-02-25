@@ -62,6 +62,52 @@ def checkoutview(request):
         "grand_total": cart.grand_total,
     }
 
+    # ── Coupon ──────────────────────────────────────────
+    applied_coupon = request.session.get("applied_coupon")
+    coupon_discount = Decimal("0.00")
+    if applied_coupon:
+        coupon_discount = Decimal(applied_coupon.get("discount_amount", "0.00"))
+        order_summary["coupon_code"] = applied_coupon["code"]
+        order_summary["coupon_discount"] = coupon_discount
+        order_summary["grand_total"] = max(
+            order_summary["grand_total"] - coupon_discount,
+            Decimal("0.00"),
+        )
+
+    # Fetch coupons the user can potentially use
+    from coupons.models import Coupon as CouponModel
+    from coupons.models import CouponUsage
+    from django.utils import timezone
+    from django.db.models import Count
+
+    now = timezone.now()
+
+    # Only exclude coupons where user has reached per_user_limit
+    user_usage = (
+        CouponUsage.objects.filter(user=request.user)
+        .values("coupon_id")
+        .annotate(usage_count=Count("id"))
+    )
+    exhausted_ids = set()
+    for entry in user_usage:
+        try:
+            coupon = CouponModel.objects.get(pk=entry["coupon_id"])
+            if entry["usage_count"] >= coupon.per_user_limit:
+                exhausted_ids.add(coupon.pk)
+        except CouponModel.DoesNotExist:
+            pass
+
+    available_coupons = (
+        CouponModel.objects.filter(
+            is_active=True,
+            start_date__lte=now,
+            end_date__gte=now,
+        )
+        .exclude(pk__in=exhausted_ids)
+        .order_by("-discount_value")[:5]
+    )
+    # ───────────────────────────────────────────────────
+
     wallet = get_or_create_wallet(request.user)
 
     context = {
@@ -71,6 +117,8 @@ def checkoutview(request):
         "can_add_address": can_add_address,
         "address_form": address_form,
         "wallet_balance": wallet.balance,
+        "applied_coupon": applied_coupon,
+        "available_coupons": available_coupons,
     }
 
     return render(request, "orders/user/checkout/checkout.html", context)

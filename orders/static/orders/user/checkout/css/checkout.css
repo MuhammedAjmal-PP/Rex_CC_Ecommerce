@@ -17,6 +17,12 @@
 
 .chk-sidebar {
     min-width: 0;
+    overflow: hidden;
+}
+
+.chk-sidebar .hub-card {
+    overflow: hidden;
+    box-sizing: border-box;
 }
 
 .chk-steps-container {

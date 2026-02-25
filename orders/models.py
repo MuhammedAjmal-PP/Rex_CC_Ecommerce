@@ -132,6 +132,21 @@ class Order(models.Model):
     shipping_fee = models.DecimalField(max_digits=10, decimal_places=2)
     grand_total = models.DecimalField(max_digits=10, decimal_places=2)
 
+    # ── Coupon ────────────────────
+    coupon = models.ForeignKey(
+        "coupons.Coupon",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="orders",
+    )
+    coupon_discount = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=Decimal("0.00"),
+        help_text="Coupon discount amount applied at order time",
+    )
+
     payment = GenericRelation(
         "payments.Transaction",
         related_query_name="orders",
@@ -236,16 +251,24 @@ class OrderItem(models.Model):
         return (self.original_price - self.price) * self.quantity
 
     @property
+    def coupon_share(self):
+        """Proportional share of order's coupon discount for this item."""
+        if not self.order.coupon_discount or not self.order.sub_total:
+            return Decimal("0.00")
+        share = (self.total_price / self.order.sub_total) * self.order.coupon_discount
+        return share.quantize(Decimal("0.01"))
+
+    @property
     def total_cancel(self):
         shipping_fee = Decimal(self.quantity * 100)
         total = self.total_price + shipping_fee
         tax = total * Decimal(settings.GST_RATE) / Decimal(100)
-        return total + tax
+        return total + tax - self.coupon_share
 
     @property
     def total_return(self):
         tax = self.total_price * Decimal(settings.GST_RATE) / Decimal(100)
-        return self.total_price + tax
+        return self.total_price + tax - self.coupon_share
 
     @property
     def current_status(self):

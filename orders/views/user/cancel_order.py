@@ -128,6 +128,17 @@ def cancel_order_submit(request, order_number):
                     )
 
                 cancelled_count += 1
+
+            # Revoke coupon usage if ALL items in the order are now cancelled
+            if order.coupon and order.coupon_discount:
+                all_cancelled = all(
+                    i.current_status and i.current_status.status == "CANCELLED"
+                    for i in order.items.prefetch_related("status").all()
+                )
+                if all_cancelled:
+                    from coupons.service import revoke_coupon_usage
+                    revoke_coupon_usage(order)
+
     except InvalidTransitionError as error:
         messages.error(request, f"Unable to cancel selected item(s): {error}")
         return redirect("user_cancel_order", order_number=order.order_number)
