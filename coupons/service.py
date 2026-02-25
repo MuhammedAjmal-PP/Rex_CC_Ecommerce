@@ -39,7 +39,11 @@ def validate_coupon(code, user, cart_subtotal):
     except Coupon.DoesNotExist:
         raise InvalidCouponError("Invalid coupon code.")
 
-    # 2. Is it active & within dates?
+    # 2. Soft-deleted?
+    if coupon.is_deleted:
+        raise InvalidCouponError("Invalid coupon code.")
+
+    # 3. Is it active & within dates?
     if not coupon.is_valid:
         if coupon.is_expired:
             raise InvalidCouponError("This coupon has expired.")

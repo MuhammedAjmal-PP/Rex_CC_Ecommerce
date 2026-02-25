@@ -16,7 +16,7 @@ _superuser_required = user_passes_test(lambda u: u.is_superuser)
 @_superuser_required
 def coupon_list(request):
     """Admin coupon list with search, filtering, and pagination."""
-    coupons = Coupon.objects.all().order_by("-created_at")
+    coupons = Coupon.active.all().order_by("-created_at")
 
     search_query = request.GET.get("q", "").strip()
     if search_query:
@@ -43,7 +43,7 @@ def coupon_list(request):
         coupons = coupons.filter(discount_type=discount_type)
 
     # ── Stats ────────────────────────────────────
-    all_coupons = Coupon.objects.all()
+    all_coupons = Coupon.active.all()
     total_coupons = all_coupons.count()
     active_coupons = all_coupons.filter(is_active=True).count()
     inactive_coupons = all_coupons.filter(is_active=False).count()
@@ -107,9 +107,9 @@ def edit_coupon(request, pk):
 @never_cache
 @_superuser_required
 def delete_coupon(request, pk):
-    """Delete a coupon (POST-only)."""
+    """Soft-delete a coupon (POST-only)."""
     if request.method == "POST":
         coupon = get_object_or_404(Coupon, pk=pk)
-        coupon.delete()
+        coupon.soft_delete()
         messages.success(request, "Coupon deleted.")
     return redirect("admin_coupons")

@@ -100,7 +100,7 @@ def checkoutview(request):
             pass
 
     available_coupons = (
-        CouponModel.objects.filter(
+        CouponModel.active.filter(
             is_active=True,
             start_date__lte=now,
             end_date__gte=now,

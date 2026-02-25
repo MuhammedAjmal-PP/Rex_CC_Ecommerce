@@ -15,6 +15,12 @@ from django.utils import timezone
 # ======================================================
 
 
+class ActiveCouponManager(models.Manager):
+    """Returns only non-deleted coupons."""
+    def get_queryset(self):
+        return super().get_queryset().filter(is_deleted=False)
+
+
 class Coupon(models.Model):
 
     DISCOUNT_TYPE_CHOICES = (
@@ -77,11 +83,15 @@ class Coupon(models.Model):
     )
 
     is_active = models.BooleanField(default=True)
+    is_deleted = models.BooleanField(default=False, db_index=True)
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    objects = models.Manager()          # default — includes deleted
+    active = ActiveCouponManager()      # excludes soft-deleted
 
     class Meta:
         ordering = ["-created_at"]
@@ -178,6 +188,12 @@ class Coupon(models.Model):
         self.full_clean()
         super().save(*args, **kwargs)
 
+    def soft_delete(self):
+        """Mark this coupon as deleted instead of removing from DB."""
+        self.is_deleted = True
+        self.is_active = False
+        self.save(update_fields=["is_deleted", "is_active", "updated_at"])
+
 
 # ======================================================
 # COUPON USAGE MODEL
@@ -189,7 +205,7 @@ class CouponUsage(models.Model):
 
     coupon = models.ForeignKey(
         Coupon,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         related_name="usages",
     )
     user = models.ForeignKey(
