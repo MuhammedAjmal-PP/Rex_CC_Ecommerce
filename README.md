@@ -56,6 +56,7 @@
 | Coupon System | ✅ Complete | Code-based coupons, checkout apply/remove, per-user limits, order integration |
 | Order Management (User) | ✅ Complete | Order history, Item tracking, Cancellation, Returns, Invoice PDF |
 | Order Management (Admin) | ✅ Complete | Status cascade, Return review, Refund approve/reject |
+| Sales Report | ✅ Complete | Date filters (Daily/Weekly/Monthly/Custom), stats, PDF & Excel download |
 
 ---
 
@@ -131,6 +132,20 @@
 - **Status Cascade**: Changing order status automatically walks all items through every intermediate status (e.g., order → SHIPPED cascades items through CONFIRMED → PACKING → READY → SHIPPED)
 - **Return Management**: Separate return list/detail views, approve/reject returns, admin cannot set RETURN_REQUESTED directly
 - **Invoice**: PDF generation via WeasyPrint with luxury-themed template
+</details>
+
+<details>
+<summary><strong>📊 Sales Report</strong></summary>
+
+**Location:** `orders/views/admin/sales_report.py` + `orders/service/sales_report.py`
+
+- **Filter Options**: Quick filters (Today / This Week / This Month) + Custom date range picker
+- **Summary Stats**: Total Orders, Total Order Amount, Total Discount (offers), Total Coupon Discount — displayed as stat cards
+- **Orders Table**: Paginated table of orders in the selected period showing discount & coupon breakdowns
+- **PDF Download**: WeasyPrint-generated report with summary stats + full orders table
+- **Excel Download**: Styled `.xlsx` export via openpyxl with formatted headers and currency columns
+- **Filter Persistence**: All downloads respect the currently active date filter
+- **Excluded Statuses**: Cancelled and Failed orders are excluded from report metrics
 </details>
 
 <details>
@@ -533,10 +548,11 @@ Rex_CC_Ecommerce/
 │   ├── service/           # Status transitions, returns, stock validation
 │   │   ├── status.py      # Progressive cascade, sync, transition validation
 │   │   ├── returns.py     # Return eligibility checks
-│   │   └── stock.py       # Stock locking & validation for order placement
+│   │   ├── stock.py       # Stock locking & validation for order placement
+│   │   └── sales_report.py # Date-range aggregation for sales reports
 │   ├── forms.py           # ReturnForm
 │   ├── views/user/        # Checkout, Place Order, Cancel, Returns, Order Detail
-│   └── views/admin/       # Order list/detail, Return list/detail
+│   └── views/admin/       # Order list/detail, Return list/detail, Sales report
 │
 ├── payments/              # Financial transactions
 │   ├── models.py          # Transaction (universal ledger)
@@ -638,7 +654,7 @@ python manage.py runserver
 - [x] Admin Offer Management (List, Add, Edit, Delete with filters & stat cards)
 - [x] Coupon System (Code-based coupons, checkout integration, per-user limits, order integration, proportional refunds)
 - [ ] Referral Program
-- [ ] Sales Analytics Dashboard
+- [x] Sales Report (Date filters, Summary stats, PDF & Excel download)
 - [ ] Email Notifications (Order updates, Refund status)
 
 ---
