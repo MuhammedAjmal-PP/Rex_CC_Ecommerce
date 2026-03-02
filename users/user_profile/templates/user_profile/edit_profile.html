@@ -96,9 +96,14 @@ Edit Profile | REX CC
         
         <!-- EMAIL ADDRESSES SECTION -->
         <section class="hub-card lux-edit-card">
-            <div class="lux-card-header">
-                <h2 class="lux-card-title">Email Addresses</h2>
-                <p class="lux-card-subtitle">Manage your connected email accounts.</p>
+            <div class="lux-card-header flex-between">
+                <div>
+                    <h2 class="lux-card-title">Email Address</h2>
+                    <p class="lux-card-subtitle">Manage your login email.</p>
+                </div>
+                <a class="lux-btn-outline" id="emailToggleBtn" data-bs-toggle="collapse" href="#emailCollapse" role="button">
+                    <span id="emailToggleText">Edit Email</span>
+                </a>
             </div>
             
             <div class="lux-card-body">
@@ -117,20 +122,9 @@ Edit Profile | REX CC
                                 {% if email.verified %}
                                     <span class="lux-badge-verified">Verified</span>
                                 {% else %}
-                                    <span class="lux-badge-pending">Unverified</span>
+                                    <span class="lux-badge-pending">Pending Verification</span>
                                 {% endif %}
                             </div>
-                        </div>
-                        <div class="lux-email-action">
-                            {% if not email.primary and email.verified %}
-                            <form action="" method="post" style="margin:0;">
-                                {% csrf_token %}
-                                <input type="hidden" name="email" value="{{ email.email }}">
-                                <button type="submit" name="action_make_primary" class="lux-btn-outline btn-sm">
-                                    Make Primary
-                                </button>
-                            </form>
-                            {% endif %}
                         </div>
                     </div>
                     {% empty %}
@@ -139,6 +133,29 @@ Edit Profile | REX CC
                         <p>No email addresses found.</p>
                     </div>
                     {% endfor %}
+                </div>
+            </div>
+
+            <!-- Collapsible Email Change Form -->
+            <div class="collapse" id="emailCollapse">
+                <div class="lux-card-body lux-email-change-body">
+                    <form id="changeEmailForm" method="post" data-change-email-url="{% url 'change_email' %}">
+                        {% csrf_token %}
+                        <div class="lux-field-group">
+                            <label>New Email Address</label>
+                            <input type="email" name="email" id="id_new_email" class="lux-input"
+                                   placeholder="Enter your new email address" required>
+                        </div>
+                        <p class="lux-info-text">
+                            <span class="material-icons">info_outline</span>
+                            A verification link will be sent to your new email. Your current email stays active until you verify the new one.
+                        </p>
+                        <div class="lux-form-actions">
+                            <button type="submit" class="lux-btn-primary">
+                                Send Verification Link
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </section>

@@ -11,6 +11,47 @@
  *   window.RAZORPAY_KEY_ID (set via template)
  */
 
+
+/* ── Toast helper (matches site .toast-container / .toast-msg styles) ── */
+
+function _showRetryToast(message, type) {
+    type = type || 'error';
+
+    // Re-use an existing container or create one
+    let container = document.querySelector('.toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.className = 'toast-container';
+        document.body.appendChild(container);
+    }
+
+    // Pick icon & accent colour
+    const icons = { error: 'error', warning: 'warning', success: 'check_circle', info: 'info' };
+    const colors = { error: '#dc3545', warning: '#f0ad4e', success: '#28a745', info: '#17a2b8' };
+    const icon = icons[type] || icons.info;
+    const color = colors[type] || colors.info;
+
+    const toast = document.createElement('div');
+    toast.className = 'toast-msg';
+    // toast.style.borderLeft = '4px solid ' + color;
+    toast.innerHTML =
+        '<span class="material-icons" style="color:' + color + ';font-size:20px;">' + icon + '</span> ' +
+        '<span>' + message + '</span>';
+
+    container.appendChild(toast);
+
+    // Auto-dismiss after 5 seconds
+    setTimeout(function () {
+        toast.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(-10px)';
+        setTimeout(function () { toast.remove(); }, 400);
+    }, 5000);
+}
+
+
+/* ── Main retry flow ── */
+
 function retryRazorpayPayment(btn) {
     const orderNumber = btn.dataset.orderNumber;
     if (!orderNumber) return;
@@ -35,7 +76,7 @@ function retryRazorpayPayment(btn) {
     .then(res => res.json())
     .then(data => {
         if (data.error) {
-            alert(data.error);
+            _showRetryToast(data.error, 'error');
             _resetRetryBtn(btn, originalHTML);
             return;
         }
@@ -73,7 +114,7 @@ function retryRazorpayPayment(btn) {
     })
     .catch(err => {
         console.error('Retry payment failed:', err);
-        alert('Something went wrong. Please try again.');
+        _showRetryToast('Something went wrong. Please try again.', 'error');
         _resetRetryBtn(btn, originalHTML);
     });
 }

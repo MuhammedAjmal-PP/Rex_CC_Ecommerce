@@ -339,6 +339,83 @@ function initPasswordChange() {
     });
 }
 
+// Email Change Toggle Button Text
+function initEmailToggle() {
+    const toggleBtn = document.getElementById('emailToggleBtn');
+    const toggleText = document.getElementById('emailToggleText');
+    const emailCollapse = document.getElementById('emailCollapse');
+
+    if (!toggleBtn || !toggleText || !emailCollapse) return;
+
+    emailCollapse.addEventListener('show.bs.collapse', function () {
+        toggleText.textContent = 'Cancel';
+    });
+
+    emailCollapse.addEventListener('hide.bs.collapse', function () {
+        toggleText.textContent = 'Edit Email';
+    });
+}
+
+// Email Change AJAX Functionality
+function initEmailChange() {
+    const emailCollapse = document.getElementById('emailCollapse');
+    const emailForm = document.getElementById('changeEmailForm');
+
+    if (!emailCollapse || !emailForm) return;
+
+    emailForm.addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const form = e.target;
+        const submitBtn = form.querySelector("button[type='submit']");
+        const formData = new FormData(form);
+
+        // Create or get alert container
+        let alertBox = form.querySelector('.email-alert');
+        if (!alertBox) {
+            alertBox = document.createElement('div');
+            alertBox.className = 'email-alert';
+            form.insertBefore(alertBox, form.firstChild);
+        }
+
+        submitBtn.disabled = true;
+        const originalHTML = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Sending...';
+        alertBox.innerHTML = '';
+
+        try {
+            const response = await fetch(form.dataset.changeEmailUrl, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+            });
+
+            const data = await response.json();
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalHTML;
+
+            if (data.success) {
+                alertBox.innerHTML = `<div class="alert alert-success">${data.message}</div>`;
+                form.reset();
+
+                // Reload page after delay to show updated email list
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2500);
+            } else {
+                alertBox.innerHTML = `<div class="alert alert-danger">${data.error || 'Failed to send verification link.'}</div>`;
+            }
+        } catch (error) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalHTML;
+            alertBox.innerHTML = '<div class="alert alert-danger">An error occurred. Please try again.</div>';
+            console.error('Email change error:', error);
+        }
+    });
+}
+
 // Main initialization
 document.addEventListener('DOMContentLoaded', function () {
     // Initialize avatar cropping functionality
@@ -350,35 +427,9 @@ document.addEventListener('DOMContentLoaded', function () {
     // Initialize password change functionality
     initPasswordChange();
 
-    // Form validation feedback
-    const forms = document.querySelectorAll('.profile-form, .add-email-form');
-    forms.forEach(form => {
-        form.addEventListener('submit', function (e) {
-            const submitBtn = form.querySelector('button[type="submit"]');
-            if (submitBtn && !submitBtn.disabled) {
-                submitBtn.disabled = true;
-                const originalHTML = submitBtn.innerHTML;
-                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Saving...';
+    // Initialize email toggle button text
+    initEmailToggle();
 
-                // Re-enable after 5 seconds as fallback
-                setTimeout(() => {
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = originalHTML;
-                }, 5000);
-            }
-        });
-    });
-
-    // Email confirmation for making email primary
-    const primaryEmailForms = document.querySelectorAll('button[name="action_make_primary"]');
-    primaryEmailForms.forEach(button => {
-        button.closest('form')?.addEventListener('submit', function (e) {
-            const confirmed = confirm(
-                'This will change your primary email. Continue?'
-            );
-            if (!confirmed) {
-                e.preventDefault();
-            }
-        });
-    });
+    // Initialize email change functionality
+    initEmailChange();
 });

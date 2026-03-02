@@ -6,7 +6,7 @@ from .views.address_management import (
     edit_address,
     toggle_default_address,
 )
-from .views.profile_settings import profile, edit_profile, change_password
+from .views.profile_settings import profile, edit_profile, change_password, change_email
 
 
 urlpatterns = [
@@ -14,6 +14,7 @@ urlpatterns = [
     path("", profile, name="user_profile"),
     path("edit/", edit_profile, name="edit_profile"),
     path("change-password/", change_password, name="change_password"),
+    path("change-email/", change_email, name="change_email"),
     # Address
     path("addresses/", user_address, name="user_address"),
     path("address/add/", add_address, name="add_address"),

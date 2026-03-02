@@ -254,59 +254,46 @@
   margin-top: 16px;
 }
 
-/* Base Buttons */
-.lux-btn-primary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 16px 32px;
+/* Edit Profile Button Overrides
+   These scope the buttons inside edit cards to use a flat black style
+   instead of the gold gradient from user_common.css */
+.lux-edit-card .lux-btn-primary {
   background: #111;
-  color: #fff;
   border: 1px solid #111;
   border-radius: 4px;
-  font-family: "Montserrat", sans-serif;
-  font-size: 0.85rem;
-  font-weight: 600;
-  text-transform: uppercase;
+  padding: 16px 32px;
   letter-spacing: 2px;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  box-shadow: none;
+  transform: none;
 }
 
-.lux-btn-primary:hover {
+.lux-edit-card .lux-btn-primary:hover {
   background: var(--color-gold, #bfa15f);
   border-color: var(--color-gold, #bfa15f);
+  transform: none;
+  box-shadow: none;
 }
 
-.lux-btn-outline {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
+/* Softer outline for card toggle buttons */
+.lux-edit-card .lux-btn-outline,
+.lux-card-header .lux-btn-outline {
   padding: 14px 28px;
-  background: transparent;
-  color: #111;
-  border: 1px solid #e0e0e0;
+  border-color: #e0e0e0;
   border-radius: 4px;
-  font-family: "Montserrat", sans-serif;
-  font-size: 0.85rem;
-  font-weight: 600;
-  text-transform: uppercase;
   letter-spacing: 2px;
   cursor: pointer;
-  text-decoration: none;
-  transition: all 0.3s ease;
+}
+
+.lux-edit-card .lux-btn-outline:hover,
+.lux-card-header .lux-btn-outline:hover {
+  border-color: #111;
+  background: #fafafa;
+  color: #111;
 }
 
 .lux-btn-outline.btn-sm {
   padding: 10px 16px;
   font-size: 0.75rem;
-}
-
-.lux-btn-outline:hover {
-  border-color: #111;
-  background: #fafafa;
 }
 
 /* ---------------------------------------------------------
@@ -402,6 +389,65 @@
   font-size: 40px;
   margin-bottom: 16px;
   color: #e0e0e0;
+}
+
+/* ---------------------------------------------------------
+   EMAIL CHANGE FORM
+   --------------------------------------------------------- */
+.lux-email-change-body {
+  border-top: 1px solid #eaeaea;
+  background: #fafafa;
+}
+
+.lux-info-text {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.8rem;
+  color: #888;
+  margin: 12px 0 0 0;
+  line-height: 1.6;
+}
+
+.lux-info-text .material-icons {
+  font-size: 16px;
+  color: #aaa;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.email-alert {
+  margin-bottom: 24px;
+  animation: slideDown 0.3s ease-out;
+}
+
+.email-alert .alert {
+  padding: 16px 20px;
+  border-radius: 2px;
+  font-size: 0.9rem;
+  font-family: "Montserrat", sans-serif;
+  margin-bottom: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.email-alert .alert-success {
+  background: #fafafa;
+  color: #2e7d32;
+  border: 1px solid #2e7d32;
+}
+
+.email-alert .alert-danger {
+  background: #fafafa;
+  color: #c62828;
+  border: 1px solid #c62828;
+}
+
+.email-alert .alert p {
+  margin: 0;
+  line-height: 1.6;
 }
 
 /* ---------------------------------------------------------

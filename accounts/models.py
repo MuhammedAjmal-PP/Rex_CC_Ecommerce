@@ -1,11 +1,14 @@
+import string
+import uuid
+
 from django.db import models
 from django.contrib.auth.models import (
     AbstractBaseUser,
     PermissionsMixin,
     BaseUserManager,
 )
+from django.utils.crypto import get_random_string
 from phonenumber_field.modelfields import PhoneNumberField
-import uuid
 from core.validators import (
     image_size_validator,
     image_file_extension_validator,
@@ -78,6 +81,18 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
     phone_number = PhoneNumberField(blank=True)
 
+    # ── Referral ──
+    referral_code = models.CharField(
+        max_length=10, unique=True, blank=True, editable=False,
+        help_text="Auto-generated unique referral code",
+    )
+    referred_by = models.ForeignKey(
+        "self", on_delete=models.SET_NULL,
+        null=True, blank=True,
+        related_name="referrals",
+        help_text="User who referred this account",
+    )
+
     is_active = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
@@ -103,11 +118,24 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         """Return the short name for the user."""
         return self.first_name
 
+    @staticmethod
+    def _generate_referral_code():
+        """Generate a unique REX-XXXXXX referral code."""
+        chars = string.ascii_uppercase + string.digits
+        for _ in range(10):  # retry limit
+            code = "REX-" + get_random_string(6, chars)
+            if not CustomUser.objects.filter(referral_code=code).exists():
+                return code
+        raise RuntimeError("Could not generate a unique referral code")
+
     def save(self, *args, **kwargs):
         if self.pk:
             old = CustomUser.objects.filter(pk=self.pk).first()
             if old and old.avatar and old.avatar != self.avatar:
                 old.avatar.delete(save=False)
+
+        if not self.referral_code:
+            self.referral_code = self._generate_referral_code()
 
         super().save(*args, **kwargs)
 
@@ -122,3 +150,27 @@ class PasswordReset(models.Model):
 
     def __str__(self):
         return f"Password reset for {self.user.email} at {self.created_at}"
+
+
+class BlacklistedEmail(models.Model):
+    """
+    Stores old emails that were replaced via the 'Edit Email' flow.
+    Prevents anyone (including the original owner) from reusing them.
+    """
+
+    email = models.EmailField(unique=True, db_index=True)
+    original_user = models.ForeignKey(
+        CustomUser,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="blacklisted_emails",
+        help_text="User who originally owned this email",
+    )
+    reason = models.CharField(max_length=30, default="EMAIL_CHANGED")
+    blacklisted_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-blacklisted_at"]
+
+    def __str__(self):
+        return f"{self.email} (blacklisted)"

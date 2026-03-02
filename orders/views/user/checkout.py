@@ -16,6 +16,12 @@ from orders.service import (
     validate_stock,
 )
 
+# Fetch coupons the user can potentially use
+from coupons.models import Coupon as CouponModel
+from coupons.models import CouponUsage
+from django.utils import timezone
+from django.db.models import Count
+
 
 # Create your views here.
 
@@ -70,17 +76,15 @@ def checkoutview(request):
         order_summary["coupon_code"] = applied_coupon["code"]
         order_summary["coupon_discount"] = coupon_discount
         # Recalculate: sub_total → coupon → shipping → tax → grand_total
-        adjusted_sub = max(order_summary["sub_total"] - coupon_discount, Decimal("0.00"))
+        adjusted_sub = max(
+            order_summary["sub_total"] - coupon_discount, Decimal("0.00")
+        )
         adjusted_total_amount = adjusted_sub + order_summary["shipping_charge"]
-        adjusted_tax = (adjusted_total_amount * Decimal(settings.GST_RATE) / Decimal("100")).quantize(Decimal("0.01"))
+        adjusted_tax = (
+            adjusted_total_amount * Decimal(settings.GST_RATE) / Decimal("100")
+        ).quantize(Decimal("0.01"))
         order_summary["tax"] = adjusted_tax
         order_summary["grand_total"] = adjusted_total_amount + adjusted_tax
-
-    # Fetch coupons the user can potentially use
-    from coupons.models import Coupon as CouponModel
-    from coupons.models import CouponUsage
-    from django.utils import timezone
-    from django.db.models import Count
 
     now = timezone.now()
 

@@ -66,16 +66,16 @@
                 <div class="wc-pattern"></div>
             </div>
 
-            <!-- REFERRAL CARD (STATIC FOR NOW) -->
+            <!-- REFERRAL CARD -->
             <div class="hub-card referral-card">
                 <div class="rc-content">
-                    <div class="rc-badge">New</div>
+                    <div class="rc-badge">Earn ₹1,000</div>
                     <h3>Invite & Earn Rewards</h3>
-                    <p>Share your exclusive link. Earn ₹500 in your wallet when a friend makes their first secure purchase.</p>
+                    <p>Share your referral code with friends. Both of you earn ₹1,000 in your wallet when they sign up!</p>
                     
                     <div class="rc-link-wrap">
-                        <input type="text" class="rc-input" value="https://rexcc.com/ref/RC{{ user.id|default:'1024' }}" readonly id="referralInput">
-                        <button class="rc-copy-btn" onclick="copyReferralLink()" aria-label="Copy Link">
+                        <input type="text" class="rc-input" value="{{ user.referral_code }}" readonly id="referralInput">
+                        <button class="rc-copy-btn" onclick="copyReferralLink()" aria-label="Copy Code">
                             <span class="material-icons" id="copyIcon">content_copy</span>
                         </button>
                     </div>

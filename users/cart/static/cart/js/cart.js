@@ -1,6 +1,6 @@
 /**
  * CART PAGE LOGIC
- * Strict stock + max purchase validation
+ * Fully AJAX — no page reloads for quantity changes or item removal.
  */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const removeBtn = item.querySelector(".remove-btn");
     const qtyInput = item.querySelector(".qty-input");
 
-    const maxAllowed = parseInt(qtyInput.dataset.max); // ← IMPORTANT
+    const maxAllowed = parseInt(qtyInput.dataset.max);
 
     updateButtonsState(qtyInput, decreaseBtn, increaseBtn, maxAllowed);
 
@@ -30,11 +30,11 @@ document.addEventListener("DOMContentLoaded", () => {
     if (decreaseBtn) {
       decreaseBtn.addEventListener("click", () =>
         handleQuantityUpdate(
+          item,
           slug,
           sku,
           qtyInput,
           -1,
-          maxAllowed,
           decreaseBtn,
           increaseBtn,
         ),
@@ -45,11 +45,11 @@ document.addEventListener("DOMContentLoaded", () => {
     if (increaseBtn) {
       increaseBtn.addEventListener("click", () =>
         handleQuantityUpdate(
+          item,
           slug,
           sku,
           qtyInput,
           1,
-          maxAllowed,
           decreaseBtn,
           increaseBtn,
         ),
@@ -58,25 +58,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Remove
     if (removeBtn) {
-      removeBtn.addEventListener("click", () => handleRemove(slug, sku));
+      removeBtn.addEventListener("click", () => handleRemove(slug, sku, item));
     }
   });
 
   // =========================================================================
-  // QUANTITY HANDLER
+  // QUANTITY HANDLER (AJAX — no reload)
   // =========================================================================
 
   async function handleQuantityUpdate(
+    cardEl,
     slug,
     sku,
     inputEl,
     change,
-    maxAllowed,
     decreaseBtn,
     increaseBtn,
   ) {
     const currentQty = parseInt(inputEl.value);
     const newQty = currentQty + change;
+    const maxAllowed = parseInt(inputEl.dataset.max);
 
     if (newQty < 1) return;
     if (newQty > maxAllowed) {
@@ -84,17 +85,53 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    showLoadingCursor(true);
+    // Disable buttons while request is in flight
+    setItemLoading(cardEl, true);
 
     try {
-      await updateCartItem(slug, sku, newQty);
-      inputEl.value = newQty;
-      updateButtonsState(inputEl, decreaseBtn, increaseBtn, maxAllowed);
+      const data = await updateCartItem(slug, sku, newQty);
+
+      if (data.success && data.item) {
+        // Update quantity input
+        inputEl.value = data.item.quantity;
+        inputEl.dataset.max = data.item.allowed_max;
+
+        // Update item total
+        const itemTotalEl = cardEl.querySelector(".lux-item-total");
+        if (itemTotalEl) {
+          itemTotalEl.textContent = `Total: ₹${formatNumber(data.item.total_amount)}`;
+        }
+
+        // Update price display
+        const finalPriceEl = cardEl.querySelector(".final-price");
+        if (finalPriceEl) {
+          finalPriceEl.textContent = `₹${formatNumber(data.item.final_price)}`;
+        }
+
+        const originalPriceEl = cardEl.querySelector(".original-price");
+        if (originalPriceEl) {
+          if (data.item.price > data.item.final_price) {
+            originalPriceEl.textContent = `₹${formatNumber(data.item.price)}`;
+            originalPriceEl.style.display = "";
+          } else {
+            originalPriceEl.style.display = "none";
+          }
+        }
+
+        // Update stock warning
+        updateStockWarning(cardEl, data.item.stock, data.item.is_in_stock);
+
+        // Update button states
+        updateButtonsState(inputEl, decreaseBtn, increaseBtn, data.item.allowed_max);
+
+        // Update order summary sidebar
+        updateOrderSummary(data.order_summary);
+      }
     } catch (error) {
       console.error(error);
-      showToast("Something went wrong.", "error");
+      showToast(error.message || "Something went wrong.", "error");
     } finally {
-      showLoadingCursor(false);
+      setItemLoading(cardEl, false);
     }
   }
 
@@ -111,7 +148,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // =========================================================================
-  // REMOVE LOGIC
+  // REMOVE LOGIC (AJAX — no reload)
   // =========================================================================
 
   let itemToRemove = null;
@@ -125,27 +162,27 @@ document.addEventListener("DOMContentLoaded", () => {
     if (confirmBtn) {
       confirmBtn.addEventListener("click", () => {
         if (itemToRemove) {
-          performRemove(itemToRemove.slug, itemToRemove.sku);
+          performRemove(itemToRemove.slug, itemToRemove.sku, itemToRemove.cardEl);
         }
       });
     }
   }
 
-  function handleRemove(slug, sku) {
-    itemToRemove = { slug, sku };
+  function handleRemove(slug, sku, cardEl) {
+    itemToRemove = { slug, sku, cardEl };
 
     if (removeModal) {
       removeModal.show();
     } else {
       if (confirm("Remove this item?")) {
-        performRemove(slug, sku);
+        performRemove(slug, sku, cardEl);
       }
     }
   }
 
-  async function performRemove(slug, sku) {
+  async function performRemove(slug, sku, cardEl) {
     if (removeModal) removeModal.hide();
-    showLoadingCursor(true);
+    setItemLoading(cardEl, true);
 
     try {
       const formData = new FormData();
@@ -157,21 +194,39 @@ document.addEventListener("DOMContentLoaded", () => {
         body: formData,
       });
 
-      if (response.redirected || response.ok) {
-        window.location.reload();
+      const data = await response.json();
+
+      if (data.success && data.removed) {
+        // Animate card removal
+        cardEl.style.transition = "opacity 0.3s ease, transform 0.3s ease";
+        cardEl.style.opacity = "0";
+        cardEl.style.transform = "translateX(-20px)";
+
+        setTimeout(() => {
+          cardEl.remove();
+
+          // Update order summary
+          updateOrderSummary(data.order_summary);
+
+          // If cart is now empty, show empty state
+          const remainingItems = document.querySelectorAll(".cart-item");
+          if (remainingItems.length === 0) {
+            showEmptyCart();
+          }
+        }, 300);
       } else {
-        throw new Error("Remove failed");
+        throw new Error(data.message || "Remove failed");
       }
-    } catch {
-      showToast("Could not remove item.", "error");
+    } catch (error) {
+      showToast(error.message || "Could not remove item.", "error");
+      setItemLoading(cardEl, false);
     } finally {
-      showLoadingCursor(false);
       itemToRemove = null;
     }
   }
 
   // =========================================================================
-  // BACKEND UPDATE
+  // BACKEND UPDATE (returns JSON)
   // =========================================================================
 
   async function updateCartItem(slug, sku, quantity) {
@@ -184,18 +239,104 @@ document.addEventListener("DOMContentLoaded", () => {
       body: formData,
     });
 
-    if (response.redirected) {
-      window.location.href = response.url;
-      return;
-    }
+    const data = await response.json();
 
     if (!response.ok) {
-      const data = await response.json();
-      if (data.error) {
-        showToast(data.error, "error");
-      } else {
-        throw new Error("Update failed");
+      throw new Error(data.message || "Update failed");
+    }
+
+    return data;
+  }
+
+  // =========================================================================
+  // DOM UPDATE HELPERS
+  // =========================================================================
+
+  function updateOrderSummary(summary) {
+    if (!summary) return;
+
+    const summaryEl = document.querySelector(".lux-cart-summary");
+    if (!summaryEl) return;
+
+    const rows = summaryEl.querySelectorAll(".summary-row");
+
+    rows.forEach((row) => {
+      const label = row.querySelector("span:first-child");
+      if (!label) return;
+      const text = label.textContent.trim();
+      const valueSpan = row.querySelector("span:last-child");
+
+      if (text.startsWith("Total") && text.includes("items")) {
+        label.textContent = `Total (${summary.products_count} items)`;
+        if (valueSpan && valueSpan !== label) {
+          valueSpan.textContent = `₹${formatNumber(summary.total)}`;
+        }
+      } else if (text === "Discount") {
+        if (valueSpan) {
+          valueSpan.textContent = `−₹${formatNumber(summary.discount)}`;
+        }
+        // Toggle discount class
+        if (summary.discount > 0) {
+          row.classList.add("discount");
+        } else {
+          row.classList.remove("discount");
+        }
+      } else if (text === "Subtotal") {
+        if (valueSpan) {
+          valueSpan.textContent = `₹${formatNumber(summary.sub_total)}`;
+        }
+      } else if (text === "Shipping Fee") {
+        if (valueSpan) {
+          valueSpan.textContent =
+            summary.shipping_fee === 0
+              ? "Free"
+              : `₹${formatNumber(summary.shipping_fee)}`;
+        }
+      } else if (text === "Total Payable") {
+        if (valueSpan) {
+          valueSpan.textContent = `₹${formatNumber(summary.total_amount_to_pay)}`;
+        }
       }
+    });
+  }
+
+  function updateStockWarning(cardEl, stock, isInStock) {
+    const qtyWrapper = cardEl.querySelector(".lux-qty-wrapper");
+    if (!qtyWrapper) return;
+
+    // Remove existing warnings
+    const existingWarning = qtyWrapper.querySelector(".stock-warning");
+    const existingError = qtyWrapper.querySelector(".stock-error");
+    if (existingWarning) existingWarning.remove();
+    if (existingError) existingError.remove();
+
+    // Add new warning if needed
+    if (!isInStock) {
+      const errorSpan = document.createElement("span");
+      errorSpan.className = "stock-error";
+      errorSpan.textContent = "Out of Stock";
+      qtyWrapper.appendChild(errorSpan);
+    } else if (stock <= 5 && stock > 0) {
+      const warnSpan = document.createElement("span");
+      warnSpan.className = "stock-warning";
+      warnSpan.textContent = `Only ${stock} left`;
+      qtyWrapper.appendChild(warnSpan);
+    }
+  }
+
+  function showEmptyCart() {
+    const layout = document.querySelector(".lux-cart-layout");
+    if (layout) {
+      layout.innerHTML = `
+        <div class="lux-empty-state" style="margin-top: 60px; grid-column: 1 / -1;">
+          <span class="material-icons empty-icon">shopping_bag</span>
+          <h2>Your cart is empty</h2>
+          <p>Explore our exclusive collection to find your next timepiece.</p>
+          <div style="margin-top: 30px;">
+            <a href="/shop/" class="btn-primary">Explore Collection</a>
+          </div>
+        </div>
+      `;
     }
   }
 
@@ -203,11 +344,16 @@ document.addEventListener("DOMContentLoaded", () => {
   // UI HELPERS
   // =========================================================================
 
-  function showLoadingCursor(show) {
-    document.body.style.cursor = show ? "wait" : "default";
-    document.querySelectorAll("button").forEach((btn) => {
-      btn.disabled = show;
-    });
+  function setItemLoading(cardEl, loading) {
+    const buttons = cardEl.querySelectorAll("button");
+    buttons.forEach((btn) => (btn.disabled = loading));
+    cardEl.style.opacity = loading ? "0.6" : "1";
+  }
+
+  function formatNumber(num) {
+    return parseFloat(num)
+      .toFixed(2)
+      .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   }
 
   function showToast(message, type = "info") {

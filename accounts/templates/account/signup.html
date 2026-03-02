@@ -77,6 +77,22 @@
                 {% endif %}
             </div>
         {% endif %}
+        {% if form.referral_code %}
+            <div class="mb-3">
+                <label for="id_referral_code" class="form-label">REFERRAL CODE (OPTIONAL)</label>
+                <input type="text"
+                       name="referral_code"
+                       class="form-control"
+                       placeholder="e.g. REX-A7K3M2"
+                       id="id_referral_code"
+                       {% if form.referral_code.value %}value="{{ form.referral_code.value }}"{% endif %}>
+                {% if form.referral_code.errors %}
+                    <div class="errorlist">
+                        {% for error in form.referral_code.errors %}<li>{{ error }}</li>{% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        {% endif %}
         <div class="mb-3">
             <label for="id_password1" class="form-label">PASSWORD</label>
             <div class="password-input-wrapper">

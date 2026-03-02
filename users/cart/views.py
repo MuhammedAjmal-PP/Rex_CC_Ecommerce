@@ -2,7 +2,7 @@ from decimal import Decimal
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import get_object_or_404, render
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_GET, require_POST
 from catalog.models import Product, ProductVariant
@@ -147,6 +147,7 @@ def add_cart(request, slug, sku):
 def update_cart(request, slug, sku):
     """
     Update or remove a cart item.
+    Returns JSON with updated item data and order summary.
     """
 
     cart, _ = Cart.objects.get_or_create(user=request.user)
@@ -173,7 +174,14 @@ def update_cart(request, slug, sku):
 
     if remove or quantity <= 0:
         cart_item.delete()
-        return redirect("user_cart")
+        # Clear cached summary so it recalculates
+        if hasattr(cart, '_cached_summary'):
+            del cart._cached_summary
+        return JsonResponse({
+            "success": True,
+            "removed": True,
+            "order_summary": _build_order_summary_json(cart),
+        })
 
     if quantity > settings.MAX_QUNATITY_PURCHASE_PER_ITEM:
         return JsonResponse(
@@ -196,7 +204,37 @@ def update_cart(request, slug, sku):
     cart_item.quantity = quantity
     cart_item.save(update_fields=["quantity"])
 
-    return redirect("user_cart")
+    # Clear cached summary so it recalculates
+    if hasattr(cart, '_cached_summary'):
+        del cart._cached_summary
+
+    allowed_max = min(variant.stock, settings.MAX_QUNATITY_PURCHASE_PER_ITEM)
+
+    return JsonResponse({
+        "success": True,
+        "item": {
+            "quantity": quantity,
+            "total_amount": float(cart_item.total_amount),
+            "final_price": float(variant.final_price),
+            "price": float(variant.price),
+            "stock": variant.stock,
+            "allowed_max": allowed_max,
+            "is_in_stock": variant.stock > 0,
+        },
+        "order_summary": _build_order_summary_json(cart),
+    })
+
+
+def _build_order_summary_json(cart):
+    """Build order summary dict with float values for JSON serialization."""
+    return {
+        "products_count": cart.items_count,
+        "total": float(cart.total),
+        "discount": float(cart.discount),
+        "sub_total": float(cart.sub_total),
+        "shipping_fee": float(cart.shipping_fee),
+        "total_amount_to_pay": float(cart.total_amount),
+    }
 
 
 @require_GET

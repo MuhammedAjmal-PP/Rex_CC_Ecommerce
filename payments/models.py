@@ -23,6 +23,7 @@ class Transaction(models.Model):
         ("CANCELLATION_REFUND", "Cancellation Refund"),
         ("RETURN_REFUND", "Return Refund"),
         ("WALLET_TOPUP", "Wallet Topup"),
+        ("REFERRAL_REWARD", "Referral Reward"),
     )
 
     # ── How (payment method) ───────────────────

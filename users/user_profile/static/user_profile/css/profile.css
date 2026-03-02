@@ -1,30 +1,15 @@
 /* ===================================================================
    REX CC - ACCOUNT HUB (LUXURY OVERHAUL)
    File: user_profile/static/user_profile/css/profile.css
+
+   NOTE: Common styles (.lux-hub-wrapper, .hub-header, .hub-name,
+   .hub-contact, .hub-btn-outline, .hub-card, etc.) live in
+   core/user/css/user_common.css — DO NOT re-define them here.
    =================================================================== */
 
-.lux-hub-wrapper {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 60px 40px 100px;
-}
-
 /* ---------------------------------------------------------
-   HEADER AREA
+   AVATAR (profile page only)
    --------------------------------------------------------- */
-.hub-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 50px;
-}
-
-.hub-user-info {
-    display: flex;
-    align-items: center;
-    gap: 32px;
-}
-
 .hub-avatar-wrap {
     position: relative;
 }
@@ -54,61 +39,11 @@
     font-size: 48px;
 }
 
-.hub-user-details {
-    display: flex;
-    flex-direction: column;
-}
-
-
-.hub-name {
-    font-family: 'Playfair Display', serif;
-    font-size: 2.2rem;
-    font-weight: 400;
-    color: #111;
-    margin: 0 0 8px 0;
-}
-
-.hub-contact {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-family: 'Montserrat', sans-serif;
-    font-size: 0.9rem;
-    color: #666;
-}
-
 .hub-dot {
     color: #ccc;
 }
 
-/* Header Actions */
-.hub-header-actions {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-}
-
-.hub-btn-outline {
-    display: inline-flex;
-    align-items: center;
-    padding: 12px 24px;
-    border: 1px solid #e0e0e0;
-    border-radius: 2px;
-    font-family: 'Montserrat', sans-serif;
-    font-size: 0.8rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: #111;
-    text-decoration: none;
-    transition: all 0.3s ease;
-}
-
-.hub-btn-outline:hover {
-    border-color: #111;
-    background: #fafafa;
-}
-
+/* Sign Out link */
 .hub-btn-text {
     font-family: 'Montserrat', sans-serif;
     font-size: 0.8rem;
@@ -134,15 +69,16 @@
     margin-bottom: 50px;
 }
 
-.hub-card {
-    border-radius: 8px; /* Slightly more rounded for these specific rich cards */
+/* Override card for highlight cards (richer look) */
+.hub-highlights .hub-card {
+    border-radius: 8px;
     padding: 32px;
     position: relative;
     overflow: hidden;
     box-shadow: 0 10px 40px rgba(0,0,0,0.06);
 }
 
-/* Wallet Card Layout */
+/* Wallet Card */
 .wallet-card {
     background: linear-gradient(135deg, #111 0%, #2a2a2a 100%);
     color: #fff;
@@ -151,7 +87,6 @@
     justify-content: space-between;
 }
 
-/* Decorative Pattern inside Wallet */
 .wc-pattern {
     position: absolute;
     top: -50%;
@@ -241,7 +176,7 @@
     color: #111;
 }
 
-/* Referral Card Layout */
+/* Referral Card */
 .referral-card {
     background: #fff;
     border: 1px solid #eaeaea;
@@ -424,7 +359,7 @@
 }
 
 /* ---------------------------------------------------------
-   RESPONSIVE DESIGN
+   RESPONSIVE
    --------------------------------------------------------- */
 @media (max-width: 992px) {
     .hub-highlights {
@@ -437,32 +372,13 @@
 }
 
 @media (max-width: 768px) {
-    .lux-hub-wrapper {
-        padding: 40px 20px 80px;
-    }
-
-    .hub-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 24px;
-    }
-
-    .hub-user-info {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 20px;
-    }
-
     .hub-grid {
         grid-template-columns: 1fr;
     }
 
-    .hub-avatar {
+    .hub-avatar,
+    .hub-avatar-placeholder {
         width: 80px;
         height: 80px;
-    }
-    
-    .hub-name {
-        font-size: 1.8rem;
     }
 }
