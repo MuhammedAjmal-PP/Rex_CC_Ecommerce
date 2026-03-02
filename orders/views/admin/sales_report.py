@@ -29,16 +29,14 @@ def _parse_filters(request):
     Extract and validate filter params from the GET querystring.
     Returns (filter_type, start_dt, end_dt, label).
     """
-    filter_type = request.GET.get("filter", "1_day").strip()
+    filter_type = request.GET.get("filter", "all").strip()
     start_str = request.GET.get("start_date", "").strip()
     end_str = request.GET.get("end_date", "").strip()
 
     start_date = end_date = None
     if filter_type == "custom" and start_str and end_str:
         try:
-            start_date = timezone.make_aware(
-                datetime.strptime(start_str, "%Y-%m-%d")
-            )
+            start_date = timezone.make_aware(datetime.strptime(start_str, "%Y-%m-%d"))
             end_date = timezone.make_aware(
                 datetime.strptime(end_str, "%Y-%m-%d").replace(
                     hour=23, minute=59, second=59
@@ -51,6 +49,7 @@ def _parse_filters(request):
 
     # Human-readable label
     labels = {
+        "all": "All Time",
         "1_day": "Today",
         "1_week": "Last 7 Days",
         "1_month": "Last 30 Days",
@@ -129,7 +128,9 @@ def download_sales_report_pdf(request):
     )
 
     pdf = HTML(string=html_string).write_pdf()
-    filename = f"sales_report_{start_dt.strftime('%Y%m%d')}_{end_dt.strftime('%Y%m%d')}.pdf"
+    filename = (
+        f"sales_report_{start_dt.strftime('%Y%m%d')}_{end_dt.strftime('%Y%m%d')}.pdf"
+    )
 
     response = HttpResponse(pdf, content_type="application/pdf")
     response["Content-Disposition"] = f'attachment; filename="{filename}"'
@@ -160,9 +161,11 @@ def download_sales_report_excel(request):
     header_font = Font(name="Calibri", bold=True, size=14)
     sub_font = Font(name="Calibri", size=11, color="555555")
     col_header_font = Font(name="Calibri", bold=True, size=10, color="FFFFFF")
-    col_header_fill = PatternFill(start_color="000000", end_color="000000", fill_type="solid")
+    col_header_fill = PatternFill(
+        start_color="000000", end_color="000000", fill_type="solid"
+    )
     col_header_alignment = Alignment(horizontal="center", vertical="center")
-    currency_fmt = '#,##0.00'
+    currency_fmt = "#,##0.00"
     thin_border = Border(
         bottom=Side(style="thin", color="DDDDDD"),
     )
@@ -188,7 +191,11 @@ def download_sales_report_excel(request):
     for label_text, value in summary_data:
         row = ws.max_row + 1
         ws.cell(row=row, column=1, value=label_text).font = summary_label_font
-        cell = ws.cell(row=row, column=2, value=float(value) if isinstance(value, Decimal) else value)
+        cell = ws.cell(
+            row=row,
+            column=2,
+            value=float(value) if isinstance(value, Decimal) else value,
+        )
         if isinstance(value, Decimal):
             cell.number_format = currency_fmt
 
@@ -224,7 +231,9 @@ def download_sales_report_excel(request):
 
         row = ws.max_row + 1
         ws.cell(row=row, column=1, value=order.order_number).font = data_font
-        ws.cell(row=row, column=2, value=order.created_at.strftime("%Y-%m-%d %I:%M %p")).font = data_font
+        ws.cell(
+            row=row, column=2, value=order.created_at.strftime("%Y-%m-%d %I:%M %p")
+        ).font = data_font
         ws.cell(row=row, column=3, value=customer).font = data_font
         ws.cell(row=row, column=4, value=payment_label).font = data_font
 
@@ -249,7 +258,9 @@ def download_sales_report_excel(request):
     wb.save(buffer)
     buffer.seek(0)
 
-    filename = f"sales_report_{start_dt.strftime('%Y%m%d')}_{end_dt.strftime('%Y%m%d')}.xlsx"
+    filename = (
+        f"sales_report_{start_dt.strftime('%Y%m%d')}_{end_dt.strftime('%Y%m%d')}.xlsx"
+    )
     response = HttpResponse(
         buffer.getvalue(),
         content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",

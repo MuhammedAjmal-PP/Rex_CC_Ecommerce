@@ -29,12 +29,17 @@ def get_date_range(filter_type, start_date=None, end_date=None):
     Return (start_datetime, end_datetime) based on the quick-filter type.
 
     filter_type:
+        'all'     – all time (earliest possible → now)
         '1_day'   – today (start of day → now)
         '1_week'  – last 7 days
         '1_month' – last 30 days
         'custom'  – use the provided start_date / end_date
     """
     now = timezone.now()
+
+    if filter_type == "all":
+        start = timezone.make_aware(timezone.datetime(2000, 1, 1))
+        return start, now
 
     if filter_type == "1_day":
         start = now.replace(hour=0, minute=0, second=0, microsecond=0)

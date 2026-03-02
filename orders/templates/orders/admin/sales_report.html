@@ -18,6 +18,10 @@
     <!-- ── Filter Bar ── -->
     <div class="report-filter-bar">
         <div class="quick-filters">
+            <a href="?filter=all"
+               class="quick-filter-btn {% if filter_type == 'all' %}active{% endif %}">
+                <span class="material-icons">select_all</span> All
+            </a>
             <a href="?filter=1_day"
                class="quick-filter-btn {% if filter_type == '1_day' %}active{% endif %}">
                 <span class="material-icons">today</span> Today
