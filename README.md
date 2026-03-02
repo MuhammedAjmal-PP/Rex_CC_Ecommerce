@@ -56,7 +56,7 @@
 | Coupon System | ✅ Complete | Code-based coupons, checkout apply/remove, per-user limits, order integration |
 | Order Management (User) | ✅ Complete | Order history, Item tracking, Cancellation, Returns, Invoice PDF |
 | Order Management (Admin) | ✅ Complete | Status cascade, Return review, Refund approve/reject |
-| Sales Report | ✅ Complete | Date filters (Daily/Weekly/Monthly/Custom), stats, PDF & Excel download |
+| Sales Report | ✅ Complete | All/Daily/Weekly/Monthly/Custom date filters, stat cards, PDF & Excel download |
 
 ---
 
@@ -139,13 +139,14 @@
 
 **Location:** `orders/views/admin/sales_report.py` + `orders/service/sales_report.py`
 
-- **Filter Options**: Quick filters (Today / This Week / This Month) + Custom date range picker
-- **Summary Stats**: Total Orders, Total Order Amount, Total Discount (offers), Total Coupon Discount — displayed as stat cards
-- **Orders Table**: Paginated table of orders in the selected period showing discount & coupon breakdowns
-- **PDF Download**: WeasyPrint-generated report with summary stats + full orders table
-- **Excel Download**: Styled `.xlsx` export via openpyxl with formatted headers and currency columns
-- **Filter Persistence**: All downloads respect the currently active date filter
-- **Excluded Statuses**: Cancelled and Failed orders are excluded from report metrics
+- **Filter Bar**: Quick-filter buttons — **All** (all time) · **Today** · **This Week** (7 days) · **This Month** (30 days) · **Custom** date-range picker with start/end inputs
+- **Summary Stat Cards**: Total Orders, Total Order Amount, Total Discount (offer-based), Total Coupon Discount — displayed as interactive stat cards with hover effects
+- **Orders Table**: Paginated table (15 per page) showing Order #, Date, Customer (name + email), Payment Method, Discount, Coupon, and Grand Total per order
+- **PDF Download**: WeasyPrint-generated report with header, summary grid, full orders table (unpaginated), and generation timestamp
+- **Excel Download**: Styled `.xlsx` export via openpyxl with branded header, summary rows, formatted column headers (black fill), and currency-formatted data columns
+- **Filter Persistence**: Download links (PDF/Excel) dynamically carry the active filter querystring so exports always match the on-screen view
+- **Excluded Statuses**: Orders whose latest status is CANCELLED or FAILED are excluded from all metrics and the table using a `StatusTimeline` subquery
+- **Service Layer**: `get_date_range()` resolves filter type → datetime range; `get_sales_report()` annotates the latest order status via subquery, excludes cancelled/failed, and returns aggregated totals + filtered queryset
 </details>
 
 <details>
@@ -654,7 +655,7 @@ python manage.py runserver
 - [x] Admin Offer Management (List, Add, Edit, Delete with filters & stat cards)
 - [x] Coupon System (Code-based coupons, checkout integration, per-user limits, order integration, proportional refunds)
 - [ ] Referral Program
-- [x] Sales Report (Date filters, Summary stats, PDF & Excel download)
+- [x] Sales Report (All/Daily/Weekly/Monthly/Custom date filters, Summary stat cards, PDF & Excel download, CANCELLED/FAILED exclusion)
 - [ ] Email Notifications (Order updates, Refund status)
 
 ---
