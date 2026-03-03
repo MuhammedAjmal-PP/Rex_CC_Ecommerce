@@ -1,7 +1,7 @@
 from django import forms
 from allauth.account.forms import SignupForm
 from phonenumber_field.formfields import PhoneNumberField
-from accounts.models import BlacklistedEmail, CustomUser
+from accounts.models import CustomUser
 
 
 class CustomSignupForm(SignupForm):
@@ -58,12 +58,6 @@ class CustomSignupForm(SignupForm):
         ),
         label="Referral Code (Optional)",
     )
-
-    def clean_email(self):
-        email = super().clean_email()
-        if BlacklistedEmail.objects.filter(email=email).exists():
-            raise forms.ValidationError("This email is not available for registration.")
-        return email
 
     def clean_referral_code(self):
         code = self.cleaned_data.get("referral_code", "").strip().upper()

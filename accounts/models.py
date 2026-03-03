@@ -1,12 +1,12 @@
 import string
 import uuid
-
 from django.db import models
 from django.contrib.auth.models import (
     AbstractBaseUser,
     PermissionsMixin,
     BaseUserManager,
 )
+from django.core.exceptions import ValidationError
 from django.utils.crypto import get_random_string
 from phonenumber_field.modelfields import PhoneNumberField
 from core.validators import (
@@ -83,12 +83,17 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     # ── Referral ──
     referral_code = models.CharField(
-        max_length=10, unique=True, blank=True, editable=False,
+        max_length=10,
+        unique=True,
+        blank=True,
+        editable=False,
         help_text="Auto-generated unique referral code",
     )
     referred_by = models.ForeignKey(
-        "self", on_delete=models.SET_NULL,
-        null=True, blank=True,
+        "self",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
         related_name="referrals",
         help_text="User who referred this account",
     )
@@ -127,6 +132,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
             if not CustomUser.objects.filter(referral_code=code).exists():
                 return code
         raise RuntimeError("Could not generate a unique referral code")
+
+    def clean(self):
+        super().clean()
+        if self.email and BlacklistedEmail.objects.filter(email=self.email).exists():
+            raise ValidationError({"email": "This email is no longer available."})
 
     def save(self, *args, **kwargs):
         if self.pk:
