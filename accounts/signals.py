@@ -6,10 +6,9 @@ Allauth signal handlers for the accounts app.
 """
 
 from decimal import Decimal
-
+from allauth.account.models import EmailAddress as AllauthEmailAddress
 from allauth.account.signals import email_confirmed
 from django.dispatch import receiver
-
 from accounts.models import BlacklistedEmail
 from payments.service import create_transaction
 from users.wallet.service import credit_wallet
@@ -23,7 +22,7 @@ def handle_email_confirmed(sender, request, email_address, **kwargs):
     """
     Fired every time an EmailAddress is confirmed.
 
-    1. Email-change flow: if confirmed email ≠ current email → swap + blacklist.
+    1. Email-change flow: if confirmed email ≠ current email → swap + blacklist + remove old.
     2. Referral reward: if user has referred_by and hasn't been rewarded yet.
     """
     user = email_address.user
@@ -40,6 +39,10 @@ def handle_email_confirmed(sender, request, email_address, **kwargs):
             email=old_email,
             defaults={"original_user": user, "reason": "EMAIL_CHANGED"},
         )
+
+        # Remove the old email from allauth's EmailAddress table
+        AllauthEmailAddress.objects.filter(user=user, email=old_email).delete()
+
         return  # done — don't process referral on email change
 
     # ── 2. Referral reward (first-time email verification only) ──
@@ -80,4 +83,6 @@ def handle_email_confirmed(sender, request, email_address, **kwargs):
         content_object=referrer,
         note=f"Referral reward — {user.email} joined using your code",
     )
-    credit_wallet(user=referrer, amount=REFERRAL_REWARD_AMOUNT, transaction_obj=referrer_txn)
+    credit_wallet(
+        user=referrer, amount=REFERRAL_REWARD_AMOUNT, transaction_obj=referrer_txn
+    )
