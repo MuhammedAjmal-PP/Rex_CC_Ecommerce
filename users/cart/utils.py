@@ -21,7 +21,9 @@ def fetch_cart(cart):
             "product_variant__product",
             "product_variant__product__brand",
         )
-        .prefetch_related("product_variant__images", "product_variant__product__category")
+        .prefetch_related(
+            "product_variant__images", "product_variant__product__category"
+        )
     )
 
     return cart_items
@@ -52,9 +54,9 @@ def compute_cart_summary(cart):
     pack_variants(variants)
 
     # Single pass over items to compute everything
-    total = Decimal("0.00")       # MRP total
-    sub_total = Decimal("0.00")   # after-discount total
-    discount = Decimal("0.00")    # offer discount
+    total = Decimal("0.00")  # MRP total
+    sub_total = Decimal("0.00")  # after-discount total
+    discount = Decimal("0.00")  # offer discount
     shipping_fee = Decimal("0.00")
 
     for item in cart_items:
@@ -129,3 +131,15 @@ def build_cart_summary(cart_items):
             }
         )
     return products
+
+
+def summary_to_json(summary):
+    """Convert summary dict to JSON-safe floats."""
+    return {
+        "products_count": summary["items_count"],
+        "total": float(summary["total"]),
+        "discount": float(summary["discount"]),
+        "sub_total": float(summary["sub_total"]),
+        "shipping_fee": float(summary["shipping_fee"]),
+        "total_amount_to_pay": float(summary["total_amount"]),
+    }

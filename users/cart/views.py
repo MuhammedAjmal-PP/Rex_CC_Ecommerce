@@ -7,7 +7,12 @@ from django.views.decorators.http import require_GET, require_POST
 from catalog.models import Product, ProductVariant
 from catalog.utils import pack_variants
 from users.cart.models import Cart, CartItem
-from users.cart.utils import build_cart_summary, compute_cart_summary, fetch_cart
+from users.cart.utils import (
+    build_cart_summary,
+    compute_cart_summary,
+    fetch_cart,
+    summary_to_json,
+)
 from users.wishlist.models import Wishlist, WishlistItem
 
 
@@ -194,19 +199,21 @@ def update_cart_quantity(request, slug, sku):
     allowed_max = min(variant.stock, settings.MAX_QUNATITY_PURCHASE_PER_ITEM)
     summary = compute_cart_summary(cart)
 
-    return JsonResponse({
-        "success": True,
-        "item": {
-            "quantity": quantity,
-            "total_amount": float(variant.final_price * quantity),
-            "final_price": float(variant.final_price),
-            "price": float(variant.price),
-            "stock": variant.stock,
-            "allowed_max": allowed_max,
-            "is_in_stock": variant.stock > 0,
-        },
-        "order_summary": _summary_to_json(summary),
-    })
+    return JsonResponse(
+        {
+            "success": True,
+            "item": {
+                "quantity": quantity,
+                "total_amount": float(variant.final_price * quantity),
+                "final_price": float(variant.final_price),
+                "price": float(variant.price),
+                "stock": variant.stock,
+                "allowed_max": allowed_max,
+                "is_in_stock": variant.stock > 0,
+            },
+            "order_summary": summary_to_json(summary),
+        }
+    )
 
 
 @login_required
@@ -232,24 +239,14 @@ def remove_cart_item(request, slug, sku):
 
     summary = compute_cart_summary(cart)
 
-    return JsonResponse({
-        "success": True,
-        "removed": True,
-        "cart_count": summary["items_count"],
-        "order_summary": _summary_to_json(summary),
-    })
-
-
-def _summary_to_json(summary):
-    """Convert summary dict to JSON-safe floats."""
-    return {
-        "products_count": summary["items_count"],
-        "total": float(summary["total"]),
-        "discount": float(summary["discount"]),
-        "sub_total": float(summary["sub_total"]),
-        "shipping_fee": float(summary["shipping_fee"]),
-        "total_amount_to_pay": float(summary["total_amount"]),
-    }
+    return JsonResponse(
+        {
+            "success": True,
+            "removed": True,
+            "cart_count": summary["items_count"],
+            "order_summary": summary_to_json(summary),
+        }
+    )
 
 
 @require_GET
