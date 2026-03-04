@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404, render
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_GET, require_POST
 from catalog.models import Product, ProductVariant
+from catalog.utils import pack_variants
 from users.cart.models import Cart, CartItem
 from users.wishlist.models import Wishlist, WishlistItem
 from users.wishlist.utils import (
@@ -52,11 +53,12 @@ def list_wishlist(request):
             .prefetch_related("images")
         )
 
+    # Pack all variants (sets primary_image, final_price, etc.)
+    pack_variants(items)
+
     products = []
 
     for variant in items:
-        image = variant.images.filter(is_primary=True).first()
-        
         # Build variant details
         variant_details = []
         if variant.dial_color:
@@ -79,7 +81,7 @@ def list_wishlist(request):
                 "final_price": str(variant.final_price),
                 "stock": variant.stock,
                 "is_in_stock": variant.stock > 0,
-                "image": image.image.url,
+                "image": variant.primary_image.image.url,
                 "variant_details": variant_details,
             }
         )
