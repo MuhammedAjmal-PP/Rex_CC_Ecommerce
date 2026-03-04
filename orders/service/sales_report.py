@@ -1,18 +1,10 @@
-"""
-Sales report aggregation service.
-
-Provides date-range helpers and order aggregation
-for the admin sales report.
-"""
-
 from datetime import timedelta
 from decimal import Decimal
 
-from django.contrib.contenttypes.models import ContentType
-from django.db.models import Count, Sum, Q, Subquery, OuterRef
+from django.db.models import Count, Sum
 from django.utils import timezone
 
-from orders.models import Order, StatusTimeline
+from orders.models import Order
 
 
 # Statuses that represent a "successful" order
@@ -72,24 +64,11 @@ def get_sales_report(start_dt, end_dt):
         total_orders, total_order_amount, total_discount,
         total_coupon_discount, orders_qs (filtered queryset).
     """
-    order_ct = ContentType.objects.get_for_model(Order)
-
-    # Subquery for latest status per order
-    latest_status_sq = Subquery(
-        StatusTimeline.objects.filter(
-            content_type=order_ct,
-            object_id=OuterRef("pk"),
-        )
-        .order_by("-created_at")
-        .values("status")[:1]
-    )
-
     orders_qs = (
         Order.objects.filter(created_at__range=(start_dt, end_dt))
         .select_related("user", "coupon")
-        .prefetch_related("payment", "status")
-        .annotate(current_status_value=latest_status_sq)
-        .exclude(current_status_value__in=_EXCLUDED_STATUSES)
+        .prefetch_related("payment")
+        .exclude(status__in=_EXCLUDED_STATUSES)
         .order_by("-created_at")
     )
 

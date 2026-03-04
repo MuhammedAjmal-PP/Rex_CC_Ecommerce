@@ -134,13 +134,9 @@
                 <div class="rd-row">
                     <span class="rd-label">Item Status</span>
                     <span class="rd-value">
-                        {% if order_item.current_status %}
-                            <span class="status-badge item-status-{{ order_item.current_status.status|lower }}">
-                                {{ order_item.current_status.status }}
-                            </span>
-                        {% else %}
-                            —
-                        {% endif %}
+                        <span class="status-badge item-status-{{ order_item.status|lower }}">
+                            {{ order_item.get_status_display }}
+                        </span>
                     </span>
                 </div>
             </div>

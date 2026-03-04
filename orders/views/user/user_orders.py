@@ -21,7 +21,7 @@ def order_list(request):
     date_filter = request.GET.get("date_filter", "").strip().lower()
 
     orders = Order.objects.filter(user=request.user).prefetch_related(
-        "status", "payment"
+        "payment"
     )
 
     if search:
@@ -44,11 +44,21 @@ def order_list(request):
     page_obj = Paginator(orders.order_by("-created_at"), 10).get_page(
         request.GET.get("page")
     )
+
+    # Build set of order IDs eligible for Razorpay retry
+    razorpay_retry_ids = set()
+    for order in page_obj:
+        if order.status == "FAILED" and order.cart_snapshot:
+            payment = order.payment_transaction
+            if payment and payment.payment_method == "RAZORPAY":
+                razorpay_retry_ids.add(order.pk)
+
     context = {
         "orders": page_obj,
         "q": search,
         "date_filter": date_filter,
         "page_obj": page_obj,
+        "razorpay_retry_ids": razorpay_retry_ids,
     }
     return render(request, "orders/user/order_list.html", context)
 
@@ -58,7 +68,7 @@ def order_list(request):
 def order_detail(request, order_number):
     """Order details page with order-level and item-level status data."""
     order = get_object_or_404(
-        Order.objects.prefetch_related("payment", "status"),
+        Order.objects.prefetch_related("payment"),
         user=request.user,
         order_number=order_number,
     )
@@ -69,28 +79,36 @@ def order_detail(request, order_number):
             "product_variant",
             "product_variant__product",
             "product_variant__product__brand",
+            "return_request",
         )
-        .prefetch_related("product_variant__images", "status")
+        .prefetch_related("product_variant__images", "transactions")
     )
 
-    order_status = order.current_status
-    is_cancellable = order_status.status in ("PLACED", "CONFIRMED")
+    is_cancellable = order.status in ("PLACED", "CONFIRMED")
 
-    payment = order.payment_transaction
-    is_razorpay_retryable = (
-        order_status.status == "FAILED"
-        and payment
-        and payment.payment_method == "RAZORPAY"
+    # ── Stepper data for the horizontal tracker ──
+    stepper_steps = [
+        ("PLACED", "Order Placed", "shopping_cart"),
+        ("CONFIRMED", "Confirmed", "inventory"),
+        ("SHIPPED", "Shipped", "local_shipping"),
+        ("OUT_FOR_DELIVERY", "Out for Delivery", "delivery_dining"),
+        ("DELIVERED", "Delivered", "home"),
+    ]
+    status_order = [s[0] for s in stepper_steps]
+    current_idx = (
+        status_order.index(order.status)
+        if order.status in status_order
+        else -1
     )
+    completed_steps = set(status_order[:current_idx]) if current_idx > 0 else set()
 
     context = {
         "order": order,
         "items": order_items,
-        "order_status_timeline": order.status.all(),
         "gst_rate": settings.GST_RATE,
         "is_cancellable": is_cancellable,
-        "is_razorpay_retryable": is_razorpay_retryable,
-        "razorpay_key_id": settings.RAZORPAY_KEY_ID if is_razorpay_retryable else None,
+        "stepper_steps": stepper_steps,
+        "completed_steps": completed_steps,
     }
     return render(request, "orders/user/order_detail.html", context)
 
@@ -138,33 +156,3 @@ def order_invoice(request, order_number):
     return response
 
 
-@never_cache
-@login_required
-def orderitem_detail(request, order_number, item_id):
-    """order-item detail"""
-
-    order = get_object_or_404(Order, user=request.user, order_number=order_number)
-    order_item = get_object_or_404(
-        OrderItem.objects.select_related(
-            "order",
-            "product_variant",
-            "product_variant__product",
-            "product_variant__product__brand",
-        )
-        .select_related("return_request")
-        .prefetch_related("status", "transactions", "return_request__transactions"),
-        id=item_id,
-        order=order,
-    )
-
-    timeline = order_item.status.all().order_by("-created_at")
-    return_entry = getattr(order_item, "return_request", None)
-
-    context = {
-        "order": order,
-        "order_item": order_item,
-        "timeline": timeline,
-        "return_request": return_entry,
-    }
-
-    return render(request, "orders/user/orderitem_detail.html", context)

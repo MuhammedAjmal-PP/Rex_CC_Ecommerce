@@ -266,44 +266,7 @@
                                         <span class="od-no-action">—</span>
                                     {% endif %}
                                 </td>
-                                <td class="od-td-center">
-                                    {% if entry.timeline %}
-                                        <button type="button" class="od-toggle-btn" onclick="toggleTimeline(this)">
-                                            <span class="material-icons">expand_more</span>
-                                        </button>
-                                    {% endif %}
-                                </td>
                             </tr>
-
-                            <!-- Collapsible Item Timeline Sub-row -->
-                            {% if entry.timeline %}
-                                <tr class="od-timeline-subrow" style="display:none;">
-                                    <td colspan="7">
-                                        <div class="od-htl">
-                                            <div class="od-htl-track">
-                                                {% for step in entry.timeline %}
-                                                    <div class="od-htl-step {% if forloop.last %}od-htl-step-current{% endif %}">
-                                                        <div class="od-htl-dot"></div>
-                                                        {% if not forloop.last %}
-                                                            <div class="od-htl-line"></div>
-                                                        {% endif %}
-                                                        <div class="od-htl-label">
-                                                            <span class="od-htl-status item-status-{{ step.status|lower }}">{{ step.status }}</span>
-                                                            <span class="od-htl-date">{{ step.created_at|date:"d M, h:i A" }}</span>
-                                                            {% if step.actor %}
-                                                                <span class="od-htl-actor">{{ step.actor.email|truncatechars:20 }}</span>
-                                                            {% endif %}
-                                                            {% if step.note %}
-                                                                <span class="od-htl-note">{{ step.note|truncatechars:40 }}</span>
-                                                            {% endif %}
-                                                        </div>
-                                                    </div>
-                                                {% endfor %}
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            {% endif %}
                         {% endwith %}
                     {% endfor %}
                 </tbody>
@@ -311,58 +274,21 @@
         </div>
     </div>
 
-    <!-- Order Status Timeline -->
+    <!-- Order Status -->
     <div class="od-section">
         <div class="od-section-title">
             <span class="material-icons">timeline</span>
-            Order Status Timeline
+            Order Status
         </div>
         <div class="od-htl od-htl-order">
-            <div class="od-htl-track">
-                {% for step in order_only_timeline %}
-                    <div class="od-htl-step {% if forloop.last %}od-htl-step-current{% endif %}">
-                        <div class="od-htl-dot"></div>
-                        {% if not forloop.last %}
-                            <div class="od-htl-line"></div>
-                        {% endif %}
-                        <div class="od-htl-label">
-                            <span class="od-htl-status order-status-{{ step.status|lower }}">{{ step.status }}</span>
-                            <span class="od-htl-date">{{ step.created_at|date:"d M Y, h:i A" }}</span>
-                            {% if step.actor %}
-                                <span class="od-htl-actor">by {{ step.actor.email }}</span>
-                            {% endif %}
-                            {% if step.note %}
-                                <span class="od-htl-note">{{ step.note|truncatechars:60 }}</span>
-                            {% endif %}
-                        </div>
-                    </div>
-                {% empty %}
-                    <p class="od-timeline-empty">No status history available.</p>
-                {% endfor %}
-            </div>
+            <p style="padding: 16px; font-family: 'Montserrat', sans-serif; font-size: 0.95rem; color: #555;">
+                Current Status: <span class="status-badge order-status-{{ order_current|lower }}">{{ order_current }}</span>
+                {% if order.status_updated_at %}
+                    &middot; Last updated: {{ order.status_updated_at|date:"d M Y, h:i A" }}
+                {% endif %}
+            </p>
         </div>
     </div>
 
 {% endblock content %}
-
-{% block extra_js %}
-<script>
-    function toggleTimeline(btn) {
-        const itemRow = btn.closest('tr');
-        const subRow = itemRow.nextElementSibling;
-        if (!subRow || !subRow.classList.contains('od-timeline-subrow')) return;
-
-        const icon = btn.querySelector('.material-icons');
-        if (subRow.style.display === 'none') {
-            subRow.style.display = 'table-row';
-            icon.textContent = 'expand_less';
-            btn.classList.add('od-toggle-active');
-        } else {
-            subRow.style.display = 'none';
-            icon.textContent = 'expand_more';
-            btn.classList.remove('od-toggle-active');
-        }
-    }
-</script>
-{% endblock extra_js %}
 

@@ -38,7 +38,6 @@
                             margin-bottom: 28px;
                             overflow: hidden">
                     {% for item in order_items %}
-                        {% with istatus=item.current_status %}
                             <div class="co-item-row {% if item.id not in cancellable_item_ids %}co-disabled{% endif %}">
                                 <!-- Checkbox -->
                                 <div class="co-checkbox-cell">
@@ -98,12 +97,9 @@
                                 <div class="co-price-cell">₹{{ item.total_price|floatformat:2|intcomma }}</div>
                                 <!-- Status -->
                                 <div class="co-status-cell">
-                                    {% if istatus %}
-                                        <span class="order-status-badge oid-status-{{ istatus.status|lower }}">{{ istatus.get_status_display }}</span>
-                                    {% endif %}
+                                    <span class="order-status-badge oid-status-{{ item.status|lower }}">{{ item.get_status_display }}</span>
                                 </div>
                             </div>
-                        {% endwith %}
                     {% endfor %}
                 </div>
                 <!-- REASON FORM -->

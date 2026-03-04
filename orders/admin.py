@@ -1,17 +1,6 @@
 from django.contrib import admin
-from django.contrib.contenttypes.admin import GenericTabularInline
 
-from orders.models import Order, OrderItem, StatusTimeline
-
-
-# ======================================================
-# STATUS TIMELINE INLINE (Generic)
-# ======================================================
-class StatusTimelineInline(GenericTabularInline):
-    model = StatusTimeline
-    extra = 0
-    readonly_fields = ("created_at",)
-    fields = ("status", "note", "actor", "created_at")
+from orders.models import Order, OrderItem, Return, ReturnImage
 
 
 # ======================================================
@@ -27,6 +16,7 @@ class OrderItemInline(admin.TabularInline):
         "product_variant",
         "quantity",
         "price",
+        "status",
     )
 
 
@@ -38,18 +28,18 @@ class OrderAdmin(admin.ModelAdmin):
     list_display = (
         "order_number",
         "user",
+        "status",
         "grand_total",
         "created_at",
     )
-    list_filter = ("created_at",)
+    list_filter = ("status", "created_at")
     search_fields = ("order_number", "user__email", "user__phone")
     ordering = ("-created_at",)
 
-    readonly_fields = ("order_number", "payment", "created_at")
+    readonly_fields = ("order_number", "payment", "created_at", "status_updated_at")
 
     inlines = [
         OrderItemInline,
-        StatusTimelineInline,
     ]
 
 
@@ -64,25 +54,35 @@ class OrderItemAdmin(admin.ModelAdmin):
         "product_variant",
         "quantity",
         "price",
+        "status",
         "total_price",
     )
-    list_filter = ("order__created_at",)
+    list_filter = ("status", "order__created_at")
     search_fields = ("order__order_number", "product_variant__product__name")
 
-    inlines = [StatusTimelineInline]
-
 
 # ======================================================
-# STATUS TIMELINE ADMIN (Optional but useful)
+# RETURN ADMIN
 # ======================================================
-@admin.register(StatusTimeline)
-class StatusTimelineAdmin(admin.ModelAdmin):
+
+
+class ReturnImageInline(admin.TabularInline):
+    model = ReturnImage
+    extra = 0
+    readonly_fields = ("image", "uploaded_at")
+
+
+@admin.register(Return)
+class ReturnAdmin(admin.ModelAdmin):
     list_display = (
-        "content_object",
+        "return_number",
+        "order_item",
         "status",
-        "actor",
+        "reason_code",
         "created_at",
     )
-    list_filter = ("status", "created_at")
-    search_fields = ("status", "note")
-    readonly_fields = ("created_at",)
+    list_filter = ("status", "reason_code")
+    search_fields = ("return_number", "order_item__order__order_number")
+    ordering = ("-created_at",)
+    readonly_fields = ("return_number", "created_at")
+    inlines = [ReturnImageInline]

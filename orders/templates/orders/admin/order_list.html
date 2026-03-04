@@ -164,9 +164,7 @@
                                 <span class="order-total">₹{{ order.grand_total|floatformat:2 }}</span>
                             </td>
                             <td>
-                                {% with order.current_status.status as st %}
-                                    <span class="status-badge order-status-{{ st|lower }}">{{ st }}</span>
-                                {% endwith %}
+                                <span class="status-badge order-status-{{ order.status|lower }}">{{ order.get_status_display }}</span>
                             </td>
                             <td>
                                 <a href="{% url 'admin_order_details' order.order_number %}"

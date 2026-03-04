@@ -108,29 +108,9 @@ def complete_refund(transaction, wallet_reason="WALLET_CREDIT"):
     return transaction
 
 
-def fail_refund(transaction, note=""):
-    """Admin rejects a refund → FAILED."""
-    if transaction.status != "PENDING":
-        raise ValueError(f"Cannot fail refund — current status is {transaction.status}")
-    transaction.status = "FAILED"
-    if note:
-        transaction.note = note
-    transaction.save(update_fields=["status", "note", "updated_at"])
-    return transaction
-
-
 # ────────────────────────────────────────────
 # Status Helpers
 # ────────────────────────────────────────────
-
-
-def complete_transaction(transaction):
-    """Mark a PENDING transaction as COMPLETED."""
-    if transaction.status != "PENDING":
-        raise ValueError(f"Cannot complete — current status is {transaction.status}")
-    transaction.status = "COMPLETED"
-    transaction.save(update_fields=["status", "updated_at"])
-    return transaction
 
 
 def fail_transaction(transaction, note=""):
@@ -142,3 +122,7 @@ def fail_transaction(transaction, note=""):
         transaction.note = note
     transaction.save(update_fields=["status", "note", "updated_at"])
     return transaction
+
+
+# Alias for backward compatibility
+fail_refund = fail_transaction

@@ -18,6 +18,12 @@ CANCELLABLE_ITEM_STATUSES = {"PENDING", "CONFIRMED", "PACKING", "READY"}
 @never_cache
 def cancel_order(request, order_number):
     order = get_object_or_404(Order, user=request.user, order_number=order_number)
+
+    # Only PLACED or CONFIRMED orders can be cancelled (L1 fix)
+    if order.status not in ("PLACED", "CONFIRMED"):
+        messages.error(request, "This order cannot be cancelled.")
+        return redirect("user_order_details", order_number=order.order_number)
+
     order_items = (
         OrderItem.objects.filter(order=order)
         .select_related(
@@ -25,19 +31,18 @@ def cancel_order(request, order_number):
             "product_variant__product",
             "product_variant__product__brand",
         )
-        .prefetch_related("product_variant__images", "status")
+        .prefetch_related("product_variant__images")
     )
 
     cancellable_items = [
         item
         for item in order_items
-        if item.current_status.status in CANCELLABLE_ITEM_STATUSES
+        if item.status in CANCELLABLE_ITEM_STATUSES
     ]
 
     context = {
         "order": order,
         "order_items": order_items,
-        # "cancellable_items": cancellable_items,
         "cancellable_item_ids": {item.id for item in cancellable_items},
         "has_cancellable_items": bool(cancellable_items),
     }
@@ -49,6 +54,11 @@ def cancel_order(request, order_number):
 @never_cache
 def cancel_order_submit(request, order_number):
     order = get_object_or_404(Order, user=request.user, order_number=order_number)
+
+    # Order status guard (L1 fix)
+    if order.status not in ("PLACED", "CONFIRMED"):
+        messages.error(request, "This order cannot be cancelled.")
+        return redirect("user_order_details", order_number=order.order_number)
 
     selected_ids = request.POST.getlist("item_ids")
     reason_note = request.POST.get("reason_note", "").strip()
@@ -77,11 +87,6 @@ def cancel_order_submit(request, order_number):
         with transaction.atomic():
             cancelled_count = 0
             for item in selected_items:
-                if not item.current_status:
-                    raise InvalidTransitionError(
-                        f"Item #{item.id} has no status and cannot be cancelled."
-                    )
-
                 change_order_item_status(
                     order_item=item,
                     to_status="CANCELLED",
@@ -99,12 +104,9 @@ def cancel_order_submit(request, order_number):
                     note=f"Stock restored — order {order.order_number} item cancelled",
                 )
 
-                # Create PENDING refund transaction only for prepaid orders
-                # COD orders haven't collected money, so no refund needed
-                if (
-                    order.payment_transaction
-                    and order.payment_transaction.payment_method != "COD"
-                ):
+                # Refund logic: prepaid → wallet credit, COD → reduce pending amount
+                payment = order.payment_transaction
+                if payment and payment.payment_method != "COD":
                     refund_txn = initiate_refund(
                         order=order,
                         user=request.user,
@@ -113,14 +115,11 @@ def cancel_order_submit(request, order_number):
                         content_object=item,
                         note=note,
                     )
-                    
-                    # Instantly credit the wallet
                     complete_refund(
                         transaction=refund_txn,
-                        wallet_reason="CANCELLATION_REFUND"
+                        wallet_reason="CANCELLATION_REFUND",
                     )
-
-                else:
+                elif payment:
                     update_transaction(
                         order=order,
                         amount=item.total_cancel,
@@ -129,13 +128,10 @@ def cancel_order_submit(request, order_number):
 
                 cancelled_count += 1
 
-            # Revoke coupon usage if ALL items in the order are now cancelled
+            # Revoke coupon if ALL items are now cancelled (L5: use already-loaded data)
             if order.coupon and order.coupon_discount:
-                all_cancelled = all(
-                    i.current_status and i.current_status.status == "CANCELLED"
-                    for i in order.items.prefetch_related("status").all()
-                )
-                if all_cancelled:
+                all_items = list(order.items.only("status"))
+                if all(i.status == "CANCELLED" for i in all_items):
                     from coupons.service import revoke_coupon_usage
                     revoke_coupon_usage(order)
 

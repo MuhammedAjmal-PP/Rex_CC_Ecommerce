@@ -1,7 +1,8 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import user_passes_test
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db import transaction
+from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.cache import never_cache
@@ -53,15 +54,14 @@ def return_list(request):
     if status_filter != "ALL":
         returns_qs = returns_qs.filter(status=status_filter)
 
-    # Status counts (on unfiltered queryset for the sidebar/tabs)
-    all_returns = Return.objects.all()
-    status_counts = {
-        "total": all_returns.count(),
-        "requested": all_returns.filter(status="REQUESTED").count(),
-        "approved": all_returns.filter(status="APPROVED").count(),
-        "rejected": all_returns.filter(status="REJECTED").count(),
-        "completed": all_returns.filter(status="COMPLETED").count(),
-    }
+    # Status counts — single aggregate query (P1 fix)
+    counts = Return.objects.aggregate(
+        total=Count("id"),
+        requested=Count("id", filter=Q(status="REQUESTED")),
+        approved=Count("id", filter=Q(status="APPROVED")),
+        rejected=Count("id", filter=Q(status="REJECTED")),
+        completed=Count("id", filter=Q(status="COMPLETED")),
+    )
 
     paginator = Paginator(returns_qs, 12)
     page_obj = paginator.get_page(request.GET.get("page", 1))
@@ -70,7 +70,7 @@ def return_list(request):
         "returns": page_obj,
         "search_query": search_query,
         "status_filter": status_filter,
-        "status_counts": status_counts,
+        "status_counts": counts,
     }
     return render(request, "orders/admin/return_list.html", context)
 
@@ -179,19 +179,43 @@ def return_status_update(request, return_number):
             messages.error(request, "Only APPROVED returns can be completed.")
             return redirect(fallback_url)
 
-        return_obj.status = "COMPLETED"
-        if admin_note:
-            return_obj.admin_note = admin_note
-        return_obj.save(update_fields=["status", "admin_note"])
-
-        # Transition OrderItem status: RETURN_REQUESTED → RETURNED
         try:
-            change_order_item_status(
-                order_item=order_item,
-                to_status="RETURNED",
-                actor=request.user,
-                note=f"Return completed by admin. Return #{return_obj.return_number}",
-            )
+            with transaction.atomic():
+                return_obj.status = "COMPLETED"
+                if admin_note:
+                    return_obj.admin_note = admin_note
+                return_obj.save(update_fields=["status", "admin_note"])
+
+                # Transition OrderItem status: RETURN_REQUESTED → RETURNED
+                change_order_item_status(
+                    order_item=order_item,
+                    to_status="RETURNED",
+                    actor=request.user,
+                    note=f"Return completed by admin. Return #{return_obj.return_number}",
+                )
+
+                # Restore stock
+                update_stock(
+                    product_variant=order_item.product_variant,
+                    change=+order_item.quantity,
+                    reason="RETURNED",
+                    actor=request.user,
+                    reference_object=return_obj,
+                    note=f"Stock restored — return {return_obj.return_number} completed",
+                )
+
+                # Create PENDING refund transaction
+                order = order_item.order
+                refund_amount = order_item.total_return
+                initiate_refund(
+                    order=order,
+                    user=order.user,
+                    amount=refund_amount,
+                    txn_type="RETURN_REFUND",
+                    content_object=return_obj,
+                    note=f"Return refund — return #{return_obj.return_number}",
+                )
+
         except InvalidTransitionError as error:
             messages.warning(
                 request,
@@ -199,32 +223,11 @@ def return_status_update(request, return_number):
             )
             return redirect(fallback_url)
 
-        # Restore stock
-        update_stock(
-            product_variant=order_item.product_variant,
-            change=+order_item.quantity,
-            reason="RETURNED",
-            actor=request.user,
-            reference_object=return_obj,
-            note=f"Stock restored — return {return_obj.return_number} completed",
-        )
-
         messages.success(
             request,
             f"Return {return_obj.return_number} completed. "
             f"Stock restored (+{order_item.quantity}). "
-            f"Refund of ₹{order_item.total_price} is pending admin approval.",
-        )
-
-        # Create PENDING refund transaction (admin must approve)
-        order = order_item.order
-        initiate_refund(
-            order=order,
-            user=order.user,
-            amount=order_item.total_return,
-            txn_type="RETURN_REFUND",
-            content_object=return_obj,
-            note=f"Return refund — return #{return_obj.return_number}",
+            f"Refund of ₹{refund_amount} is pending admin approval.",
         )
 
     else:

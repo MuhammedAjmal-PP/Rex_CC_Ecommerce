@@ -83,29 +83,22 @@
                                 </span>
                             </div>
                             <div class="order-row-status">
-                                {% with status=order.current_status %}
-                                    {% if status %}
-                                        <span class="order-status-badge status-{{ status.status|lower }}">
-                                            {% if status.status == "PLACED" %}
-                                                Pending Review
-                                            {% elif status.status == "CONFIRMED" %}
-                                                Confirmed
-                                            {% elif status.status == "SHIPPED" %}
-                                                Shipped
-                                            {% elif status.status == "OUT_FOR_DELIVERY" %}
-                                                Out for Delivery
-                                            {% elif status.status == "DELIVERED" %}
-                                                Delivered
-                                            {% elif status.status == "CANCELLED" %}
-                                                Cancelled
-                                            {% else %}
-                                                {{ status.status }}
-                                            {% endif %}
-                                        </span>
-                                    {% endif %}
-                                {% endwith %}
+                                <span class="order-status-badge status-{{ order.status|lower }}">
+                                    {{ order.get_status_display }}
+                                </span>
                             </div>
-                            <div class="order-row-action">
+                            <div class="order-row-action" style="display: flex; align-items: center; gap: 8px;">
+                                {% if order.pk in razorpay_retry_ids %}
+                                    {% csrf_token %}
+                                    <button type="button"
+                                            class="lux-btn-primary"
+                                            style="padding: 6px 14px; font-size: 0.8rem; white-space: nowrap;"
+                                            data-order-number="{{ order.order_number }}"
+                                            onclick="retryRazorpayPayment(this)">
+                                        <span class="material-icons" style="font-size: 16px; margin-right: 4px;">replay</span>
+                                        Retry
+                                    </button>
+                                {% endif %}
                                 <a href="{% url 'user_order_details' order.order_number %}"
                                    class="btn-view-order"
                                    title="View Order">
@@ -161,4 +154,10 @@
             </div>
         {% endif %}
     </div>
+{% endblock %}
+{% block extra_js %}
+    {% if razorpay_retry_ids %}
+        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+        <script src="{% static 'orders/user/js/retry_payment.js' %}"></script>
+    {% endif %}
 {% endblock %}

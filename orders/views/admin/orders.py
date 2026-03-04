@@ -1,14 +1,13 @@
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import user_passes_test
-from django.contrib.contenttypes.models import ContentType
 from django.core.paginator import Paginator
-from django.db.models import Count, Q, Subquery, OuterRef
+from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_GET, require_POST
-from orders.models import Order, OrderItem, StatusTimeline
+from orders.models import Order, OrderItem
 from orders.service import (
     InvalidTransitionError,
     change_order_item_status,
@@ -26,21 +25,9 @@ def order_list(request):
     search_query = request.GET.get("search", "").strip()
     status_filter = request.GET.get("status", "all").strip().upper()
 
-    # Subquery: annotate each order with its latest status at DB level
-    order_ct = ContentType.objects.get_for_model(Order)
-    latest_status_sq = Subquery(
-        StatusTimeline.objects.filter(
-            content_type=order_ct,
-            object_id=OuterRef("pk"),
-        )
-        .order_by("-created_at")
-        .values("status")[:1]
-    )
-
     orders_qs = (
         Order.objects.select_related("user")
-        .prefetch_related("payment", "status")
-        .annotate(current_status_value=latest_status_sq)
+        .prefetch_related("payment")
         .order_by("-created_at")
     )
 
@@ -55,15 +42,15 @@ def order_list(request):
     # DB-level status counts (computed on the searched but unfiltered queryset)
     status_agg = orders_qs.aggregate(
         total=Count("id"),
-        confirmed=Count("id", filter=Q(current_status_value="CONFIRMED")),
-        shipped=Count("id", filter=Q(current_status_value="SHIPPED")),
-        delivered=Count("id", filter=Q(current_status_value="DELIVERED")),
-        cancelled=Count("id", filter=Q(current_status_value="CANCELLED")),
+        confirmed=Count("id", filter=Q(status="CONFIRMED")),
+        shipped=Count("id", filter=Q(status="SHIPPED")),
+        delivered=Count("id", filter=Q(status="DELIVERED")),
+        cancelled=Count("id", filter=Q(status="CANCELLED")),
     )
 
     # DB-level status filter
     if status_filter != "ALL":
-        orders_qs = orders_qs.filter(current_status_value=status_filter)
+        orders_qs = orders_qs.filter(status=status_filter)
 
     paginator = Paginator(orders_qs, 12)
     page_obj = paginator.get_page(request.GET.get("page", 1))
@@ -86,7 +73,7 @@ def order_list(request):
 @require_GET
 def order_detail(request, order_number):
     order = get_object_or_404(
-        Order.objects.select_related("user").prefetch_related("payment", "status"),
+        Order.objects.select_related("user").prefetch_related("payment"),
         order_number=order_number,
     )
     order_items = (
@@ -96,38 +83,29 @@ def order_detail(request, order_number):
             "product_variant__product",
             "product_variant__product__brand",
         )
-        .prefetch_related("product_variant__images", "status")
+        .prefetch_related("product_variant__images")
     )
 
-    order_current = order.current_status.status if order.current_status else None
+    order_current = order.status
     order_next = sorted(ORDER_ALLOWED_TRANSITIONS.get(order_current, set()))
 
     items_with_transitions = []
     for item in order_items:
-        item_current = item.current_status.status if item.current_status else None
+        item_current = item.status
         item_next = sorted(ADMIN_ITEM_ALLOWED_TRANSITIONS.get(item_current, set()))
-        # Per-item timeline: oldest → newest for horizontal display
-        item_timeline = list(item.status.select_related("actor").order_by("created_at"))
         items_with_transitions.append(
             {
                 "item": item,
                 "current_status": item_current,
                 "allowed_next": item_next,
-                "timeline": item_timeline,
             }
         )
-
-    # Order-only timeline: oldest → newest
-    order_only_timeline = list(
-        order.status.select_related("actor").order_by("created_at")
-    )
 
     context = {
         "order": order,
         "order_current": order_current,
         "order_next": order_next,
         "items_with_transitions": items_with_transitions,
-        "order_only_timeline": order_only_timeline,
         "gst_rate": settings.GST_RATE,
     }
 

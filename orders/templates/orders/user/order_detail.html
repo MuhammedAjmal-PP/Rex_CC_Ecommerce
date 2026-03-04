@@ -5,7 +5,7 @@
 {% block head_title %}Order {{ order.order_number }} | REX CC{% endblock %}
 
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'orders/user/css/order_detail.css' %}?v=1.2">
+    <link rel="stylesheet" href="{% static 'orders/user/css/order_detail.css' %}?v=2.0">
 {% endblock %}
 
 {% block content %}
@@ -23,24 +23,7 @@
     <!-- HEADER -->
     <div class="hub-header" style="margin-bottom: 32px;">
         <div class="hub-header-left">
-            <h1 class="hub-title" style="margin-bottom: 8px;">Order {{ order.order_number }}</h1>
-            <div style="display: flex; align-items: center; gap: 12px; font-family: 'Montserrat', sans-serif;">
-                {% with status=order.current_status %}
-                    {% if status %}
-                        <span class="order-status-badge status-{{ status.status|lower }}">
-                            {% if status.status == "PLACED" %}Pending Review
-                            {% elif status.status == "CONFIRMED" %}Confirmed
-                            {% elif status.status == "SHIPPED" %}Shipped
-                            {% elif status.status == "OUT_FOR_DELIVERY" %}Out for Delivery
-                            {% elif status.status == "DELIVERED" %}Delivered
-                            {% elif status.status == "CANCELLED" %}Cancelled
-                            {% else %}{{ status.status }}
-                            {% endif %}
-                        </span>
-                    {% endif %}
-                {% endwith %}
-                <span class="od-order-date" style="font-size: 0.85rem; color: #666;">Placed on {{ order.created_at|date:"d M Y" }}, {{ order.created_at|date:"h:i A" }}</span>
-            </div>
+            <h1 class="hub-title" style="margin-bottom: 8px;">Order Details</h1>
         </div>
         <div class="hub-header-right">
             {% if order.can_generate_invoice %}
@@ -52,170 +35,155 @@
         </div>
     </div>
 
-    <!-- PAYMENT FAILED / ACTION REQUIRED CARD -->
-    {% if is_razorpay_retryable %}
-        <div class="hub-card" style="margin-bottom: 32px; padding: 24px; border-left: 4px solid var(--color-danger); background: rgba(211, 47, 47, 0.02); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px;">
-            <div style="display: flex; align-items: flex-start; gap: 16px;">
-                <span class="material-icons" style="color: var(--color-danger); font-size: 28px; margin-top: 2px;">error_outline</span>
-                <div>
-                    <h3 style="font-family: 'Playfair Display', serif; font-size: 1.3rem; margin: 0 0 8px 0; color: #111;">Payment Failed</h3>
-                    <p style="font-family: 'Montserrat', sans-serif; font-size: 0.95rem; color: #555; margin: 0; line-height: 1.5; max-width: 600px;">
-                        We couldn't process your payment for this order. Please retry the payment to confirm your order and avoid cancellation.
-                    </p>
-                </div>
-            </div>
-            <div style="display: flex; gap: 16px; align-items: center;">
-                {% if is_cancellable %}
-                    <a href="{% url 'user_cancel_order' order.order_number %}" class="hub-btn-outline" style="border-color: var(--color-danger); color: var(--color-danger);">
-                        Cancel Order
-                    </a>
-                {% endif %}
-                {% csrf_token %}
-                <button type="button"
-                        class="lux-btn-primary"
-                        data-order-number="{{ order.order_number }}"
-                        onclick="retryRazorpayPayment(this)">
-                    <span class="material-icons" style="margin-right: 6px; font-size: 20px;">replay</span>
-                    Retry Payment
-                </button>
-            </div>
+    <!-- ORDER INFO BAR -->
+    <div class="hub-card od-info-bar">
+        <div class="od-info-item">
+            <span class="od-info-label">Order Number</span>
+            <span class="od-info-value">{{ order.order_number }}</span>
         </div>
-    {% endif %}
+        <div class="od-info-item">
+            <span class="od-info-label">Placed</span>
+            <span class="od-info-value">{{ order.created_at|date:"d M Y" }}</span>
+        </div>
+        <div class="od-info-item">
+            <span class="od-info-label">Items</span>
+            <span class="od-info-value">{{ items|length }}</span>
+        </div>
+        <div class="od-info-item">
+            <span class="od-info-label">Status</span>
+            <span class="order-status-badge status-{{ order.status|lower }}">
+                {{ order.get_status_display }}
+            </span>
+        </div>
+    </div>
 
-    <!-- ORDER TRACKING / TIMELINE -->
+
+
+    <!-- ORDER TRACKING STEPPER -->
+    {% if order.status != "CANCELLED" and order.status != "FAILED" %}
     <div class="od-section-wrapper" style="margin-bottom: 40px;">
         <h2 class="od-section-heading">Order Tracking</h2>
         <div class="hub-card od-timeline-card">
-            <div class="od-timeline-track">
-                {% comment %}
-                    Build a reversed timeline (oldest first) to show progress left-to-right.
-                    Each StatusTimeline entry: .status, .created_at, .note
-                {% endcomment %}
-                {% with timeline=order_status_timeline %}
-                    {% for entry in timeline reversed %}
-                        <div class="od-timeline-step od-step-done {% if forloop.last %}od-step-current{% endif %}">
-                            <div class="od-step-marker">
-                                {% if entry.status == "DELIVERED" %}
-                                    <span class="material-icons" style="font-size: 14px; color: #fff; line-height: 16px;">check</span>
-                                {% elif entry.status == "CANCELLED" or entry.status == "FAILED" %}
-                                    <span class="material-icons" style="font-size: 14px; color: #fff; line-height: 16px;">close</span>
-                                {% endif %}
+            <div class="od-stepper">
+                {% with current=order.status %}
+                    {% comment %} Fixed order progression chain {% endcomment %}
+                    {% for step_key, step_label, step_icon in stepper_steps %}
+                        {% if step_key == current %}
+                            <div class="od-stepper-step od-step-active">
+                        {% elif step_key in completed_steps %}
+                            <div class="od-stepper-step od-step-done">
+                        {% else %}
+                            <div class="od-stepper-step od-step-pending">
+                        {% endif %}
+                                <div class="od-stepper-icon">
+                                    <span class="material-icons">{{ step_icon }}</span>
+                                </div>
+                                <div class="od-stepper-label">{{ step_label }}</div>
                             </div>
-                            <div class="od-step-label">
-                                {% if entry.status == "PLACED" %}Placed
-                                {% elif entry.status == "CONFIRMED" %}Confirmed
-                                {% elif entry.status == "SHIPPED" %}Dispatched
-                                {% elif entry.status == "IN_TRANSIT" %}In Transit
-                                {% elif entry.status == "OUT_FOR_DELIVERY" %}Out for Delivery
-                                {% elif entry.status == "DELIVERED" %}Delivered
-                                {% elif entry.status == "CANCELLED" %}Cancelled
-                                {% else %}{{ entry.status }}
-                                {% endif %}
-                            </div>
-                            <div class="od-step-time">
-                                {{ entry.created_at|date:"d M Y" }}<br>
-                                {{ entry.created_at|date:"h:i A" }}
-                            </div>
-                        </div>
                     {% endfor %}
                 {% endwith %}
             </div>
         </div>
     </div>
+    {% endif %}
 
     <!-- ITEMS -->
     <div class="od-section-wrapper" style="margin-bottom: 32px;">
-        <h2 class="od-section-heading">Items</h2>
-        <div class="hub-card od-items-card">
-            <div class="od-items-header">
-                <span></span>
-                <span>Product</span>
-                <span style="text-align:center;">Qty</span>
-                <span>Unit Price</span>
-                <span>Total</span>
-                <span>Status</span>
-                <span></span>
-            </div>
+        <h2 class="od-section-heading">Items from the order</h2>
+        <div class="hub-card" style="padding: 0;">
             {% for item in items %}
-                <div class="od-item-row">
+                <div class="od-item-card {% if not forloop.last %}od-item-border{% endif %}">
                     <!-- Image -->
-                    {% if item.product_variant and item.product_variant.primary_image %}
-                        <img src="{{ item.product_variant.primary_image.image.url }}"
-                             alt="{{ item.product_variant.product.name }}"
-                             class="od-item-img">
-                    {% else %}
-                        <div class="od-item-img-placeholder">
-                            <span class="material-icons">image</span>
-                        </div>
-                    {% endif %}
-
-                    <!-- Name + SKU -->
-                    <div class="od-item-details-col">
-                        {% if item.product_variant and item.product_variant.product and item.product_variant.product.brand %}
-                            <div class="od-item-brand">{{ item.product_variant.product.brand.name }}</div>
+                    <div class="od-item-img-wrap">
+                        {% if item.product_variant and item.product_variant.primary_image %}
+                            <img src="{{ item.product_variant.primary_image.image.url }}"
+                                 alt="{{ item.product_variant.product.name }}"
+                                 class="od-item-img">
+                        {% else %}
+                            <div class="od-item-img-placeholder">
+                                <span class="material-icons">image</span>
+                            </div>
                         {% endif %}
-                        <div class="od-item-name">
-                            {% if item.product_variant and item.product_variant.product %}
-                                {{ item.product_variant.product.name }}
-                            {% else %}
-                                Product unavailable
+                    </div>
+
+                    <!-- Info -->
+                    <div class="od-item-info">
+                        <div class="od-item-top-row">
+                            <div class="od-item-details-col">
+                                {% if item.product_variant and item.product_variant.product and item.product_variant.product.brand %}
+                                    <div class="od-item-brand">{{ item.product_variant.product.brand.name }}</div>
+                                {% endif %}
+                                <div class="od-item-name">
+                                    {% if item.product_variant and item.product_variant.product %}
+                                        {{ item.product_variant.product.name }}
+                                    {% else %}
+                                        Product unavailable
+                                    {% endif %}
+                                </div>
+                                {% if item.product_variant %}
+                                    <div class="od-item-sku">{{ item.product_variant.sku }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="od-item-numbers">
+                                <div class="od-item-qty-label">Qty: {{ item.quantity }}</div>
+                                <div class="od-item-total-price">
+                                    {% if item.original_price and item.original_price > item.price %}
+                                        <span class="od-price-original">₹{{ item.total_original_price|floatformat:2|intcomma }}</span>
+                                    {% endif %}
+                                    <span class="od-price-final">₹{{ item.total_price|floatformat:2|intcomma }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Status + Actions row -->
+                        <div class="od-item-bottom-row">
+                            <span class="order-status-badge status-{{ item.status|lower }}" style="font-size: 0.7rem;">
+                                {{ item.get_status_display }}
+                            </span>
+
+                            {% if item.can_return %}
+                                <a href="{% url 'user_return_order' order.order_number item.id %}"
+                                   class="od-return-btn">
+                                    <span class="material-icons" style="font-size: 16px;">keyboard_return</span>
+                                    Request Return
+                                </a>
                             {% endif %}
                         </div>
-                        {% if item.product_variant %}
-                            <div class="od-item-sku">{{ item.product_variant.sku }}</div>
-                        {% endif %}
-                    </div>
 
-                    <!-- Qty -->
-                    <div class="od-item-qty">{{ item.quantity }}</div>
-
-                    <!-- Unit Price: MRP (struck) + final -->
-                    <div class="od-item-price">
-                        {% if item.original_price and item.original_price > item.price %}
-                            <span class="od-price-original">₹{{ item.original_price|floatformat:2|intcomma }}</span>
-                        {% endif %}
-                        <span class="od-price-final">₹{{ item.price|floatformat:2|intcomma }}</span>
-                    </div>
-
-                    <!-- Total: MRP total (struck) + final total -->
-                    <div class="od-item-total">
-                        {% if item.original_price and item.original_price > item.price %}
-                            <span class="od-price-original">₹{{ item.total_original_price|floatformat:2|intcomma }}</span>
-                        {% endif %}
-                        <span class="od-price-final">₹{{ item.total_price|floatformat:2|intcomma }}</span>
-                    </div>
-
-                    <!-- Item Status -->
-                    <div class="od-item-status-col">
-                        {% with istatus=item.current_status %}
-                            {% if istatus %}
-                                <span class="order-status-badge status-{{ istatus.status|lower }}" style="font-size: 0.65rem;">
-                                    {% if istatus.status == "PENDING" %}Pending
-                                    {% elif istatus.status == "CONFIRMED" %}Confirmed
-                                    {% elif istatus.status == "PACKING" %}Packing
-                                    {% elif istatus.status == "READY" %}Ready
-                                    {% elif istatus.status == "SHIPPED" %}Shipped
-                                    {% elif istatus.status == "IN_TRANSIT" %}In Transit
-                                    {% elif istatus.status == "OUT_FOR_DELIVERY" %}Out for Delivery
-                                    {% elif istatus.status == "DELIVERED" %}Delivered
-                                    {% elif istatus.status == "FAILED" %}Failed
-                                    {% elif istatus.status == "CANCELLED" %}Cancelled
-                                    {% elif istatus.status == "RETURN_REQUESTED" %}Return Req
-                                    {% elif istatus.status == "RETURNED" %}Returned
-                                    {% elif istatus.status == "RTS" %}RTS
-                                    {% else %}{{ istatus.status }}
-                                    {% endif %}
-                                </span>
+                        <!-- Inline Return Info (if return exists) -->
+                        {% with ret=item.return_request %}
+                            {% if ret %}
+                                <div class="od-return-info">
+                                    <div class="od-return-info-header">
+                                        <span class="od-return-label">
+                                            <span class="material-icons" style="font-size: 16px; vertical-align: middle;">assignment_return</span>
+                                            Return #{{ ret.return_number }}
+                                        </span>
+                                        <span class="order-status-badge oid-return-{{ ret.status|lower }}">{{ ret.get_status_display }}</span>
+                                    </div>
+                                    <div class="od-return-info-body">
+                                        <span><strong>Reason:</strong> {{ ret.get_reason_code_display }}</span>
+                                        {% if ret.admin_note %}
+                                            <span class="od-admin-note">
+                                                <span class="material-icons" style="font-size: 14px;">info</span>
+                                                <strong>Update:</strong> {{ ret.admin_note }}
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
                             {% endif %}
                         {% endwith %}
-                    </div>
 
-                    <!-- View button -->
-                    <div class="od-item-action-col">
-                        <a href="{% url 'user_order_item_details' order.order_number item.id %}"
-                           class="od-item-view" title="View Item">
-                            <span class="material-icons">chevron_right</span>
-                        </a>
+                        <!-- Inline Refund Info -->
+                        {% if item.transactions.all %}
+                            {% for txn in item.transactions.all %}
+                                <div class="od-refund-info">
+                                    <span class="od-refund-label">Refund: ₹{{ txn.amount|floatformat:2|intcomma }}</span>
+                                    <span class="order-status-badge oid-return-{{ txn.status|lower }}">{{ txn.get_status_display }}</span>
+                                    <span class="od-refund-method">via {{ txn.get_payment_method_display }}</span>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
                     </div>
                 </div>
             {% endfor %}
@@ -314,8 +282,8 @@
         </div>
     </div>
 
-    <!-- CANCEL ORDER BUTTON (bottom fallback if no retry) -->
-    {% if not is_razorpay_retryable and is_cancellable %}
+    <!-- CANCEL ORDER BUTTON -->
+    {% if is_cancellable %}
         <div class="od-footer-actions" style="display: flex; justify-content: flex-end; margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--color-border);">
             <a href="{% url 'user_cancel_order' order.order_number %}" class="od-btn-cancel-outline">
                 Cancel Order
@@ -324,10 +292,4 @@
     {% endif %}
 
 </div>
-{% endblock %}
-{% block extra_js %}
-    {% if is_razorpay_retryable %}
-        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-        <script src="{% static 'orders/user/js/retry_payment.js' %}"></script>
-    {% endif %}
 {% endblock %}

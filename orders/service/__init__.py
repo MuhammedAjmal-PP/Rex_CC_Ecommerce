@@ -2,7 +2,6 @@ from .stock import (
     InsufficientStockError,
     build_unlocked_stock_lookup,
     lock_variants_for_update,
-    restore_order_stock,
     validate_stock,
 )
 from .status import (
@@ -10,7 +9,6 @@ from .status import (
     can_transition,
     change_order_item_status,
     change_order_status,
-    get_current_status,
 )
 from .returns import (
     ReturnNotEligibleError,
@@ -27,7 +25,6 @@ __all__ = [
     "can_transition",
     "change_order_item_status",
     "change_order_status",
-    "get_current_status",
     "ReturnNotEligibleError",
     "DuplicateReturnError",
     "validate_return_eligibility",

@@ -1,3 +1,6 @@
+from django.utils import timezone
+
+
 class InvalidTransitionError(Exception):
     """Raised when a status transition is not allowed."""
 
@@ -45,11 +48,6 @@ ADMIN_ITEM_ALLOWED_TRANSITIONS = {
     "CANCELLED": set(),
 }
 
-INITIAL_STATUS_BY_MODEL = {
-    "order": ["PLACED", "CONFIRMED"],
-    "orderitem": "PENDING",
-}
-
 # Ordered item status progression (happy path)
 ITEM_STATUS_CHAIN = [
     "PENDING",
@@ -68,17 +66,13 @@ ORDER_TO_ITEM_TARGET = {
     "SHIPPED": "SHIPPED",
     "OUT_FOR_DELIVERY": "OUT_FOR_DELIVERY",
     "DELIVERED": "DELIVERED",
-    "CANCELLED": "CANCELLED",  # special: direct jump
-    "FAILED": "FAILED",  # special: direct jump (payment failure)
+    "CANCELLED": "CANCELLED",
+    "FAILED": "FAILED",
 }
 
 
-def get_current_status(obj):
-    current = obj.status.first()
-    return current.status if current else None
-
-
 def can_transition(*, model_type, from_status, to_status):
+    """Check if transitioning from from_status to to_status is allowed."""
     if model_type == "order":
         transitions = ORDER_ALLOWED_TRANSITIONS
     elif model_type == "orderitem":
@@ -86,14 +80,11 @@ def can_transition(*, model_type, from_status, to_status):
     else:
         return False
 
-    if from_status is None:
-        return to_status in INITIAL_STATUS_BY_MODEL.get(model_type, set())
-
     return to_status in transitions.get(from_status, set())
 
 
 def _change_status(*, obj, model_type, to_status, actor=None, note=""):
-    from_status = get_current_status(obj)
+    from_status = obj.status
 
     if not can_transition(
         model_type=model_type,
@@ -104,11 +95,10 @@ def _change_status(*, obj, model_type, to_status, actor=None, note=""):
             f"Invalid {model_type} transition: {from_status or 'NONE'} -> {to_status}"
         )
 
-    return obj.status.create(
-        status=to_status,
-        note=note,
-        actor=actor,
-    )
+    obj.status = to_status
+    obj.status_updated_at = timezone.now()
+    obj.save(update_fields=["status", "status_updated_at"])
+    return obj
 
 
 # ────────────────────────────────────────────
@@ -123,11 +113,9 @@ def _sync_order_status(order, *, actor=None):
     if not items:
         return
 
-    item_statuses = {get_current_status(item) for item in items}
+    item_statuses = {item.status for item in items}
 
-    # print(item_statuses)
-
-    current_order_status = get_current_status(order)
+    current_order_status = order.status
 
     # Post-delivery statuses (return flow): treated as "delivered" for order sync
     _POST_DELIVERY = {"DELIVERED", "RETURN_REQUESTED", "RETURNED"}
@@ -192,7 +180,7 @@ def _cascade_order_to_items(order, to_status, *, actor=None):
         return
 
     for item in order.items.all():
-        item_status = get_current_status(item)
+        item_status = item.status
         if item_status == "CANCELLED":
             continue
 

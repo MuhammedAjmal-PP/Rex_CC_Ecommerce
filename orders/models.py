@@ -1,107 +1,9 @@
 from decimal import Decimal
 import uuid
-from django.conf import settings
-from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
-from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import ValidationError
 from django.db import models
-from django.utils import timezone
-
-# ======================================================
-# STATUS TIMELINE (GENERIC – Order & OrderItem)
-# ======================================================
+from django.contrib.contenttypes.fields import GenericRelation
 
 
-class StatusTimeline(models.Model):
-
-    # ---------------- ORDER STATUSES ----------------
-    ORDER_STATUSES = (
-        ("PLACED", "Pending Review"),
-        ("CONFIRMED", "Order Confirmed"),
-        ("SHIPPED", "Dispatched"),
-        ("OUT_FOR_DELIVERY", "Out for Delivery"),
-        ("DELIVERED", "Delivered"),
-        ("CANCELLED", "Cancelled"),
-        ("FAILED", "Payment Failed"),
-    )
-
-    # ---------------- ORDER ITEM STATUSES ----------------
-    ORDER_ITEM_STATUSES = (
-        ("PENDING", "Pending"),
-        ("CONFIRMED", "Confirmed"),
-        ("PACKING", "Packing"),
-        ("READY", "Ready to Dispatch"),
-        ("SHIPPED", "Shipped"),
-        ("IN_TRANSIT", "In Transit"),
-        ("OUT_FOR_DELIVERY", "Out for Delivery"),
-        ("DELIVERED", "Delivered"),
-        ("FAILED", "Delivery Failed"),
-        ("RTS", "Returned to Sender"),
-        ("CANCELLED", "Cancelled"),
-        ("RETURN_REQUESTED", "Return Requested"),
-        ("RETURNED", "Returned"),
-    )
-
-    # Map model → allowed statuses
-    CHOICE_MAP = {
-        "order": ORDER_STATUSES,
-        "orderitem": ORDER_ITEM_STATUSES,
-    }
-
-    # ---------------- GENERIC RELATION ----------------
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    object_id = models.PositiveIntegerField()
-    content_object = GenericForeignKey("content_type", "object_id")
-
-    # NO choices here (validated manually)
-    status = models.CharField(max_length=50)
-
-    note = models.TextField(blank=True, null=True)
-
-    # who changed the status (admin / system / courier)
-    actor = models.ForeignKey(
-        "accounts.CustomUser",
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name="status_actions",
-    )
-
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        ordering = ["-created_at"]
-        indexes = [
-            models.Index(fields=["content_type", "object_id"]),
-        ]
-
-    # ---------------- VALIDATION ----------------
-    @property
-    def get_applicable_choices(self):
-        return self.CHOICE_MAP.get(self.content_type.model, [])
-
-    def clean(self):
-        allowed = [key for key, _ in self.get_applicable_choices]
-        if self.status not in allowed:
-            raise ValidationError(
-                f"Invalid status '{self.status}' for {self.content_type.model}"
-            )
-
-        # prevent duplicate consecutive statuses
-        last = StatusTimeline.objects.filter(
-            content_type=self.content_type,
-            object_id=self.object_id,
-        ).first()
-
-        if last and last.status == self.status:
-            raise ValidationError("Duplicate consecutive status not allowed")
-
-    def save(self, *args, **kwargs):
-        self.full_clean()
-        super().save(*args, **kwargs)
-
-    def __str__(self):
-        return f"{self.content_object} → {self.status}"
 
 
 # ======================================================
@@ -110,6 +12,16 @@ class StatusTimeline(models.Model):
 
 
 class Order(models.Model):
+
+    ORDER_STATUS_CHOICES = [
+        ("PLACED", "Pending Review"),
+        ("CONFIRMED", "Order Confirmed"),
+        ("SHIPPED", "Dispatched"),
+        ("OUT_FOR_DELIVERY", "Out for Delivery"),
+        ("DELIVERED", "Delivered"),
+        ("CANCELLED", "Cancelled"),
+        ("FAILED", "Payment Failed"),
+    ]
 
     user = models.ForeignKey(
         "accounts.CustomUser",
@@ -152,9 +64,18 @@ class Order(models.Model):
         related_query_name="orders",
     )
 
-    status = GenericRelation(
-        StatusTimeline,
-        related_query_name="orders",
+    status = models.CharField(
+        max_length=20,
+        choices=ORDER_STATUS_CHOICES,
+        default="PLACED",
+        db_index=True,
+    )
+    status_updated_at = models.DateTimeField(auto_now_add=True)
+
+    cart_snapshot = models.JSONField(
+        null=True,
+        blank=True,
+        help_text="Cart data saved at order time, used to create items after Razorpay payment",
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -162,7 +83,6 @@ class Order(models.Model):
     class Meta:
         ordering = ["-created_at"]
 
-    # ---------------- ORDER NUMBER ----------------
     def generate_order_number(self):
         while True:
             order_number = f"ORD-{uuid.uuid4().hex[-8:].upper()}"
@@ -174,25 +94,17 @@ class Order(models.Model):
             self.order_number = self.generate_order_number()
         super().save(*args, **kwargs)
 
-    # ---------------- HELPERS ----------------
-
-    @property
-    def current_status(self):
-        return self.status.first()
+    # Thin wrappers — real logic in orders.utils
 
     @property
     def payment_transaction(self):
-        """Return the primary payment Transaction (or None)."""
-        return self.payment.filter(transaction_type="ORDER_PAYMENT").first()
+        from orders.utils import get_payment_transaction
+        return get_payment_transaction(self)
 
     @property
     def can_generate_invoice(self):
-        return self.current_status.status in (
-            "CONFIRMED",
-            "SHIPPED",
-            "OUT_FOR_DELIVERY",
-            "DELIVERED",
-        )
+        from orders.utils import can_generate_invoice
+        return can_generate_invoice(self)
 
     def __str__(self):
         return f"Order {self.order_number}"
@@ -204,6 +116,22 @@ class Order(models.Model):
 
 
 class OrderItem(models.Model):
+
+    ITEM_STATUS_CHOICES = [
+        ("PENDING", "Pending"),
+        ("CONFIRMED", "Confirmed"),
+        ("PACKING", "Packing"),
+        ("READY", "Ready to Dispatch"),
+        ("SHIPPED", "Shipped"),
+        ("IN_TRANSIT", "In Transit"),
+        ("OUT_FOR_DELIVERY", "Out for Delivery"),
+        ("DELIVERED", "Delivered"),
+        ("FAILED", "Delivery Failed"),
+        ("RTS", "Returned to Sender"),
+        ("CANCELLED", "Cancelled"),
+        ("RETURN_REQUESTED", "Return Requested"),
+        ("RETURNED", "Returned"),
+    ]
 
     order = models.ForeignKey(
         Order,
@@ -227,14 +155,20 @@ class OrderItem(models.Model):
         help_text="MRP / list price at the time the order was placed (before any offer discount)",
     )
 
-    status = GenericRelation(
-        StatusTimeline,
-        related_query_name="order_items",
+    status = models.CharField(
+        max_length=20,
+        choices=ITEM_STATUS_CHOICES,
+        default="PENDING",
+        db_index=True,
     )
+    status_updated_at = models.DateTimeField(auto_now_add=True)
+
     transactions = GenericRelation(
         "payments.Transaction",
         related_query_name="order_items",
     )
+
+    # Thin wrappers — real logic in orders.utils
 
     @property
     def total_price(self):
@@ -242,63 +176,33 @@ class OrderItem(models.Model):
 
     @property
     def total_original_price(self):
-        """MRP total for this item (original_price × qty)."""
-        return self.original_price * self.quantity
+        from orders.utils import compute_item_totals
+        return compute_item_totals(self)["total_original_price"]
 
     @property
     def item_discount(self):
-        """Total saving for this item (MRP − final) × qty."""
-        return (self.original_price - self.price) * self.quantity
+        from orders.utils import compute_item_totals
+        return compute_item_totals(self)["item_discount"]
 
     @property
     def coupon_share(self):
-        """Proportional share of order's coupon discount for this item."""
-        if not self.order.coupon_discount or not self.order.sub_total:
-            return Decimal("0.00")
-        share = (self.total_price / self.order.sub_total) * self.order.coupon_discount
-        return share.quantize(Decimal("0.01"))
+        from orders.utils import compute_coupon_share
+        return compute_coupon_share(self)
 
     @property
     def total_cancel(self):
-        shipping_fee = Decimal(self.quantity * 100)
-        total = self.total_price + shipping_fee
-        tax = total * Decimal(settings.GST_RATE) / Decimal(100)
-        return total + tax - self.coupon_share
+        from orders.utils import compute_cancel_refund
+        return compute_cancel_refund(self)
 
     @property
     def total_return(self):
-        tax = self.total_price * Decimal(settings.GST_RATE) / Decimal(100)
-        return self.total_price + tax - self.coupon_share
-
-    @property
-    def current_status(self):
-        return self.status.first()
+        from orders.utils import compute_return_refund
+        return compute_return_refund(self)
 
     @property
     def can_return(self):
-        """
-        Item is returnable only if:
-        1. Current status is DELIVERED
-        2. Within 7 days of the delivery date
-        3. No pending (REQUESTED/APPROVED) return already exists
-        """
-        current = self.current_status
-        if not current or current.status != "DELIVERED":
-            return False
-
-        if hasattr(self, "return_request") and self.return_request.status in (
-            "REQUESTED",
-            "APPROVED",
-            "REJECTED",
-        ):
-            return False
-
-        delivered_entry = self.status.filter(status="DELIVERED").first()
-        if not delivered_entry:
-            return False
-
-        days_since = (timezone.now() - delivered_entry.created_at).days
-        return days_since <= 7
+        from orders.utils import can_return_item
+        return can_return_item(self)
 
     def __str__(self):
         return f"OrderItem #{self.id} ({self.product_variant})"
