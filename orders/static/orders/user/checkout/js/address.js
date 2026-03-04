@@ -122,66 +122,10 @@ function _initLabelLogic(container) {
     sync();
 }
 
-// ────────────────── India Post PIN Validation ──────────────────
-
-function _initPinValidation(container) {
-    if (!container) return;
-
-    const pinInput   = container.querySelector('#postal_code');
-    const cityInput  = container.querySelector('#city');
-    const stateInput = container.querySelector('#state');
-    if (!pinInput) return;
-
-    let feedback = container.querySelector('.api-feedback');
-    if (!feedback) {
-        feedback = document.createElement('div');
-        feedback.className = 'api-feedback';
-        feedback.style.cssText = 'font-size:0.85rem; margin-top:4px;';
-        pinInput.parentNode.appendChild(feedback);
-    }
-
-    pinInput.addEventListener('change', function () {
-        const pin = this.value.trim();
-
-        if (pin.length === 6 && /^\d+$/.test(pin)) {
-            feedback.textContent = 'Fetching details from India Post…';
-            feedback.style.color = '#666';
-            pinInput.classList.remove('is-invalid');
-
-            fetch(`https://api.postalpincode.in/pincode/${pin}`)
-                .then(r => r.json())
-                .then(data => {
-                    if (data?.[0]?.Status === 'Success') {
-                        const state = data[0].PostOffice[0].State;
-                        if (stateInput) { stateInput.value = state; stateInput.readOnly = true; }
-                        if (cityInput)  { cityInput.readOnly = false; }
-                        feedback.textContent = '';
-                        pinInput.classList.remove('is-invalid');
-                        pinInput.classList.add('is-valid');
-                    } else { throw new Error('Invalid'); }
-                })
-                .catch(() => {
-                    feedback.textContent = 'Invalid Postal Code.';
-                    feedback.style.color = '#d9534f';
-                    pinInput.classList.add('is-invalid');
-                    if (stateInput) { stateInput.value = ''; stateInput.readOnly = true; }
-                });
-        } else if (pin.length > 0) {
-            feedback.textContent = 'Postal code must be 6 digits.';
-            feedback.style.color = '#d9534f';
-            pinInput.classList.add('is-invalid');
-        } else {
-            feedback.textContent = '';
-            pinInput.classList.remove('is-invalid', 'is-valid');
-        }
-    });
-}
-
 // ────────────────── Init helpers on a form inside a container ──────────────────
 
 function _initFormPlugins(container) {
     _initLabelLogic(container);
-    _initPinValidation(container);
 }
 
 // ────────────────── AJAX Form Submit ──────────────────

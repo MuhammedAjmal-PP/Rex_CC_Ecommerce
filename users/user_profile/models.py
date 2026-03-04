@@ -12,7 +12,7 @@ from users.user_profile.validators import (
     address_regex,
     alpha_space_hyphen,
 )
-from users.user_profile.helper import get_expected_states
+
 
 
 class AddressActiveManager(models.Manager):
@@ -103,37 +103,6 @@ class Address(models.Model):
                 raise ValidationError(
                     f"You can only save up to {settings.MAX_ADDRESSES_PER_USER} addresses."
                 )
-
-        # Server-side State-Pincode Validation
-        if (
-            self.postal_code
-            and len(self.postal_code) == 6
-            and self.postal_code.isdigit()
-        ):
-            # First 2 digits map to State/Region
-            try:
-                prefix = int(self.postal_code[:2])
-                expected_states = get_expected_states(prefix)
-
-                if expected_states and self.state:
-                    # Normalize for comparison
-                    input_state = self.state.replace("&", "and").lower().strip()
-                    # Check if any expected state is in input state (substring match often safer for distinct names)
-                    match_found = any(
-                        s.replace("&", "and").lower() in input_state
-                        for s in expected_states
-                    )
-
-                    if not match_found:
-                        # Provide a clear error message
-                        valid_names = ", ".join(expected_states)
-                        raise ValidationError(
-                            {
-                                "state": f"Invalid state for this pincode. Expected one of: {valid_names}."
-                            }
-                        )
-            except ValueError:
-                pass  # Should be caught by isdigit check, but safe guard.
 
     def save(self, *args, **kwargs):
         self.full_clean()
