@@ -3,9 +3,9 @@ from django.views.decorators.cache import never_cache
 from catalog.models import Category, Brand, ProductVariant, Product
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
+from catalog.utils import pack_variants, get_offer_variants
 from users.wishlist.utils import get_session_wishlist
 from users.wishlist.models import WishlistItem
-from offers.service import get_offer_variants
 
 # Create your views here.
 
@@ -15,10 +15,11 @@ def home(request):
     """
     Homepage view
     """
-    categories = Category.objects.filter(is_active=True)
 
     # Get brands with logos for featured brands section
-    brands = Brand.objects.filter(is_active=True, logo__isnull=False)[:5]
+    brands = Brand.objects.filter(is_active=True, logo__isnull=False).only(
+        "slug", "name", "logo"
+    )[:5]
 
     product_variant = (
         ProductVariant.objects.filter(
@@ -29,14 +30,16 @@ def home(request):
             stock__gt=0,
         )
         .select_related("product", "product__brand")
-        .prefetch_related("images")
+        .prefetch_related("images", "product__category")
     )
 
     new_arrivals = product_variant.order_by("-created_at")[:8]
+    new_arrivals = pack_variants(new_arrivals)
 
     featured_variants = product_variant.filter(is_featured=True).order_by(
         "-created_at"
     )[:8]
+    featured_variants = pack_variants(featured_variants)
 
     offer_variants = get_offer_variants(product_variant, limit=8)
 
@@ -51,7 +54,6 @@ def home(request):
         wishlist_ids = get_session_wishlist(request)
 
     context = {
-        "categories": categories,
         "brands": brands,
         "new_arrivals": new_arrivals,
         "featured_variants": featured_variants,
@@ -105,7 +107,9 @@ def get_latest_product(request):
                 "slug": latest_variant.product.slug,
                 "brand": latest_variant.product.brand.name,
                 "image": image_url,
-                "category": latest_variant.product.category.name,
+                "category": getattr(
+                    latest_variant.product.category.first(), "name", ""
+                ),
                 "sku": latest_variant.sku,
             },
         }

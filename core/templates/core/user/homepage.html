@@ -70,7 +70,7 @@
                     <a href="{% url 'product_list' %}?brand={{ brand.slug }}"
                        class="brand-card">
                         <div class="brand-image-box">
-                            {% if brand.logo %}<img src="{{ brand.logo.url }}" alt="{{ brand.name }}" class="brand-logo">{% endif %}
+                            <img src="{{ brand.logo.url }}" alt="{{ brand.name }}" class="brand-logo">
                         </div>
                     </a>
                 {% endfor %}

@@ -123,10 +123,9 @@
                             <a href="{% url 'product_detail' v.product.slug v.sku %}"
                                class="pdp-variant-option {% if v == selected_variant %}active{% endif %} {% if v.stock == 0 %}out-of-stock{% endif %}"
                                title="{{ v.sku }} - {% if v.stock == 0 %}Out of Stock{% else %}In Stock{% endif %}">
-                                {% if v.images.first %}
-                                    <img src="{{ v.images.first.image.url }}" alt="{{ v.sku }}">
+                                {% if v.primary_image %}
+                                    <img src="{{ v.primary_image.image.url }}" alt="{{ v.sku }}">
                                 {% else %}
-                                    <!-- Fallback if variant has no image, generic icon or text -->
                                     <div style="width:100%;
                                                 height:100%;
                                                 display:flex;
@@ -276,16 +275,12 @@
             </div>
         </section>
         <!-- 4. Related Products -->
-        {% if related_products %}
+        {% if related_variants %}
             <section class="pdp-content-section" style="border-bottom: none;">
                 <h2 class="pdp-section-title">You May Also Like</h2>
                 <div class="pdp-related-grid">
-                    {% for rp in related_products %}
-                        {% with variant=rp.variants.first %}
-                            {% if variant %}
-                                {% include "catalog/user/product/product_card.html" with variant=variant %}
-                            {% endif %}
-                        {% endwith %}
+                    {% for variant in related_variants %}
+                        {% include "catalog/user/product/product_card.html" with variant=variant %}
                     {% endfor %}
                 </div>
             </section>

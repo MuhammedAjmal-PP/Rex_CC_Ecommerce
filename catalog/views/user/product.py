@@ -6,6 +6,7 @@ from django.contrib import messages
 from django.views.decorators.cache import never_cache
 from catalog.service import get_category_from_referer
 from catalog.models import Product, ProductVariant, Category, Brand
+from catalog.utils import pack_variants
 from users.wishlist.utils import get_wishlist_variant_ids
 
 
@@ -85,6 +86,9 @@ def product_list(request):
     paginator = Paginator(variants, 15)
     page_obj = paginator.get_page(page_number)
 
+    # Pack the current page's variants (sets primary_image, discount, price)
+    pack_variants(page_obj.object_list)
+
     # FILTER OPTIONS
     categories = Category.objects.filter(is_active=True)
     brands = Brand.objects.filter(is_active=True)
@@ -150,6 +154,7 @@ def product_detail(request, slug, sku):
             is_deleted=False,
             is_drafted=False,
         )
+        .select_related("product", "product__brand")
         .prefetch_related("images")
         .order_by("-is_featured", "sku")
     )
@@ -158,11 +163,17 @@ def product_detail(request, slug, sku):
         messages.error(request, "This product is currently unavailable.")
         return redirect("product_list")
 
-    # VARIANT
-
-    variant = get_object_or_404(variants, sku=sku)
-
+    # VARIANT — list and pack first, then find selected from the packed list
     variants = list(variants)
+
+    # Pack ALL variants — sets primary_image, discount_percentage, final_price
+    pack_variants(variants)
+
+    # Find the selected variant from the packed list (not a fresh DB object)
+    variant = next((v for v in variants if v.sku == sku), None)
+    if not variant:
+        messages.error(request, "This product is currently unavailable.")
+        return redirect("product_list")
 
     # VARIANT IMAGES
     variant_images = variant.images.all()
@@ -185,11 +196,9 @@ def product_detail(request, slug, sku):
         stock_status = "in_stock"
         stock_message = "In Stock"
 
-    # PRICING (MODEL-DRIVEN)
+    # PRICING (set by pack_variants above)
     discount_percentage = variant.discount_percentage or 0
-
     final_price = variant.final_price
-
     original_price = variant.price if discount_percentage > 0 else None
 
     # BREADCRUMBS
@@ -253,18 +262,23 @@ def product_detail(request, slug, sku):
         },
     ]
 
-    # RELATED PRODUCTS
-    related_products = (
-        Product.objects.filter(
-            category__in=active_categories,
+    # RELATED PRODUCTS — query variants directly to avoid N+1
+    related_variants = (
+        ProductVariant.objects.filter(
+            product__category__in=active_categories,
+            product__is_deleted=False,
+            product__is_drafted=False,
+            product__brand__is_active=True,
             is_deleted=False,
             is_drafted=False,
-            brand__is_active=True,
         )
-        .exclude(id=product.id)
-        .prefetch_related("variants")
-        .distinct()[:4]
+        .exclude(product_id=product.id)
+        .select_related("product", "product__brand")
+        .prefetch_related("images")
+        .order_by("product_id", "-is_featured")
+        .distinct("product_id")[:4]
     )
+    related_variants = pack_variants(related_variants)
 
     # SPECIFICATIONS
     specifications = []
@@ -300,7 +314,7 @@ def product_detail(request, slug, sku):
         "breadcrumbs": breadcrumbs,
         "ratings_data": ratings_data,
         "reviews": reviews,
-        "related_products": related_products,
+        "related_variants": related_variants,
         "specifications": specifications,
         "categories": active_categories,
         "wishlist_ids": get_wishlist_variant_ids(request),

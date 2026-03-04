@@ -231,49 +231,6 @@ class ProductVariant(models.Model):
     class Meta:
         ordering = ["product", "sku"]
 
-    @property
-    def primary_image(self):
-        return self.images.first()
-
-    @property
-    def discount_percentage(self):
-        # Instance-level cache: compute once per object lifecycle
-        if hasattr(self, '_cached_discount_percentage'):
-            return self._cached_discount_percentage
-
-        from offers.models import Offer
-        from django.utils import timezone
-
-        now = timezone.now()
-
-        # Collect all active offers linked to this variant's product, categories, or brand
-        offers = Offer.objects.filter(
-            is_active=True,
-            start_date__lte=now,
-            end_date__gte=now,
-        ).filter(
-            models.Q(products=self.product)
-            | models.Q(categories__in=self.product.category.all())
-            | models.Q(brands=self.product.brand)
-        ).distinct()
-
-        # Build a list of all discount rates (offer rates + variant's own rate)
-        discount_rates = [int(offer.discount_value) for offer in offers]
-        discount_rates.append(self.discount_rate)
-
-        self._cached_discount_percentage = max(discount_rates)
-        return self._cached_discount_percentage
-
-    @property
-    def discount_amount(self):
-        
-        if self.discount_percentage > 0:
-            return self.price * Decimal(self.discount_percentage) / Decimal(100)
-        return Decimal("0.00")
-
-    @property
-    def final_price(self):
-        return self.price - self.discount_amount
 
     def __str__(self):
         return f"{self.product.name} ({self.sku})"
