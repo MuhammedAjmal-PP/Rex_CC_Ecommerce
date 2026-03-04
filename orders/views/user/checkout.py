@@ -6,7 +6,7 @@ from django.shortcuts import redirect, render
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_GET
 from users.cart.models import Cart
-from users.cart.utils import build_cart_summary, fetch_cart
+from users.cart.utils import build_cart_summary, compute_cart_summary, fetch_cart
 from users.user_profile.forms import AddressForm
 from users.user_profile.models import Address
 from users.wallet.service import get_or_create_wallet
@@ -57,15 +57,18 @@ def checkoutview(request):
     can_add_address = addresses.count() < settings.MAX_ADDRESSES_PER_USER
     address_form = AddressForm() if can_add_address else None
 
+    # Use utility for totals
+    summary = compute_cart_summary(cart)
+
     order_summary = {
-        "items_count": cart.items_count,
-        "mrp_total": cart.total,
-        "discount": cart.discount,
-        "sub_total": cart.sub_total,
-        "shipping_charge": cart.shipping_fee,
+        "items_count": summary["items_count"],
+        "mrp_total": summary["total"],
+        "discount": summary["discount"],
+        "sub_total": summary["sub_total"],
+        "shipping_charge": summary["shipping_fee"],
         "gst_rate": settings.GST_RATE,
-        "tax": cart.tax,
-        "grand_total": cart.grand_total,
+        "tax": summary["tax"],
+        "grand_total": summary["grand_total"],
     }
 
     # ── Coupon ──────────────────────────────────────────

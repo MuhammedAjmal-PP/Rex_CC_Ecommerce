@@ -16,6 +16,7 @@ from payments.models import Transaction
 from payments.service import create_transaction
 from payments.razorpay_service import create_razorpay_order, verify_razorpay_signature
 from users.cart.models import Cart, CartItem
+from users.cart.utils import compute_cart_summary
 from users.user_profile.models import Address
 from users.wallet.service import (
     can_pay_with_wallet,
@@ -78,9 +79,10 @@ def place_order_view(request):
         messages.error(request, "Your cart is empty.")
         return redirect("user_cart")
 
-    cart_items = CartItem.objects.filter(cart=cart).select_related("product_variant")
+    # Compute cart summary (packs variants, computes all totals)
+    summary = compute_cart_summary(cart)
 
-    if not cart_items.exists():
+    if summary["items_count"] == 0:
         if payment_method == "RAZORPAY":
             return JsonResponse({"error": "Your cart is empty."}, status=400)
         messages.error(request, "Your cart is empty.")
@@ -88,7 +90,7 @@ def place_order_view(request):
 
     # Pre-check wallet balance to avoid database lock if insufficient
     if payment_method == "WALLET":
-        if not can_pay_with_wallet(request.user, cart.grand_total):
+        if not can_pay_with_wallet(request.user, summary["grand_total"]):
             messages.error(
                 request,
                 "Insufficient wallet balance. Please choose another payment method.",
@@ -104,7 +106,7 @@ def place_order_view(request):
         coupon_code = applied_coupon_session.get("code", "")
         try:
             coupon_obj, coupon_discount = validate_coupon(
-                coupon_code, request.user, cart.sub_total
+                coupon_code, request.user, summary["sub_total"]
             )
         except InvalidCouponError as e:
             # Coupon no longer valid — clear session and redirect
@@ -121,10 +123,10 @@ def place_order_view(request):
 
     # Calculate adjusted grand total with correct flow:
     # sub_total → coupon → shipping → tax → grand_total
-    adjusted_sub = cart.sub_total - coupon_discount
+    adjusted_sub = summary["sub_total"] - coupon_discount
     if adjusted_sub < Decimal("0.00"):
         adjusted_sub = Decimal("0.00")
-    adjusted_total_amount = adjusted_sub + cart.shipping_fee
+    adjusted_total_amount = adjusted_sub + summary["shipping_fee"]
     adjusted_tax = (adjusted_total_amount * Decimal(settings.GST_RATE) / Decimal("100")).quantize(Decimal("0.01"))
     adjusted_grand_total = adjusted_total_amount + adjusted_tax
 
@@ -139,6 +141,8 @@ def place_order_view(request):
     # ────────────────────────────────────────────────────────
 
     with transaction.atomic():
+        # Re-fetch cart items for stock locking (need fresh queryset)
+        cart_items = CartItem.objects.filter(cart=cart).select_related("product_variant")
         locked_variants = lock_variants_for_update(items=cart_items)
 
         try:
@@ -154,15 +158,21 @@ def place_order_view(request):
             user=request.user,
             billing_address=billing_address.snapshot,
             shipping_address=shipping_address.snapshot,
-            total=cart.total,
-            sub_total=cart.sub_total,
-            tax=adjusted_tax if coupon_obj else cart.tax,
-            discount=cart.discount,
-            shipping_fee=cart.shipping_fee,
+            total=summary["total"],
+            sub_total=summary["sub_total"],
+            tax=adjusted_tax if coupon_obj else summary["tax"],
+            discount=summary["discount"],
+            shipping_fee=summary["shipping_fee"],
             grand_total=adjusted_grand_total,
             coupon=coupon_obj,
             coupon_discount=coupon_discount,
         )
+
+        # Build price lookup from packed variants
+        packed_prices = {
+            ci.product_variant_id: ci.product_variant.final_price
+            for ci in summary["cart_items"]
+        }
 
         for item in cart_items:
             locked_variant = locked_variants[item.product_variant_id]
@@ -172,7 +182,7 @@ def place_order_view(request):
                 order=order,
                 product_variant=locked_variant,
                 quantity=item.quantity,
-                price=item.item_price,                        # discounted final price
+                price=packed_prices.get(item.product_variant_id, locked_variant.price),  # discounted final price
                 original_price=locked_variant.price,          # MRP at time of order
             )
 

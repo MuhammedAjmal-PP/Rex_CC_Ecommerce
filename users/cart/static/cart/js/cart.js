@@ -85,11 +85,23 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // Disable buttons while request is in flight
     setItemLoading(cardEl, true);
 
     try {
-      const data = await updateCartItem(slug, sku, newQty);
+      const formData = new FormData();
+      formData.append("quantity", newQty);
+
+      const response = await fetch(`/api/mycart/${slug}/v/${sku}/update/`, {
+        method: "POST",
+        headers: { "X-CSRFToken": csrfToken },
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Update failed");
+      }
 
       if (data.success && data.item) {
         // Update quantity input
@@ -121,9 +133,6 @@ document.addEventListener("DOMContentLoaded", () => {
         // Update stock warning
         updateStockWarning(cardEl, data.item.stock, data.item.is_in_stock);
 
-        // Update button states
-        updateButtonsState(inputEl, decreaseBtn, increaseBtn, data.item.allowed_max);
-
         // Update order summary sidebar
         updateOrderSummary(data.order_summary);
       }
@@ -131,7 +140,9 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error(error);
       showToast(error.message || "Something went wrong.", "error");
     } finally {
+      // Re-enable card first, then set correct button disabled states
       setItemLoading(cardEl, false);
+      updateButtonsState(inputEl, decreaseBtn, increaseBtn, parseInt(inputEl.dataset.max));
     }
   }
 
@@ -185,13 +196,9 @@ document.addEventListener("DOMContentLoaded", () => {
     setItemLoading(cardEl, true);
 
     try {
-      const formData = new FormData();
-      formData.append("remove", "true");
-
-      const response = await fetch(`/api/mycart/${slug}/v/${sku}/update/`, {
+      const response = await fetch(`/api/mycart/${slug}/v/${sku}/remove/`, {
         method: "POST",
         headers: { "X-CSRFToken": csrfToken },
-        body: formData,
       });
 
       const data = await response.json();
@@ -207,6 +214,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
           // Update order summary
           updateOrderSummary(data.order_summary);
+
+          // Update cart badge in navbar
+          updateNavCartBadge(data.cart_count);
+
+          // Dispatch global event so add_cart.js badge also updates
+          window.dispatchEvent(new CustomEvent("cart:updated"));
 
           // If cart is now empty, show empty state
           const remainingItems = document.querySelectorAll(".cart-item");
@@ -226,31 +239,21 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // =========================================================================
-  // BACKEND UPDATE (returns JSON)
-  // =========================================================================
-
-  async function updateCartItem(slug, sku, quantity) {
-    const formData = new FormData();
-    formData.append("quantity", quantity);
-
-    const response = await fetch(`/api/mycart/${slug}/v/${sku}/update/`, {
-      method: "POST",
-      headers: { "X-CSRFToken": csrfToken },
-      body: formData,
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.message || "Update failed");
-    }
-
-    return data;
-  }
-
-  // =========================================================================
   // DOM UPDATE HELPERS
   // =========================================================================
+
+  function updateNavCartBadge(count) {
+    const badge = document.getElementById("cartBadge");
+    if (!badge) return;
+
+    if (count > 0) {
+      badge.textContent = count;
+      badge.style.display = "";
+    } else {
+      badge.textContent = "0";
+      badge.style.display = "none";
+    }
+  }
 
   function updateOrderSummary(summary) {
     if (!summary) return;
@@ -275,7 +278,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if (valueSpan) {
           valueSpan.textContent = `−₹${formatNumber(summary.discount)}`;
         }
-        // Toggle discount class
         if (summary.discount > 0) {
           row.classList.add("discount");
         } else {
@@ -304,13 +306,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const qtyWrapper = cardEl.querySelector(".lux-qty-wrapper");
     if (!qtyWrapper) return;
 
-    // Remove existing warnings
     const existingWarning = qtyWrapper.querySelector(".stock-warning");
     const existingError = qtyWrapper.querySelector(".stock-error");
     if (existingWarning) existingWarning.remove();
     if (existingError) existingError.remove();
 
-    // Add new warning if needed
     if (!isInStock) {
       const errorSpan = document.createElement("span");
       errorSpan.className = "stock-error";

@@ -11,6 +11,7 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 
 from users.cart.models import Cart
+from users.cart.utils import compute_cart_summary
 from coupons.service import InvalidCouponError, validate_coupon
 
 
@@ -36,14 +37,16 @@ def apply_coupon(request):
     except Cart.DoesNotExist:
         return JsonResponse({"success": False, "message": "Your cart is empty."}, status=400)
 
+    summary = compute_cart_summary(cart)
+
     try:
-        coupon, discount_amount = validate_coupon(code, request.user, cart.sub_total)
+        coupon, discount_amount = validate_coupon(code, request.user, summary["sub_total"])
     except InvalidCouponError as e:
         return JsonResponse({"success": False, "message": str(e)}, status=400)
 
     # Recalculate totals: sub_total → coupon → shipping → tax → grand_total
-    adjusted_sub = max(cart.sub_total - discount_amount, Decimal("0.00"))
-    adjusted_total_amount = adjusted_sub + cart.shipping_fee
+    adjusted_sub = max(summary["sub_total"] - discount_amount, Decimal("0.00"))
+    adjusted_total_amount = adjusted_sub + summary["shipping_fee"]
     adjusted_tax = (adjusted_total_amount * Decimal(settings.GST_RATE) / Decimal("100")).quantize(Decimal("0.01"))
     new_grand_total = adjusted_total_amount + adjusted_tax
 
@@ -80,7 +83,8 @@ def remove_coupon(request):
     # Return original totals
     try:
         cart = Cart.objects.get(user=request.user)
-        grand_total = str(cart.grand_total)
+        summary = compute_cart_summary(cart)
+        grand_total = str(summary["grand_total"])
     except Cart.DoesNotExist:
         grand_total = "0.00"
 

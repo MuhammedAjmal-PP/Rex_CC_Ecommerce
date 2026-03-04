@@ -1,4 +1,3 @@
-from decimal import Decimal
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
@@ -6,11 +5,10 @@ from django.shortcuts import get_object_or_404, render
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_GET, require_POST
 from catalog.models import Product, ProductVariant
+from catalog.utils import pack_variants
 from users.cart.models import Cart, CartItem
-from users.cart.utils import build_cart_summary, fetch_cart
+from users.cart.utils import build_cart_summary, compute_cart_summary, fetch_cart
 from users.wishlist.models import Wishlist, WishlistItem
-
-# Create your views here.
 
 
 @login_required
@@ -24,15 +22,15 @@ def view_cart(request):
 
     products = build_cart_summary(cart_items)
 
-    # order summay variables
+    summary = compute_cart_summary(cart)
 
     order_summary = {
-        "products_count": cart.items_count,
-        "total": cart.total,
-        "discount": cart.discount,
-        "sub_total": cart.sub_total,
-        "shipping_fee": cart.shipping_fee,
-        "total_amount_to_pay": cart.total_amount,
+        "products_count": summary["items_count"],
+        "total": summary["total"],
+        "discount": summary["discount"],
+        "sub_total": summary["sub_total"],
+        "shipping_fee": summary["shipping_fee"],
+        "total_amount_to_pay": summary["total_amount"],
     }
 
     context = {
@@ -66,7 +64,6 @@ def add_cart(request, slug, sku):
         is_deleted=False,
     )
 
-    # Parse quantity safely
     try:
         quantity = int(request.POST.get("quantity", 1))
     except (TypeError, ValueError):
@@ -75,23 +72,18 @@ def add_cart(request, slug, sku):
             status=400,
         )
 
-    # Validate quantity
     if quantity <= 0:
         return JsonResponse(
             {"success": False, "message": "Quantity must be greater than zero"},
             status=400,
         )
 
-    # Get existing cart item (without quantity)
     cart_item = CartItem.objects.filter(cart=cart, product_variant=variant).first()
 
-    # Compute merged quantity
     if cart_item:
         new_quantity = cart_item.quantity + quantity
     else:
         new_quantity = quantity
-
-    # Stock validation
 
     if new_quantity > settings.MAX_QUNATITY_PURCHASE_PER_ITEM:
         return JsonResponse(
@@ -111,7 +103,6 @@ def add_cart(request, slug, sku):
             status=400,
         )
 
-    # Save
     if cart_item:
         cart_item.quantity = new_quantity
         cart_item.save()
@@ -138,18 +129,18 @@ def add_cart(request, slug, sku):
             "message": message,
             "added": True,
             "quantity": new_quantity,
+            "cart_count": cart.items_count,
         }
     )
 
 
 @login_required
 @require_POST
-def update_cart(request, slug, sku):
+def update_cart_quantity(request, slug, sku):
     """
-    Update or remove a cart item.
+    Update quantity of a cart item (increment / decrement).
     Returns JSON with updated item data and order summary.
     """
-
     cart, _ = Cart.objects.get_or_create(user=request.user)
 
     product = get_object_or_404(Product, slug=slug, is_drafted=False, is_deleted=False)
@@ -170,18 +161,11 @@ def update_cart(request, slug, sku):
             status=400,
         )
 
-    remove = request.POST.get("remove") == "true"
-
-    if remove or quantity <= 0:
-        cart_item.delete()
-        # Clear cached summary so it recalculates
-        if hasattr(cart, '_cached_summary'):
-            del cart._cached_summary
-        return JsonResponse({
-            "success": True,
-            "removed": True,
-            "order_summary": _build_order_summary_json(cart),
-        })
+    if quantity <= 0:
+        return JsonResponse(
+            {"success": False, "message": "Quantity must be at least 1"},
+            status=400,
+        )
 
     if quantity > settings.MAX_QUNATITY_PURCHASE_PER_ITEM:
         return JsonResponse(
@@ -204,36 +188,67 @@ def update_cart(request, slug, sku):
     cart_item.quantity = quantity
     cart_item.save(update_fields=["quantity"])
 
-    # Clear cached summary so it recalculates
-    if hasattr(cart, '_cached_summary'):
-        del cart._cached_summary
+    # Pack the single variant for price data
+    pack_variants([variant])
 
     allowed_max = min(variant.stock, settings.MAX_QUNATITY_PURCHASE_PER_ITEM)
+    summary = compute_cart_summary(cart)
 
     return JsonResponse({
         "success": True,
         "item": {
             "quantity": quantity,
-            "total_amount": float(cart_item.total_amount),
+            "total_amount": float(variant.final_price * quantity),
             "final_price": float(variant.final_price),
             "price": float(variant.price),
             "stock": variant.stock,
             "allowed_max": allowed_max,
             "is_in_stock": variant.stock > 0,
         },
-        "order_summary": _build_order_summary_json(cart),
+        "order_summary": _summary_to_json(summary),
     })
 
 
-def _build_order_summary_json(cart):
-    """Build order summary dict with float values for JSON serialization."""
+@login_required
+@require_POST
+def remove_cart_item(request, slug, sku):
+    """
+    Remove a cart item entirely.
+    Returns JSON with updated order summary and cart count.
+    """
+    cart, _ = Cart.objects.get_or_create(user=request.user)
+
+    product = get_object_or_404(Product, slug=slug, is_drafted=False, is_deleted=False)
+    variant = get_object_or_404(
+        ProductVariant,
+        product=product,
+        sku=sku,
+        is_drafted=False,
+        is_deleted=False,
+    )
+    cart_item = get_object_or_404(CartItem, cart=cart, product_variant=variant)
+
+    cart_item.delete()
+
+    summary = compute_cart_summary(cart)
+
+    return JsonResponse({
+        "success": True,
+        "removed": True,
+        "cart_count": summary["items_count"],
+        "order_summary": _summary_to_json(summary),
+    })
+
+
+def _summary_to_json(summary):
+    """Convert summary dict to JSON-safe floats."""
     return {
-        "products_count": cart.items_count,
-        "total": float(cart.total),
-        "discount": float(cart.discount),
-        "sub_total": float(cart.sub_total),
-        "shipping_fee": float(cart.shipping_fee),
-        "total_amount_to_pay": float(cart.total_amount),
+        "products_count": summary["items_count"],
+        "total": float(summary["total"]),
+        "discount": float(summary["discount"]),
+        "sub_total": float(summary["sub_total"]),
+        "shipping_fee": float(summary["shipping_fee"]),
+        "total_amount_to_pay": float(summary["total_amount"]),
     }
 
 
