@@ -112,3 +112,32 @@ def revoke_coupon_usage(order):
     Coupon.objects.filter(pk=coupon.pk, used_count__gt=0).update(
         used_count=F("used_count") - 1
     )
+
+
+# ────────────────────────────────────────────
+# Recalculate totals with coupon discount
+# ────────────────────────────────────────────
+
+
+def recalculate_with_coupon(sub_total, shipping_fee, gst_rate, coupon_discount):
+    """
+    Apply coupon discount and recalculate:
+        sub_total → coupon → shipping → tax → grand_total
+
+    Returns:
+        dict with adjusted_sub, shipping_fee, tax, grand_total
+    """
+    adjusted_sub = max(sub_total - coupon_discount, Decimal("0.00"))
+    total_before_tax = adjusted_sub + shipping_fee
+    tax = (total_before_tax * Decimal(str(gst_rate)) / Decimal("100")).quantize(
+        Decimal("0.01")
+    )
+    grand_total = total_before_tax + tax
+
+    return {
+        "adjusted_sub": adjusted_sub,
+        "shipping_fee": shipping_fee,
+        "tax": tax,
+        "grand_total": grand_total,
+    }
+

@@ -16,6 +16,7 @@ from orders.service import (
     validate_stock,
 )
 
+
 # Fetch coupons the user can potentially use
 from coupons.models import Coupon as CouponModel
 from coupons.models import CouponUsage
@@ -71,23 +72,10 @@ def checkoutview(request):
         "grand_total": summary["grand_total"],
     }
 
-    # ── Coupon ──────────────────────────────────────────
-    applied_coupon = request.session.get("applied_coupon")
-    coupon_discount = Decimal("0.00")
-    if applied_coupon:
-        coupon_discount = Decimal(applied_coupon.get("discount_amount", "0.00"))
-        order_summary["coupon_code"] = applied_coupon["code"]
-        order_summary["coupon_discount"] = coupon_discount
-        # Recalculate: sub_total → coupon → shipping → tax → grand_total
-        adjusted_sub = max(
-            order_summary["sub_total"] - coupon_discount, Decimal("0.00")
-        )
-        adjusted_total_amount = adjusted_sub + order_summary["shipping_charge"]
-        adjusted_tax = (
-            adjusted_total_amount * Decimal(settings.GST_RATE) / Decimal("100")
-        ).quantize(Decimal("0.01"))
-        order_summary["tax"] = adjusted_tax
-        order_summary["grand_total"] = adjusted_total_amount + adjusted_tax
+    # ── Coupon: clear any stale session coupon on fresh checkout load ──
+    if "applied_coupon" in request.session:
+        del request.session["applied_coupon"]
+        request.session.modified = True
 
     now = timezone.now()
 
@@ -126,7 +114,6 @@ def checkoutview(request):
         "can_add_address": can_add_address,
         "address_form": address_form,
         "wallet_balance": wallet.balance,
-        "applied_coupon": applied_coupon,
         "available_coupons": available_coupons,
     }
 

@@ -12,7 +12,7 @@ from django.views.decorators.http import require_POST
 
 from users.cart.models import Cart
 from users.cart.utils import compute_cart_summary
-from coupons.service import InvalidCouponError, validate_coupon
+from coupons.service import InvalidCouponError, validate_coupon, recalculate_with_coupon
 
 
 @login_required
@@ -45,10 +45,13 @@ def apply_coupon(request):
         return JsonResponse({"success": False, "message": str(e)}, status=400)
 
     # Recalculate totals: sub_total → coupon → shipping → tax → grand_total
-    adjusted_sub = max(summary["sub_total"] - discount_amount, Decimal("0.00"))
-    adjusted_total_amount = adjusted_sub + summary["shipping_fee"]
-    adjusted_tax = (adjusted_total_amount * Decimal(settings.GST_RATE) / Decimal("100")).quantize(Decimal("0.01"))
-    new_grand_total = adjusted_total_amount + adjusted_tax
+    adjusted = recalculate_with_coupon(
+        summary["sub_total"],
+        summary["shipping_fee"],
+        settings.GST_RATE,
+        discount_amount,
+    )
+    new_grand_total = adjusted["grand_total"]
 
     # Store in session
     request.session["applied_coupon"] = {
