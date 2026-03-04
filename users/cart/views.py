@@ -90,11 +90,11 @@ def add_cart(request, slug, sku):
     else:
         new_quantity = quantity
 
-    if new_quantity > settings.MAX_QUNATITY_PURCHASE_PER_ITEM:
+    if new_quantity > settings.MAX_QUANTITY_PURCHASE_PER_ITEM:
         return JsonResponse(
             {
                 "success": False,
-                "message": f"You can purchase a maximum of {settings.MAX_QUNATITY_PURCHASE_PER_ITEM} units of this item per order.",
+                "message": f"You can purchase a maximum of {settings.MAX_QUANTITY_PURCHASE_PER_ITEM} units of this item per order.",
             },
             status=400,
         )
@@ -172,11 +172,11 @@ def update_cart_quantity(request, slug, sku):
             status=400,
         )
 
-    if quantity > settings.MAX_QUNATITY_PURCHASE_PER_ITEM:
+    if quantity > settings.MAX_QUANTITY_PURCHASE_PER_ITEM:
         return JsonResponse(
             {
                 "success": False,
-                "message": f"You can purchase a maximum of {settings.MAX_QUNATITY_PURCHASE_PER_ITEM} units of this item per order.",
+                "message": f"You can purchase a maximum of {settings.MAX_QUANTITY_PURCHASE_PER_ITEM} units of this item per order.",
             },
             status=400,
         )
@@ -196,7 +196,7 @@ def update_cart_quantity(request, slug, sku):
     # Pack the single variant for price data
     pack_variants([variant])
 
-    allowed_max = min(variant.stock, settings.MAX_QUNATITY_PURCHASE_PER_ITEM)
+    allowed_max = min(variant.stock, settings.MAX_QUANTITY_PURCHASE_PER_ITEM)
     summary = compute_cart_summary(cart)
 
     return JsonResponse(

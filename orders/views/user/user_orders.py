@@ -10,6 +10,13 @@ from django.template.loader import render_to_string
 from django.utils import timezone
 from django.views.decorators.cache import never_cache
 from orders.models import Order, OrderItem
+from orders.utils import (
+    can_generate_invoice,
+    can_return_item,
+    compute_item_totals,
+    compute_return_refund,
+    get_payment_transaction,
+)
 from weasyprint import HTML
 
 
@@ -49,7 +56,7 @@ def order_list(request):
     razorpay_retry_ids = set()
     for order in page_obj:
         if order.status == "FAILED" and order.cart_snapshot:
-            payment = order.payment_transaction
+            payment = get_payment_transaction(order)
             if payment and payment.payment_method == "RAZORPAY":
                 razorpay_retry_ids.add(order.pk)
 
@@ -102,13 +109,26 @@ def order_detail(request, order_number):
     )
     completed_steps = set(status_order[:current_idx]) if current_idx > 0 else set()
 
+    # Enrich items with computed values for template
+    items_list = list(order_items)
+    for item in items_list:
+        totals = compute_item_totals(item)
+        item._total_original_price = totals["total_original_price"]
+        item._item_discount = totals["item_discount"]
+        item._can_return = can_return_item(item)
+        item._total_return = compute_return_refund(item)
+
+    payment = get_payment_transaction(order)
+
     context = {
         "order": order,
-        "items": order_items,
+        "items": items_list,
         "gst_rate": settings.GST_RATE,
         "is_cancellable": is_cancellable,
         "stepper_steps": stepper_steps,
         "completed_steps": completed_steps,
+        "payment": payment,
+        "can_invoice": can_generate_invoice(order),
     }
     return render(request, "orders/user/order_detail.html", context)
 
@@ -131,7 +151,7 @@ def order_invoice(request, order_number):
         .prefetch_related("product_variant__images")
     )
 
-    if not order.can_generate_invoice:
+    if not can_generate_invoice(order):
         messages.warning(request, "Invoice will be available after order confirmation.")
         return redirect("user_order_details", order_number=order.order_number)
 

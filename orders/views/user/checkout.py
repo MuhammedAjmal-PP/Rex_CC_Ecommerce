@@ -19,7 +19,7 @@ from orders.service import (
 
 # Fetch coupons the user can potentially use
 from coupons.models import Coupon as CouponModel
-from coupons.models import CouponUsage
+from coupons.service import get_exhausted_coupon_ids
 from django.utils import timezone
 from django.db.models import Count
 
@@ -59,7 +59,7 @@ def checkoutview(request):
     address_form = AddressForm() if can_add_address else None
 
     # Use utility for totals
-    summary = compute_cart_summary(cart)
+    summary = compute_cart_summary(cart, cart_items=list(cart_items))
 
     order_summary = {
         "items_count": summary["items_count"],
@@ -79,20 +79,7 @@ def checkoutview(request):
 
     now = timezone.now()
 
-    # Only exclude coupons where user has reached per_user_limit
-    user_usage = (
-        CouponUsage.objects.filter(user=request.user)
-        .values("coupon_id")
-        .annotate(usage_count=Count("id"))
-    )
-    exhausted_ids = set()
-    for entry in user_usage:
-        try:
-            coupon = CouponModel.objects.get(pk=entry["coupon_id"])
-            if entry["usage_count"] >= coupon.per_user_limit:
-                exhausted_ids.add(coupon.pk)
-        except CouponModel.DoesNotExist:
-            pass
+    exhausted_ids = get_exhausted_coupon_ids(request.user)
 
     available_coupons = (
         CouponModel.active.filter(

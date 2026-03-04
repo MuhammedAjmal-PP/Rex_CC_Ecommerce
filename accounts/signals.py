@@ -8,6 +8,7 @@ Allauth signal handlers for the accounts app.
 from decimal import Decimal
 from allauth.account.models import EmailAddress as AllauthEmailAddress
 from allauth.account.signals import email_confirmed
+from django.db import transaction as db_transaction
 from django.dispatch import receiver
 from accounts.models import BlacklistedEmail
 from payments.service import create_transaction
@@ -61,28 +62,30 @@ def handle_email_confirmed(sender, request, email_address, **kwargs):
 
     referrer = user.referred_by
 
-    # Credit referee (new user)
-    referee_txn = create_transaction(
-        user=user,
-        txn_type="REFERRAL_REWARD",
-        method="WALLET",
-        amount=REFERRAL_REWARD_AMOUNT,
-        status="COMPLETED",
-        content_object=user,
-        note=f"Referral reward — referred by {referrer.email}",
-    )
-    credit_wallet(user=user, amount=REFERRAL_REWARD_AMOUNT, transaction_obj=referee_txn)
+    # Fix #16: wrap both credits in a single atomic block
+    with db_transaction.atomic():
+        # Credit referee (new user)
+        referee_txn = create_transaction(
+            user=user,
+            txn_type="REFERRAL_REWARD",
+            method="WALLET",
+            amount=REFERRAL_REWARD_AMOUNT,
+            status="COMPLETED",
+            content_object=user,
+            note=f"Referral reward — referred by {referrer.email}",
+        )
+        credit_wallet(user=user, amount=REFERRAL_REWARD_AMOUNT, transaction_obj=referee_txn)
 
-    # Credit referrer (existing user)
-    referrer_txn = create_transaction(
-        user=referrer,
-        txn_type="REFERRAL_REWARD",
-        method="WALLET",
-        amount=REFERRAL_REWARD_AMOUNT,
-        status="COMPLETED",
-        content_object=referrer,
-        note=f"Referral reward — {user.email} joined using your code",
-    )
-    credit_wallet(
-        user=referrer, amount=REFERRAL_REWARD_AMOUNT, transaction_obj=referrer_txn
-    )
+        # Credit referrer (existing user)
+        referrer_txn = create_transaction(
+            user=referrer,
+            txn_type="REFERRAL_REWARD",
+            method="WALLET",
+            amount=REFERRAL_REWARD_AMOUNT,
+            status="COMPLETED",
+            content_object=referrer,
+            note=f"Referral reward — {user.email} joined using your code",
+        )
+        credit_wallet(
+            user=referrer, amount=REFERRAL_REWARD_AMOUNT, transaction_obj=referrer_txn
+        )

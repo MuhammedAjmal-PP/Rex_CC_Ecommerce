@@ -1,4 +1,5 @@
 from orders.models import Return
+from orders.utils import can_return_item
 
 
 class ReturnNotEligibleError(Exception):
@@ -27,7 +28,8 @@ def validate_return_eligibility(order_item):
         pass
 
     # Must be within 7-day return window
-    if not order_item.can_return:
+    if not can_return_item(order_item):
         raise ReturnNotEligibleError(
             "The 7-day return window has expired for this item."
         )
+

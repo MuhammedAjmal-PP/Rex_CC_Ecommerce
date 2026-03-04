@@ -16,6 +16,7 @@ from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_GET
 
 from orders.service.sales_report import get_date_range, get_sales_report
+from orders.utils import get_payment_transaction
 from weasyprint import HTML
 
 
@@ -222,7 +223,7 @@ def download_sales_report_excel(request):
     # ── Data Rows ──
     data_font = Font(name="Calibri", size=10)
     for order in orders:
-        txn = order.payment_transaction
+        txn = get_payment_transaction(order)
         payment_label = txn.get_payment_method_display() if txn else "—"
         customer = "—"
         if order.user:

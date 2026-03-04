@@ -305,7 +305,7 @@ def product_detail(request, slug, sku):
         "selected_variant": variant,
         "variant_images": variant_images,
         "primary_image": primary_image,
-        "max_qunatity_purchase": settings.MAX_QUNATITY_PURCHASE_PER_ITEM,
+        "max_qunatity_purchase": settings.MAX_QUANTITY_PURCHASE_PER_ITEM,
         "stock_status": stock_status,
         "stock_message": stock_message,
         "price": final_price,

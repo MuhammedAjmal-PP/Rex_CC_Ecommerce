@@ -3,7 +3,7 @@ Coupon validation, application, and revocation service.
 """
 
 from decimal import Decimal
-from django.db.models import F
+from django.db.models import Count, F
 from coupons.models import Coupon, CouponUsage
 
 
@@ -33,9 +33,10 @@ def validate_coupon(code, user, cart_subtotal):
     code = code.strip().upper()
     cart_subtotal = Decimal(str(cart_subtotal))
 
-    # 1. Does it exist?
+    # 1. Does it exist? select_for_update prevents race conditions (fix #18)
+    # Note: caller must be inside transaction.atomic() — place_order already does this
     try:
-        coupon = Coupon.objects.get(code=code)
+        coupon = Coupon.objects.select_for_update().get(code=code)
     except Coupon.DoesNotExist:
         raise InvalidCouponError("Invalid coupon code.")
 
@@ -112,6 +113,36 @@ def revoke_coupon_usage(order):
     Coupon.objects.filter(pk=coupon.pk, used_count__gt=0).update(
         used_count=F("used_count") - 1
     )
+
+
+# ────────────────────────────────────────────
+# Query helpers
+# ────────────────────────────────────────────
+
+
+def get_exhausted_coupon_ids(user):
+    """
+    Return a set of coupon PKs that the given user can no longer use
+    because they have reached the per-user usage limit.
+
+    Uses a single bulk query instead of a per-coupon get() in a loop.
+    """
+    user_usage = (
+        CouponUsage.objects.filter(user=user)
+        .values("coupon_id")
+        .annotate(usage_count=Count("id"))
+    )
+
+    if not user_usage:
+        return set()
+
+    coupon_id_list = [e["coupon_id"] for e in user_usage]
+    usage_map = {e["coupon_id"]: e["usage_count"] for e in user_usage}
+    limits = {
+        c.pk: c.per_user_limit
+        for c in Coupon.objects.filter(pk__in=coupon_id_list).only("pk", "per_user_limit")
+    }
+    return {cid for cid, limit in limits.items() if usage_map.get(cid, 0) >= limit}
 
 
 # ────────────────────────────────────────────

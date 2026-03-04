@@ -3,7 +3,7 @@ from django.conf import settings
 from catalog.utils import pack_variants
 from users.cart.models import CartItem
 
-max_purchase_limit = settings.MAX_QUNATITY_PURCHASE_PER_ITEM
+max_purchase_limit = settings.MAX_QUANTITY_PURCHASE_PER_ITEM
 
 
 def fetch_cart(cart):
@@ -29,25 +29,22 @@ def fetch_cart(cart):
     return cart_items
 
 
-def compute_cart_summary(cart):
+def compute_cart_summary(cart, cart_items=None):
     """
-    Single function that fetches items, packs variants, and computes
-    every cart total. Returns a dict with all data views/templates need.
+    Computes every cart total. Accepts optional pre-loaded cart_items list
+    to avoid a second DB hit when the caller already has the items (fix #6).
 
     Usage:
         summary = compute_cart_summary(cart)
-        summary["items_count"]   # int
-        summary["total"]         # Decimal (MRP total)
-        summary["discount"]      # Decimal (offer discount)
-        summary["sub_total"]     # Decimal (after offer discount)
-        summary["shipping_fee"]  # Decimal
-        summary["tax"]           # Decimal
-        summary["grand_total"]   # Decimal
-        summary["cart_items"]    # list of cart items (variants are packed)
+        # or, to avoid double fetch:
+        items = list(fetch_cart(cart))
+        summary = compute_cart_summary(cart, cart_items=items)
 
-    DB cost: fetch_cart queries + 2 from pack_variants.
+    Returns a dict with all data views/templates need.
+    DB cost: fetch_cart queries + 2 from pack_variants (skipped if cart_items provided).
     """
-    cart_items = list(fetch_cart(cart))
+    if cart_items is None:
+        cart_items = list(fetch_cart(cart))
 
     # Pack all variants in one shot (2 DB queries)
     variants = [item.product_variant for item in cart_items]

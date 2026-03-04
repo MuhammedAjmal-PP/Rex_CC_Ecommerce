@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.cache import never_cache
 from orders.models import Order
+from orders.utils import get_payment_transaction
 
 
 @login_required
@@ -22,14 +23,14 @@ def order_success_view(request, order_number):
     current_status = order.status
 
     # Sanity check: redirect away if order isn't in expected post-placement state
-    payment = order.payment_transaction
+    payment = get_payment_transaction(order)
     if payment:
         if payment.payment_method == "COD" and current_status != "PLACED":
             return redirect("user_order_list")
         elif payment.payment_method != "COD" and current_status != "CONFIRMED":
             return redirect("user_order_list")
 
-    return render(request, "orders/user/order_success.html", {"order": order})
+    return render(request, "orders/user/order_success.html", {"order": order, "payment": payment})
 
 
 @login_required
@@ -43,7 +44,7 @@ def order_failure_view(request, order_number):
         order_number=order_number,
     )
 
-    payment = order.payment_transaction
+    payment = get_payment_transaction(order)
     is_razorpay_failed = (
         order.status == "FAILED"
         and payment

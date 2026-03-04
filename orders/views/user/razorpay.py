@@ -1,6 +1,3 @@
-"""
-Razorpay payment views — callback, failure handler, and retry.
-"""
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
@@ -8,18 +5,17 @@ from django.db import transaction
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
-from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from catalog.models import ProductVariant
 from orders.models import Order
 from orders.service import InsufficientStockError, change_order_status
 from orders.service.order_helpers import create_items_from_snapshot
+from orders.utils import get_payment_transaction
 from payments.models import Transaction
 from payments.service import create_transaction
 from payments.razorpay_service import create_razorpay_order, verify_razorpay_signature
 
 
-@csrf_exempt
 @login_required
 @require_POST
 def razorpay_callback(request):
@@ -61,12 +57,7 @@ def razorpay_callback(request):
 
         order = txn.content_object
         if order:
-            change_order_status(
-                order=order,
-                to_status="FAILED",
-                note="Payment verification failed",
-                actor=request.user,
-            )
+            change_order_status(order=order, to_status="FAILED")
 
         return JsonResponse({
             "success": False,
@@ -96,12 +87,7 @@ def razorpay_callback(request):
             )
 
             # Confirm order
-            change_order_status(
-                order=order,
-                to_status="CONFIRMED",
-                note="Payment verified via Razorpay",
-                actor=request.user,
-            )
+            change_order_status(order=order, to_status="CONFIRMED")
 
             # Clear snapshot (no longer needed)
             order.cart_snapshot = None
@@ -113,12 +99,7 @@ def razorpay_callback(request):
         txn.note = "Stock unavailable after payment — refund needed"
         txn.save(update_fields=["status", "note", "updated_at"])
 
-        change_order_status(
-            order=order,
-            to_status="FAILED",
-            note="Stock unavailable after payment",
-            actor=request.user,
-        )
+        change_order_status(order=order, to_status="FAILED")
 
         return JsonResponse({
             "success": False,
@@ -131,7 +112,6 @@ def razorpay_callback(request):
     })
 
 
-@csrf_exempt
 @login_required
 @require_POST
 def razorpay_payment_failed(request):
@@ -164,12 +144,7 @@ def razorpay_payment_failed(request):
 
     order = txn.content_object
     if order:
-        change_order_status(
-            order=order,
-            to_status="FAILED",
-            note=f"Payment failed: {reason}",
-            actor=request.user,
-        )
+        change_order_status(order=order, to_status="FAILED")
 
     return JsonResponse({
         "success": True,
@@ -177,7 +152,6 @@ def razorpay_payment_failed(request):
     })
 
 
-@csrf_exempt
 @login_required
 @require_POST
 def retry_razorpay_payment(request):
@@ -198,7 +172,7 @@ def retry_razorpay_payment(request):
     order = get_object_or_404(Order, order_number=order_number, user=request.user)
 
     # Must be FAILED + RAZORPAY + has snapshot
-    payment = order.payment_transaction
+    payment = get_payment_transaction(order)
     if (
         order.status != "FAILED"
         or not payment
@@ -229,12 +203,13 @@ def retry_razorpay_payment(request):
                     )
 
             # Reset order: FAILED → PLACED
-            change_order_status(
-                order=order,
-                to_status="PLACED",
-                note="Payment retry initiated",
-                actor=request.user,
-            )
+            change_order_status(order=order, to_status="PLACED")
+
+            # Mark old FAILED transaction as CANCELLED before creating new one (fix #14)
+            if payment and payment.status == "FAILED":
+                payment.status = "CANCELLED"
+                payment.note = "Superseded by payment retry"
+                payment.save(update_fields=["status", "note", "updated_at"])
 
             # Create new Razorpay order
             amount_paise = int(order.grand_total * 100)

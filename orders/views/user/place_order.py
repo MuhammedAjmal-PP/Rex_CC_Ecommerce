@@ -192,11 +192,7 @@ def place_order_view(request):
                 )
 
             if payment_method == "WALLET":
-                change_order_status(
-                    order=order, to_status="CONFIRMED",
-                    note="Order placed by customer (wallet payment)",
-                    actor=request.user,
-                )
+                change_order_status(order=order, to_status="CONFIRMED")
                 txn = create_transaction(
                     user=request.user, txn_type="ORDER_PAYMENT",
                     method="WALLET", amount=order.grand_total,

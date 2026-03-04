@@ -124,12 +124,7 @@ def order_status_update(request, order_number):
         return redirect(request.META.get("HTTP_REFERER", reverse("admin_orders_list")))
 
     try:
-        change_order_status(
-            order=order,
-            to_status=to_status,
-            actor=request.user,
-            note=f"Order status updated by admin to {to_status}",
-        )
+        change_order_status(order=order, to_status=to_status)
         messages.success(request, f"Order status changed to {to_status}.")
     except InvalidTransitionError as error:
         messages.error(request, f"Invalid order transition: {error}")
@@ -150,12 +145,7 @@ def order_item_status_update(request, order_number, item_id):
         return redirect(request.META.get("HTTP_REFERER", reverse("admin_orders_list")))
 
     try:
-        change_order_item_status(
-            order_item=order_item,
-            to_status=to_status,
-            actor=request.user,
-            note=f"Order item status updated by admin to {to_status}",
-        )
+        change_order_item_status(order_item=order_item, to_status=to_status)
         messages.success(
             request, f"Item #{order_item.id} status changed to {to_status}."
         )

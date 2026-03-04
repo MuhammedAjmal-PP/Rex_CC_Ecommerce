@@ -46,7 +46,8 @@ def update_transaction(*, order, amount, note=""):
     Update a pending transaction (usually COD)
     when a partial cancellation occurs.
     """
-    txn = order.payment_transaction
+    from orders.utils import get_payment_transaction
+    txn = get_payment_transaction(order)
     if txn and txn.status == "PENDING":
         new_amount = txn.amount - amount
 

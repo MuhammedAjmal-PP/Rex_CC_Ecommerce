@@ -7,6 +7,7 @@ from django.views.decorators.http import require_GET, require_POST
 from catalog.service import update_stock
 from orders.models import Order, OrderItem
 from orders.service import InvalidTransitionError, change_order_item_status
+from orders.utils import compute_cancel_refund, get_payment_transaction
 from payments.service import complete_refund, initiate_refund, update_transaction
 
 
@@ -19,7 +20,7 @@ CANCELLABLE_ITEM_STATUSES = {"PENDING", "CONFIRMED", "PACKING", "READY"}
 def cancel_order(request, order_number):
     order = get_object_or_404(Order, user=request.user, order_number=order_number)
 
-    # Only PLACED or CONFIRMED orders can be cancelled (L1 fix)
+    # Only PLACED or CONFIRMED orders can be cancelled
     if order.status not in ("PLACED", "CONFIRMED"):
         messages.error(request, "This order cannot be cancelled.")
         return redirect("user_order_details", order_number=order.order_number)
@@ -35,9 +36,7 @@ def cancel_order(request, order_number):
     )
 
     cancellable_items = [
-        item
-        for item in order_items
-        if item.status in CANCELLABLE_ITEM_STATUSES
+        item for item in order_items if item.status in CANCELLABLE_ITEM_STATUSES
     ]
 
     context = {
@@ -90,8 +89,6 @@ def cancel_order_submit(request, order_number):
                 change_order_item_status(
                     order_item=item,
                     to_status="CANCELLED",
-                    actor=request.user,
-                    note=note,
                 )
 
                 # Restore stock for the cancelled item
@@ -105,12 +102,13 @@ def cancel_order_submit(request, order_number):
                 )
 
                 # Refund logic: prepaid → wallet credit, COD → reduce pending amount
-                payment = order.payment_transaction
+                payment = get_payment_transaction(order)
+                cancel_amount = compute_cancel_refund(item)
                 if payment and payment.payment_method != "COD":
                     refund_txn = initiate_refund(
                         order=order,
                         user=request.user,
-                        amount=item.total_cancel,
+                        amount=cancel_amount,
                         txn_type="CANCELLATION_REFUND",
                         content_object=item,
                         note=note,
@@ -122,7 +120,7 @@ def cancel_order_submit(request, order_number):
                 elif payment:
                     update_transaction(
                         order=order,
-                        amount=item.total_cancel,
+                        amount=cancel_amount,
                         note="Adjusted for partial cancellation.",
                     )
 
@@ -133,6 +131,7 @@ def cancel_order_submit(request, order_number):
                 all_items = list(order.items.only("status"))
                 if all(i.status == "CANCELLED" for i in all_items):
                     from coupons.service import revoke_coupon_usage
+
                     revoke_coupon_usage(order)
 
     except InvalidTransitionError as error:

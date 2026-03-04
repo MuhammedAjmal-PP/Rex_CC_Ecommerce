@@ -13,6 +13,7 @@ from orders.service.status import (
     InvalidTransitionError,
     change_order_item_status,
 )
+from orders.utils import compute_return_refund
 from payments.service import initiate_refund
 
 # Return model status transitions allowed by admin
@@ -158,12 +159,7 @@ def return_status_update(request, return_number):
 
         # Revert OrderItem status: RETURN_REQUESTED → DELIVERED
         try:
-            change_order_item_status(
-                order_item=order_item,
-                to_status="DELIVERED",
-                actor=request.user,
-                note=f"Return rejected by admin. Reason: {admin_note}",
-            )
+            change_order_item_status(order_item=order_item, to_status="DELIVERED")
         except InvalidTransitionError as error:
             messages.warning(
                 request,
@@ -187,12 +183,7 @@ def return_status_update(request, return_number):
                 return_obj.save(update_fields=["status", "admin_note"])
 
                 # Transition OrderItem status: RETURN_REQUESTED → RETURNED
-                change_order_item_status(
-                    order_item=order_item,
-                    to_status="RETURNED",
-                    actor=request.user,
-                    note=f"Return completed by admin. Return #{return_obj.return_number}",
-                )
+                change_order_item_status(order_item=order_item, to_status="RETURNED")
 
                 # Restore stock
                 update_stock(
@@ -206,7 +197,7 @@ def return_status_update(request, return_number):
 
                 # Create PENDING refund transaction
                 order = order_item.order
-                refund_amount = order_item.total_return
+                refund_amount = compute_return_refund(order_item)
                 initiate_refund(
                     order=order,
                     user=order.user,

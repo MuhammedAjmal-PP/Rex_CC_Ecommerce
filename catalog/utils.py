@@ -92,10 +92,14 @@ def _best_discount(variant, offer_data, category_map):
 # ─── PUBLIC API ─────────────────────────────────────────────
 
 
-def pack_variants(variants):
+def pack_variants(variants, offer_data=None):
     """
-    Attach display-ready data to each variant:
+    Enrich each variant with computed display fields.
+    Accepts optional pre-loaded offer_data to avoid a second DB hit.
+    Cost: 1 query (_load_offer_data) + 1 query (_load_category_map).
+    If offer_data is provided, skips the first query.
 
+    Specifically, it attaches:
         variant.primary_image        → ProductImage or None
         variant.discount_percentage  → int (0–100)
         variant.discount_amount      → Decimal
@@ -104,19 +108,16 @@ def pack_variants(variants):
     Callers should apply:
         .select_related("product", "product__brand")
         .prefetch_related("images")
-
-    DB cost: 2 queries total (offers + categories),
-    no matter how many variants you pass.
     """
-    variants = list(variants)
-    if not variants:
-        return variants
-
-    offer_data = _load_offer_data()
-    product_ids = {v.product_id for v in variants}
+    variants_list = list(variants)
+    if not variants_list:
+        return variants_list
+    if offer_data is None:
+        offer_data = _load_offer_data()
+    product_ids = {v.product_id for v in variants_list}
     category_map = _load_category_map(product_ids)
 
-    for variant in variants:
+    for variant in variants_list:
 
         # ── Primary image (from prefetch cache) ──
         primary_image = None
@@ -153,6 +154,7 @@ def get_offer_variants(variant_queryset, *, limit=8):
 
     DB cost: ~4 queries (offers twice + category + filtered variants).
     """
+    # Fix #17: load offer data once and pass into pack_variants
     offer_data = _load_offer_data()
 
     # Collect IDs that have offers
@@ -178,7 +180,7 @@ def get_offer_variants(variant_queryset, *, limit=8):
         .distinct()
     )
 
-    packed = pack_variants(candidates)
+    packed = pack_variants(candidates, offer_data=offer_data)
 
     # Sort by discount and slice
     packed.sort(key=lambda v: v.discount_percentage, reverse=True)

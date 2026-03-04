@@ -4,8 +4,6 @@ from django.db import models
 from django.contrib.contenttypes.fields import GenericRelation
 
 
-
-
 # ======================================================
 # ORDER MODEL
 # ======================================================
@@ -70,7 +68,7 @@ class Order(models.Model):
         default="PLACED",
         db_index=True,
     )
-    status_updated_at = models.DateTimeField(auto_now_add=True)
+    status_updated_at = models.DateTimeField(auto_now=True)
 
     cart_snapshot = models.JSONField(
         null=True,
@@ -84,27 +82,16 @@ class Order(models.Model):
         ordering = ["-created_at"]
 
     def generate_order_number(self):
-        while True:
-            order_number = f"ORD-{uuid.uuid4().hex[-8:].upper()}"
+        for _ in range(20):
+            order_number = f"ORD-{uuid.uuid4().hex[:10].upper()}"
             if not Order.objects.filter(order_number=order_number).exists():
                 return order_number
+        raise RuntimeError("Could not generate a unique order number after 20 retries.")
 
     def save(self, *args, **kwargs):
         if not self.order_number:
             self.order_number = self.generate_order_number()
         super().save(*args, **kwargs)
-
-    # Thin wrappers — real logic in orders.utils
-
-    @property
-    def payment_transaction(self):
-        from orders.utils import get_payment_transaction
-        return get_payment_transaction(self)
-
-    @property
-    def can_generate_invoice(self):
-        from orders.utils import can_generate_invoice
-        return can_generate_invoice(self)
 
     def __str__(self):
         return f"Order {self.order_number}"
@@ -161,48 +148,18 @@ class OrderItem(models.Model):
         default="PENDING",
         db_index=True,
     )
-    status_updated_at = models.DateTimeField(auto_now_add=True)
+    status_updated_at = models.DateTimeField(auto_now=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
 
     transactions = GenericRelation(
         "payments.Transaction",
         related_query_name="order_items",
     )
 
-    # Thin wrappers — real logic in orders.utils
-
     @property
     def total_price(self):
         return self.price * self.quantity
-
-    @property
-    def total_original_price(self):
-        from orders.utils import compute_item_totals
-        return compute_item_totals(self)["total_original_price"]
-
-    @property
-    def item_discount(self):
-        from orders.utils import compute_item_totals
-        return compute_item_totals(self)["item_discount"]
-
-    @property
-    def coupon_share(self):
-        from orders.utils import compute_coupon_share
-        return compute_coupon_share(self)
-
-    @property
-    def total_cancel(self):
-        from orders.utils import compute_cancel_refund
-        return compute_cancel_refund(self)
-
-    @property
-    def total_return(self):
-        from orders.utils import compute_return_refund
-        return compute_return_refund(self)
-
-    @property
-    def can_return(self):
-        from orders.utils import can_return_item
-        return can_return_item(self)
 
     def __str__(self):
         return f"OrderItem #{self.id} ({self.product_variant})"

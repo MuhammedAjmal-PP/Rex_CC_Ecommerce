@@ -83,7 +83,7 @@ def can_transition(*, model_type, from_status, to_status):
     return to_status in transitions.get(from_status, set())
 
 
-def _change_status(*, obj, model_type, to_status, actor=None, note=""):
+def _change_status(*, obj, model_type, to_status):
     from_status = obj.status
 
     if not can_transition(
@@ -104,17 +104,18 @@ def _change_status(*, obj, model_type, to_status, actor=None, note=""):
 # ────────────────────────────────────────────
 # Item → Order sync (called after item change)
 # ────────────────────────────────────────────
-def _sync_order_status(order, *, actor=None):
+def _sync_order_status(order, *, items=None):
     """
     Derive the order-level status from all its items.
+    Accepts a pre-loaded items list to avoid N+1 queries (fix #4).
     Called automatically after every item status change.
     """
-    items = order.items.all()
+    if items is None:
+        items = list(order.items.all())
     if not items:
         return
 
     item_statuses = {item.status for item in items}
-
     current_order_status = order.status
 
     # Post-delivery statuses (return flow): treated as "delivered" for order sync
@@ -123,8 +124,8 @@ def _sync_order_status(order, *, actor=None):
     # Rule 1: ALL items cancelled → cancel the order
     if item_statuses == {"CANCELLED"}:
         target = "CANCELLED"
-    # Rule 1b: ALL items failed (payment) → fail the order
-    elif item_statuses == {"FAILED"}:
+    # Rule 1b: ALL items FAILED or some FAILED + rest CANCELLED → fail the order (fix #20)
+    elif item_statuses <= {"FAILED", "CANCELLED"} and "FAILED" in item_statuses:
         target = "FAILED"
     # Rule 2: ALL items delivered/returned/cancelled (at least one post-delivery) → deliver
     elif (
@@ -157,23 +158,17 @@ def _sync_order_status(order, *, actor=None):
         from_status=current_order_status,
         to_status=target,
     ):
-        _change_status(
-            obj=order,
-            model_type="order",
-            to_status=target,
-            actor=actor,
-            note=f"Auto-synced: all items reached {target.lower()} state",
-        )
+        _change_status(obj=order, model_type="order", to_status=target)
 
 
 # ────────────────────────────────────────────
 # Order → Items cascade (called after order change)
 # ────────────────────────────────────────────
-def _cascade_order_to_items(order, to_status, *, actor=None):
+def _cascade_order_to_items(order, to_status):
     """
     Push order-level status down to eligible items.
     Items walk through every intermediate status in the chain.
-    CANCELLED is a direct jump (no walk needed).
+    CANCELLED/FAILED are direct jumps (no walk needed).
     """
     target_item_status = ORDER_TO_ITEM_TARGET.get(to_status)
     if not target_item_status:
@@ -195,8 +190,6 @@ def _cascade_order_to_items(order, to_status, *, actor=None):
                     obj=item,
                     model_type="orderitem",
                     to_status=target_item_status,
-                    actor=actor,
-                    note=f"Auto-cascaded from order status → {target_item_status}",
                 )
             continue
 
@@ -221,41 +214,30 @@ def _cascade_order_to_items(order, to_status, *, actor=None):
                 obj=item,
                 model_type="orderitem",
                 to_status=step_status,
-                actor=actor,
-                note=f"Auto-cascaded from order status → {to_status}",
             )
 
 
 # ────────────────────────────────────────────
 # Public API
 # ────────────────────────────────────────────
-def change_order_status(*, order, to_status, actor=None, note=""):
-    result = _change_status(
-        obj=order,
-        model_type="order",
-        to_status=to_status,
-        actor=actor,
-        note=note,
-    )
+def change_order_status(*, order, to_status):
+    result = _change_status(obj=order, model_type="order", to_status=to_status)
 
     # Auto-update COD payment status to PAID upon delivery
-    payment = order.payment_transaction
+    from orders.utils import get_payment_transaction
+    payment = get_payment_transaction(order)
     if to_status == "DELIVERED" and payment:
         if payment.payment_method == "COD" and payment.status == "PENDING":
             payment.status = "PAID"
             payment.save(update_fields=["status", "updated_at"])
 
-    _cascade_order_to_items(order, to_status, actor=actor)
+    _cascade_order_to_items(order, to_status)
     return result
 
 
-def change_order_item_status(*, order_item, to_status, actor=None, note=""):
-    result = _change_status(
-        obj=order_item,
-        model_type="orderitem",
-        to_status=to_status,
-        actor=actor,
-        note=note,
-    )
-    _sync_order_status(order_item.order, actor=actor)
+def change_order_item_status(*, order_item, to_status):
+    result = _change_status(obj=order_item, model_type="orderitem", to_status=to_status)
+    # Load all sibling items once and pass into sync to avoid N+1 (fix #4)
+    all_items = list(order_item.order.items.all())
+    _sync_order_status(order_item.order, items=all_items)
     return result

@@ -123,8 +123,6 @@ def return_order_submit(request, order_number, item_id):
             change_order_item_status(
                 order_item=order_item,
                 to_status="RETURN_REQUESTED",
-                actor=request.user,
-                note=f"Return requested by customer. Reason: {return_obj.reason_code}",
             )
     except InvalidTransitionError as error:
         messages.error(request, f"Unable to process return: {error}")
