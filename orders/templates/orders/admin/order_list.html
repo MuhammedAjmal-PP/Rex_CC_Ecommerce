@@ -120,9 +120,13 @@
                     {% for order in orders %}
                         <tr>
                             <td>
+                                {% if order.status != 'FAILED' %}
                                 <a href="{% url 'admin_order_details' order.order_number %}" class="item-info-link">
                                     <span class="order-number">{{ order.order_number }}</span>
                                 </a>
+                                {% else %}
+                                    <span class="order-number">{{ order.order_number }}</span>
+                                {% endif %}
                             </td>
                             <td>
                                 {% if order.user %}
@@ -148,13 +152,13 @@
                             </td>
                             <td>
                                 <div class="payment-method-wrapper">
-                                    <span class="payment-method">{{ order.payment_transaction.get_payment_method_display }}</span>
+                                    <span class="payment-method">{{ order.payment_txn.get_payment_method_display }}</span>
                                 </div>
                             </td>
                             <td>
-                                {% if order.payment_transaction %}
-                                    <span class="payment-status-badge payment-status-{{ order.payment_transaction.status|lower }}">
-                                        {{ order.payment_transaction.get_status_display }}
+                                {% if order.payment_txn %}
+                                    <span class="payment-status-badge payment-status-{{ order.payment_txn.status|lower }}">
+                                        {{ order.payment_txn.get_status_display }}
                                     </span>
                                 {% else %}
                                     —
@@ -167,11 +171,13 @@
                                 <span class="status-badge order-status-{{ order.status|lower }}">{{ order.get_status_display }}</span>
                             </td>
                             <td>
+                                {% if order.status != 'FAILED' %}
                                 <a href="{% url 'admin_order_details' order.order_number %}"
                                    class="action-btn"
                                    title="View Details">
                                     <span class="material-icons fs-6">visibility</span>
                                 </a>
+                                {% endif %}
                             </td>
                         </tr>
                     {% endfor %}

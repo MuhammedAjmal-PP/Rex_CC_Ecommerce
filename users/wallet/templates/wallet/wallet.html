@@ -3,12 +3,12 @@
 {% load humanize %}
 {% block head_title %}My Wallet | REX CC{% endblock %}
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'wallet/css/wallet.css' %}">
+    <link rel="stylesheet" href="{% static 'wallet/css/wallet.css' %}?v=1.3">
 {% endblock %}
 {% block content %}
     <div class="lux-hub-wrapper">
         <!-- HEADER -->
-        <header class="hub-header">
+        <header class="hub-header mb-24">
             <div class="hub-user-info">
                 <div class="hub-user-details">
                     <h1 class="hub-name">My Wallet</h1>
@@ -31,83 +31,84 @@
         <!-- TAB TOGGLE -->
         <div class="lux-tabs-container">
             <a href="?tab=wallet" class="lux-tab {{ active_tab|yesno:'active,,' }}">
-                <span class="material-icons">account_balance_wallet</span>Wallet
+                <span class="material-icons">account_balance_wallet</span> Wallet Impact
             </a>
             <a href="?tab=all" class="lux-tab {{ active_tab|yesno:',active,' }}">
-                <span class="material-icons">receipt_long</span>All Transactions
+                <span class="material-icons">receipt_long</span> All Transactions
             </a>
         </div>
 
-        <!-- TRANSACTION HISTORY -->
-        <div class="hub-card">
+        <!-- TRANSACTION CARDS -->
         {% if transactions %}
-            <div class="txn-list">
+            <div class="txn-grid mb-32">
                 {% if active_tab == "wallet" %}
-                    <!-- WALLET TAB HEADER -->
-                    <div class="txn-table-header">
-                        <span class="col-date">Date</span>
-                        <span class="col-type">Type</span>
-                        <span class="col-desc">Description</span>
-                        <span class="col-amount">Amount</span>
-                        <span class="col-balance">Balance</span>
-                    </div>
                     {% for txn in transactions %}
-                        <a href="{% if txn.transaction %}{% url 'user_transaction_detail' txn.transaction.transaction_id %}{% else %}#{% endif %}" class="txn-row txn-row-link">
-                            <div class="txn-row-date">
-                                <span class="txn-date">{{ txn.created_at|date:"d M Y" }}</span>
-                                <span class="txn-time">{{ txn.created_at|date:"h:i A" }}</span>
+                        <a href="{% if txn.transaction %}{% url 'user_transaction_detail' txn.transaction.transaction_id %}{% else %}#{% endif %}" class="wl-card {% if txn.label == 'CREDIT' %}wl-card-credit{% else %}wl-card-debit{% endif %}">
+                            <div class="wl-card-header">
+                                <div>
+                                    <h4 class="wl-card-title">
+                                        {% if txn.transaction %}
+                                            {{ txn.transaction.get_transaction_type_display }}
+                                        {% else %}
+                                            Wallet Adjustment
+                                        {% endif %}
+                                    </h4>
+                                    <span class="wl-card-subtitle">{{ txn.created_at|date:"d M Y, h:i A" }}</span>
+                                </div>
+                                <span class="txn-badge {% if txn.label == 'CREDIT' %}txn-credit{% else %}txn-debit{% endif %}">
+                                    {{ txn.label }}
+                                </span>
                             </div>
-                            <div class="txn-row-type">
-                                <span class="txn-type-badge txn-{{ txn.label|lower }}">{{ txn.label }}</span>
-                            </div>
-                            <div class="txn-row-desc">
+
+                            <div class="wl-card-footer">
                                 {% if txn.transaction %}
-                                    <span class="txn-desc-main">{{ txn.transaction.get_transaction_type_display }}</span>
-                                    <span class="txn-desc-id">{{ txn.transaction.transaction_id }}</span>
+                                    <span class="wl-card-subtitle font-monospace">ID: {{ txn.transaction.transaction_id }}</span>
                                 {% else %}
-                                    <span class="txn-desc-main">Wallet Transaction</span>
+                                    <span></span>
                                 {% endif %}
                             </div>
-                            <div class="txn-row-amount">
-                                {% if txn.label == "CREDIT" %}
-                                    <span class="amount-credit">+₹{{ txn.transaction.amount|floatformat:2|intcomma }}</span>
-                                {% else %}
-                                    <span class="amount-debit">-₹{{ txn.transaction.amount|floatformat:2|intcomma }}</span>
-                                {% endif %}
-                            </div>
-                            <div class="txn-row-balance">
-                                <span class="balance-after">₹{{ txn.balance_after|floatformat:2|intcomma }}</span>
+
+                            <div class="wl-card-body">
+                                <div class="wl-card-amount">
+                                    <span class="wl-card-amount-label">Amount</span>
+                                    {% if txn.label == "CREDIT" %}
+                                        <span class="amount-val amount-credit">+₹{{ txn.transaction.amount|floatformat:2|intcomma }}</span>
+                                    {% else %}
+                                        <span class="amount-val amount-debit">-₹{{ txn.transaction.amount|floatformat:2|intcomma }}</span>
+                                    {% endif %}
+                                </div>
+                                <div class="wl-card-balance">
+                                    <div class="wl-card-balance-label">Balance After</div>
+                                    <div class="balance-val">₹{{ txn.balance_after|floatformat:2|intcomma }}</div>
+                                </div>
                             </div>
                         </a>
                     {% endfor %}
 
                 {% else %}
-                    <!-- ALL TRANSACTIONS TAB HEADER -->
-                    <div class="txn-table-header txn-header-all">
-                        <span class="col-date">Date</span>
-                        <span class="col-type-all">Type</span>
-                        <span class="col-method">Method</span>
-                        <span class="col-amount">Amount</span>
-                        <span class="col-status">Status</span>
-                    </div>
+                    <!-- ALL TRANSACTIONS -->
                     {% for txn in transactions %}
-                        <a href="{% url 'user_transaction_detail' txn.transaction_id %}" class="txn-row txn-row-all txn-row-link">
-                            <div class="txn-row-date">
-                                <span class="txn-date">{{ txn.created_at|date:"d M Y" }}</span>
-                                <span class="txn-time">{{ txn.created_at|date:"h:i A" }}</span>
+                        <a href="{% url 'user_transaction_detail' txn.transaction_id %}" class="wl-card">
+                            <div class="wl-card-header">
+                                <div>
+                                    <h4 class="wl-card-title">{{ txn.get_transaction_type_display }}</h4>
+                                    <span class="wl-card-subtitle">{{ txn.created_at|date:"d M Y, h:i A" }}</span>
+                                </div>
+                                <span class="txn-status-badge status-{{ txn.status|lower }}">
+                                    {{ txn.get_status_display }}
+                                </span>
                             </div>
-                            <div class="txn-row-type-all">
-                                <span class="txn-desc-main">{{ txn.get_transaction_type_display }}</span>
-                                <span class="txn-desc-id">{{ txn.transaction_id }}</span>
+                            
+                            <div class="wl-card-footer">
+                                <span class="wl-card-subtitle font-monospace">ID: {{ txn.transaction_id }}</span>
+                                <span class="txn-method-badge method-badge">{{ txn.get_payment_method_display }}</span>
                             </div>
-                            <div class="txn-row-method">
-                                <span class="txn-method-badge">{{ txn.get_payment_method_display }}</span>
-                            </div>
-                            <div class="txn-row-amount">
-                                <span class="amount-value">₹{{ txn.amount|floatformat:2|intcomma }}</span>
-                            </div>
-                            <div class="txn-row-status">
-                                <span class="txn-status-badge status-{{ txn.status|lower }}">{{ txn.get_status_display }}</span>
+
+                            <div class="wl-card-body">
+                                <div class="wl-card-amount">
+                                    <span class="wl-card-amount-label">Total Amount</span>
+                                    <span class="amount-val amount-neutral">₹{{ txn.amount|floatformat:2|intcomma }}</span>
+                                </div>
                             </div>
                         </a>
                     {% endfor %}
@@ -116,27 +117,27 @@
 
             <!-- PAGINATION -->
             {% if page_obj.has_other_pages %}
-                <nav class="wallet-pagination" style="padding: 24px; border-top: 1px solid #eaeaea;">
+                <nav class="wallet-pagination">
                     {% if page_obj.has_previous %}
-                        <a href="?tab={{ active_tab }}&page={{ page_obj.previous_page_number }}" class="pagination-btn prev">
-                            <span class="material-icons">chevron_left</span> Previous
+                        <a href="?tab={{ active_tab }}&page={{ page_obj.previous_page_number }}" class="pagination-btn">
+                            <span class="material-icons">chevron_left</span> Prev
                         </a>
                     {% endif %}
-                    <div class="pagination-pages">
-                        {% for num in page_obj.paginator.page_range %}
-                            {% if page_obj.number == num %}
-                                <span class="pagination-page active">{{ num }}</span>
-                            {% elif num > page_obj.number|add:"-3" and num < page_obj.number|add:"3" %}
-                                <a href="?tab={{ active_tab }}&page={{ num }}" class="pagination-page">{{ num }}</a>
-                            {% elif num == 1 or num == page_obj.paginator.num_pages %}
-                                <a href="?tab={{ active_tab }}&page={{ num }}" class="pagination-page">{{ num }}</a>
-                            {% elif num == page_obj.number|add:"-3" or num == page_obj.number|add:"3" %}
-                                <span class="pagination-ellipsis">…</span>
-                            {% endif %}
-                        {% endfor %}
-                    </div>
+                    
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <span class="pagination-page active">{{ num }}</span>
+                        {% elif num > page_obj.number|add:"-3" and num < page_obj.number|add:"3" %}
+                            <a href="?tab={{ active_tab }}&page={{ num }}" class="pagination-page">{{ num }}</a>
+                        {% elif num == 1 or num == page_obj.paginator.num_pages %}
+                            <a href="?tab={{ active_tab }}&page={{ num }}" class="pagination-page">{{ num }}</a>
+                        {% elif num == page_obj.number|add:"-3" or num == page_obj.number|add:"3" %}
+                            <span class="pagination-ellipsis">…</span>
+                        {% endif %}
+                    {% endfor %}
+
                     {% if page_obj.has_next %}
-                        <a href="?tab={{ active_tab }}&page={{ page_obj.next_page_number }}" class="pagination-btn next">
+                        <a href="?tab={{ active_tab }}&page={{ page_obj.next_page_number }}" class="pagination-btn">
                             Next <span class="material-icons">chevron_right</span>
                         </a>
                     {% endif %}
@@ -146,7 +147,7 @@
         {% else %}
             <!-- EMPTY STATE -->
             <div class="lux-empty-state">
-                <span class="material-icons empty-icon" style="font-size: 48px; color: #ccc;">receipt_long</span>
+                <span class="material-icons empty-icon">account_balance_wallet</span>
                 <h2>No transactions yet</h2>
                 <p>
                     {% if active_tab == "wallet" %}
@@ -155,11 +156,10 @@
                         You don't have any transactions yet. They will appear here after you place an order.
                     {% endif %}
                 </p>
-                <div style="margin-top: 24px;">
-                    <a href="{% url 'product_list' %}" class="btn-primary" style="margin:0;">Start Shopping</a>
+                <div style="margin-top: 16px;">
+                    <a href="{% url 'product_list' %}" class="btn-primary">Start Shopping</a>
                 </div>
             </div>
         {% endif %}
-        </div>
     </div>
 {% endblock %}

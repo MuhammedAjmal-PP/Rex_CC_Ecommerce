@@ -64,22 +64,22 @@
                 </div>
                 <div class="od-meta-row">
                     <span class="od-meta-label">Payment Method</span>
-                    <span class="od-meta-value">{{ order.payment_transaction.get_payment_method_display }}</span>
+                    <span class="od-meta-value">{{ payment.get_payment_method_display }}</span>
                 </div>
-                {% if order.payment_transaction %}
+                {% if payment %}
                     <div class="od-meta-row">
                         <span class="od-meta-label">Transaction ID</span>
-                        <span class="od-meta-value text-mono">{{ order.payment_transaction.transaction_id|truncatechars:18 }}</span>
+                        <span class="od-meta-value text-mono">{{ payment.transaction_id|truncatechars:18 }}</span>
                     </div>
                     <div class="od-meta-row">
                         <span class="od-meta-label">Payment Status</span>
                         <span class="od-meta-value">
-                            <span class="status-badge order-status-{{ order.payment_transaction.status|lower }}">{{ order.payment_transaction.get_status_display }}</span>
+                            <span class="status-badge order-status-{{ payment.status|lower }}">{{ payment.get_status_display }}</span>
                         </span>
                     </div>
                     <div class="od-meta-row">
                         <span class="od-meta-label">Amount Paid</span>
-                        <span class="od-meta-value">₹{{ order.payment_transaction.amount|floatformat:2 }}</span>
+                        <span class="od-meta-value">₹{{ payment.amount|floatformat:2 }}</span>
                     </div>
                 {% endif %}
             </div>
@@ -141,9 +141,9 @@
                     <span>₹{{ order.sub_total|floatformat:2|intcomma }}</span>
                 </div>
                 {% if order.coupon and order.coupon_discount > 0 %}
-                    <div class="od-summary-row" style="color: #2e7d32;">
+                    <div class="od-summary-row text-success">
                         <span>
-                            <span class="material-icons" style="font-size: 14px; vertical-align: middle; margin-right: 4px;">local_offer</span>
+                            <span class="material-icons coupon-icon">local_offer</span>
                             Coupon ({{ order.coupon.code }})
                         </span>
                         <span>−₹{{ order.coupon_discount|floatformat:2|intcomma }}</span>
@@ -237,7 +237,7 @@
                                 <!-- Total: MRP total (struck) + final total -->
                                 <td class="od-td-center od-item-total">
                                     {% if item.original_price and item.original_price > item.price %}
-                                        <span class="od-price-original">₹{{ item.total_original_price|floatformat:2|intcomma }}</span>
+                                        <span class="od-price-original">₹{{ entry.total_original_price|floatformat:2|intcomma }}</span>
                                     {% endif %}
                                     <span class="od-price-final">₹{{ item.total_price|floatformat:2|intcomma }}</span>
                                 </td>
@@ -281,7 +281,7 @@
             Order Status
         </div>
         <div class="od-htl od-htl-order">
-            <p style="padding: 16px; font-family: 'Montserrat', sans-serif; font-size: 0.95rem; color: #555;">
+            <p class="od-status-text">
                 Current Status: <span class="status-badge order-status-{{ order_current|lower }}">{{ order_current }}</span>
                 {% if order.status_updated_at %}
                     &middot; Last updated: {{ order.status_updated_at|date:"d M Y, h:i A" }}

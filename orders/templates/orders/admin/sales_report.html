@@ -167,8 +167,8 @@
                             </td>
                             <td>
                                 <span class="payment-method">
-                                    {% if order.payment_transaction %}
-                                        {{ order.payment_transaction.get_payment_method_display }}
+                                    {% if order.payment_txn %}
+                                        {{ order.payment_txn.get_payment_method_display }}
                                     {% else %}
                                         —
                                     {% endif %}

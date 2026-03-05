@@ -8,23 +8,23 @@
 {% block content %}
     <div class="lux-hub-wrapper">
         <!-- HEADER -->
-        <div class="hub-header" style="align-items: flex-start;">
+        <div class="hub-header align-items-start">
             <div class="hub-user-info">
                 <div class="hub-user-details">
                     <h1 class="hub-name">{{ txn.get_transaction_type_display }}</h1>
                     <div class="hub-contact">
-                        <span style="font-family: 'Montserrat', sans-serif;">{{ txn.transaction_id }}</span>
+                        <span class="font-montserrat">{{ txn.transaction_id }}</span>
                     </div>
                 </div>
             </div>
             <div class="hub-header-actions">
-                <span class="td-status-badge status-{{ txn.status|lower }}" style="padding: 6px 14px; font-size: 0.75rem;">
+                <span class="td-status-badge status-{{ txn.status|lower }} td-status-md">
                     {{ txn.get_status_display }}
                 </span>
             </div>
         </div>
 
-        <div class="td-back" style="margin-bottom: 24px;">
+        <div class="td-back mb-24">
             <a href="{% url 'user_wallet' %}" class="td-back-btn">
                 <span class="material-icons">arrow_back</span>
                 Back to Wallet

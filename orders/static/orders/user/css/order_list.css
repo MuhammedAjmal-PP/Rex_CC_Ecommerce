@@ -1,257 +1,414 @@
-/* ============================================================
-   REX CC — ORDER LISTING PAGE
-   Luxury theme matching cart/wishlist design system
-   ============================================================ */
+/* ===================================================================
+   REX CC - ORDER LIST (Card-Based Luxury Layout)
+   =================================================================== */
 
-:root {
-  --ol-bg: #faf9f7;
-  --ol-surface: #ffffff;
-  --ol-text: #2c2c2c;
-  --ol-text-muted: #7a7a7a;
-  --ol-border: #e8e6e2;
-  --ol-gold: #cd7f32;
-  --ol-gold-light: #bfa15f;
-  --ol-gold-dark: #b06825;
-
-  --font-serif: "Playfair Display", serif;
-  --font-sans: "Montserrat", sans-serif;
+/* ---------------------------------------------------------
+   PAGE HEADER & BREADCRUMBS
+   --------------------------------------------------------- */
+.ol-header-wrapper {
+  margin-bottom: 40px;
 }
 
-/* ============================================================
-   ORDERS TABLE
-   ============================================================ */
+.ol-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.8rem;
+  color: #888;
+  margin-bottom: 24px;
+}
 
-.orders-list {
-  max-width: 1400px;
-  margin: 0 auto;
-  background: var(--ol-surface);
-  border: 1px solid var(--ol-border);
-  border-radius: 3px;
+.ol-breadcrumb a {
+  color: #111;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.ol-breadcrumb a:hover {
+  color: var(--color-gold, #bfa15f);
+}
+
+.ol-header-flex {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.ol-title {
+  font-family: "Playfair Display", serif;
+  font-size: 2.2rem;
+  font-weight: 600;
+  color: #111;
+  margin: 0 0 8px 0;
+}
+
+.ol-subtitle {
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.95rem;
+  color: #666;
+  margin: 0;
+}
+
+/* ---------------------------------------------------------
+   SEARCH & FILTERS
+   --------------------------------------------------------- */
+.ol-controls-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.ol-search-box {
+  position: relative;
+  flex: 1;
+  min-width: 250px;
+  max-width: 400px;
+}
+
+.ol-search-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
+  font-size: 20px;
+  pointer-events: none;
+}
+
+.ol-search-input {
+  width: 100%;
+  padding: 14px 16px 14px 44px;
+  border: 1px solid var(--color-border, #eaeaea);
+  border-radius: 8px;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.9rem;
+  background: #fff;
+  transition: all 0.3s;
+}
+
+.ol-search-input:focus {
+  outline: none;
+  border-color: #111;
+  box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.05);
+}
+
+.ol-filters-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ol-filter-pill {
+  padding: 10px 18px;
+  border: 1px solid var(--color-border, #eaeaea);
+  border-radius: 24px;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #555;
+  text-decoration: none;
+  background: #fff;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.ol-filter-pill:hover {
+  border-color: #ccc;
+  color: #111;
+}
+
+.ol-filter-pill.active {
+  background: #111;
+  color: #fff;
+  border-color: #111;
+}
+
+/* ---------------------------------------------------------
+   ORDER CARDS LIST
+   --------------------------------------------------------- */
+.ol-cards-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.ol-card {
+  background: #fff;
+  border: 1px solid var(--color-border, #eaeaea);
+  border-radius: 12px;
   overflow: hidden;
+  transition:
+    box-shadow 0.3s,
+    transform 0.3s;
 }
 
-/* ---- TABLE HEADER ---- */
-.orders-table-header {
+.ol-card:hover {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+  border-color: #ddd;
+}
+
+/* Card Header: Grid Data */
+.ol-card-header {
   display: grid;
-  grid-template-columns: 2fr 1.2fr 1fr 1.2fr 60px;
-  padding: 16px 28px;
-  border-bottom: 1px solid var(--ol-border);
-  background: rgba(250, 249, 247, 0.6);
-  font-family: var(--font-sans);
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 20px;
+  padding: 24px 32px;
+  background: #fdfdfd;
+  border-bottom: 1px solid var(--color-border, #eaeaea);
+}
+
+.ol-meta-block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ol-meta-label {
+  font-family: "Montserrat", sans-serif;
   font-size: 0.72rem;
   font-weight: 600;
+  color: #888;
   text-transform: uppercase;
-  letter-spacing: 1.5px;
-  color: var(--ol-text-muted);
+  letter-spacing: 0.5px;
 }
 
-/* ---- ORDER ROW ---- */
-.order-row {
-  display: grid;
-  grid-template-columns: 2fr 1.2fr 1fr 1.2fr 60px;
-  padding: 20px 28px;
+.ol-meta-value {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #111;
+}
+
+/* Card Body: Items Preview & Actions */
+.ol-card-body {
+  display: flex;
   align-items: center;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
-  transition: background 0.2s ease;
+  justify-content: space-between;
+  padding: 24px 32px;
+  gap: 24px;
+  flex-wrap: wrap;
 }
 
-.order-row:last-child {
-  border-bottom: none;
+/* Order Status Display */
+.ol-status-display {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
 }
 
-.order-row:hover {
-  background: rgba(250, 249, 247, 0.5);
+.ol-status-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ccc;
+}
+.ol-status-dot.status-placed {
+  background: #f57c00;
+  box-shadow: 0 0 0 4px rgba(245, 124, 0, 0.15);
+}
+.ol-status-dot.status-confirmed,
+.ol-status-dot.status-shipped {
+  background: #1976d2;
+  box-shadow: 0 0 0 4px rgba(25, 118, 210, 0.15);
+}
+.ol-status-dot.status-delivered {
+  background: #2e7d32;
+  box-shadow: 0 0 0 4px rgba(46, 125, 50, 0.15);
+}
+.ol-status-dot.status-cancelled,
+.ol-status-dot.status-returned {
+  background: #d32f2f;
+  box-shadow: 0 0 0 4px rgba(211, 47, 47, 0.15);
 }
 
-/* ---- ORDER COLUMN ---- */
-.order-row-order {
+.ol-status-text {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.order-number {
-  font-family: var(--font-sans);
-  font-size: 0.92rem;
+.ol-status-main {
+  font-family: "Montserrat", sans-serif;
+  font-size: 1rem;
   font-weight: 700;
-  color: var(--ol-text);
+  color: #111;
+  text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
-.order-total-inline {
-  font-family: var(--font-sans);
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--ol-gold-dark);
-}
-
-/* ---- DATE COLUMN ---- */
-.order-row-date {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.order-date {
-  font-family: var(--font-sans);
-  font-size: 0.85rem;
-  color: var(--ol-text);
-  font-weight: 500;
-}
-
-.order-time {
-  font-family: var(--font-sans);
-  font-size: 0.75rem;
-  color: var(--ol-text-muted);
-}
-
-/* ---- PAYMENT COLUMN ---- */
-.order-payment-method {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-family: var(--font-sans);
+.ol-status-sub {
+  font-family: "Montserrat", sans-serif;
   font-size: 0.8rem;
-  color: var(--ol-text-muted);
-  font-weight: 500;
+  color: #666;
 }
 
-.order-payment-method .material-icons {
-  font-size: 16px;
-  color: var(--ol-gold-light);
+/* Card Actions */
+.ol-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
-.order-payment-status {
-  display: inline-block;
-  margin-top: 4px;
-  font-size: 0.65rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  padding: 2px 6px;
-  border-radius: 2px;
-  letter-spacing: 0.5px;
-}
-
-.status-paid, .status-completed {
-  color: #2e7d32;
-  background: rgba(46, 125, 50, 0.05);
-}
-
-.status-pending {
-  color: #f57f17;
-  background: rgba(245, 127, 23, 0.05);
-}
-
-.status-failed {
-  color: #c62828;
-  background: rgba(198, 40, 40, 0.05);
-}
-
-/* ---- STATUS BADGES ---- */
-.order-status-badge {
+.ol-btn-secondary {
   display: inline-flex;
   align-items: center;
-  padding: 5px 14px;
-  border-radius: 3px;
-  font-family: var(--font-sans);
-  font-size: 0.7rem;
+  gap: 8px;
+  padding: 12px 24px;
+  background: transparent;
+  border: 1px solid #111;
+  color: #111;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.85rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.8px;
-  white-space: nowrap;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: all 0.2s;
 }
 
-.status-placed {
-  color: #cd7f32;
-  background: rgba(205, 127, 50, 0.08);
-  border: 1px solid rgba(205, 127, 50, 0.2);
+.ol-btn-secondary:hover {
+  background: #111;
+  color: #fff;
 }
 
-.status-confirmed {
-  color: #1565c0;
-  background: rgba(21, 101, 192, 0.08);
-  border: 1px solid rgba(21, 101, 192, 0.2);
+.ol-btn-gold {
+  background: var(--color-gold, #bfa15f);
+  color: #fff;
+  border-color: var(--color-gold, #bfa15f);
+}
+.ol-btn-gold:hover {
+  background: #a98d51;
+  border-color: #a98d51;
+  color: #fff;
 }
 
-.status-shipped {
-  color: #4527a0;
-  background: rgba(69, 39, 160, 0.08);
-  border: 1px solid rgba(69, 39, 160, 0.2);
-}
-
-.status-out_for_delivery {
-  color: #e65100;
-  background: rgba(230, 81, 0, 0.08);
-  border: 1px solid rgba(230, 81, 0, 0.2);
-}
-
-.status-delivered {
-  color: #2e7d32;
-  background: rgba(46, 125, 50, 0.08);
-  border: 1px solid rgba(46, 125, 50, 0.2);
-}
-
-.status-cancelled {
-  color: #d32f2f;
-  background: rgba(211, 47, 47, 0.08);
-  border: 1px solid rgba(211, 47, 47, 0.2);
-}
-
-/* ---- VIEW ACTION ---- */
-.order-row-action {
+/* ---------------------------------------------------------
+   PAGINATION
+   --------------------------------------------------------- */
+.ol-pagination {
   display: flex;
   justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 48px;
 }
 
-.btn-view-order {
+.ol-page-btn,
+.ol-page-num {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  color: var(--ol-text-muted);
+  min-width: 40px;
+  height: 40px;
+  padding: 0 12px;
+  border-radius: 6px;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #555;
   text-decoration: none;
-  transition: all 0.25s ease;
-  border: 1px solid transparent;
+  border: 1px solid var(--color-border, #eaeaea);
+  transition: all 0.2s;
 }
 
-.btn-view-order:hover {
-  color: var(--ol-gold);
-  background: rgba(205, 127, 50, 0.06);
-  border-color: rgba(205, 127, 50, 0.15);
+.ol-page-btn:hover,
+.ol-page-num:hover {
+  background: #fdfdfd;
+  border-color: #bfa15f;
+  color: #bfa15f;
 }
 
-.btn-view-order .material-icons {
-  font-size: 20px;
+.ol-page-num.active {
+  background: var(--color-gold, #bfa15f);
+  color: #fff;
+  border-color: var(--color-gold, #bfa15f);
 }
 
-/* ============================================================
-   RESPONSIVE
-   ============================================================ */
+.ol-page-dots {
+  color: #ccc;
+  padding: 0 8px;
+}
 
+/* ---------------------------------------------------------
+   EMPTY STATE
+   --------------------------------------------------------- */
+.ol-empty-state {
+  text-align: center;
+  padding: 80px 20px;
+  background: #fff;
+  border: 1px dashed #ccc;
+  border-radius: 12px;
+  margin-top: 32px;
+}
+
+.ol-empty-icon {
+  font-size: 48px;
+  color: #ddd;
+  margin-bottom: 24px;
+}
+
+.ol-empty-title {
+  font-family: "Playfair Display", serif;
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #111;
+  margin-bottom: 8px;
+}
+
+.ol-empty-text {
+  font-family: "Montserrat", sans-serif;
+  color: #666;
+  margin-bottom: 32px;
+}
+
+/* ---------------------------------------------------------
+   RESPONSIVE DESIGN
+   --------------------------------------------------------- */
 @media (max-width: 768px) {
-  /* Switch to card layout on mobile */
-  .orders-table-header {
-    display: none;
-  }
-
-  .order-row {
-    display: flex;
+  .ol-header-flex {
     flex-direction: column;
     align-items: flex-start;
-    gap: 12px;
-    padding: 20px;
-    position: relative;
   }
 
-  .order-row-action {
-    position: absolute;
-    top: 20px;
-    right: 20px;
+  .ol-controls-bar {
+    flex-direction: column;
+    align-items: stretch;
   }
 
-  .order-total-inline {
-    font-size: 0.9rem;
+  .ol-search-box {
+    max-width: none;
+  }
+
+  .ol-filters-group {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 8px;
+    scrollbar-width: none; /* Firefox */
+  }
+  .ol-filters-group::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+  }
+
+  .ol-card-body {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .ol-card-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .ol-btn-secondary {
+    flex: 1;
+    justify-content: center;
   }
 }

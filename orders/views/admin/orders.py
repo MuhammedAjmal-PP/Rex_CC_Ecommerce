@@ -17,6 +17,7 @@ from orders.service.status import (
     ADMIN_ITEM_ALLOWED_TRANSITIONS,
     ORDER_ALLOWED_TRANSITIONS,
 )
+from orders.utils import compute_item_totals, get_payment_transaction
 
 
 @user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
@@ -55,6 +56,10 @@ def order_list(request):
     paginator = Paginator(orders_qs, 12)
     page_obj = paginator.get_page(request.GET.get("page", 1))
 
+    # Attach _payment to each order for template access
+    for order in page_obj:
+        order.payment_txn = get_payment_transaction(order)
+
     context = {
         "orders": page_obj,
         "search_query": search_query,
@@ -76,6 +81,11 @@ def order_detail(request, order_number):
         Order.objects.select_related("user").prefetch_related("payment"),
         order_number=order_number,
     )
+
+    # Block details page for failed orders
+    if order.status == "FAILED":
+        messages.error(request, "This order failed and cannot be viewed.")
+        return redirect("admin_orders_list")
     order_items = (
         OrderItem.objects.filter(order=order)
         .select_related(
@@ -93,11 +103,13 @@ def order_detail(request, order_number):
     for item in order_items:
         item_current = item.status
         item_next = sorted(ADMIN_ITEM_ALLOWED_TRANSITIONS.get(item_current, set()))
+        totals = compute_item_totals(item)
         items_with_transitions.append(
             {
                 "item": item,
                 "current_status": item_current,
                 "allowed_next": item_next,
+                "total_original_price": totals["total_original_price"],
             }
         )
 
@@ -107,6 +119,7 @@ def order_detail(request, order_number):
         "order_next": order_next,
         "items_with_transitions": items_with_transitions,
         "gst_rate": settings.GST_RATE,
+        "payment": get_payment_transaction(order),
     }
 
     return render(request, "orders/admin/order_details.html", context)

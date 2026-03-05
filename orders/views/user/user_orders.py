@@ -52,11 +52,12 @@ def order_list(request):
         request.GET.get("page")
     )
 
-    # Build set of order IDs eligible for Razorpay retry
+    # Build set of order IDs eligible for Razorpay retry; attach payment_txn to each order
     razorpay_retry_ids = set()
     for order in page_obj:
+        payment = get_payment_transaction(order)
+        order.payment_txn = payment
         if order.status == "FAILED" and order.cart_snapshot:
-            payment = get_payment_transaction(order)
             if payment and payment.payment_method == "RAZORPAY":
                 razorpay_retry_ids.add(order.pk)
 
@@ -79,6 +80,11 @@ def order_detail(request, order_number):
         user=request.user,
         order_number=order_number,
     )
+
+    # Block details page for failed orders
+    if order.status == "FAILED":
+        messages.error(request, "This order failed and cannot be viewed.")
+        return redirect("user_order_list")
 
     order_items = (
         OrderItem.objects.filter(order=order)
@@ -113,10 +119,10 @@ def order_detail(request, order_number):
     items_list = list(order_items)
     for item in items_list:
         totals = compute_item_totals(item)
-        item._total_original_price = totals["total_original_price"]
-        item._item_discount = totals["item_discount"]
-        item._can_return = can_return_item(item)
-        item._total_return = compute_return_refund(item)
+        item.total_original_price = totals["total_original_price"]
+        item.item_discount = totals["item_discount"]
+        item.can_return = can_return_item(item)
+        item.total_return = compute_return_refund(item)
 
     payment = get_payment_transaction(order)
 
@@ -160,6 +166,7 @@ def order_invoice(request, order_number):
         {
             "order": order,
             "order_items": order_items,
+            "payment": get_payment_transaction(order),
             "gst_rate": settings.GST_RATE,
             "hsn_code": settings.DEFAULT_WATCH_HSN,
             "store_state": settings.STORE_STATE,

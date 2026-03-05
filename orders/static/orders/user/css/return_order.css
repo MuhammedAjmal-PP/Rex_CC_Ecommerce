@@ -1,96 +1,433 @@
 /* ===================================================================
-   REX CC - RETURN ORDER STYLES
+   REX CC - RETURN ORDER STYLES (Luxury Layout)
    =================================================================== */
 
-/* Select Native Override */
-.ro-select {
-  appearance: none;
-  -webkit-appearance: none;
-  cursor: pointer;
-  background-color: #fff;
+/* ---------------------------------------------------------
+   PAGE HEADER
+   --------------------------------------------------------- */
+.ro-header-wrapper {
+  margin-bottom: 40px;
 }
 
-/* Base override for default input styles */
-.hub-input {
-  width: 100%;
-  padding: 12px 14px;
+.ro-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.2rem;
+  font-weight: 600;
+  color: #111;
+  margin: 0 0 8px 0;
+}
+
+.ro-subtitle {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.95rem;
+  color: #666;
+  margin: 0;
+}
+
+/* ---------------------------------------------------------
+   LAYOUT GRID
+   --------------------------------------------------------- */
+.ro-grid {
+  display: grid;
+  grid-template-columns: 350px 1fr;
+  gap: 32px;
+  align-items: start;
+}
+
+.ro-card {
+  background: #fff;
+  border: 1px solid var(--color-border, #eaeaea);
+  border-radius: 12px;
+  padding: 32px;
+}
+
+.ro-card-lg {
+  background: #fff;
+  border: 1px solid var(--color-border, #eaeaea);
+  border-radius: 12px;
+  padding: 40px;
+}
+
+.ro-section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.4rem;
+  color: #111;
+  margin: 0 0 24px 0;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 16px;
+}
+
+/* ---------------------------------------------------------
+   LEFT PANE: ITEM DETAILS
+   --------------------------------------------------------- */
+.ro-img-wrap {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.ro-img {
+  width: 160px;
+  height: 160px;
+  object-fit: cover;
+  background: #fff;
+  border: 1px solid #f0f0f0;
+  border-radius: 8px;
+  padding: 4px;
+  display: inline-block;
+}
+
+.ro-img-placeholder {
+  width: 160px;
+  height: 160px;
+  border: 1px solid #eaeaea;
+  border-radius: 8px;
+  background: #fafafa;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #ccc;
+  margin: 0 auto;
+}
+
+.icon-40 { font-size: 40px !important; }
+
+.text-center { text-align: center; }
+
+.ro-brand {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: #888;
+  margin-bottom: 8px;
+}
+
+.ro-product-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.3rem;
+  margin: 0 0 24px 0;
+  color: #111;
+  line-height: 1.4;
+}
+
+.ro-summary-box {
+  background: #fafafa;
+  border: 1px solid var(--color-border, #eaeaea);
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.ro-summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
   font-family: 'Montserrat', sans-serif;
   font-size: 0.9rem;
+}
+
+.ro-summary-row:last-child {
+  margin-bottom: 0;
+}
+
+.ro-summary-row.total {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #eaeaea;
+}
+
+.text-muted { color: #888; }
+.font-monospace-500 { font-family: monospace; font-size: 0.95rem; font-weight: 500; color: #111; }
+.font-weight-500 { font-weight: 500; color: #111; }
+.font-weight-600 { font-weight: 600; color: #111; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.5px; }
+
+.ro-refund-val {
+  font-weight: 600;
+  color: var(--color-gold, #bfa15f);
+  font-size: 1.2rem;
+  font-family: 'Playfair Display', serif;
+}
+
+/* ---------------------------------------------------------
+   RIGHT PANE: FORM STYLES
+   --------------------------------------------------------- */
+.ro-label {
+  display: block;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
   color: #111;
-  border: 1px solid #eaeaea;
-  border-radius: 2px;
-  transition: all 0.2s ease;
+  margin-bottom: 12px;
+}
+
+.text-danger { color: #d32f2f; margin-left: 4px; }
+
+.position-relative { position: relative; }
+
+.hub-input {
+  width: 100%;
+  padding: 14px 16px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.95rem;
+  color: #111;
+  border: 1px solid var(--color-border, #eaeaea);
+  border-radius: 8px;
+  background: #fff;
+  transition: all 0.3s ease;
 }
 
 .hub-input:focus {
   outline: none;
-  border-color: var(--color-gold);
-  box-shadow: 0 0 0 2px rgba(191, 161, 95, 0.1);
+  border-color: #111;
+  box-shadow: 0 0 0 4px rgba(0,0,0,0.05);
 }
 
 .hub-input::placeholder {
-  color: #aaa;
+  color: #999;
+}
+
+.ro-select {
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+
+.ro-select-icon {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
+  pointer-events: none;
+}
+
+.ro-textarea {
+  min-height: 140px;
+  resize: vertical;
+}
+
+.ro-error-text {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.8rem;
+  color: #d32f2f;
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ro-error-text::before {
+  content: 'error';
+  font-family: 'Material Icons';
+  font-size: 14px;
 }
 
 /* ---------------------------------------------------------
-   IMAGE PREVIEW GRID (Upload JS Component)
+   PHOTO UPLOAD COMPONENT
    --------------------------------------------------------- */
+.ro-upload-box {
+  padding: 32px;
+  border: 1px dashed #ccc;
+  border-radius: 8px;
+  background: #fafafa;
+  transition: all 0.3s;
+}
+
+.ro-upload-box:hover {
+  border-color: #999;
+  background: #f5f5f5;
+}
+
+.ro-upload-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #111;
+  margin-bottom: 8px;
+}
+
+.ro-upload-desc {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.9rem;
+  color: #666;
+  margin: 0 0 24px 0;
+  line-height: 1.5;
+}
+
+.d-none { display: none; }
+
+.ro-upload-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.ro-btn-browse {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border: 1px solid #111;
+  color: #111;
+  background: transparent;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.ro-btn-browse:hover {
+  background: #111;
+  color: #fff;
+}
+
 .ro-preview-grid {
   display: flex;
-  gap: 12px;
+  gap: 16px;
   flex-wrap: wrap;
 }
 
 .ro-preview-card {
   position: relative;
-  width: 60px;
-  height: 60px;
-  border-radius: 2px;
+  width: 80px;
+  height: 80px;
+  border-radius: 6px;
   overflow: hidden;
   border: 1px solid #eaeaea;
   background: #fff;
-  padding: 2px;
+  padding: 4px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
 .ro-preview-img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
+  border-radius: 4px;
 }
 
 .ro-preview-remove {
   position: absolute;
-  top: 2px;
-  right: 2px;
-  width: 18px;
-  height: 18px;
+  top: -6px;
+  right: -6px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.6);
-  border: none;
+  background: #d32f2f;
+  border: 2px solid #fff;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0;
-  transition: background 0.2s;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  transition: transform 0.2s;
 }
 
 .ro-preview-remove:hover {
-  background: #d32f2f;
+  transform: scale(1.1);
+  background: #b71c1c;
 }
 
 .ro-preview-remove .material-icons {
-  font-size: 12px;
+  font-size: 14px;
   color: #fff;
 }
 
+/* ---------------------------------------------------------
+   FORM ACTIONS Footer
+   --------------------------------------------------------- */
+.ro-form-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  padding-top: 32px;
+  margin-top: 16px;
+  border-top: 1px solid var(--color-border, #eaeaea);
+}
+
+.hub-btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 28px;
+  border: 1px solid #111;
+  color: #111;
+  background: #fff;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: all 0.3s;
+}
+
+.hub-btn-outline:hover {
+  background: #111;
+  color: #fff;
+}
+
+.lux-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 28px;
+  background: var(--color-gold, #bfa15f);
+  color: #fff;
+  border: none;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.lux-btn-primary:hover {
+  background: #a98d51;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(191, 161, 95, 0.3);
+}
+
+/* ---------------------------------------------------------
+   UTILITY & STRUCTURAL CLASSES
+   --------------------------------------------------------- */
+.mb-24 { margin-bottom: 24px; }
+.mb-32 { margin-bottom: 32px; }
 
 /* ---------------------------------------------------------
    RESPONSIVE DESIGN 
    --------------------------------------------------------- */
-   
-@media (max-width: 900px) {
+@media (max-width: 992px) {
   .ro-grid {
-    grid-template-columns: 1fr !important;
+    grid-template-columns: 1fr;
+  }
+  
+  .ro-card, .ro-card-lg {
+    padding: 24px;
+  }
+  
+  .ro-form-footer {
+    flex-direction: column-reverse;
+  }
+  
+  .ro-form-footer .hub-btn-outline,
+  .ro-form-footer .lux-btn-primary {
+    width: 100%;
   }
 }
+

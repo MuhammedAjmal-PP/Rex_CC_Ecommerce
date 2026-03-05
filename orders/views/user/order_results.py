@@ -56,6 +56,7 @@ def order_failure_view(request, order_number):
         "orders/user/order_failure.html",
         {
             "order": order,
+            "payment": payment,
             "is_razorpay_failed": is_razorpay_failed,
             "razorpay_key_id": settings.RAZORPAY_KEY_ID if is_razorpay_failed else None,
         },

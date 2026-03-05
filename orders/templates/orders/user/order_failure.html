@@ -2,44 +2,61 @@
 {% load static %}
 {% load humanize %}
 {% block head_title %}Payment Failed | REX CC{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'orders/user/css/order_failure.css' %}?v=1.1">
+{% endblock %}
+
 {% block content %}
-<div class="lux-hub-wrapper">
-    <div style="max-width: 600px; margin: 60px auto; text-align: center;">
-        <div class="hub-icon-circle" style="width: 80px; height: 80px; border-radius: 50%; background: rgba(211, 47, 47, 0.1); display: flex; align-items: center; justify-content: center; margin: 0 auto 24px;">
-            <span class="material-icons" style="font-size: 40px; color: #d32f2f;">error_outline</span>
+<div class="failure-page">
+    <div class="failure-container">
+        
+        <div class="failure-icon-wrapper">
+            <svg class="xmark-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                <circle class="xmark-circle" cx="26" cy="26" r="25"/>
+                <path class="xmark-x" d="M16,16 L36,36"/>
+                <path class="xmark-x xmark-x2" d="M36,16 L16,36"/>
+            </svg>
         </div>
         
-        <h1 style="font-family: 'Playfair Display', serif; font-size: 2.5rem; color: #111; margin-bottom: 8px;">Payment Failed</h1>
-        <p style="font-family: 'Montserrat', sans-serif; color: #666; margin-bottom: 32px;">We couldn't process your payment. No money has been deducted.</p>
+        <div class="failure-text-block">
+            <h1 class="failure-title">Payment Failed</h1>
+            <p class="failure-subtitle">We couldn't process your payment. No money has been deducted.</p>
+        </div>
         
-        <div class="hub-card" style="padding: 32px; text-align: left; margin-bottom: 32px; border: 1px solid #eaeaea; box-shadow: 0 4px 20px rgba(0,0,0,0.03);">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px dashed #eaeaea;">
-                <span style="font-family: 'Montserrat', sans-serif; color: #666; font-size: 0.9rem;">Order Number</span>
-                <span style="font-family: 'Montserrat', sans-serif; font-weight: 600; color: #111;">{{ order.order_number }}</span>
+        <div class="failure-info-card">
+            <div class="failure-info-row">
+                <span class="failure-info-label">Order Number</span>
+                <span class="failure-info-value">{{ order.order_number }}</span>
             </div>
-            <div style="display: flex; justify-content: space-between; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px dashed #eaeaea;">
-                <span style="font-family: 'Montserrat', sans-serif; color: #666; font-size: 0.9rem;">Amount</span>
-                <span style="font-family: 'Montserrat', sans-serif; font-weight: 600; color: #111;">₹{{ order.grand_total|floatformat:2|intcomma }}</span>
+            <div class="failure-info-row">
+                <span class="failure-info-label">Amount</span>
+                <span class="failure-info-value">₹{{ order.grand_total|floatformat:2|intcomma }}</span>
             </div>
-            {% if order.payment_transaction %}
-            <div style="display: flex; justify-content: space-between;">
-                <span style="font-family: 'Montserrat', sans-serif; color: #666; font-size: 0.9rem;">Method</span>
-                <span style="font-family: 'Montserrat', sans-serif; font-weight: 500; color: #111;">{{ order.payment_transaction.get_payment_method_display }}</span>
+            {% if payment %}
+            <div class="failure-info-row">
+                <span class="failure-info-label">Method</span>
+                <span class="failure-info-value">{{ payment.get_payment_method_display }}</span>
             </div>
             {% endif %}
         </div>
         
-        <div style="display: flex; gap: 16px; justify-content: center;">
+        <div class="failure-actions">
             {% if is_razorpay_failed %}
-                <button type="button" class="lux-btn-primary" data-order-number="{{ order.order_number }}" onclick="retryRazorpayPayment(this)" style="padding: 12px 24px; border: none; cursor: pointer;">
-                    Retry Payment
+                {% csrf_token %}
+                <button type="button" class="btn-retry-payment" data-order-number="{{ order.order_number }}" onclick="retryRazorpayPayment(this)">
+                    <span class="material-icons">refresh</span> Retry Payment
                 </button>
             {% endif %}
-            <a href="{% url 'user_order_details' order.order_number %}" class="hub-btn-outline" style="border-color: #111; color: #111; padding: 12px 24px;">View Order</a>
+            <a href="{% url 'product_list' %}" class="btn-continue-shopping">
+                <span class="material-icons">shopping_bag</span> Continue Shopping
+            </a>
         </div>
+        
     </div>
 </div>
 {% endblock %}
+
 {% block extra_js %}
     {% if is_razorpay_failed %}
         <script src="https://checkout.razorpay.com/v1/checkout.js"></script>

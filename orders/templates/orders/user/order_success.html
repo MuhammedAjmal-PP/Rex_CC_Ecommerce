@@ -2,39 +2,55 @@
 {% load static %}
 {% load humanize %}
 {% block head_title %}Order Confirmed | REX CC{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'orders/user/css/order_success.css' %}?v=1.1">
+{% endblock %}
+
 {% block content %}
-<div class="lux-hub-wrapper">
-    <div style="max-width: 600px; margin: 60px auto; text-align: center;">
-        <div class="hub-icon-circle" style="width: 80px; height: 80px; border-radius: 50%; background: rgba(46, 125, 50, 0.1); display: flex; align-items: center; justify-content: center; margin: 0 auto 24px;">
-            <span class="material-icons" style="font-size: 40px; color: #2e7d32;">check_circle</span>
+<div class="success-page">
+    <div class="success-container">
+        
+        <div class="success-icon-wrapper">
+            <svg class="checkmark-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+                <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+            </svg>
         </div>
         
-        <h1 style="font-family: 'Playfair Display', serif; font-size: 2.5rem; color: #111; margin-bottom: 8px;">Order Confirmed</h1>
-        <p style="font-family: 'Montserrat', sans-serif; color: #666; margin-bottom: 32px;">Thank you for your purchase. Your order has been placed successfully.</p>
+        <div class="success-text-block">
+            <h1 class="success-title">Order Confirmed</h1>
+            <p class="success-subtitle">Thank you for your purchase. Your order has been placed successfully.</p>
+        </div>
         
-        <div class="hub-card" style="padding: 32px; text-align: left; margin-bottom: 32px; border: 1px solid #eaeaea; box-shadow: 0 4px 20px rgba(0,0,0,0.03);">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px dashed #eaeaea;">
-                <span style="font-family: 'Montserrat', sans-serif; color: #666; font-size: 0.9rem;">Order Number</span>
-                <span style="font-family: 'Montserrat', sans-serif; font-weight: 600; color: #111;">{{ order.order_number }}</span>
+        <div class="order-card">
+            <div class="info-row">
+                <span class="info-label">Order Number</span>
+                <span class="info-value">{{ order.order_number }}</span>
             </div>
-            <div style="display: flex; justify-content: space-between; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px dashed #eaeaea;">
-                <span style="font-family: 'Montserrat', sans-serif; color: #666; font-size: 0.9rem;">Amount Paid</span>
-                <span style="font-family: 'Montserrat', sans-serif; font-weight: 600; color: #111;">₹{{ order.grand_total|floatformat:2|intcomma }}</span>
+            <div class="info-row">
+                <span class="info-label">Amount Paid</span>
+                <span class="info-value">₹{{ order.grand_total|floatformat:2|intcomma }}</span>
             </div>
-            <div style="display: flex; justify-content: space-between; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px dashed #eaeaea;">
-                <span style="font-family: 'Montserrat', sans-serif; color: #666; font-size: 0.9rem;">Payment Method</span>
-                <span style="font-family: 'Montserrat', sans-serif; font-weight: 500; color: #111;">{{ order.payment_transaction.get_payment_method_display }}</span>
+            <div class="info-row">
+                <span class="info-label">Payment Method</span>
+                <span class="info-value">{{ payment.get_payment_method_display }}</span>
             </div>
-            <div style="display: flex; justify-content: space-between;">
-                <span style="font-family: 'Montserrat', sans-serif; color: #666; font-size: 0.9rem;">Date</span>
-                <span style="font-family: 'Montserrat', sans-serif; font-weight: 500; color: #111;">{{ order.created_at|date:"d M Y, h:i A" }}</span>
+            <div class="info-row">
+                <span class="info-label">Date</span>
+                <span class="info-value">{{ order.created_at|date:"d M Y, h:i A" }}</span>
             </div>
         </div>
         
-        <div style="display: flex; gap: 16px; justify-content: center;">
-            <a href="{% url 'user_order_details' order.order_number %}" class="lux-btn-primary" style="padding: 12px 24px;">View Order</a>
-            <a href="{% url 'product_list' %}" class="hub-btn-outline" style="border-color: #111; color: #111; padding: 12px 24px;">Continue Shopping</a>
+        <div class="success-actions">
+            <a href="{% url 'user_order_details' order.order_number %}" class="btn-view-order">
+                <span class="material-icons">receipt_long</span> View Order
+            </a>
+            <a href="{% url 'product_list' %}" class="btn-continue-shopping">
+                <span class="material-icons">shopping_bag</span> Continue Shopping
+            </a>
         </div>
+        
     </div>
 </div>
 {% endblock %}

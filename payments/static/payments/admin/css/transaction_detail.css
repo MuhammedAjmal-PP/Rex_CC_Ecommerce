@@ -1,8 +1,9 @@
 /* ============================================================
-   REX CC ADMIN — TRANSACTION DETAIL
-   Follows admin_ui_style_guide.md
-   Matches order_details.css design system
+   REX CC ADMIN - TRANSACTION DETAIL STYLES
+   File: payments/static/payments/admin/css/transaction_detail.css
    ============================================================ */
+
+.font-montserrat { font-family: 'Montserrat', sans-serif; }
 
 :root {
     --td-black: #000000;

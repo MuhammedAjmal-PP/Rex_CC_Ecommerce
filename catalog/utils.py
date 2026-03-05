@@ -140,7 +140,7 @@ def pack_variants(variants, offer_data=None):
 
         variant.final_price = variant.price - variant.discount_amount
 
-    return variants
+    return variants_list
 
 
 def get_offer_variants(variant_queryset, *, limit=8):

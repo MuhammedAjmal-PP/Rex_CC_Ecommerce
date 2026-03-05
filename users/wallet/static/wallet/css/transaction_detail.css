@@ -2,16 +2,20 @@
    REX CC — USER TRANSACTION DETAIL PAGE
    Luxury theme matching wallet/order detail design system
    ============================================================ */
+.align-items-start { align-items: flex-start; }
+.font-montserrat { font-family: 'Montserrat', sans-serif; }
+.td-status-md { padding: 6px 14px; font-size: 0.75rem; }
+.mb-24 { margin-bottom: 24px; }
 
 :root {
   --td-bg: #faf9f7;
   --td-surface: #ffffff;
-  --td-text: #2c2c2c;
-  --td-text-muted: #7a7a7a;
-  --td-border: #e8e6e2;
-  --td-gold: #cd7f32;
-  --td-gold-light: #bfa15f;
-  --td-gold-dark: #b06825;
+  --td-text: #111111;
+  --td-text-muted: #666666;
+  --td-border: #eaeaea;
+  --td-gold: #bfa15f;
+  --td-gold-light: #d1b882;
+  --td-gold-dark: #a98d51;
   --td-credit: #16a34a;
   --td-credit-bg: #f0fdf4;
   --td-debit: #dc2626;

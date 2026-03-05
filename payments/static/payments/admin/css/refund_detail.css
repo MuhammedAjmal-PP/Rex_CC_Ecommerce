@@ -279,6 +279,13 @@
 .wt-debit { background: #fef2f2; color: #dc2626; }
 
 /* ============================================================
+   REX CC ADMIN - REFUND DETAIL STYLES
+   File: payments/static/payments/admin/css/refund_detail.css
+   ============================================================ */
+
+.font-montserrat { font-family: 'Montserrat', sans-serif; }
+
+/* ============================================================
    REJECT MODAL
    ============================================================ */
 

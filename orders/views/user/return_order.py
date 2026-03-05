@@ -12,6 +12,15 @@ from orders.service.returns import (
     validate_return_eligibility,
 )
 from orders.service.status import InvalidTransitionError, change_order_item_status
+from orders.utils import compute_return_refund
+
+
+def _get_primary_image(variant):
+    """Return the primary ProductImage for a variant (uses prefetch cache)."""
+    for img in variant.images.all():
+        if img.is_primary:
+            return img
+    return variant.images.first()
 
 
 @login_required
@@ -25,7 +34,7 @@ def return_order(request, order_number, item_id):
     order_item = get_object_or_404(
         OrderItem.objects.select_related(
             "product_variant", "product_variant__product", "product_variant__product__brand"
-        ),
+        ).prefetch_related("product_variant__images"),
         id=item_id,
         order=order,
     )
@@ -51,7 +60,8 @@ def return_order(request, order_number, item_id):
         "order": order,
         "order_item": order_item,
         "form": form,
-        "primary_image": order_item.product_variant.primary_image,
+        "primary_image": _get_primary_image(order_item.product_variant),
+        "refund_amount": compute_return_refund(order_item),
     }
     return render(request, "orders/user/return_order.html", context)
 
@@ -65,7 +75,7 @@ def return_order_submit(request, order_number, item_id):
     """
     order = get_object_or_404(Order, user=request.user, order_number=order_number)
     order_item = get_object_or_404(
-        OrderItem.objects.select_related("product_variant"),
+        OrderItem.objects.select_related("product_variant").prefetch_related("product_variant__images"),
         id=item_id,
         order=order,
     )
@@ -92,7 +102,7 @@ def return_order_submit(request, order_number, item_id):
             "order": order,
             "order_item": order_item,
             "form": form,
-            "primary_image": order_item.product_variant.primary_image,
+            "primary_image": _get_primary_image(order_item.product_variant),
         }
         return render(request, "orders/user/return_order.html", context)
 
@@ -103,7 +113,7 @@ def return_order_submit(request, order_number, item_id):
             "order": order,
             "order_item": order_item,
             "form": form,
-            "primary_image": order_item.product_variant.primary_image,
+            "primary_image": _get_primary_image(order_item.product_variant),
             "photo_errors": "You can upload a maximum of 3 photos.",
         }
         return render(request, "orders/user/return_order.html", context)

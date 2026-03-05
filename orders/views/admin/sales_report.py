@@ -86,6 +86,10 @@ def sales_report_view(request):
     paginator = Paginator(report["orders_qs"], 15)
     page_obj = paginator.get_page(request.GET.get("page", 1))
 
+    # Attach _payment to each order on this page for template access
+    for order in page_obj:
+        order.payment_txn = get_payment_transaction(order)
+
     context = {
         "filter_type": filter_type,
         "start_date": request.GET.get("start_date", ""),
@@ -113,6 +117,8 @@ def download_sales_report_pdf(request):
     filter_type, start_dt, end_dt, label = _parse_filters(request)
     report = get_sales_report(start_dt, end_dt)
     orders = list(report["orders_qs"])  # all results — no pagination
+    for order in orders:
+        order.payment_txn = get_payment_transaction(order)
 
     html_string = render_to_string(
         "orders/admin/sales_report_pdf.html",

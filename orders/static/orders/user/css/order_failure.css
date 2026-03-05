@@ -6,13 +6,13 @@
 :root {
   --of-bg: #faf9f7;
   --of-surface: #ffffff;
-  --of-text: #2c2c2c;
-  --of-text-muted: #7a7a7a;
-  --of-red: #dc2626;
+  --of-text: #111111;
+  --of-text-muted: #666666;
+  --of-red: #d32f2f;
   --of-red-light: #fef2f2;
-  --of-gold: #cd7f32;
-  --of-gold-dark: #b06825;
-  --of-border: #e8e6e2;
+  --of-gold: #bfa15f;
+  --of-gold-dark: #a98d51;
+  --of-border: #eaeaea;
 
   --font-serif: "Playfair Display", serif;
   --font-sans: "Montserrat", sans-serif;

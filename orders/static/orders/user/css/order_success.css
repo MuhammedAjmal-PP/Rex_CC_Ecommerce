@@ -5,11 +5,11 @@
 :root {
   --os-bg: #faf9f7;
   --os-surface: #ffffff;
-  --os-text: #2c2c2c;
-  --os-text-muted: #7a7a7a;
-  --os-gold: #cd7f32;
-  --os-gold-dark: #b06825;
-  --os-border: #e8e6e2;
+  --os-text: #111111;
+  --os-text-muted: #666666;
+  --os-gold: #bfa15f;
+  --os-gold-dark: #a98d51;
+  --os-border: #eaeaea;
 
   --font-serif: "Playfair Display", serif;
   --font-sans: "Montserrat", sans-serif;

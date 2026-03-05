@@ -3,6 +3,13 @@
    File: orders/static/orders/admin/css/order_details.css
    ============================================================ */
 
+/* ========================================
+   UTILITIES
+   ======================================== */
+.text-success { color: #2e7d32; }
+.coupon-icon { font-size: 14px; vertical-align: middle; margin-right: 4px; }
+.od-status-text { padding: 16px; font-family: 'Montserrat', sans-serif; font-size: 0.95rem; color: #555; }
+
 :root {
     --od-black: #000000;
     --od-dark: #1A1A1A;
