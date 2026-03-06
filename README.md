@@ -42,14 +42,16 @@
 | Feature | Status | Description |
 |---------|--------|-------------|
 | Authentication | ✅ Complete | Email/OTP, Google OAuth, Password Reset |
+| Admin Dashboard | ✅ Complete | Revenue/order charts, best-selling analytics, stat cards |
 | Admin Panel | ✅ Complete | Dynamic variant forms, validation, advanced CRUD |
 | User Profile | ✅ Complete | Settings, Avatar cropping, Address book |
 | Catalog | ✅ Complete | Search, Filter, Sort, Stock status |
 | Cart | ✅ Complete | Real-time stock, Guest handling, Wishlist sync |
 | Wishlist | ✅ Complete | Offcanvas UI, AJAX toggle, Persistent storage |
 | Checkout | ✅ Complete | 3-step stepper, Address selection, Order summary |
-| Order Placement | ✅ Complete | COD, Razorpay, Wallet — Atomic transactions |
+| Order Placement | ✅ Complete | COD, Razorpay (two-phase), Wallet — Atomic transactions |
 | Payments | ✅ Complete | Razorpay gateway, Transaction ledger, Refund management |
+| Razorpay Retry | ✅ Complete | Retry failed payments from order listing |
 | Wallet | ✅ Complete | Credit/Debit, Balance snapshots, Transaction history |
 | Inventory | ✅ Complete | Centralized stock service, Audit logs |
 | Offers & Discounts | ✅ Complete | Product/Category/Brand offers, Best-offer pricing, Admin CRUD |
@@ -75,6 +77,19 @@
 ---
 
 ## 🛠️ Admin Panel
+
+<details>
+<summary><strong>📊 Admin Dashboard</strong></summary>
+
+**Location:** `core/service/dashboard.py` + `core/templates/core/admin/dashboard.html`
+
+- **Summary Stat Cards**: Total Revenue, Total Orders, Total Customers, Total Products — real-time aggregations excluding cancelled/failed orders
+- **Revenue & Orders Chart**: Interactive chart with filter toggle (Yearly / Monthly / Weekly / Daily) — visualises revenue and order count over time
+- **Best-Selling Products**: Top 10 products ranked by quantity sold with revenue totals
+- **Best-Selling Categories**: Top 10 categories ranked by quantity sold (M2M-aware)
+- **Best-Selling Brands**: Top 10 brands ranked by quantity sold with revenue
+- **Excluded Statuses**: All analytics exclude orders with CANCELLED or FAILED status; best-selling tables also exclude CANCELLED and RETURNED items
+</details>
 
 <details>
 <summary><strong>👥 User Management</strong></summary>
@@ -128,7 +143,7 @@
 **Location:** `orders/views/admin/`
 
 - **Order List**: Paginated listing with search, filter by status, stat cards
-- **Order Detail**: View items, addresses, timeline; update order status
+- **Order Detail**: View items, addresses, status; update order status
 - **Status Cascade**: Changing order status automatically walks all items through every intermediate status (e.g., order → SHIPPED cascades items through CONFIRMED → PACKING → READY → SHIPPED)
 - **Return Management**: Separate return list/detail views, approve/reject returns, admin cannot set RETURN_REQUESTED directly
 - **Invoice**: PDF generation via WeasyPrint with luxury-themed template
@@ -145,8 +160,8 @@
 - **PDF Download**: WeasyPrint-generated report with header, summary grid, full orders table (unpaginated), and generation timestamp
 - **Excel Download**: Styled `.xlsx` export via openpyxl with branded header, summary rows, formatted column headers (black fill), and currency-formatted data columns
 - **Filter Persistence**: Download links (PDF/Excel) dynamically carry the active filter querystring so exports always match the on-screen view
-- **Excluded Statuses**: Orders whose latest status is CANCELLED or FAILED are excluded from all metrics and the table using a `StatusTimeline` subquery
-- **Service Layer**: `get_date_range()` resolves filter type → datetime range; `get_sales_report()` annotates the latest order status via subquery, excludes cancelled/failed, and returns aggregated totals + filtered queryset
+- **Excluded Statuses**: Orders with CANCELLED or FAILED status are excluded from all metrics and the table using a direct `status` field filter
+- **Service Layer**: `get_date_range()` resolves filter type → datetime range; `get_sales_report()` filters by status, excludes cancelled/failed, and returns aggregated totals + filtered queryset
 </details>
 
 <details>
@@ -243,9 +258,12 @@ Tracks individual coupon usage per user, linked to orders:
 ### Service Layer (`coupons/service.py`)
 
 ```python
-validate_coupon(code, user, cart_subtotal)    # Full validation → (coupon, discount)
-apply_coupon_to_order(coupon, user, order)    # Record usage + increment count
-revoke_coupon_usage(order)                   # Undo usage on full cancellation
+validate_coupon(code, user, cart_subtotal)       # Full validation → (coupon, discount)
+apply_coupon_to_order(coupon, user, order)       # Record usage + increment count
+revoke_coupon_usage(order)                       # Undo usage on full cancellation
+get_exhausted_coupon_ids(user)                   # Bulk query for per-user limit check
+recalculate_with_coupon(sub_total, shipping_fee, # Recalculate totals with coupon applied
+                        gst_rate, coupon_discount)
 ```
 
 ### Checkout Integration
@@ -253,9 +271,9 @@ revoke_coupon_usage(order)                   # Undo usage on full cancellation
 - **Session State**: Applied coupon stored in `request.session["applied_coupon"]`
 - **AJAX Endpoints**: `/coupon/apply/` and `/coupon/remove/` for real-time apply/remove
 - **Available Coupons**: Only shows coupons where user hasn't reached `per_user_limit`
-- **Server Re-validation**: Coupon re-validated at order placement to prevent stale usage
+- **Server Re-validation**: Coupon re-validated at order placement (with `select_for_update` to prevent race conditions)
 - **Order Model**: `coupon` FK and `coupon_discount` field store applied coupon on the order
-- **Proportional Refunds**: `OrderItem.coupon_share` distributes coupon discount proportionally for per-item refunds
+- **Proportional Refunds**: `compute_coupon_share()` in `orders/utils.py` distributes coupon discount proportionally across items for per-item refunds
 
 ### Validation Rules
 
@@ -284,18 +302,22 @@ revoke_coupon_usage(order)                   # Undo usage on full cancellation
 
 **Location:** `users/cart/`
 
-| Function | Description |
-|----------|-------------|
-| `view_cart()` | Displays items with real-time stock limits |
-| `add_cart()` | Adds items, merges quantities, redirects guests to login (preserving intent) |
-| `update_cart()` | Updates quantity via AJAX, respects stock limit |
-| `get_variant_stock()` | **Public API** for frontend stock checking |
+| Function | Location | Description |
+|----------|----------|-------------|
+| `view_cart()` | `views.py` | Displays items with real-time stock limits |
+| `add_cart()` | `views.py` | Adds items, merges quantities, redirects guests to login (preserving intent) |
+| `update_cart()` | `views.py` | Updates quantity via AJAX, respects stock limit |
+| `get_variant_stock()` | `views.py` | **Public API** for frontend stock checking |
+| `fetch_cart()` | `utils.py` | Fetches cart items with related data prefetched |
+| `compute_cart_summary()` | `utils.py` | Computes all totals (MRP, discount, sub_total, tax, shipping, grand_total) |
+| `build_cart_summary()` | `utils.py` | Builds product list for cart display (cart page, offcanvas) |
+| `summary_to_json()` | `utils.py` | Converts summary dict to JSON-safe format for AJAX |
 
 **Key Logics:**
 1.  **Stock Validation**: Prevents adding more than available stock.
 2.  **Guest Handling**: Guests clicking "Add to Cart" are redirected to Login, then back to PDP.
 3.  **Wishlist Sync**: Adding to cart automatically removes from wishlist.
-4.  **Cart Properties**: `sub_total`, `tax` (GST), `shipping_fee`, `grand_total` as computed model properties.
+4.  **Offer-Aware Pricing**: Cart totals use `final_price` (after best-offer resolution) via `pack_variants()`.
 
 ---
 
@@ -325,7 +347,7 @@ revoke_coupon_usage(order)                   # Undo usage on full cancellation
 A **3-step stepper** UI guides the user through:
 
 | Step | Feature | Details |
-|------|---------|---------|
+|------|---------|---------:|
 | 1. **Address** | Select/Add delivery address | Saved addresses with default selection, inline address form |
 | 2. **Payment** | Choose payment method | COD, Razorpay, Wallet |
 | 3. **Review** | Final order review | Item summary, pricing breakdown, dynamic payment method display, confirm & place |
@@ -336,22 +358,33 @@ A **3-step stepper** UI guides the user through:
 
 | Function | Description |
 |----------|-------------|
-| `place_order_view()` | `@require_POST` — Handles COD, Wallet, and Razorpay order creation. For Razorpay: returns JSON with gateway order data |
-| `razorpay_callback()` | Verifies Razorpay signature via HMAC-SHA256 and completes the transaction |
-| `razorpay_payment_failed()` | Marks transaction as FAILED when user dismisses modal or Razorpay reports failure |
-| `order_success_view()` | Animated success page with order number, guards against invalid access |
-| `order_failure_view()` | Payment failure page shown when Razorpay payment fails |
+| `place_order_view()` | `@require_POST` — COD & Wallet: full atomic flow (order + items + stock + cart clear). Razorpay: two-phase (order shell + cart snapshot only; items created on callback) |
 
 **Transaction Flow (Atomic):**
 1. Validate address, payment method, cart items, and stock (with `select_for_update` row locking)
 2. Create `Transaction` record via payments service
 3. Create `Order` with address snapshots (JSONField) and totals, linked to Transaction
-4. Create `OrderItem` for each cart item with initial `PENDING` status
-5. Decrement stock via `update_stock()` service (creates `InventoryLog`)
-6. Set initial `PLACED` status on the Order via `StatusTimeline`
-7. **COD/Wallet**: Complete transaction immediately; **Razorpay**: Return gateway order data for frontend checkout modal
-8. Clear purchased items from cart
-9. Redirect to order success/failure page
+4. **COD/Wallet**: Create `OrderItem` for each cart item, decrement stock via `update_stock()`, clear cart
+5. **Razorpay**: Save `cart_snapshot` on Order (no items/stock changes yet), return gateway order data for frontend checkout modal
+6. Set initial `PLACED` status on Order
+7. Redirect to order success/failure page
+
+### Razorpay Flow
+
+**Location:** `orders/views/user/razorpay.py`
+
+| Function | Description |
+|----------|-------------|
+| `razorpay_callback()` | Verifies Razorpay signature via HMAC-SHA256, then creates items from `cart_snapshot`, deducts stock, and confirms order |
+| `razorpay_payment_failed()` | Marks transaction and order as FAILED when user dismisses modal or Razorpay reports failure. No stock to restore — items were never created |
+| `retry_razorpay_payment()` | Retries a FAILED Razorpay payment: validates stock, resets order to PLACED, creates new Razorpay order + Transaction, returns JSON for frontend popup |
+
+**Order Helpers** (`orders/service/order_helpers.py`):
+
+```python
+build_cart_snapshot(cart_items, packed_prices, locked_variants)  # Save cart as JSON for deferred item creation
+create_items_from_snapshot(order, snapshot, actor)               # Lock variants, validate stock, create items, deduct stock
+```
 
 ### Order Cancellation
 
@@ -366,16 +399,15 @@ A **3-step stepper** UI guides the user through:
 - **Item-level cancellation**: Users select individual items to cancel (items in PENDING, CONFIRMED, PACKING, or READY status)
 - **Stock restoration**: Cancelled items' stock is restored via inventory service
 - **Instant Refunds**: For prepaid orders (Razorpay/Wallet), cancellations trigger an **instant** refund directly to the user's wallet. COD orders skip refund since no payment was collected
-- **Reason tracking**: User provides a cancellation reason, recorded in status timeline
+- **Reason tracking**: User provides a cancellation reason
 
 ### Order Models
 
 | Model | Description |
 |-------|-------------|
-| `Order` | User, address snapshots (JSON), totals, linked Transaction (`GenericRelation`), auto-generated order number |
-| `OrderItem` | Links Order ↔ ProductVariant with quantity and price |
-| `StatusTimeline` | **Generic relation** — tracks status history for both Order and OrderItem with actor audit |
-| `Return` | Return request linked to OrderItem with reason code, comment, status (REQUESTED/APPROVED/REJECTED/COMPLETED) |
+| `Order` | User, address snapshots (JSON), totals, `status` + `status_updated_at`, linked Transaction (`GenericRelation`), auto-generated order number, `cart_snapshot` for Razorpay two-phase flow |
+| `OrderItem` | Links Order ↔ ProductVariant with quantity, price, `original_price` (MRP at order time), `status` + `status_updated_at` |
+| `Return` | Return request linked to OrderItem with reason code, comment, auto-generated return number, status (REQUESTED/APPROVED/REJECTED/COMPLETED) |
 | `ReturnImage` | Photos uploaded as return evidence (up to 3 per return) |
 
 **Status Flows:**
@@ -383,16 +415,31 @@ A **3-step stepper** UI guides the user through:
 - **OrderItem**: PENDING → CONFIRMED → PACKING → READY → SHIPPED → IN_TRANSIT → OUT_FOR_DELIVERY → DELIVERED (+ CANCELLED, RETURN_REQUESTED, RETURNED, FAILED, RTS)
 
 **Status Service** (`orders/service/status.py`):
+- **Direct Status Tracking**: Status stored directly on `Order.status` and `OrderItem.status` fields with `status_updated_at` timestamps (no separate timeline table)
+- **Transition Validation**: Explicit allowed-transition maps (`ORDER_ALLOWED_TRANSITIONS`, `ORDER_ITEM_ALLOWED_TRANSITIONS`) with `InvalidTransitionError` on illegal moves
 - **Progressive Cascade**: Order status changes walk items through every intermediate status in the chain
-- **Reverse Sync**: Item status changes auto-derive the correct order-level status
-- **Admin Restrictions**: Admins cannot set RETURN_REQUESTED directly; only the user return flow triggers it
+- **Reverse Sync**: Item status changes auto-derive the correct order-level status via `_sync_order_status()`
+- **Admin Restrictions**: Separate `ADMIN_ITEM_ALLOWED_TRANSITIONS` map — admins cannot set RETURN_REQUESTED directly; only the user return flow triggers it
+- **COD Auto-Pay**: When order reaches DELIVERED, COD payment transactions are automatically marked as PAID
+
+### Order Utilities (`orders/utils.py`)
+
+```python
+get_payment_transaction(order)   # Get primary ORDER_PAYMENT transaction (prefetch-aware)
+can_generate_invoice(order)      # Check if status allows invoice generation
+compute_item_totals(item)        # Price totals: total_price, total_original_price, item_discount
+compute_coupon_share(item)       # Proportional coupon discount share for an item
+compute_cancel_refund(item)      # Full refund: item + shipping + tax - coupon share
+compute_return_refund(item)      # Return refund: item + tax - coupon share (no shipping)
+can_return_item(order_item)      # Check if item is eligible for return
+```
 
 ### User Order Pages
 
 | Page | Description |
 |------|-------------|
-| Order List | Tabular history with status badges, date, payment method |
-| Order Detail | Items table (qty, price, total, status), address, summary, timeline, invoice download |
+| Order List | Tabular history with status badges, date, payment method, Razorpay retry button for failed orders |
+| Order Detail | Items table (qty, price, total, status), address, summary, invoice download |
 | Order Item Detail | Product info, vertical status timeline, return button (if eligible) |
 | Cancel Order | Item-selection form with checkboxes, reason input, cancel confirmation |
 | Return Form | Reason dropdown, comments, styled photo upload with inline preview |
@@ -411,7 +458,7 @@ A universal `Transaction` model records every financial event in the system:
 | Field | Description |
 |-------|-------------|
 | `transaction_id` | UUID — unique identifier |
-| `transaction_type` | ORDER_PAYMENT, CANCELLATION_REFUND, RETURN_REFUND, WALLET_CREDIT, WALLET_DEBIT |
+| `transaction_type` | ORDER_PAYMENT, CANCELLATION_REFUND, RETURN_REFUND, WALLET_TOPUP, REFERRAL_REWARD |
 | `payment_method` | COD, WALLET, RAZORPAY |
 | `status` | PENDING → PAID / COMPLETED / FAILED / CANCELLED |
 | `content_object` | GenericFK linking to the source (Order, OrderItem, Return, etc.) |
@@ -437,7 +484,7 @@ fail_transaction(transaction)     # → PENDING → FAILED
 | `create_razorpay_order()` | Creates a Razorpay order (amount in paise, auto-capture enabled) |
 | `verify_razorpay_signature()` | HMAC-SHA256 signature verification of Razorpay callback |
 
-**Flow**: Place order → Create Razorpay order → Frontend opens checkout modal → Razorpay callback verifies → Transaction marked PAID → Order confirmed
+**Flow**: Place order → Create Razorpay order → Frontend opens checkout modal → Razorpay callback verifies → Items created from snapshot → Stock deducted → Transaction marked PAID → Order confirmed
 
 ---
 
@@ -511,6 +558,7 @@ Backend          Frontend           Storage          Payments         Tools
 Django 6.0       Bootstrap 5.3     PostgreSQL       Razorpay         Black (formatter)
 django-allauth   Vanilla CSS       Cloudinary                        djLint (templates)
 WeasyPrint       Cropper.js                                          Git
+openpyxl         Chart.js                                            
                  Material Icons
 ```
 
@@ -520,57 +568,72 @@ WeasyPrint       Cropper.js                                          Git
 
 ```
 Rex_CC_Ecommerce/
-├── core/                  # Core modules
-│   ├── validators.py      # Shared validators
-│   └── templates/core/    # Base templates (admin/user)
+├── core/                       # Core modules
+│   ├── validators.py           # Shared validators
+│   ├── service/
+│   │   └── dashboard.py        # Dashboard analytics (stats, charts, best-sellers)
+│   └── templates/core/         # Base templates (admin/user)
 │
-├── accounts/              # Authentication & User Model
-│   └── views/admin_views/ # User management (admin)
+├── accounts/                   # Authentication & User Model
+│   └── views/admin_views/      # User management (admin)
 │
-├── catalog/               # Products, Brands, Categories, Variants
-│   ├── models.py          # Product, Variant, InventoryLog
-│   ├── service.py         # update_stock(), draft management
-│   └── views/admin/       # Full catalog CRUD
+├── catalog/                    # Products, Brands, Categories, Variants
+│   ├── models.py               # Product, Variant, InventoryLog
+│   ├── service.py              # update_stock(), draft management
+│   ├── utils.py                # pack_variants() for offer-aware pricing
+│   └── views/admin/            # Full catalog CRUD
 │
-├── offers/                # Offers & Discounts
-│   ├── models.py          # Offer (Product/Category/Brand, M2M targets)
-│   ├── forms.py           # OfferForm with type-specific validation
-│   └── views/admin/       # Offer list, add, edit, delete
+├── offers/                     # Offers & Discounts
+│   ├── models.py               # Offer (Product/Category/Brand, M2M targets)
+│   ├── forms.py                # OfferForm with type-specific validation
+│   └── views/admin/            # Offer list, add, edit, delete
 │
-├── coupons/               # Coupon System
-│   ├── models.py          # Coupon, CouponUsage
-│   ├── forms.py           # CouponForm with validation
-│   ├── service.py         # validate, apply, revoke coupon logic
-│   ├── views/admin/       # Admin CRUD (list, add, edit, delete)
-│   └── views/user/        # AJAX apply/remove endpoints
+├── coupons/                    # Coupon System
+│   ├── models.py               # Coupon, CouponUsage
+│   ├── forms.py                # CouponForm with validation
+│   ├── service.py              # validate, apply, revoke, recalculate coupon logic
+│   ├── views/admin/            # Admin CRUD (list, add, edit, delete)
+│   └── views/user/             # AJAX apply/remove endpoints
 │
-├── orders/                # Order lifecycle
-│   ├── models.py          # Order, OrderItem, StatusTimeline, Return, ReturnImage
-│   ├── service/           # Status transitions, returns, stock validation
-│   │   ├── status.py      # Progressive cascade, sync, transition validation
-│   │   ├── returns.py     # Return eligibility checks
-│   │   ├── stock.py       # Stock locking & validation for order placement
-│   │   └── sales_report.py # Date-range aggregation for sales reports
-│   ├── forms.py           # ReturnForm
-│   ├── views/user/        # Checkout, Place Order, Cancel, Returns, Order Detail
-│   └── views/admin/       # Order list/detail, Return list/detail, Sales report
+├── orders/                     # Order lifecycle
+│   ├── models.py               # Order, OrderItem, Return, ReturnImage
+│   ├── utils.py                # Refund calculations, coupon shares, return eligibility
+│   ├── service/                # Business logic services
+│   │   ├── status.py           # Transition validation, cascade, sync, admin restrictions
+│   │   ├── order_helpers.py    # Cart snapshot build, item creation from snapshot
+│   │   ├── returns.py          # Return eligibility checks
+│   │   ├── stock.py            # Stock locking & validation for order placement
+│   │   └── sales_report.py     # Date-range aggregation for sales reports
+│   ├── forms.py                # ReturnForm
+│   ├── views/user/             # Checkout, Place Order, Razorpay, Cancel, Returns
+│   │   ├── checkout.py         # 3-step stepper UI
+│   │   ├── place_order.py      # COD/Wallet/Razorpay order creation
+│   │   ├── razorpay.py         # Razorpay callback, failure, retry
+│   │   ├── cancel_order.py     # Item-level cancellation
+│   │   ├── return_order.py     # Return request submission
+│   │   ├── user_orders.py      # Order list, detail, item detail
+│   │   └── order_results.py    # Success/failure result pages
+│   └── views/admin/            # Order list/detail, Return list/detail, Sales report
 │
-├── payments/              # Financial transactions
-│   ├── models.py          # Transaction (universal ledger)
-│   ├── service.py         # create_transaction, refund ops, status helpers
-│   ├── razorpay_service.py # Razorpay order creation & signature verification
-│   └── views.py           # Admin transaction/refund management
+├── payments/                   # Financial transactions
+│   ├── models.py               # Transaction (universal ledger)
+│   ├── service.py              # create_transaction, refund ops, status helpers
+│   ├── razorpay_service.py     # Razorpay order creation & signature verification
+│   └── views.py                # Admin transaction/refund management
 │
-├── users/                 # User domain
-│   ├── cart/              # Cart logic, utils, computed properties
-│   ├── wishlist/          # Wishlist toggle, offcanvas
-│   ├── wallet/            # Wallet balance, credit/debit, transaction history
-│   │   ├── models.py      # Wallet, WalletTransaction
-│   │   ├── service.py     # credit_wallet, debit_wallet, balance checks
-│   │   └── views.py       # User wallet page, transaction detail
-│   └── user_profile/      # Address (with pincode validation), Profile
+├── users/                      # User domain
+│   ├── cart/                   # Cart logic
+│   │   ├── models.py           # Cart, CartItem
+│   │   ├── views.py            # Add, update, remove, stock API
+│   │   └── utils.py            # fetch_cart, compute_cart_summary, build_cart_summary
+│   ├── wishlist/               # Wishlist toggle, offcanvas
+│   ├── wallet/                 # Wallet balance, credit/debit, transaction history
+│   │   ├── models.py           # Wallet, WalletTransaction
+│   │   ├── service.py          # credit_wallet, debit_wallet, balance checks
+│   │   └── views.py            # User wallet page, transaction detail
+│   └── user_profile/           # Address (with pincode validation), Profile
 │
-└── rexcc_project/         # Project settings & URL conf
+└── rexcc_project/              # Project settings & URL conf
 ```
 
 ---
@@ -641,7 +704,8 @@ python manage.py runserver
 
 ### Phase 3 — Payments & Financial (✅ Complete)
 - [x] Transaction Ledger (Universal model, GenericFK, audit trail)
-- [x] Razorpay Integration (Order creation, Signature verification, Callback handling)
+- [x] Razorpay Integration (Two-phase flow, Signature verification, Callback handling)
+- [x] Razorpay Payment Retry (Retry failed payments from order listing)
 - [x] Wallet System (Credit/Debit, Balance snapshots, Row locking)
 - [x] Order Cancellation (Item-level, Stock restore, Auto-refund initiation)
 - [x] Refund Management (Admin approve/reject, **Instant cancel refunds** to wallet)
@@ -654,8 +718,9 @@ python manage.py runserver
 - [x] Offers & Discounts (Product/Category/Brand offers, best-offer pricing)
 - [x] Admin Offer Management (List, Add, Edit, Delete with filters & stat cards)
 - [x] Coupon System (Code-based coupons, checkout integration, per-user limits, order integration, proportional refunds)
-- [ ] Referral Program
 - [x] Sales Report (All/Daily/Weekly/Monthly/Custom date filters, Summary stat cards, PDF & Excel download, CANCELLED/FAILED exclusion)
+- [x] Admin Dashboard (Revenue/orders chart with filters, best-selling products/categories/brands, summary stat cards)
+- [x] Referral Program
 - [ ] Email Notifications (Order updates, Refund status)
 
 ---
