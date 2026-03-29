@@ -6,13 +6,12 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.views.decorators.http import require_POST
-from catalog.models import ProductVariant
 from orders.models import Order
-from orders.service import InsufficientStockError, change_order_status
+from orders.service import InsufficientStockError, change_order_status, validate_snapshot_stock
 from orders.service.order_helpers import create_items_from_snapshot
 from orders.utils import get_payment_transaction
 from payments.models import Transaction
-from payments.service import create_transaction
+from payments.service import create_transaction, initiate_refund
 from payments.razorpay_service import create_razorpay_order, verify_razorpay_signature
 
 
@@ -95,11 +94,25 @@ def razorpay_callback(request):
 
     except InsufficientStockError:
         # Stock sold out between order creation and payment
-        txn.status = "FAILED"
-        txn.note = "Stock unavailable after payment — refund needed"
-        txn.save(update_fields=["status", "note", "updated_at"])
+        # Payment was collected by Razorpay but order can't be fulfilled
+        txn.status = "PAID"
+        txn.gateway_payment_id = razorpay_payment_id
+        txn.gateway_signature = razorpay_signature
+        txn.note = "Payment collected but stock unavailable — refund initiated"
+        txn.save(update_fields=[
+            "status", "gateway_payment_id", "gateway_signature", "note", "updated_at",
+        ])
 
         change_order_status(order=order, to_status="FAILED")
+
+        initiate_refund(
+            order=order,
+            user=request.user,
+            amount=order.grand_total,
+            txn_type="REFUND",
+            content_object=order,
+            note=f"Auto-refund: stock unavailable after Razorpay payment for order {order.order_number}",
+        )
 
         return JsonResponse({
             "success": False,
@@ -187,20 +200,7 @@ def retry_razorpay_payment(request):
     try:
         with transaction.atomic():
             # Lock variants and validate stock from snapshot
-            variant_ids = sorted({e["variant_id"] for e in order.cart_snapshot})
-            locked_variants = {
-                v.id: v
-                for v in ProductVariant.objects.select_for_update().filter(
-                    id__in=variant_ids
-                )
-            }
-
-            for entry in order.cart_snapshot:
-                variant = locked_variants.get(entry["variant_id"])
-                if not variant or entry["quantity"] > variant.stock:
-                    raise InsufficientStockError(
-                        f"Insufficient stock for {variant or 'unknown variant'}."
-                    )
+            validate_snapshot_stock(order.cart_snapshot)
 
             # Reset order: FAILED → PLACED
             change_order_status(order=order, to_status="PLACED")
@@ -213,6 +213,9 @@ def retry_razorpay_payment(request):
 
             # Create new Razorpay order
             amount_paise = int(order.grand_total * 100)
+            # Razorpay test mode: UPI capped at ₹1,00,000 — cap to ₹99,999
+            # if settings.DEBUG:
+            amount_paise = min(amount_paise, 99_999_00)
             rz_order = create_razorpay_order(
                 amount_paise=amount_paise,
                 receipt=order.order_number,

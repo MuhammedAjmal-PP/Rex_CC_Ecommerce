@@ -1,4 +1,3 @@
-from decimal import Decimal
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -15,9 +14,6 @@ from orders.service import (
     build_unlocked_stock_lookup,
     validate_stock,
 )
-
-
-# Fetch coupons the user can potentially use
 from coupons.models import Coupon as CouponModel
 from coupons.service import get_exhausted_coupon_ids
 from django.utils import timezone
@@ -75,7 +71,6 @@ def checkoutview(request):
     # ── Coupon: clear any stale session coupon on fresh checkout load ──
     if "applied_coupon" in request.session:
         del request.session["applied_coupon"]
-        request.session.modified = True
 
     now = timezone.now()
 

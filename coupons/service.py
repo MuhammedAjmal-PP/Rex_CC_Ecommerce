@@ -30,13 +30,33 @@ def validate_coupon(code, user, cart_subtotal):
     Raises:
         InvalidCouponError with a user-friendly message.
     """
+    return _validate(code, user, cart_subtotal, lock=False)
+
+
+def validate_coupon_locked(code, user, cart_subtotal):
+    """
+    Same as validate_coupon but locks the coupon row with SELECT ... FOR UPDATE.
+    Must be called inside transaction.atomic() to prevent race conditions
+    (e.g. two users claiming the last usage slot).
+
+    Returns:
+        (coupon, discount_amount) on success.
+
+    Raises:
+        InvalidCouponError with a user-friendly message.
+    """
+    return _validate(code, user, cart_subtotal, lock=True)
+
+
+def _validate(code, user, cart_subtotal, lock=False):
+    """Internal validation logic shared by locked and unlocked paths."""
     code = code.strip().upper()
     cart_subtotal = Decimal(str(cart_subtotal))
 
-    # 1. Does it exist? select_for_update prevents race conditions (fix #18)
-    # Note: caller must be inside transaction.atomic() — place_order already does this
+    # 1. Does it exist?
     try:
-        coupon = Coupon.objects.select_for_update().get(code=code)
+        qs = Coupon.objects.select_for_update() if lock else Coupon.objects
+        coupon = qs.get(code=code)
     except Coupon.DoesNotExist:
         raise InvalidCouponError("Invalid coupon code.")
 
@@ -49,10 +69,6 @@ def validate_coupon(code, user, cart_subtotal):
         if coupon.is_expired:
             raise InvalidCouponError("This coupon has expired.")
         raise InvalidCouponError("This coupon is not currently active.")
-
-    # 3. Overall usage limit
-    if coupon.usage_limit is not None and coupon.used_count >= coupon.usage_limit:
-        raise InvalidCouponError("This coupon has reached its usage limit.")
 
     # 4. Per-user limit
     user_usage_count = CouponUsage.objects.filter(

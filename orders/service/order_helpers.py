@@ -2,10 +2,9 @@
 Order placement helpers — business logic used by place_order and razorpay views.
 """
 from decimal import Decimal
-from catalog.models import ProductVariant
 from catalog.service import update_stock
 from orders.models import OrderItem
-from orders.service import InsufficientStockError
+from orders.service.stock import validate_snapshot_stock
 
 
 def build_cart_snapshot(cart_items, packed_prices, locked_variants):
@@ -38,27 +37,14 @@ def create_items_from_snapshot(order, snapshot, actor):
     Used by the Razorpay callback after payment is verified.
 
     Steps:
-      1. Lock variants (SELECT FOR UPDATE)
-      2. Validate stock is still available
-      3. Create OrderItem records
-      4. Deduct stock for each item
+      1. Lock variants and validate stock (SELECT FOR UPDATE)
+      2. Create OrderItem records
+      3. Deduct stock for each item
     """
-    # 1. Lock variants to prevent race conditions
-    variant_ids = sorted({entry["variant_id"] for entry in snapshot})
-    locked_variants = {
-        v.id: v
-        for v in ProductVariant.objects.select_for_update().filter(id__in=variant_ids)
-    }
+    # 1. Lock + validate (raises InsufficientStockError if out of stock)
+    locked_variants = validate_snapshot_stock(snapshot)
 
-    # 2. Check stock availability
-    for entry in snapshot:
-        variant = locked_variants.get(entry["variant_id"])
-        if not variant or entry["quantity"] > variant.stock:
-            raise InsufficientStockError(
-                f"Insufficient stock for {variant or 'unknown variant'}."
-            )
-
-    # 3 & 4. Create items and deduct stock
+    # 2 & 3. Create items and deduct stock
     for entry in snapshot:
         variant = locked_variants[entry["variant_id"]]
 

@@ -22,19 +22,11 @@ from django.utils import timezone
 # ────────────────────────────────────────────
 
 def get_payment_transaction(order):
-    """
-    Return the primary ORDER_PAYMENT transaction for an order, or None.
-    Uses the prefetched 'payment' set if available (avoids extra queries).
-    """
-    # Try prefetched cache first (set by prefetch_related("payment"))
-    if hasattr(order, '_prefetched_objects_cache') and 'payment' in order._prefetched_objects_cache:
-        for txn in order.payment.all():
-            if txn.transaction_type == "ORDER_PAYMENT":
-                return txn
-        return None
-
-    # Fallback: DB query
-    return order.payment.filter(transaction_type="ORDER_PAYMENT").first()
+    """Return the primary ORDER_PAYMENT transaction for an order, or None."""
+    return next(
+        (txn for txn in order.payment.all() if txn.transaction_type == "ORDER_PAYMENT"),
+        None,
+    )
 
 
 def can_generate_invoice(order):

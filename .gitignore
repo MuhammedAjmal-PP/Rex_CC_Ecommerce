@@ -110,3 +110,10 @@ pnpm-debug.log*
 # ----------------------------------------------------------------------
 
 reference/
+
+# db dump files
+*.dump
+*.sql
+*.sql.gz
+*.sql.zip
+*.sql.rar

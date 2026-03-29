@@ -39,11 +39,11 @@ async function applyCoupon() {
         const resp = await fetch('/coupon/apply/', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded',
                 'X-CSRFToken': getCSRF(),
                 'X-Requested-With': 'XMLHttpRequest',
             },
-            body: JSON.stringify({ code }),
+            body: new URLSearchParams({ code }),
         });
 
         const data = await resp.json();
@@ -88,11 +88,11 @@ async function removeCoupon() {
         const resp = await fetch('/coupon/remove/', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded',
                 'X-CSRFToken': getCSRF(),
                 'X-Requested-With': 'XMLHttpRequest',
             },
-            body: '{}',
+            body: '',
         });
 
         const data = await resp.json();

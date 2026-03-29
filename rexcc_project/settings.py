@@ -38,10 +38,6 @@ DEBUG = env("DEBUG")
 
 ALLOWED_HOSTS = env("ALLOWED_HOSTS").split(",")
 
-# INTERNAL_IPS = [
-#     "127.0.0.1",
-# ]
-
 SITE_ID = env.int("SITE_ID", default=1)
 
 AUTHENTICATION_BACKENDS = [
@@ -73,8 +69,6 @@ INSTALLED_APPS = [
     "cloudinary",
     "cloudinary_storage",
     "phonenumber_field",
-    # "django_extensions",
-    # "debug_toolbar",  # testing
     # localapps
     "core",
     "catalog",
@@ -90,7 +84,6 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    # "debug_toolbar.middleware.DebugToolbarMiddleware",  # testing
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
