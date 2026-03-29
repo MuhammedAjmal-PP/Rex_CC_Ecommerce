@@ -11,6 +11,7 @@ Usage:
         can_return_item,
     )
 """
+
 from decimal import Decimal
 from django.conf import settings
 from django.utils import timezone
@@ -19,6 +20,7 @@ from django.utils import timezone
 # ────────────────────────────────────────────
 # Order helpers
 # ────────────────────────────────────────────
+
 
 def get_payment_transaction(order):
     """Return the primary ORDER_PAYMENT transaction for an order, or None."""
@@ -36,6 +38,7 @@ def can_generate_invoice(order):
 # ────────────────────────────────────────────
 # OrderItem helpers
 # ────────────────────────────────────────────
+
 
 def compute_item_totals(item):
     """
@@ -74,13 +77,11 @@ def _compute_order_total(items, order, include_shipping=True):
     coupon_discount = Decimal("0.00")
 
     if include_shipping:
-        shipping = sum(
-            Decimal(i.quantity * settings.SHIPPING_CHARGE) for i in items
-        )
+        shipping = sum(Decimal(i.quantity * settings.SHIPPING_CHARGE) for i in items)
 
     # Recalculate coupon discount for this subtotal
     coupon = order.coupon
-    if coupon and order.coupon_discount:
+    if coupon and not order.coupon_revoke:
         if subtotal >= coupon.min_order_amount:
             coupon_discount = coupon.calculate_discount(subtotal)
 
@@ -147,14 +148,14 @@ def compute_return_refund(item):
 
     coupon_discount = Decimal("0.00")
     coupon = order.coupon
-    if coupon and order.coupon_discount and after_items:
+    if coupon and not order.coupon_revoke and after_items:
         if after_subtotal >= coupon.min_order_amount:
             coupon_discount = coupon.calculate_discount(after_subtotal)
 
     after_taxable = after_subtotal - coupon_discount + before_shipping
-    after_tax = (
-        after_taxable * Decimal(settings.GST_RATE) / Decimal(100)
-    ).quantize(Decimal("0.01"))
+    after_tax = (after_taxable * Decimal(settings.GST_RATE) / Decimal(100)).quantize(
+        Decimal("0.01")
+    )
     after_total = (after_taxable + after_tax).quantize(Decimal("0.01"))
 
     refund = (before_total - after_total).quantize(Decimal("0.01"))

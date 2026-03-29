@@ -87,6 +87,7 @@ def cancel_order_submit(request, order_number):
         with transaction.atomic():
             cancelled_count = 0
             for item in selected_items:
+                cancel_amount = compute_cancel_refund(item)
                 change_order_item_status(
                     order_item=item,
                     to_status="CANCELLED",
@@ -104,7 +105,6 @@ def cancel_order_submit(request, order_number):
 
                 # Refund logic: prepaid → wallet credit, COD → reduce pending amount
                 payment = get_payment_transaction(order)
-                cancel_amount = compute_cancel_refund(item)
                 if payment and payment.payment_method != "COD":
                     refund_txn = initiate_refund(
                         order=order,

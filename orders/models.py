@@ -58,6 +58,7 @@ class Order(models.Model):
         default=Decimal("0.00"),
         help_text="Coupon discount amount applied at order time",
     )
+    coupon_revoke = models.BooleanField(default=False)
 
     payment = GenericRelation(
         "payments.Transaction",

@@ -183,6 +183,8 @@ def return_status_update(request, return_number):
                     return_obj.admin_note = admin_note
                 return_obj.save(update_fields=["status", "admin_note"])
 
+                refund_amount = compute_return_refund(order_item)
+
                 # Transition OrderItem status: RETURN_REQUESTED → RETURNED
                 change_order_item_status(order_item=order_item, to_status="RETURNED")
 
@@ -198,7 +200,6 @@ def return_status_update(request, return_number):
 
                 # Create PENDING refund transaction
                 order = order_item.order
-                refund_amount = compute_return_refund(order_item)
                 initiate_refund(
                     order=order,
                     user=order.user,

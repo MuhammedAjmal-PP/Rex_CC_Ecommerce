@@ -71,9 +71,7 @@ def _validate(code, user, cart_subtotal, lock=False):
         raise InvalidCouponError("This coupon is not currently active.")
 
     # 4. Per-user limit
-    user_usage_count = CouponUsage.objects.filter(
-        coupon=coupon, user=user
-    ).count()
+    user_usage_count = CouponUsage.objects.filter(coupon=coupon, user=user).count()
     if user_usage_count >= coupon.per_user_limit:
         raise InvalidCouponError("You have already used this coupon.")
 
@@ -147,18 +145,17 @@ def revoke_coupon_if_invalid(order):
     if not order.coupon or not order.coupon_discount:
         return
 
-    remaining = [
-        i for i in order.items.all()
-        if i.status not in _TERMINAL_STATUSES
-    ]
+    remaining = [i for i in order.items.all() if i.status not in _TERMINAL_STATUSES]
     remaining_subtotal = sum(i.price * i.quantity for i in remaining)
     all_gone = len(remaining) == 0
     below_min = remaining_subtotal < order.coupon.min_order_amount
 
     if all_gone or below_min:
         revoke_coupon_usage(order)
-        order.coupon_discount = 0
-        order.save(update_fields=["coupon_discount"])
+        order.coupon_revoke = True
+        order.save(update_fields=["coupon_revoke"])
+        # order.coupon_discount = 0
+        # order.save(update_fields=["coupon_discount"])
 
 
 # ────────────────────────────────────────────
@@ -186,7 +183,9 @@ def get_exhausted_coupon_ids(user):
     usage_map = {e["coupon_id"]: e["usage_count"] for e in user_usage}
     limits = {
         c.pk: c.per_user_limit
-        for c in Coupon.objects.filter(pk__in=coupon_id_list).only("pk", "per_user_limit")
+        for c in Coupon.objects.filter(pk__in=coupon_id_list).only(
+            "pk", "per_user_limit"
+        )
     }
     return {cid for cid, limit in limits.items() if usage_map.get(cid, 0) >= limit}
 
@@ -217,4 +216,3 @@ def recalculate_with_coupon(sub_total, shipping_fee, gst_rate, coupon_discount):
         "tax": tax,
         "grand_total": grand_total,
     }
-

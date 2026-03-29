@@ -10,7 +10,7 @@
 }
 
 .ro-title {
-  font-family: 'Playfair Display', serif;
+  font-family: "Playfair Display", serif;
   font-size: 2.2rem;
   font-weight: 600;
   color: #111;
@@ -18,7 +18,7 @@
 }
 
 .ro-subtitle {
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
   font-size: 0.95rem;
   color: #666;
   margin: 0;
@@ -49,7 +49,7 @@
 }
 
 .ro-section-title {
-  font-family: 'Playfair Display', serif;
+  font-family: "Playfair Display", serif;
   font-size: 1.4rem;
   color: #111;
   margin: 0 0 24px 0;
@@ -89,12 +89,16 @@
   margin: 0 auto;
 }
 
-.icon-40 { font-size: 40px !important; }
+.icon-40 {
+  font-size: 40px !important;
+}
 
-.text-center { text-align: center; }
+.text-center {
+  text-align: center;
+}
 
 .ro-brand {
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -104,7 +108,7 @@
 }
 
 .ro-product-name {
-  font-family: 'Playfair Display', serif;
+  font-family: "Playfair Display", serif;
   font-size: 1.3rem;
   margin: 0 0 24px 0;
   color: #111;
@@ -123,7 +127,7 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 12px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
   font-size: 0.9rem;
 }
 
@@ -137,16 +141,31 @@
   border-top: 1px solid #eaeaea;
 }
 
-.text-muted { color: #888; }
-.font-monospace-500 { font-family: monospace; font-size: 0.95rem; font-weight: 500; color: #111; }
-.font-weight-500 { font-weight: 500; color: #111; }
-.font-weight-600 { font-weight: 600; color: #111; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.5px; }
+.text-muted {
+  color: #888;
+}
+.font-monospace-500 {
+  font-family: monospace;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #111;
+}
+.font-weight-500 {
+  font-weight: 500;
+  color: #111;
+}
+.font-weight-600 {
+  font-weight: 600;
+  color: #111;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 0.5px;
+}
 
 .ro-refund-val {
   font-weight: 600;
   color: var(--color-gold, #bfa15f);
   font-size: 1.2rem;
-  font-family: 'Playfair Display', serif;
 }
 
 /* ---------------------------------------------------------
@@ -154,7 +173,7 @@
    --------------------------------------------------------- */
 .ro-label {
   display: block;
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -163,14 +182,19 @@
   margin-bottom: 12px;
 }
 
-.text-danger { color: #d32f2f; margin-left: 4px; }
+.text-danger {
+  color: #d32f2f;
+  margin-left: 4px;
+}
 
-.position-relative { position: relative; }
+.position-relative {
+  position: relative;
+}
 
 .hub-input {
   width: 100%;
   padding: 14px 16px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
   font-size: 0.95rem;
   color: #111;
   border: 1px solid var(--color-border, #eaeaea);
@@ -182,7 +206,7 @@
 .hub-input:focus {
   outline: none;
   border-color: #111;
-  box-shadow: 0 0 0 4px rgba(0,0,0,0.05);
+  box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.05);
 }
 
 .hub-input::placeholder {
@@ -210,7 +234,7 @@
 }
 
 .ro-error-text {
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
   font-size: 0.8rem;
   color: #d32f2f;
   margin-top: 8px;
@@ -220,8 +244,8 @@
 }
 
 .ro-error-text::before {
-  content: 'error';
-  font-family: 'Material Icons';
+  content: "error";
+  font-family: "Material Icons";
   font-size: 14px;
 }
 
@@ -245,7 +269,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
   font-size: 0.9rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -255,14 +279,16 @@
 }
 
 .ro-upload-desc {
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
   font-size: 0.9rem;
   color: #666;
   margin: 0 0 24px 0;
   line-height: 1.5;
 }
 
-.d-none { display: none; }
+.d-none {
+  display: none;
+}
 
 .ro-upload-actions {
   display: flex;
@@ -279,7 +305,7 @@
   border: 1px solid #111;
   color: #111;
   background: transparent;
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -308,7 +334,7 @@
   border: 1px solid #eaeaea;
   background: #fff;
   padding: 4px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .ro-preview-img {
@@ -332,7 +358,7 @@
   align-items: center;
   justify-content: center;
   padding: 0;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   transition: transform 0.2s;
 }
 
@@ -366,7 +392,7 @@
   border: 1px solid #111;
   color: #111;
   background: #fff;
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
   font-size: 0.95rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -388,7 +414,7 @@
   background: var(--color-gold, #bfa15f);
   color: #fff;
   border: none;
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
   font-size: 0.95rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -406,8 +432,12 @@
 /* ---------------------------------------------------------
    UTILITY & STRUCTURAL CLASSES
    --------------------------------------------------------- */
-.mb-24 { margin-bottom: 24px; }
-.mb-32 { margin-bottom: 32px; }
+.mb-24 {
+  margin-bottom: 24px;
+}
+.mb-32 {
+  margin-bottom: 32px;
+}
 
 /* ---------------------------------------------------------
    RESPONSIVE DESIGN 
@@ -416,18 +446,18 @@
   .ro-grid {
     grid-template-columns: 1fr;
   }
-  
-  .ro-card, .ro-card-lg {
+
+  .ro-card,
+  .ro-card-lg {
     padding: 24px;
   }
-  
+
   .ro-form-footer {
     flex-direction: column-reverse;
   }
-  
+
   .ro-form-footer .hub-btn-outline,
   .ro-form-footer .lux-btn-primary {
     width: 100%;
   }
 }
-
