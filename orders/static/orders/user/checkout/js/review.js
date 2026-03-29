@@ -32,7 +32,7 @@ function placeOrder() {
   const btn = document.getElementById("btn-place-order");
 
   if (!CheckoutState.selectedAddressId) {
-    alert("Please select a delivery address.");
+    showToast("Please select a delivery address.", "error");
     return;
   }
 
@@ -97,7 +97,7 @@ function _placeOrderRazorpay(csrfToken, method, btn) {
     .then((res) => res.json())
     .then((data) => {
       if (data.error) {
-        alert(data.error);
+        showToast(data.error, "error");
         _resetPlaceOrderBtn(btn);
         return;
       }
@@ -139,7 +139,7 @@ function _placeOrderRazorpay(csrfToken, method, btn) {
     })
     .catch((err) => {
       console.error("Razorpay order creation failed:", err);
-      alert("Something went wrong. Please try again.");
+      showToast("Something went wrong. Please try again.", "error");
       _resetPlaceOrderBtn(btn);
     });
 }

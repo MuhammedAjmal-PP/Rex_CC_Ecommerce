@@ -106,6 +106,45 @@ setTimeout(() => {
   }
 }, 4000);
 
+/**
+ * Show a toast message from JavaScript (replaces alert()).
+ * Reuses the existing .toast-container / .toast-msg styles.
+ * @param {string} message  - Text to display
+ * @param {string} type     - "info" (default), "error", "success"
+ * @param {number} duration - ms before auto-dismiss (default 4000)
+ */
+function showToast(message, type = "info", duration = 4000) {
+  let container = document.querySelector(".toast-container");
+  if (!container) {
+    container = document.createElement("div");
+    container.className = "toast-container";
+    document.body.appendChild(container);
+  }
+  // Reset visibility in case a previous toast faded it out
+  container.style.opacity = "1";
+
+  const iconMap = { info: "info", error: "error", success: "check_circle" };
+  const colorMap = {
+    info:    "var(--color-gold, #bfa15f)",
+    error:   "#e74c3c",
+    success: "#2e7d32",
+  };
+
+  const toast = document.createElement("div");
+  toast.className = "toast-msg";
+  toast.innerHTML = `<span class="material-icons" style="color:${colorMap[type] || colorMap.info}">${iconMap[type] || "info"}</span> ${message}`;
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.style.transition = "opacity 0.4s ease, transform 0.4s ease";
+    toast.style.opacity = "0";
+    toast.style.transform = "translateY(-10px)";
+    setTimeout(() => toast.remove(), 400);
+  }, duration);
+}
+
+window.showToast = showToast;
+
 // Dynamic Mega Menu Product Preview & Data Fetch
 document.addEventListener("DOMContentLoaded", () => {
   const megaMenu = document.querySelector(".mega-menu");

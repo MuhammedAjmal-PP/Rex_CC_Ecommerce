@@ -81,7 +81,7 @@ function validateStep(current, next) {
     // 1 -> 2 (Address -> Payment)
     if (current === 1 && next === 2) {
         if (!CheckoutState.selectedAddressId) {
-            alert("Please select a delivery address.");
+            showToast("Please select a delivery address.", "error");
             return false;
         }
     }

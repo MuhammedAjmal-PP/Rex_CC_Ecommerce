@@ -160,7 +160,7 @@ async function _submitAddressForm(e) {
             if (data.errors) {
                 _showErrors(form, data.errors);
             } else if (data.error) {
-                alert(data.error);
+                showToast(data.error, "error");
             }
         } else {
             // Fallback: parse returned HTML and swap form contents
@@ -173,12 +173,12 @@ async function _submitAddressForm(e) {
                 _wireCancel(form);
                 _initFormPlugins(form.closest('#checkout-address-form-container') || form);
             } else {
-                alert('Validation failed. Please check your inputs.');
+                showToast('Validation failed. Please check your inputs.', "error");
             }
         }
     } catch (err) {
         console.error('Address save failed:', err);
-        alert('Connection error. Please try again.');
+        showToast('Connection error. Please try again.', "error");
     } finally {
         if (submitBtn) { submitBtn.innerHTML = originalText; submitBtn.disabled = false; }
     }

@@ -1,4 +1,5 @@
-import uuid
+import secrets
+import time
 from decimal import Decimal
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
@@ -43,8 +44,8 @@ class Transaction(models.Model):
     )
 
     # ── Core Fields ────────────────────────────
-    transaction_id = models.UUIDField(
-        default=uuid.uuid4,
+    transaction_id = models.CharField(
+        max_length=16,
         unique=True,
         editable=False,
         db_index=True,
@@ -103,3 +104,20 @@ class Transaction(models.Model):
             f"₹{self.amount} ({self.get_status_display()}) "
             f"— {self.get_payment_method_display()}"
         )
+
+    @staticmethod
+    def generate_transaction_id():
+        """Generate a 16-char uppercase transaction ID: TXN + 13 hex chars."""
+        suffix = secrets.token_hex(7).upper()[:13]  # 13 uppercase hex chars
+        return f"TXN{suffix}"
+
+    def save(self, *args, **kwargs):
+        if not self.transaction_id:
+            for _ in range(10):  # retry on collision
+                tid = self.generate_transaction_id()
+                if not Transaction.objects.filter(transaction_id=tid).exists():
+                    self.transaction_id = tid
+                    break
+            else:
+                raise RuntimeError("Failed to generate unique transaction ID")
+        super().save(*args, **kwargs)

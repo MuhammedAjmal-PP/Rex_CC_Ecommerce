@@ -278,7 +278,7 @@
         </tr>
         <tr>
             <td class="inv-meta-label">Txn ID</td>
-            <td class="inv-meta-value">{{ payment.transaction_id|default:"-"|truncatechars:18 }}</td>
+            <td class="inv-meta-value">{{ payment.transaction_id|default:"-" }}</td>
             <td class="inv-meta-label">Status</td>
             <td class="inv-meta-value">{{ payment.get_status_display }}</td>
         </tr>
