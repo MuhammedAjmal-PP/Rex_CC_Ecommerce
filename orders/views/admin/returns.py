@@ -9,11 +9,12 @@ from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_GET, require_POST
 from catalog.service import update_stock
 from orders.models import Return
-from orders.service.status import (
+from orders.service import (
     InvalidTransitionError,
     change_order_item_status,
 )
 from orders.utils import compute_return_refund
+from coupons.service import revoke_coupon_if_invalid
 from payments.service import initiate_refund
 
 # Return model status transitions allowed by admin
@@ -206,6 +207,9 @@ def return_status_update(request, return_number):
                     content_object=return_obj,
                     note=f"Return refund — return #{return_obj.return_number}",
                 )
+
+                # Revoke coupon if remaining items no longer qualify
+                revoke_coupon_if_invalid(order)
 
         except InvalidTransitionError as error:
             messages.warning(

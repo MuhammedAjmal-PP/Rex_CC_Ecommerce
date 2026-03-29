@@ -7,7 +7,6 @@ Usage:
         compute_item_totals,
         compute_cancel_refund,
         compute_return_refund,
-        compute_coupon_share,
         can_generate_invoice,
         can_return_item,
     )
@@ -53,42 +52,113 @@ def compute_item_totals(item):
     }
 
 
-def compute_coupon_share(item):
+def _compute_order_total(items, order, include_shipping=True):
     """
-    Calculate proportional share of order's coupon discount for this item.
-    Returns Decimal.
+    Calculate the grand total for a subset of order items.
+
+    Steps:
+        1. Sum item subtotal  (price × qty for each item)
+        2. Calculate coupon discount for that subtotal
+           — only if the coupon's min_order_amount is still met
+        3. Add shipping  (qty × SHIPPING_CHARGE per item, if included)
+        4. Apply GST on  (subtotal − coupon + shipping)
+        5. Return grand total
+
+    Returns Decimal("0.00") when items is empty.
     """
-    order = item.order
-    if not order.coupon_discount or order.sub_total == 0:
+    if not items:
         return Decimal("0.00")
-    total_price = item.price * item.quantity
-    share = (total_price / order.sub_total) * order.coupon_discount
-    return share.quantize(Decimal("0.01"))
+
+    subtotal = sum(i.price * i.quantity for i in items)
+    shipping = Decimal("0.00")
+    coupon_discount = Decimal("0.00")
+
+    if include_shipping:
+        shipping = sum(
+            Decimal(i.quantity * settings.SHIPPING_CHARGE) for i in items
+        )
+
+    # Recalculate coupon discount for this subtotal
+    coupon = order.coupon
+    if coupon and order.coupon_discount:
+        if subtotal >= coupon.min_order_amount:
+            coupon_discount = coupon.calculate_discount(subtotal)
+
+    taxable = subtotal - coupon_discount + shipping
+    tax = (taxable * Decimal(settings.GST_RATE) / Decimal(100)).quantize(
+        Decimal("0.01")
+    )
+    return (taxable + tax).quantize(Decimal("0.01"))
+
+
+# Statuses that are already "out" of the order
+_TERMINAL_STATUSES = {"CANCELLED", "RETURNED"}
 
 
 def compute_cancel_refund(item):
     """
-    Full refund amount: item + shipping + tax, minus coupon share.
-    Used when user cancels an item before shipping.
+    Cancel refund = before_total − after_total.
+
+    before_total : grand total of all currently active items (including this one)
+    after_total  : grand total of active items WITHOUT this one
+
+    Shipping IS refunded (the item hasn't been shipped yet).
+    Coupon discount is recalculated for the surviving items and
+    automatically invalidated if the remaining subtotal drops
+    below the coupon's min_order_amount.
     """
-    total_price = item.price * item.quantity
-    coupon_share = compute_coupon_share(item)
-    shipping_fee = Decimal(item.quantity * 100)
-    taxable = total_price - coupon_share + shipping_fee
-    tax = taxable * Decimal(settings.GST_RATE) / Decimal(100)
-    return (taxable + tax).quantize(Decimal("0.01"))
+    order = item.order
+    all_items = list(order.items.all())
+
+    before_items = [i for i in all_items if i.status not in _TERMINAL_STATUSES]
+    after_items = [i for i in before_items if i.id != item.id]
+
+    before_total = _compute_order_total(before_items, order, include_shipping=True)
+    after_total = _compute_order_total(after_items, order, include_shipping=True)
+
+    refund = (before_total - after_total).quantize(Decimal("0.01"))
+    return max(refund, Decimal("0.00"))
 
 
 def compute_return_refund(item):
     """
-    Return refund amount: item + tax, minus coupon share. NO shipping refund.
-    Used when a delivered item is returned.
+    Return refund = before_total − after_total.
+
+    Same logic as cancel, but shipping is NOT refunded because the
+    item was already delivered.  We keep shipping identical in both
+    calculations so it cancels out in the difference.
     """
-    total_price = item.price * item.quantity
-    coupon_share = compute_coupon_share(item)
-    taxable = total_price - coupon_share
-    tax = taxable * Decimal(settings.GST_RATE) / Decimal(100)
-    return (taxable + tax).quantize(Decimal("0.01"))
+    order = item.order
+    all_items = list(order.items.all())
+
+    before_items = [i for i in all_items if i.status not in _TERMINAL_STATUSES]
+    after_items = [i for i in before_items if i.id != item.id]
+
+    # Use before_items for shipping in BOTH sides so shipping doesn't
+    # appear in the refund difference.
+    before_total = _compute_order_total(before_items, order, include_shipping=True)
+
+    # After total: surviving items' subtotal/coupon, but shipping stays
+    # the same as before (so it cancels out → no shipping refund).
+    after_subtotal = sum(i.price * i.quantity for i in after_items)
+    before_shipping = sum(
+        Decimal(i.quantity * settings.SHIPPING_CHARGE) for i in before_items
+    )
+
+    coupon_discount = Decimal("0.00")
+    coupon = order.coupon
+    if coupon and order.coupon_discount and after_items:
+        if after_subtotal >= coupon.min_order_amount:
+            coupon_discount = coupon.calculate_discount(after_subtotal)
+
+    after_taxable = after_subtotal - coupon_discount + before_shipping
+    after_tax = (
+        after_taxable * Decimal(settings.GST_RATE) / Decimal(100)
+    ).quantize(Decimal("0.01"))
+    after_total = (after_taxable + after_tax).quantize(Decimal("0.01"))
+
+    refund = (before_total - after_total).quantize(Decimal("0.01"))
+    return max(refund, Decimal("0.00"))
 
 
 def can_return_item(order_item):

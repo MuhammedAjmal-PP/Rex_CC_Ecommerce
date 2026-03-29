@@ -131,6 +131,36 @@ def revoke_coupon_usage(order):
     )
 
 
+# Terminal item statuses — items no longer "active" in the order
+_TERMINAL_STATUSES = {"CANCELLED", "RETURNED"}
+
+
+def revoke_coupon_if_invalid(order):
+    """
+    Check whether the order's coupon is still valid for the remaining
+    active items.  If not (all items gone, or subtotal below
+    min_order_amount), revoke the coupon usage so the user can reuse it.
+
+    Should be called inside a transaction.atomic() block after
+    cancelling or completing a return.
+    """
+    if not order.coupon or not order.coupon_discount:
+        return
+
+    remaining = [
+        i for i in order.items.all()
+        if i.status not in _TERMINAL_STATUSES
+    ]
+    remaining_subtotal = sum(i.price * i.quantity for i in remaining)
+    all_gone = len(remaining) == 0
+    below_min = remaining_subtotal < order.coupon.min_order_amount
+
+    if all_gone or below_min:
+        revoke_coupon_usage(order)
+        order.coupon_discount = 0
+        order.save(update_fields=["coupon_discount"])
+
+
 # ────────────────────────────────────────────
 # Query helpers
 # ────────────────────────────────────────────

@@ -68,6 +68,7 @@ def apply_coupon(request):
             "discount_type": coupon.discount_type,
             "discount_value": str(coupon.discount_value),
             "discount_amount": str(discount_amount),
+            "new_tax": str(adjusted["tax"]),
             "new_grand_total": str(new_grand_total),
         }
     )
@@ -85,13 +86,16 @@ def remove_coupon(request):
         cart = Cart.objects.get(user=request.user)
         summary = compute_cart_summary(cart)
         grand_total = str(summary["grand_total"])
+        tax = str(summary["tax"])
     except Cart.DoesNotExist:
         grand_total = "0.00"
+        tax = "0.00"
 
     return JsonResponse(
         {
             "success": True,
             "message": "Coupon removed.",
+            "tax": tax,
             "grand_total": grand_total,
         }
     )

@@ -52,15 +52,20 @@ async function applyCoupon() {
             // Show applied state
             document.getElementById('coupon-applied').style.display = 'block';
             document.getElementById('coupon-applied-code').textContent = data.coupon_code;
-            document.getElementById('coupon-discount-amount').textContent = '-₹' + formatCurrency(data.discount_amount);
 
             // Hide input & available list
             document.getElementById('coupon-input-group').style.display = 'none';
             const availDiv = document.getElementById('available-coupons');
             if (availDiv) availDiv.style.display = 'none';
 
-            // Update grand total
+            // Update grand total and tax
             document.getElementById('grand-total-display').textContent = '₹' + formatCurrency(data.new_grand_total);
+            document.getElementById('tax-display').textContent = '₹' + formatCurrency(data.new_tax);
+
+            // Show coupon discount row in summary
+            const discountRow = document.getElementById('coupon-discount-row');
+            discountRow.style.display = 'flex';
+            document.getElementById('coupon-discount-summary').textContent = '-₹' + formatCurrency(data.discount_amount);
 
             // Update ReviewState if exists (for review step)
             if (window.CheckoutState) {
@@ -101,7 +106,6 @@ async function removeCoupon() {
             // Hide applied state
             document.getElementById('coupon-applied').style.display = 'none';
             document.getElementById('coupon-applied-code').textContent = '';
-            document.getElementById('coupon-discount-amount').textContent = '';
 
             // Show input
             document.getElementById('coupon-input-group').style.display = 'block';
@@ -110,8 +114,13 @@ async function removeCoupon() {
             const availDiv = document.getElementById('available-coupons');
             if (availDiv) availDiv.style.display = 'block';
 
-            // Update grand total
+            // Update grand total and tax
             document.getElementById('grand-total-display').textContent = '₹' + formatCurrency(data.grand_total);
+            document.getElementById('tax-display').textContent = '₹' + formatCurrency(data.tax);
+
+            // Hide coupon discount row in summary
+            document.getElementById('coupon-discount-row').style.display = 'none';
+            document.getElementById('coupon-discount-summary').textContent = '';
 
             if (window.CheckoutState) {
                 CheckoutState.couponCode = null;

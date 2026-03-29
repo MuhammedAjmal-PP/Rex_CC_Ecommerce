@@ -8,6 +8,7 @@ from catalog.service import update_stock
 from orders.models import Order, OrderItem
 from orders.service import InvalidTransitionError, change_order_item_status
 from orders.utils import compute_cancel_refund, get_payment_transaction
+from coupons.service import revoke_coupon_if_invalid
 from payments.service import complete_refund, initiate_refund, update_transaction
 
 
@@ -126,13 +127,8 @@ def cancel_order_submit(request, order_number):
 
                 cancelled_count += 1
 
-            # Revoke coupon if ALL items are now cancelled (L5: use already-loaded data)
-            if order.coupon and order.coupon_discount:
-                all_items = list(order.items.only("status"))
-                if all(i.status == "CANCELLED" for i in all_items):
-                    from coupons.service import revoke_coupon_usage
-
-                    revoke_coupon_usage(order)
+            # Revoke coupon if remaining items no longer qualify
+            revoke_coupon_if_invalid(order)
 
     except InvalidTransitionError as error:
         messages.error(request, f"Unable to cancel selected item(s): {error}")

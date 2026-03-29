@@ -83,6 +83,19 @@
                             <span>Subtotal</span>
                             <span style="font-weight: 500; color: #111;">₹{{ order_summary.sub_total|floatformat:2|intcomma }}</span>
                         </div>
+                        <div id="coupon-discount-row"
+                             style="display: none;
+                                    justify-content: space-between;
+                                    margin-bottom: 12px">
+                            <span style="color: #2e7d32;">
+                                <span class="material-icons"
+                                      style="font-size: 14px;
+                                             vertical-align: middle;
+                                             margin-right: 2px">local_offer</span>Coupon Discount
+                            </span>
+                            <span id="coupon-discount-summary"
+                                  style="font-weight: 600; color: #2e7d32;"></span>
+                        </div>
                         <div style="display: flex;
                                     justify-content: space-between;
                                     margin-bottom: 12px">
@@ -99,7 +112,7 @@
                                     justify-content: space-between;
                                     margin-bottom: 16px">
                             <span>Tax (GST {{ order_summary.gst_rate }}%)</span>
-                            <span style="font-weight: 500; color: #111;">₹{{ order_summary.tax|default:0|floatformat:2|intcomma }}</span>
+                            <span id="tax-display" style="font-weight: 500; color: #111;">₹{{ order_summary.tax|default:0|floatformat:2|intcomma }}</span>
                         </div>
                         {# ── Coupon Section ── #}
                         <div id="coupon-section"
@@ -112,7 +125,7 @@
                             {# Applied coupon display #}
                             <div id="coupon-applied"
                                  style="{% if not applied_coupon %}display:none;
-                                        {% endif %} margin-bottom: 12px">
+                                        {% endif %}">
                                 <div style="display: flex;
                                             justify-content: space-between;
                                             align-items: center">
@@ -137,14 +150,6 @@
                                                    font-family: 'Montserrat', sans-serif;
                                                    padding: 4px 8px;
                                                    flex-shrink: 0">Remove</button>
-                                </div>
-                                <div style="display: flex;
-                                            justify-content: space-between;
-                                            margin-top: 8px">
-                                    <span style="color: #2e7d32; font-size: 0.85rem;">Coupon Discount</span>
-                                    <span id="coupon-discount-amount" style="font-weight: 600; color: #2e7d32;">
-                                        {% if applied_coupon %}-₹{{ applied_coupon.discount_amount }}{% endif %}
-                                    </span>
                                 </div>
                             </div>
                             {# Coupon input #}
