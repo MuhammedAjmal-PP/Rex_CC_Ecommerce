@@ -120,7 +120,7 @@
                     {% for order in orders %}
                         <tr>
                             <td>
-                                {% if order.status != 'FAILED' %}
+                                {% if order.status != 'FAILED' and order.status != 'EXPIRED' and order.status != 'STOCK_UNAVAILABLE' %}
                                 <a href="{% url 'admin_order_details' order.order_number %}" class="item-info-link">
                                     <span class="order-number">{{ order.order_number }}</span>
                                 </a>
@@ -171,7 +171,7 @@
                                 <span class="status-badge order-status-{{ order.status|lower }}">{{ order.get_status_display }}</span>
                             </td>
                             <td>
-                                {% if order.status != 'FAILED' %}
+                                {% if order.status != 'FAILED' and order.status != 'EXPIRED' and order.status != 'STOCK_UNAVAILABLE' %}
                                 <a href="{% url 'admin_order_details' order.order_number %}"
                                    class="action-btn"
                                    title="View Details">

@@ -13,6 +13,8 @@ from orders.utils import get_payment_transaction
 from payments.models import Transaction
 from payments.service import create_transaction, initiate_refund
 from payments.razorpay_service import create_razorpay_order, verify_razorpay_signature
+from coupons.service import revoke_coupon_usage
+from orders.tasks import _restore_cart_from_snapshot
 
 
 @login_required
@@ -103,7 +105,7 @@ def razorpay_callback(request):
             "status", "gateway_payment_id", "gateway_signature", "note", "updated_at",
         ])
 
-        change_order_status(order=order, to_status="FAILED")
+        change_order_status(order=order, to_status="STOCK_UNAVAILABLE")
 
         initiate_refund(
             order=order,
@@ -113,6 +115,15 @@ def razorpay_callback(request):
             content_object=order,
             note=f"Auto-refund: stock unavailable after Razorpay payment for order {order.order_number}",
         )
+
+        # Restore cart items and revoke coupon
+        if order.cart_snapshot:
+            _restore_cart_from_snapshot(request.user, order.cart_snapshot)
+            order.cart_snapshot = None
+            order.save(update_fields=["cart_snapshot"])
+
+        if order.coupon:
+            revoke_coupon_usage(order)
 
         return JsonResponse({
             "success": False,

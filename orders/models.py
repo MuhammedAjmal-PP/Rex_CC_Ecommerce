@@ -19,6 +19,8 @@ class Order(models.Model):
         ("DELIVERED", "Delivered"),
         ("CANCELLED", "Cancelled"),
         ("FAILED", "Payment Failed"),
+        ("EXPIRED", "Expired"),
+        ("STOCK_UNAVAILABLE", "Stock Unavailable"),
     ]
 
     user = models.ForeignKey(

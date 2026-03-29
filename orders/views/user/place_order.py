@@ -2,7 +2,10 @@
 Place order view — handles COD, WALLET, and RAZORPAY order placement.
 """
 
+from datetime import timedelta
 from decimal import Decimal
+from functools import partial
+from django.utils import timezone
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -20,6 +23,7 @@ from orders.service import (
     validate_stock,
 )
 from orders.service.order_helpers import build_cart_snapshot
+from orders.tasks import expire_failed_order
 from payments.service import create_transaction
 from payments.razorpay_service import create_razorpay_order
 from users.cart.models import Cart, CartItem
@@ -186,6 +190,17 @@ def place_order_view(request):
             rz_order = create_razorpay_order(amount_paise, order.order_number)
             txn.gateway_order_id = rz_order["id"]
             txn.save(update_fields=["gateway_order_id"])
+
+            # Schedule auto-expiry after the retry window
+            # If payment succeeds, the task is a no-op (order won't be FAILED)
+            transaction.on_commit(
+                partial(
+                    expire_failed_order.using(
+                        run_after=timezone.now() + timedelta(seconds=settings.FAILED_ORDER_EXPIRY_SECONDS)
+                    ).enqueue,
+                    order_id=order.pk,
+                )
+            )
 
         # ── COD / WALLET: full order (items + stock) ──
         else:

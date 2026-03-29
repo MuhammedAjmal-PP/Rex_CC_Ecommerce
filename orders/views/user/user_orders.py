@@ -27,7 +27,9 @@ def order_list(request):
     search = request.GET.get("q", "").strip()
     date_filter = request.GET.get("date_filter", "").strip().lower()
 
-    orders = Order.objects.filter(user=request.user).prefetch_related(
+    orders = Order.objects.filter(user=request.user).exclude(
+        status__in=("EXPIRED", "STOCK_UNAVAILABLE")
+    ).prefetch_related(
         "payment"
     )
 
@@ -81,9 +83,9 @@ def order_detail(request, order_number):
         order_number=order_number,
     )
 
-    # Block details page for failed orders
-    if order.status == "FAILED":
-        messages.error(request, "This order failed and cannot be viewed.")
+    # Block details page for failed/expired/stock-unavailable orders
+    if order.status in ("FAILED", "EXPIRED", "STOCK_UNAVAILABLE"):
+        messages.error(request, "This order cannot be viewed.")
         return redirect("user_order_list")
 
     order_items = (

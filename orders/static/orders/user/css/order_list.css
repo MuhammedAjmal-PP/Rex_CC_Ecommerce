@@ -228,6 +228,10 @@
   background: #d32f2f;
   box-shadow: 0 0 0 4px rgba(211, 47, 47, 0.15);
 }
+.ol-status-dot.status-failed {
+  background: #e74c3c;
+  box-shadow: 0 0 0 4px rgba(231, 76, 60, 0.15);
+}
 
 .ol-status-text {
   display: flex;

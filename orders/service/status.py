@@ -6,13 +6,15 @@ class InvalidTransitionError(Exception):
 
 
 ORDER_ALLOWED_TRANSITIONS = {
-    "PLACED": {"CONFIRMED", "CANCELLED", "FAILED"},
+    "PLACED": {"CONFIRMED", "CANCELLED", "FAILED", "STOCK_UNAVAILABLE"},
     "CONFIRMED": {"SHIPPED", "CANCELLED"},
     "SHIPPED": {"OUT_FOR_DELIVERY"},
     "OUT_FOR_DELIVERY": {"DELIVERED"},
     "DELIVERED": set(),
     "CANCELLED": set(),
-    "FAILED": {"PLACED"},
+    "FAILED": {"PLACED", "EXPIRED"},
+    "EXPIRED": set(),
+    "STOCK_UNAVAILABLE": set(),
 }
 
 ORDER_ITEM_ALLOWED_TRANSITIONS = {

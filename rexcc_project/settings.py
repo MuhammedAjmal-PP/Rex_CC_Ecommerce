@@ -69,6 +69,7 @@ INSTALLED_APPS = [
     "cloudinary",
     "cloudinary_storage",
     "phonenumber_field",
+    "django_tasks_db",
     # localapps
     "core",
     "catalog",
@@ -271,3 +272,18 @@ GST_RATE = 18
 
 RAZORPAY_KEY_ID = env("RAZORPAY_KEY_ID")
 RAZORPAY_KEY_SECRET = env("RAZORPAY_KEY_SECRET")
+
+# ---------------------------------------------------------------
+# BACKGROUND TASKS (django-tasks-db)
+# ---------------------------------------------------------------
+
+TASKS = {
+    "default": {
+        "BACKEND": "django_tasks_db.DatabaseBackend",
+        "QUEUES": ["default"]
+    }
+}
+
+# Retry window for failed Razorpay orders (seconds)
+# Default: 5 hours (18000s). For testing: set FAILED_ORDER_EXPIRY_SECONDS=120 in .env
+FAILED_ORDER_EXPIRY_SECONDS = env.int("FAILED_ORDER_EXPIRY_SECONDS", default=5 * 60 * 60)

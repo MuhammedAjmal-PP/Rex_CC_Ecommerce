@@ -46,11 +46,19 @@ def order_list(request):
         confirmed=Count("id", filter=Q(status="CONFIRMED")),
         shipped=Count("id", filter=Q(status="SHIPPED")),
         delivered=Count("id", filter=Q(status="DELIVERED")),
-        cancelled=Count("id", filter=Q(status="CANCELLED")),
+        cancelled=Count(
+            "id",
+            filter=Q(status__in=("CANCELLED", "EXPIRED", "STOCK_UNAVAILABLE")),
+        ),
     )
 
     # DB-level status filter
-    if status_filter != "ALL":
+    if status_filter == "CANCELLED":
+        # Group EXPIRED and STOCK_UNAVAILABLE under "Cancelled" tab
+        orders_qs = orders_qs.filter(
+            status__in=("CANCELLED", "EXPIRED", "STOCK_UNAVAILABLE")
+        )
+    elif status_filter != "ALL":
         orders_qs = orders_qs.filter(status=status_filter)
 
     paginator = Paginator(orders_qs, 12)
@@ -82,9 +90,9 @@ def order_detail(request, order_number):
         order_number=order_number,
     )
 
-    # Block details page for failed orders
-    if order.status == "FAILED":
-        messages.error(request, "This order failed and cannot be viewed.")
+    # Block details page for failed/expired/stock-unavailable orders
+    if order.status in ("FAILED", "EXPIRED", "STOCK_UNAVAILABLE"):
+        messages.error(request, "This order cannot be managed.")
         return redirect("admin_orders_list")
     order_items = (
         OrderItem.objects.filter(order=order)
