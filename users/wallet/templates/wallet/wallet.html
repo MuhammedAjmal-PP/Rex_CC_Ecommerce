@@ -3,7 +3,7 @@
 {% load humanize %}
 {% block head_title %}My Wallet | REX CC{% endblock %}
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'wallet/css/wallet.css' %}?v=1.3">
+    <link rel="stylesheet" href="{% static 'wallet/css/wallet.css' %}?v=2.0">
 {% endblock %}
 {% block content %}
     <div class="lux-hub-wrapper">
@@ -20,11 +20,16 @@
             <div class="hub-header-actions">
                 <div class="wallet-balance-chic">
                     <span class="wallet-balance-label">Available Balance</span>
-                    <span class="wallet-balance-amount">₹{{ wallet.balance|floatformat:2|intcomma }}</span>
+                    <span class="wallet-balance-amount" id="walletBalance">₹{{ wallet.balance|floatformat:2|intcomma }}</span>
                     {% if not wallet.is_active %}
                         <span class="wallet-inactive-badge">Inactive</span>
                     {% endif %}
                 </div>
+                {% if wallet.is_active %}
+                    <button type="button" class="topup-btn" id="openTopupModal">
+                        <span class="material-icons">add</span> Add Money
+                    </button>
+                {% endif %}
             </div>
         </header>
 
@@ -162,4 +167,261 @@
             </div>
         {% endif %}
     </div>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         TOP-UP MODAL
+         ═══════════════════════════════════════════════════════════ -->
+    {% if wallet.is_active %}
+    <div class="topup-modal-overlay" id="topupOverlay">
+        <div class="topup-modal">
+            <button type="button" class="topup-modal-close" id="closeTopupModal">
+                <span class="material-icons">close</span>
+            </button>
+
+            <div class="topup-modal-header">
+                <span class="material-icons topup-modal-icon">account_balance_wallet</span>
+                <h2>Add Money to Wallet</h2>
+                <p class="topup-modal-subtitle">Top up your wallet using Razorpay for instant checkout</p>
+            </div>
+
+            <div class="topup-modal-body">
+                <label class="topup-amount-label" for="topupAmount">Enter Amount (₹)</label>
+                <div class="topup-amount-wrapper">
+                    <span class="topup-currency">₹</span>
+                    <input type="number"
+                           id="topupAmount"
+                           class="topup-amount-input"
+                           placeholder="{{ topup_min|intcomma }}"
+                           min="{{ topup_min }}"
+                           max="{{ topup_max }}"
+                           step="1">
+                </div>
+                <span class="topup-amount-hint">
+                    Min ₹{{ topup_min|intcomma }} · Max ₹{{ topup_max|intcomma }}
+                </span>
+
+                <div class="topup-quick-amounts">
+                    <button type="button" class="topup-quick-btn" data-amount="{{ topup_min }}">₹{{ topup_min|intcomma }}</button>
+                    <button type="button" class="topup-quick-btn" data-amount="10000">₹10,000</button>
+                    <button type="button" class="topup-quick-btn" data-amount="25000">₹25,000</button>
+                    <button type="button" class="topup-quick-btn" data-amount="50000">₹50,000</button>
+                    <button type="button" class="topup-quick-btn" data-amount="{{ topup_max }}">₹{{ topup_max|intcomma }}</button>
+                </div>
+            </div>
+
+            <div class="topup-modal-footer">
+                <button type="button" class="topup-submit-btn" id="topupSubmitBtn">
+                    <span class="material-icons">lock</span>
+                    Proceed to Pay
+                </button>
+                <div class="topup-secure-note">
+                    <span class="material-icons" style="font-size: 14px;">verified_user</span>
+                    Secured by Razorpay · 256-bit encryption
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+{% if wallet.is_active %}
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+(function () {
+    /* ── DOM refs ── */
+    const overlay      = document.getElementById("topupOverlay");
+    const openBtn      = document.getElementById("openTopupModal");
+    const closeBtn     = document.getElementById("closeTopupModal");
+    const amountInput  = document.getElementById("topupAmount");
+    const submitBtn    = document.getElementById("topupSubmitBtn");
+    const quickBtns    = document.querySelectorAll(".topup-quick-btn");
+    const balanceEl    = document.getElementById("walletBalance");
+    const csrfToken    = "{{ csrf_token }}";
+
+    const TOPUP_MIN = {{ topup_min }};
+    const TOPUP_MAX = {{ topup_max }};
+
+    /* ── Modal open / close ── */
+    openBtn.addEventListener("click", () => {
+        overlay.classList.add("is-open");
+        amountInput.value = "";
+        amountInput.focus();
+        _clearQuickActive();
+    });
+
+    closeBtn.addEventListener("click", () => overlay.classList.remove("is-open"));
+
+    overlay.addEventListener("click", (e) => {
+        if (e.target === overlay) overlay.classList.remove("is-open");
+    });
+
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && overlay.classList.contains("is-open")) {
+            overlay.classList.remove("is-open");
+        }
+    });
+
+    /* ── Quick-select buttons ── */
+    function _clearQuickActive() {
+        quickBtns.forEach(b => b.classList.remove("active"));
+    }
+
+    quickBtns.forEach(btn => {
+        btn.addEventListener("click", () => {
+            _clearQuickActive();
+            btn.classList.add("active");
+            amountInput.value = btn.dataset.amount;
+        });
+    });
+
+    amountInput.addEventListener("input", _clearQuickActive);
+
+    /* ── Submit → Initiate Razorpay ── */
+    submitBtn.addEventListener("click", () => {
+        const amount = parseInt(amountInput.value, 10);
+
+        if (!amount || isNaN(amount)) {
+            showToast("Please enter an amount.", "error");
+            return;
+        }
+        if (amount < TOPUP_MIN) {
+            showToast(`Minimum top-up is ₹${TOPUP_MIN.toLocaleString("en-IN")}.`, "error");
+            return;
+        }
+        if (amount > TOPUP_MAX) {
+            showToast(`Maximum top-up is ₹${TOPUP_MAX.toLocaleString("en-IN")}.`, "error");
+            return;
+        }
+
+        _setLoading(true);
+
+        const formData = new FormData();
+        formData.append("csrfmiddlewaretoken", csrfToken);
+        formData.append("amount", amount);
+
+        fetch("{% url 'wallet_topup_initiate' %}", {
+            method: "POST",
+            body: formData,
+            headers: { "X-Requested-With": "XMLHttpRequest" },
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.error) {
+                showToast(data.error, "error");
+                _setLoading(false);
+                return;
+            }
+
+            /* ── Open Razorpay checkout ── */
+            const options = {
+                key:         data.razorpay_key_id,
+                amount:      data.amount,
+                currency:    data.currency,
+                name:        data.name,
+                description: data.description,
+                order_id:    data.razorpay_order_id,
+                prefill:     data.prefill || {},
+                theme:       { color: "#bfa15f" },
+                handler: function (response) {
+                    _verifyPayment(response, data.razorpay_order_id);
+                },
+                modal: {
+                    ondismiss: function () {
+                        _markFailed(data.razorpay_order_id, "Payment cancelled by user");
+                    },
+                },
+            };
+
+            const rzp = new Razorpay(options);
+
+            rzp.on("payment.failed", function (response) {
+                const reason = response.error.description || "Payment failed";
+                _markFailed(data.razorpay_order_id, reason);
+            });
+
+            overlay.classList.remove("is-open");
+            rzp.open();
+        })
+        .catch(err => {
+            console.error("Top-up initiation failed:", err);
+            showToast("Something went wrong. Please try again.", "error");
+            _setLoading(false);
+        });
+    });
+
+    /* ── Verify successful payment ── */
+    function _verifyPayment(response, rzOrderId) {
+        const formData = new FormData();
+        formData.append("csrfmiddlewaretoken", csrfToken);
+        formData.append("razorpay_payment_id", response.razorpay_payment_id);
+        formData.append("razorpay_order_id", response.razorpay_order_id);
+        formData.append("razorpay_signature", response.razorpay_signature);
+
+        fetch("{% url 'wallet_topup_callback' %}", {
+            method: "POST",
+            body: formData,
+            headers: { "X-Requested-With": "XMLHttpRequest" },
+        })
+        .then(res => res.json())
+        .then(data => {
+            _setLoading(false);
+            if (data.success) {
+                /* Update balance on page */
+                const newBal = parseFloat(data.new_balance);
+                if (balanceEl && !isNaN(newBal)) {
+                    balanceEl.textContent = "₹" + newBal.toLocaleString("en-IN", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                    });
+                }
+                showToast("Wallet topped up successfully!", "success");
+                /* Reload after short delay to show updated transactions */
+                setTimeout(() => location.reload(), 1500);
+            } else {
+                showToast(data.error || "Payment verification failed.", "error");
+            }
+        })
+        .catch(err => {
+            console.error("Callback error:", err);
+            showToast("Something went wrong verifying your payment.", "error");
+            _setLoading(false);
+        });
+    }
+
+    /* ── Mark failed / dismissed payment ── */
+    function _markFailed(rzOrderId, reason) {
+        const formData = new FormData();
+        formData.append("csrfmiddlewaretoken", csrfToken);
+        formData.append("razorpay_order_id", rzOrderId);
+        formData.append("reason", reason);
+
+        fetch("{% url 'wallet_topup_failed' %}", {
+            method: "POST",
+            body: formData,
+            headers: { "X-Requested-With": "XMLHttpRequest" },
+        })
+        .then(() => {
+            showToast("Payment was cancelled.", "error");
+            _setLoading(false);
+        })
+        .catch(() => {
+            _setLoading(false);
+        });
+    }
+
+    /* ── Loading state ── */
+    function _setLoading(loading) {
+        if (loading) {
+            submitBtn.innerHTML = '<span class="material-icons rotating">autorenew</span> Processing...';
+            submitBtn.disabled = true;
+        } else {
+            submitBtn.innerHTML = '<span class="material-icons">lock</span> Proceed to Pay';
+            submitBtn.disabled = false;
+        }
+    }
+})();
+</script>
+{% endif %}
 {% endblock %}

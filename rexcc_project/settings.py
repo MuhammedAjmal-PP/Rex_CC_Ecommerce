@@ -274,6 +274,10 @@ GST_RATE = 18
 RAZORPAY_KEY_ID = env("RAZORPAY_KEY_ID")
 RAZORPAY_KEY_SECRET = env("RAZORPAY_KEY_SECRET")
 
+# Wallet top-up limits (in rupees)
+WALLET_TOPUP_MIN = env.int("WALLET_TOPUP_MIN", default=5_000)
+WALLET_TOPUP_MAX = env.int("WALLET_TOPUP_MAX", default=75_000)
+
 # ---------------------------------------------------------------
 # BACKGROUND TASKS (django-tasks-db)
 # ---------------------------------------------------------------
