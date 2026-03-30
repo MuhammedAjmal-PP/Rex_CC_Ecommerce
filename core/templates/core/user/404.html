@@ -1,0 +1,211 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Page Not Found | REX CC</title>
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:wght@400;600;700&display=swap"
+              rel="stylesheet">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+              rel="stylesheet">
+        <style>
+            :root {
+                --color-gold: #bfa15f;
+                --color-bronze: #cd7f32;
+                --black: #000;
+                --white: #fff;
+            }
+
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family: "Montserrat", sans-serif;
+                background: var(--black);
+                color: var(--white);
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
+            }
+
+            /* Ambient background */
+            .error-bg {
+                position: fixed;
+                inset: 0;
+                z-index: 0;
+                background:
+                    radial-gradient(ellipse at 20% 50%, rgba(191, 161, 95, 0.06) 0%, transparent 60%),
+                    radial-gradient(ellipse at 80% 50%, rgba(205, 127, 50, 0.04) 0%, transparent 60%),
+                    var(--black);
+            }
+
+            /* Top brand bar */
+            .error-brand-bar {
+                position: relative;
+                z-index: 1;
+                padding: 28px 40px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            }
+
+            .error-brand-bar a {
+                font-family: "Playfair Display", serif;
+                font-size: 24px;
+                font-weight: 700;
+                letter-spacing: 3px;
+                color: var(--white);
+                text-decoration: none;
+            }
+
+            .error-brand-bar a span {
+                color: var(--color-gold);
+            }
+
+            /* Main content */
+            .error-main {
+                position: relative;
+                z-index: 1;
+                flex: 1;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 40px;
+            }
+
+            .error-content {
+                text-align: center;
+                max-width: 600px;
+            }
+
+            /* Error code */
+            .error-code {
+                font-family: "Playfair Display", serif;
+                font-size: 140px;
+                font-weight: 700;
+                line-height: 1;
+                letter-spacing: 8px;
+                background: linear-gradient(135deg, var(--color-gold) 0%, var(--color-bronze) 50%, var(--color-gold) 100%);
+                background-size: 200% auto;
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+                animation: shimmer 4s ease-in-out infinite;
+                margin-bottom: 20px;
+            }
+
+            @keyframes shimmer {
+                0%, 100% { background-position: 0% center; }
+                50% { background-position: 200% center; }
+            }
+
+            /* Decorative line */
+            .error-divider {
+                width: 60px;
+                height: 1px;
+                background: var(--color-gold);
+                margin: 0 auto 30px;
+                opacity: 0.6;
+            }
+
+            .error-label {
+                font-size: 11px;
+                font-weight: 600;
+                letter-spacing: 4px;
+                text-transform: uppercase;
+                color: var(--color-gold);
+                margin-bottom: 16px;
+            }
+
+            .error-title {
+                font-family: "Playfair Display", serif;
+                font-size: 28px;
+                font-weight: 600;
+                color: var(--white);
+                margin-bottom: 16px;
+                letter-spacing: 0.5px;
+            }
+
+            .error-description {
+                font-size: 14px;
+                color: rgba(255, 255, 255, 0.5);
+                line-height: 1.8;
+                margin-bottom: 40px;
+                font-weight: 300;
+            }
+
+            /* CTA button */
+            .error-cta {
+                display: inline-flex;
+                align-items: center;
+                gap: 10px;
+                padding: 14px 36px;
+                background: transparent;
+                border: 1px solid rgba(191, 161, 95, 0.4);
+                color: var(--color-gold);
+                font-family: "Montserrat", sans-serif;
+                font-size: 12px;
+                font-weight: 600;
+                letter-spacing: 2px;
+                text-transform: uppercase;
+                text-decoration: none;
+                transition: all 0.4s ease;
+            }
+
+            .error-cta:hover {
+                background: var(--color-gold);
+                color: var(--black);
+                border-color: var(--color-gold);
+            }
+
+            .error-cta .material-icons {
+                font-size: 18px;
+                transition: transform 0.3s ease;
+            }
+
+            .error-cta:hover .material-icons {
+                transform: translateX(-4px);
+            }
+
+            /* Footer */
+            .error-footer {
+                position: relative;
+                z-index: 1;
+                text-align: center;
+                padding: 24px;
+                border-top: 1px solid rgba(255, 255, 255, 0.06);
+                font-size: 11px;
+                color: rgba(255, 255, 255, 0.25);
+                letter-spacing: 1px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="error-bg"></div>
+        <div class="error-brand-bar">
+            <a href="/">REX <span>CC</span></a>
+        </div>
+        <div class="error-main">
+            <div class="error-content">
+                <div class="error-code">404</div>
+                <div class="error-divider"></div>
+                <p class="error-label">Page Not Found</p>
+                <h1 class="error-title">This Timepiece Has Eluded Us</h1>
+                <p class="error-description">
+                    The page you're looking for doesn't exist or has been moved.
+                    Let us guide you back to our collection.
+                </p>
+                <a href="/" class="error-cta">
+                    <span class="material-icons">arrow_back</span>
+                    Return Home
+                </a>
+            </div>
+        </div>
+        <footer class="error-footer">
+            &copy; {% now "Y" %} REX CC. All rights reserved.
+        </footer>
+    </body>
+</html>

@@ -608,23 +608,3 @@ input:invalid:not(:focus):not(:placeholder-shown) {
 /* ========================================
    RESPONSIVE
    ======================================== */
-
-@media (max-width: 540px) {
-    .auth-card {
-        padding: 45px 30px;
-        margin: 0 15px;
-    }
-
-    .auth-title {
-        font-size: 1.6rem;
-    }
-
-    .brand-logo {
-        font-size: 1.6rem;
-    }
-
-    .brand-tagline {
-        font-size: 0.6rem;
-        letter-spacing: 3px;
-    }
-}
