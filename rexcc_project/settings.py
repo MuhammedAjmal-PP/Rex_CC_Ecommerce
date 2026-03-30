@@ -89,6 +89,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "accounts.middleware.AccountStatusMiddleware",
     "allauth.account.middleware.AccountMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
@@ -278,12 +279,11 @@ RAZORPAY_KEY_SECRET = env("RAZORPAY_KEY_SECRET")
 # ---------------------------------------------------------------
 
 TASKS = {
-    "default": {
-        "BACKEND": "django_tasks_db.DatabaseBackend",
-        "QUEUES": ["default"]
-    }
+    "default": {"BACKEND": "django_tasks_db.DatabaseBackend", "QUEUES": ["default"]}
 }
 
 # Retry window for failed Razorpay orders (seconds)
 # Default: 5 hours (18000s). For testing: set FAILED_ORDER_EXPIRY_SECONDS=120 in .env
-FAILED_ORDER_EXPIRY_SECONDS = env.int("FAILED_ORDER_EXPIRY_SECONDS", default=5 * 60 * 60)
+FAILED_ORDER_EXPIRY_SECONDS = env.int(
+    "FAILED_ORDER_EXPIRY_SECONDS", default=5 * 60 * 60
+)
