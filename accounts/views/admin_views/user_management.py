@@ -7,6 +7,11 @@ from django.views.decorators.cache import never_cache
 from django.contrib.auth.decorators import user_passes_test
 from django.urls import reverse
 
+from users.user_profile.models import Address
+from orders.models import Order
+from users.wallet.models import Wallet, WalletTransaction
+from payments.models import Transaction
+
 User = get_user_model()
 
 
@@ -71,119 +76,28 @@ def user_profile(request, id):
     """
     user = get_object_or_404(User, id=id, is_superuser=False)
 
-    # Static data for testing
-    addresses = {
-        "home": {
-            "name": "John Doe",
-            "street": "123 Main Street",
-            "apartment": "Apt 4B",
-            "city": "New York",
-            "state": "NY",
-            "postal_code": "10001",
-            "phone": "+1 (555) 123-4567",
-        },
-        "office": {
-            "name": "John Doe",
-            "street": "456 Business Ave",
-            "apartment": "Suite 200",
-            "city": "Manhattan",
-            "state": "NY",
-            "postal_code": "10002",
-            "phone": "+1 (555) 987-6543",
-        },
-    }
-
-    recent_orders = [
-        {
-            "order_number": "#ORD-2024-001",
-            "date": "Dec 20, 2024",
-            "amount": 1299.99,
-            "status": "delivered",
-        },
-        {
-            "order_number": "#ORD-2024-002",
-            "date": "Dec 18, 2024",
-            "amount": 899.50,
-            "status": "processing",
-        },
-        {
-            "order_number": "#ORD-2024-003",
-            "date": "Dec 15, 2024",
-            "amount": 2499.00,
-            "status": "shipped",
-        },
-    ]
-
-    wallet_balance = 5420.00
-
-    wallet_transactions = [
-        {
-            "type": "credit",
-            "description": "Refund for Order #ORD-2024-001",
-            "date": "Dec 19, 2024",
-            "amount": 150.00,
-        },
-        {
-            "type": "debit",
-            "description": "Purchase - Order #ORD-2024-002",
-            "date": "Dec 18, 2024",
-            "amount": -899.50,
-        },
-        {
-            "type": "credit",
-            "description": "Cashback Reward",
-            "date": "Dec 17, 2024",
-            "amount": 50.00,
-        },
-    ]
-
-    transactions = [
-        {
-            "type": "payment",
-            "description": "Order #ORD-2024-003",
-            "date": "Dec 15, 2024",
-            "method": "Credit Card",
-            "amount": 2499.00,
-        },
-        {
-            "type": "refund",
-            "description": "Refund - Order #ORD-2024-001",
-            "date": "Dec 19, 2024",
-            "method": "Wallet",
-            "amount": 150.00,
-        },
-        {
-            "type": "payment",
-            "description": "Order #ORD-2024-002",
-            "date": "Dec 18, 2024",
-            "method": "Wallet",
-            "amount": 899.50,
-        },
-    ]
-
-    referral_rewards = [
-        {
-            "date": "Dec 10, 2024",
-            "referred_user": "jane.smith@example.com",
-            "amount": 25.00,
-        },
-        {
-            "date": "Dec 5, 2024",
-            "referred_user": "mike.johnson@example.com",
-            "amount": 25.00,
-        },
-        {
-            "date": "Nov 28, 2024",
-            "referred_user": "sarah.williams@example.com",
-            "amount": 25.00,
-        },
-    ]
+    #user addresses
+    addresses = Address.objects.filter(user=user, is_active=True).order_by("-is_default", "-created_at")[:2]
+    #user recent orders
+    recent_orders = Order.objects.filter(user=user).order_by("-created_at")[:5]
+    
+    # Wallet
+    wallet, _ = Wallet.objects.get_or_create(user=user)
+    
+    # Wallet transactions
+    wallet_transactions = WalletTransaction.objects.filter(wallet__user=user).order_by("-created_at")[:5]
+    
+    # Overall transactions
+    transactions = Transaction.objects.filter(user=user).exclude(transaction_type="REFERRAL_REWARD").order_by("-created_at")[:5]
+    
+    # Referral transactions
+    referral_rewards = Transaction.objects.filter(user=user, transaction_type="REFERRAL_REWARD").order_by("-created_at")[:5]
 
     context = {
         "user": user,
         "addresses": addresses,
         "recent_orders": recent_orders,
-        "wallet_balance": wallet_balance,
+        "wallet_balance": wallet.balance,
         "wallet_transactions": wallet_transactions,
         "transactions": transactions,
         "referral_rewards": referral_rewards,
