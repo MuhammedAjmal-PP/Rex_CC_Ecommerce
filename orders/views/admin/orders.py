@@ -15,7 +15,7 @@ from orders.service import (
 )
 from orders.service.status import (
     ADMIN_ITEM_ALLOWED_TRANSITIONS,
-    ORDER_ALLOWED_TRANSITIONS,
+    ADMIN_ORDER_ALLOWED_TRANSITIONS,
 )
 from orders.utils import compute_item_totals, get_payment_transaction
 
@@ -105,7 +105,7 @@ def order_detail(request, order_number):
     )
 
     order_current = order.status
-    order_next = sorted(ORDER_ALLOWED_TRANSITIONS.get(order_current, set()))
+    order_next = sorted(ADMIN_ORDER_ALLOWED_TRANSITIONS.get(order_current, set()))
 
     items_with_transitions = []
     for item in order_items:

@@ -33,7 +33,22 @@ ORDER_ITEM_ALLOWED_TRANSITIONS = {
     "CANCELLED": set(),
 }
 
-# Admin-only transitions: stops at DELIVERED (no RETURN_REQUESTED)
+# ...................................
+# Admin-only transitions
+# ...................................
+
+ADMIN_ORDER_ALLOWED_TRANSITIONS = {
+    "PLACED": {"CONFIRMED", "CANCELLED"},
+    "CONFIRMED": {"SHIPPED", "CANCELLED"},
+    "SHIPPED": {"OUT_FOR_DELIVERY"},
+    "OUT_FOR_DELIVERY": {"DELIVERED"},
+    "DELIVERED": set(),
+    "CANCELLED": set(),
+    "FAILED": set(),
+    "EXPIRED": set(),
+    "STOCK_UNAVAILABLE": set(),
+}
+
 ADMIN_ITEM_ALLOWED_TRANSITIONS = {
     "PENDING": {"CONFIRMED", "CANCELLED"},
     "CONFIRMED": {"PACKING", "CANCELLED"},
@@ -227,6 +242,7 @@ def change_order_status(*, order, to_status):
 
     # Auto-update COD payment status to PAID upon delivery
     from orders.utils import get_payment_transaction
+
     payment = get_payment_transaction(order)
     if to_status == "DELIVERED" and payment:
         if payment.payment_method == "COD" and payment.status == "PENDING":
