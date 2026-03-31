@@ -2,28 +2,56 @@ from django.shortcuts import redirect
 from django.http import Http404
 
 
-class AccountStatusMiddleware:
+class AuthFlowRedirectMiddleware:
     """
     Redirects users away from the inactive page if their account
     has been reactivated, and blocks active-only pages for inactive users.
+    Handles redirects for password reset and email confirmation flows.
     """
 
     INACTIVE_URL = "/accounts/inactive/"
+    PASSWORD_RESET_KEY_DONE_URL = "/accounts/password/reset/key/done/"
+    PASSWORD_RESET_DONE_URL = "/accounts/password/reset/done/"
+    CONFIRM_EMAIL_URL = "/accounts/confirm-email/"
 
     def __init__(self, get_response):
         self.get_response = get_response
 
     def __call__(self, request):
-        if request.path == self.INACTIVE_URL:
-            user = request.user
+        user = request.user
+        path = request.path
 
-            # Account was reactivated - redirect them out
+        # --- Inactive page handling ---
+        if path == self.INACTIVE_URL:
             if user.is_authenticated:
                 if user.is_active:
                     return redirect("home")
-
                 if not user.is_active:
                     return redirect("account_inactive")
+
+        # --- Password reset key done (e.g. after clicking reset link) ---
+        # /accounts/password/reset/key/done/
+        elif path == self.PASSWORD_RESET_KEY_DONE_URL:
+            if user.is_authenticated:
+                return redirect("home")
+            # Unauthenticated: password reset completed via key, send to login
+            return redirect("account_login")
+
+        # --- Password reset request done (e.g. "check your email" page) ---
+        # /accounts/password/reset/done/
+        elif path == self.PASSWORD_RESET_DONE_URL:
+            if user.is_authenticated:
+                return redirect("home")
+            # Unauthenticated user who submitted the reset form — redirect to login
+            return redirect("account_login")
+
+        # --- Email confirmation landing page ---
+        # /accounts/confirm-email/
+        elif path.startswith(self.CONFIRM_EMAIL_URL):
+            if user.is_authenticated:
+                return redirect("home")
+            # Not authenticated but email verified/confirmed — send to login
+            return redirect("account_login")
 
         return self.get_response(request)
 

@@ -1,10 +1,34 @@
 """
 Order placement helpers — business logic used by place_order and razorpay views.
 """
+from datetime import timedelta
 from decimal import Decimal
+from functools import partial
+from django.conf import settings
+from django.db import transaction
+from django.utils import timezone
 from catalog.service import update_stock
 from orders.models import OrderItem
 from orders.service.stock import validate_snapshot_stock
+from orders.tasks import expire_failed_order
+
+
+def schedule_order_expiry(order):
+    """
+    Schedule an auto-expiry task for a failed/pending Razorpay order.
+
+    Uses `transaction.on_commit` so the task is only enqueued after the
+    current DB transaction commits successfully.  The task itself is a
+    no-op if the order is no longer FAILED when it runs.
+    """
+    transaction.on_commit(
+        partial(
+            expire_failed_order.using(
+                run_after=timezone.now() + timedelta(seconds=settings.FAILED_ORDER_EXPIRY_SECONDS)
+            ).enqueue,
+            order_id=order.pk,
+        )
+    )
 
 
 def build_cart_snapshot(cart_items, packed_prices, locked_variants):

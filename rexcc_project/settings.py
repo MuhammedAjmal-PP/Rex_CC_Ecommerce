@@ -89,7 +89,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "accounts.middleware.AccountStatusMiddleware",
+    "accounts.middleware.AuthFlowRedirectMiddleware",
     "accounts.middleware.BlockUnusedAllauthURLsMiddleware",
     "allauth.account.middleware.AccountMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
