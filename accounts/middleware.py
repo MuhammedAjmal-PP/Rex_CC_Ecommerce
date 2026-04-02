@@ -47,11 +47,11 @@ class AuthFlowRedirectMiddleware:
 
         # --- Email confirmation landing page ---
         # /accounts/confirm-email/
-        elif path.startswith(self.CONFIRM_EMAIL_URL):
+        elif path == self.CONFIRM_EMAIL_URL:
+            # Only intercept the bare listing page, not confirmation links with tokens
             if user.is_authenticated:
                 return redirect("home")
-            # Not authenticated but email verified/confirmed — send to login
-            return redirect("account_login")
+
 
         return self.get_response(request)
 

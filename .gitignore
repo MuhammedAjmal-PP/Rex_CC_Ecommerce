@@ -38,10 +38,6 @@ env/
 # ----------------------------------------------------------------------
 # VS Code
 .vscode/
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
 *.code-workspace
 
 # PyCharm / IntelliJ
@@ -93,6 +89,7 @@ pytest.xml
 # ----------------------------------------------------------------------
 # Backup files
 *.bak
+local/
 
 # Celery (if added later)
 celerybeat-schedule
@@ -105,11 +102,6 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# ----------------------------------------------------------------------
-# Reference
-# ----------------------------------------------------------------------
-
-reference/
 
 # db dump files
 *.dump

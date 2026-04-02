@@ -14,12 +14,12 @@ from pathlib import Path
 import environ
 
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# ───────────────────────────────────────────────────────────────
+# PATH & ENVIRONMENT SETUP
+# ───────────────────────────────────────────────────────────────
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-"""
-    Env Setup
-"""
 env = environ.Env(DEBUG=(bool, False))
 
 env_path = BASE_DIR / ".env"
@@ -27,30 +27,25 @@ if env_path.exists():
     environ.Env.read_env(str(env_path))
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
+# ───────────────────────────────────────────────────────────────
+# CORE SETTINGS
+# ───────────────────────────────────────────────────────────────
 
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env("SECRET_KEY")
-
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env("DEBUG")
-
 ALLOWED_HOSTS = env("ALLOWED_HOSTS").split(",")
-
 SITE_ID = env.int("SITE_ID", default=1)
-
-AUTHENTICATION_BACKENDS = [
-    # Needed to login by username in Django admin, regardless of `allauth`
-    "django.contrib.auth.backends.ModelBackend",
-    # `allauth` specific authentication methods, such as login by email
-    "allauth.account.auth_backends.AuthenticationBackend",
-]
+ROOT_URLCONF = "rexcc_project.urls"
+WSGI_APPLICATION = "rexcc_project.wsgi.application"
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
-# Application definition
+# ───────────────────────────────────────────────────────────────
+# INSTALLED APPS
+# ───────────────────────────────────────────────────────────────
 
 INSTALLED_APPS = [
+    # Django core
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -59,9 +54,9 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.sites",
     "django.contrib.humanize",
-    # auth app
-    "accounts",  # to override the alluth templates
-    # third party apps
+    # Auth app (placed before allauth to override its templates)
+    "accounts",
+    # Third-party
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
@@ -70,7 +65,7 @@ INSTALLED_APPS = [
     "cloudinary_storage",
     "phonenumber_field",
     "django_tasks_db",
-    # localapps
+    # Local apps
     "core",
     "catalog",
     "users.user_profile",
@@ -82,6 +77,11 @@ INSTALLED_APPS = [
     "offers",
     "coupons",
 ]
+
+
+# ───────────────────────────────────────────────────────────────
+# MIDDLEWARE
+# ───────────────────────────────────────────────────────────────
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -96,7 +96,10 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = "rexcc_project.urls"
+
+# ───────────────────────────────────────────────────────────────
+# TEMPLATES
+# ───────────────────────────────────────────────────────────────
 
 TEMPLATES = [
     {
@@ -113,114 +116,57 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "rexcc_project.wsgi.application"
 
-
-# Database
-# https://docs.djangoproject.com/en/6.0/ref/settings/#databases
+# ───────────────────────────────────────────────────────────────
+# DATABASE
+# ───────────────────────────────────────────────────────────────
 
 DATABASES = {"default": env.db("DATABASE_URL")}
 
 
-# Password validation
-# https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
+# ───────────────────────────────────────────────────────────────
+# AUTHENTICATION
+# ───────────────────────────────────────────────────────────────
 
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
-    },
-    {
-        "NAME": "accounts.validators.NoWhitespacePasswordValidator",
-    },
-]
-
-# Custom User Model
 AUTH_USER_MODEL = "accounts.CustomUser"
 
-# Internationalization
-# https://docs.djangoproject.com/en/6.0/topics/i18n/
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+]
 
-LANGUAGE_CODE = "en-us"
+AUTH_PASSWORD_VALIDATORS = [
+    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
+    {"NAME": "accounts.validators.NoWhitespacePasswordValidator"},
+]
 
-TIME_ZONE = env("TIME_ZONE")
 
-USE_I18N = True
+# ───────────────────────────────────────────────────────────────
+# DJANGO-ALLAUTH
+# ───────────────────────────────────────────────────────────────
 
-USE_TZ = True
-
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/6.0/howto/static-files/
-
-STATIC_URL = "static/"
-
-# Cloudinary config
-CLOUDINARY_URL = env("CLOUDINARY_URL")
-
-# Django 6.0+ requires STORAGES dict format (DEFAULT_FILE_STORAGE is deprecated)
-STORAGES = {
-    "default": {
-        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
-    },
-    "staticfiles": {
-        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
-    },
-}
-# GLOBAL IMAGE SETTINGS
-IMAGE_MAX_SIZE_MB = 5
-ALLOWED_IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "webp", "avif"]
-
-# Phonenumber config
-PHONENUMBER_DB_FORMAT = "NATIONAL"
-PHONENUMBER_DEFAULT_REGION = "IN"
-
-# Email Configuration
-EMAIL_BACKEND = env("EMAIL_BACKEND")
-EMAIL_HOST = "smtp.gmail.com"
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = env("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
-
-# ---------------------------------------------------------------
-# DJANGO-ALLAUTH CONFIGURATION
-# ---------------------------------------------------------------
-
-# Your user model has NO username field
+# User model uses email, no username field
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
-
-# New Allauth API: fields required during signup
 ACCOUNT_SIGNUP_FIELDS = ["email*", "password1", "password2"]
-
-# Login using only email (password still required)
 ACCOUNT_LOGIN_METHODS = {"email"}
+ACCOUNT_SESSION_REMEMBER = False
 
-ACCOUNT_SESSION_REMEMBER = False  # This hides the "Remember Me" checkbox and defaults to "False" (unchecked behavior)
-
-# Use custom signup form
 ACCOUNT_FORMS = {
     "signup": "accounts.forms.CustomSignupForm",
 }
 
-# Require email verification
+# Email verification
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 ACCOUNT_CONFIRM_EMAIL_ON_GET = True
 ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 1
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
 ACCOUNT_EMAIL_UNKNOWN_ACCOUNTS = True
-ACCOUNT_EMAIL_NOTIFICATIONS = False  # password_reset_message.html
+ACCOUNT_EMAIL_NOTIFICATIONS = False
 ACCOUNT_EMAIL_VERIFICATION_SUPPORTS_RESEND = True
-
 
 # Redirects
 LOGIN_REDIRECT_URL = "home"
@@ -228,9 +174,10 @@ LOGOUT_REDIRECT_URL = "home"
 ACCOUNT_LOGOUT_REDIRECT_URL = "home"
 ACCOUNT_LOGOUT_ON_GET = True
 
-# ---------------------------------------------------------------
-# SOCIAL ACCOUNT PROVIDERS
-# ---------------------------------------------------------------
+
+# ───────────────────────────────────────────────────────────────
+# SOCIAL ACCOUNT (Google OAuth)
+# ───────────────────────────────────────────────────────────────
 
 SOCIALACCOUNT_LOGIN_ON_GET = True
 
@@ -246,49 +193,177 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
+
+# ───────────────────────────────────────────────────────────────
+# INTERNATIONALIZATION & TIME
+# ───────────────────────────────────────────────────────────────
+
+LANGUAGE_CODE = "en-us"
+TIME_ZONE = env("TIME_ZONE", default="Asia/Kolkata")
+USE_I18N = True
+USE_TZ = True
+
+
+# ───────────────────────────────────────────────────────────────
+# STATIC FILES
+# ───────────────────────────────────────────────────────────────
+
+STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+
+# ───────────────────────────────────────────────────────────────
+# MEDIA / CLOUDINARY
+# ───────────────────────────────────────────────────────────────
+
+CLOUDINARY_URL = env("CLOUDINARY_URL")
+
+STORAGES = {
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}
+
+IMAGE_MAX_SIZE_MB = 5
+ALLOWED_IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "webp", "avif"]
+
+
+# ───────────────────────────────────────────────────────────────
+# EMAIL
+# ───────────────────────────────────────────────────────────────
+
+EMAIL_BACKEND = env("EMAIL_BACKEND")
+EMAIL_HOST = env("EMAIL_HOST", default="smtp.gmail.com")
+EMAIL_PORT = env.int("EMAIL_PORT", default=587)
+EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS", default=True)
+EMAIL_HOST_USER = env("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
+
+
+# ───────────────────────────────────────────────────────────────
+# CSRF
+# ───────────────────────────────────────────────────────────────
+
 CSRF_TRUSTED_ORIGINS = env("CSRF_TRUSTED_ORIGINS").split(",")
 
-MAX_ADDRESSES_PER_USER = 5
 
-MAX_QUANTITY_PURCHASE_PER_ITEM = 5
-
-SHIPPING_CHARGE = 100
-
-# ---------------------------------------------------------------
-# TAX
-# ---------------------------------------------------------------
-
-# Your store's base location
-STORE_STATE = "KERALA"
-STORE_STATE_CODE = "32"
-
-# HSN Code for standard wristwatches (Mechanical/Battery-operated)
-DEFAULT_WATCH_HSN = "9102"
-
-# Standard GST rate for watches
-GST_RATE = 18
-
-# ---------------------------------------------------------------
-# RAZORPAY
-# ---------------------------------------------------------------
+# ───────────────────────────────────────────────────────────────
+# RAZORPAY (Payments)
+# ───────────────────────────────────────────────────────────────
 
 RAZORPAY_KEY_ID = env("RAZORPAY_KEY_ID")
 RAZORPAY_KEY_SECRET = env("RAZORPAY_KEY_SECRET")
 
-# Wallet top-up limits (in rupees)
+
+# ───────────────────────────────────────────────────────────────
+# BACKGROUND TASKS (django-tasks-db)
+# ───────────────────────────────────────────────────────────────
+
+TASKS = {
+    "default": {
+        "BACKEND": "django_tasks_db.DatabaseBackend",
+        "QUEUES": ["default"],
+    }
+}
+
+
+# ───────────────────────────────────────────────────────────────
+# PHONE NUMBER
+# ───────────────────────────────────────────────────────────────
+
+PHONENUMBER_DB_FORMAT = "NATIONAL"
+PHONENUMBER_DEFAULT_REGION = "IN"
+
+
+# ───────────────────────────────────────────────────────────────
+# BUSINESS RULES
+# ───────────────────────────────────────────────────────────────
+
+# User limits
+MAX_ADDRESSES_PER_USER = 5
+MAX_QUANTITY_PURCHASE_PER_ITEM = 5
+
+# Shipping
+SHIPPING_CHARGE = 100
+
+# Wallet top-up limits (₹)
 WALLET_TOPUP_MIN = env.int("WALLET_TOPUP_MIN", default=5_000)
 WALLET_TOPUP_MAX = env.int("WALLET_TOPUP_MAX", default=75_000)
 
-# ---------------------------------------------------------------
-# BACKGROUND TASKS (django-tasks-db)
-# ---------------------------------------------------------------
+# Order expiry — how long to wait before auto-expiring a failed Razorpay order
+# Dev: 120s (2 min) | Prod: 18000s (5 hours)
+FAILED_ORDER_EXPIRY_SECONDS = env.int("FAILED_ORDER_EXPIRY_SECONDS", default=5 * 60 * 60)
 
-TASKS = {
-    "default": {"BACKEND": "django_tasks_db.DatabaseBackend", "QUEUES": ["default"]}
+# Tax — store base location
+STORE_STATE = "KERALA"
+STORE_STATE_CODE = "32"
+DEFAULT_WATCH_HSN = "9102"  # HSN code for wristwatches
+GST_RATE = 18               # Standard GST rate for watches (%)
+
+
+# ───────────────────────────────────────────────────────────────
+# PRODUCTION SECURITY (only active when DEBUG=False)
+# ───────────────────────────────────────────────────────────────
+
+if not DEBUG:
+    # Django is behind Nginx reverse proxy that handles SSL
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+    # Force HTTPS
+    SECURE_SSL_REDIRECT = True
+
+    # Secure cookies
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+
+    # Clickjacking protection
+    X_FRAME_OPTIONS = "DENY"
+
+    # HSTS — tell browsers to always use HTTPS (1 year)
+    SECURE_HSTS_SECONDS = 31_536_000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+
+    # Prevent MIME-type sniffing
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+
+
+# ───────────────────────────────────────────────────────────────
+# LOGGING
+# ───────────────────────────────────────────────────────────────
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "[{asctime}] {levelname} {name} {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "INFO",
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "level": "WARNING",
+            "propagate": False,
+        },
+        "orders": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": False,
+        },
+    },
 }
-
-# Retry window for failed Razorpay orders (seconds)
-# Default: 5 hours (18000s). For testing: set FAILED_ORDER_EXPIRY_SECONDS=120 in .env
-FAILED_ORDER_EXPIRY_SECONDS = env.int(
-    "FAILED_ORDER_EXPIRY_SECONDS", default=5 * 60 * 60
-)
