@@ -1,0 +1,48 @@
+# ─────────────────────────────────────────────
+# CI/CD Pipeline — Deploy to AWS EC2
+# Triggers when code is pushed to the main branch
+# ─────────────────────────────────────────────
+
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - main
+    # Only deploy when actual code changes, not just docs
+    paths-ignore:
+      - '*.md'
+      - 'docs/**'
+
+jobs:
+  deploy:
+    name: Deploy to EC2
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: SSH into EC2 and deploy
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            # Navigate to project directory
+            cd ${{ secrets.PROJECT_DIR }}
+
+            # Pull latest code from main
+            git pull origin main
+
+            # Rebuild and restart containers
+            docker compose build
+            docker compose up -d
+
+            # Run migrations (in case there are new ones)
+            docker compose exec -T web python manage.py migrate
+
+            # Collect static files (in case there are new ones)
+            docker compose exec -T web python manage.py collectstatic --noinput
+
+            # Show status
+            docker compose ps
