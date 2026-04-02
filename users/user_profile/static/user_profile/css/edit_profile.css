@@ -1,0 +1,539 @@
+/* ===================================================================
+   REX CC - LUXURY EDIT PROFILE PAGE
+   File: user_profile/static/user_profile/css/edit_profile.css
+   =================================================================== */
+
+/* ---------------------------------------------------------
+   HEADER & BREADCRUMBS
+   --------------------------------------------------------- */
+.lux-edit-header {
+  margin-bottom: 48px;
+}
+
+.lux-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #666;
+  text-decoration: none;
+  margin-bottom: 24px;
+  transition: all 0.3s ease;
+}
+
+.lux-back-link:hover {
+  color: #111;
+  transform: translateX(-4px);
+}
+
+.lux-page-title {
+  font-family: "Playfair Display", serif;
+  font-size: 2.5rem;
+  font-weight: 400;
+  color: #111;
+  margin: 0;
+}
+
+/* ---------------------------------------------------------
+   LAYOUT
+   --------------------------------------------------------- */
+.lux-edit-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  /* max-width: 900px; Keep forms contained */
+}
+
+.lux-edit-card {
+  background: #fff;
+  border: 1px solid #eaeaea;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06);
+}
+
+.lux-card-header {
+  padding: 32px 40px;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.lux-card-header.flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.lux-card-title {
+  font-family: "Playfair Display", serif;
+  font-size: 1.5rem;
+  font-weight: 400;
+  color: #111;
+  margin: 0 0 8px 0;
+}
+
+.lux-card-subtitle {
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.9rem;
+  color: #666;
+  margin: 0;
+}
+
+.lux-card-body {
+  padding: 40px;
+}
+
+/* ---------------------------------------------------------
+   PERSONAL DETAILS & AVATAR
+   --------------------------------------------------------- */
+.lux-profile-split {
+  display: flex;
+  gap: 64px;
+  align-items: flex-start;
+}
+
+.lux-avatar-col {
+  flex-shrink: 0;
+  text-align: center;
+}
+
+.lux-avatar-wrapper {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  margin-bottom: 12px;
+  border-radius: 50%;
+}
+
+.lux-avatar-img {
+  width: 140px;
+  height: 140px;
+  max-width: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #e0e0e0;
+  padding: 4px;
+  display: block;
+  background-color: #fff;
+}
+
+.lux-avatar-placeholder {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: #f9f9f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e0e0e0;
+  color: #ccc;
+}
+
+.lux-avatar-placeholder .material-icons {
+  font-size: 64px;
+}
+
+.lux-avatar-trigger {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  width: 36px;
+  height: 36px;
+  background: #111;
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 3px solid #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 10;
+}
+
+.lux-avatar-trigger .material-icons {
+  font-size: 18px;
+}
+
+.lux-avatar-trigger:hover {
+  background: var(--color-gold, #bfa15f);
+  transform: scale(1.05);
+}
+
+.lux-avatar-remove {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 140px;
+  height: 140px;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  backdrop-filter: blur(2px);
+  color: #fff;
+  z-index: 5;
+  overflow: hidden;
+}
+
+.lux-avatar-wrapper:hover .lux-avatar-remove {
+  opacity: 1;
+}
+
+.lux-avatar-remove .material-icons {
+  font-size: 36px;
+}
+
+.lux-hidden-input {
+  display: none;
+}
+
+/* ---------------------------------------------------------
+   FORMS & INPUTS
+   --------------------------------------------------------- */
+.lux-fields-col {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.lux-field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.lux-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.lux-field-group label {
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #555;
+  margin-top: 8px;
+}
+
+.lux-field-group input,
+.lux-input {
+  width: 100%;
+  padding: 16px;
+  background: #fafafa;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.95rem;
+  color: #111;
+  transition: all 0.3s ease;
+}
+
+.lux-field-group input:focus,
+.lux-input:focus {
+  outline: none;
+  border-color: var(--color-gold, #bfa15f);
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(191, 161, 95, 0.1);
+}
+
+.lux-form-actions {
+  margin-top: 16px;
+}
+
+/* Edit Profile Button Overrides
+   These scope the buttons inside edit cards to use a flat black style
+   instead of the gold gradient from user_common.css */
+.lux-edit-card .lux-btn-primary {
+  background: #111;
+  border: 1px solid #111;
+  border-radius: 4px;
+  padding: 16px 32px;
+  letter-spacing: 2px;
+  box-shadow: none;
+  transform: none;
+}
+
+.lux-edit-card .lux-btn-primary:hover {
+  background: var(--color-gold, #bfa15f);
+  border-color: var(--color-gold, #bfa15f);
+  transform: none;
+  box-shadow: none;
+}
+
+/* Softer outline for card toggle buttons */
+.lux-edit-card .lux-btn-outline,
+.lux-card-header .lux-btn-outline {
+  padding: 14px 28px;
+  border-color: #e0e0e0;
+  border-radius: 4px;
+  letter-spacing: 2px;
+  cursor: pointer;
+}
+
+.lux-edit-card .lux-btn-outline:hover,
+.lux-card-header .lux-btn-outline:hover {
+  border-color: #111;
+  background: #fafafa;
+  color: #111;
+}
+
+.lux-btn-outline.btn-sm {
+  padding: 10px 16px;
+  font-size: 0.75rem;
+}
+
+/* ---------------------------------------------------------
+   EMAIL SECION
+   --------------------------------------------------------- */
+.lux-email-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.lux-email-item {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 24px;
+  border: 1px solid #eaeaea;
+  border-radius: 4px;
+  transition: border-color 0.3s ease;
+}
+
+.lux-email-item:hover {
+  border-color: var(--color-gold, #bfa15f);
+}
+
+.lux-email-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #fafafa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #111;
+}
+
+.lux-email-icon .material-icons {
+  font-size: 20px;
+}
+
+.lux-email-info {
+  flex-grow: 1;
+}
+
+.lux-email-address {
+  font-family: "Montserrat", sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #111;
+  margin-bottom: 8px;
+}
+
+.lux-email-badges {
+  display: flex;
+  gap: 8px;
+}
+
+.lux-badge-primary,
+.lux-badge-verified,
+.lux-badge-pending {
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 4px 10px;
+  border-radius: 4px;
+}
+
+.lux-badge-primary {
+  background: #111;
+  color: #fff;
+}
+
+.lux-badge-verified {
+  background: rgba(46, 125, 50, 0.1);
+  color: #2e7d32;
+}
+
+.lux-badge-pending {
+  background: #fafafa;
+  color: #666;
+  border: 1px solid #eaeaea;
+}
+
+.lux-empty-state {
+  text-align: center;
+  padding: 40px;
+  color: #999;
+}
+
+.lux-empty-state .material-icons {
+  font-size: 40px;
+  margin-bottom: 16px;
+  color: #e0e0e0;
+}
+
+/* ---------------------------------------------------------
+   EMAIL CHANGE FORM
+   --------------------------------------------------------- */
+.lux-email-change-body {
+  border-top: 1px solid #eaeaea;
+  background: #fafafa;
+}
+
+.lux-info-text {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.8rem;
+  color: #888;
+  margin: 12px 0 0 0;
+  line-height: 1.6;
+}
+
+.lux-info-text .material-icons {
+  font-size: 16px;
+  color: #aaa;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.email-alert {
+  margin-bottom: 24px;
+  animation: slideDown 0.3s ease-out;
+}
+
+.email-alert .alert {
+  padding: 16px 20px;
+  border-radius: 2px;
+  font-size: 0.9rem;
+  font-family: "Montserrat", sans-serif;
+  margin-bottom: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.email-alert .alert-success {
+  background: #fafafa;
+  color: #2e7d32;
+  border: 1px solid #2e7d32;
+}
+
+.email-alert .alert-danger {
+  background: #fafafa;
+  color: #c62828;
+  border: 1px solid #c62828;
+}
+
+.email-alert .alert p {
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* ---------------------------------------------------------
+   SECURITY SECTION (PASSWORD)
+   --------------------------------------------------------- */
+.lux-security-body {
+  border-top: 1px solid #eaeaea;
+  background: #fafafa;
+}
+
+.lux-password-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.lux-password-wrap input {
+  padding-right: 50px;
+}
+
+.lux-pwd-toggle {
+  position: absolute;
+  right: 8px;
+  background: transparent;
+  border: none;
+  color: #999;
+  padding: 8px;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lux-pwd-toggle:hover {
+  color: #111;
+}
+
+/* ---------------------------------------------------------
+   RESPONSIVE DESIGN
+   --------------------------------------------------------- */
+/* Desktop only - no responsive breakpoints needed */
+
+/* ---------------------------------------------------------
+   PASSWORD ALERTS (JS Generated)
+   --------------------------------------------------------- */
+.password-alert {
+  margin-bottom: 24px;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.password-alert .alert {
+  padding: 16px 20px;
+  border-radius: 2px;
+  font-size: 0.9rem;
+  font-family: "Montserrat", sans-serif;
+  margin-bottom: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.password-alert .alert-success {
+  background: #fafafa;
+  color: #2e7d32;
+  border: 1px solid #2e7d32;
+}
+
+.password-alert .alert-danger {
+  background: #fafafa;
+  color: #c62828;
+  border: 1px solid #c62828;
+}
+
+.password-alert .alert p {
+  margin: 0;
+  line-height: 1.6;
+}

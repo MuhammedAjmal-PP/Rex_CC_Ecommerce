@@ -1,0 +1,404 @@
+/* ============================================================
+   REX CC ADMIN — REFUND DETAIL
+   Detail page with approve/reject actions
+   Follows admin_ui_style_guide.md
+   Matches order_details.css design system
+   ============================================================ */
+
+:root {
+    --rd-black: #000000;
+    --rd-dark: #1A1A1A;
+    --rd-gray: #666666;
+    --rd-gray-light: #999999;
+    --rd-border: #e0e0e0;
+    --rd-bg: #F5F5F5;
+    --rd-white: #FFFFFF;
+    --rd-row-border: #f0f0f0;
+    --rd-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+/* ========================================
+   ACTION BAR
+   ======================================== */
+
+.rd-action-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 24px 40px;
+    padding: 20px 28px;
+    background: var(--rd-white);
+    box-shadow: var(--rd-shadow);
+    border: 1px solid var(--rd-border);
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.rd-back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border: 1px solid var(--rd-border);
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--rd-gray);
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background: var(--rd-white);
+    transition: all 0.3s ease;
+}
+
+.rd-back-btn:hover {
+    background: var(--rd-black);
+    color: var(--rd-white);
+    border-color: var(--rd-black);
+}
+
+.rd-back-btn .material-icons {
+    font-size: 18px;
+}
+
+/* ========================================
+   ACTION BUTTONS
+   ======================================== */
+
+.rd-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.rd-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 42px;
+    padding: 0 20px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+}
+
+.rd-btn .material-icons {
+    font-size: 18px;
+}
+
+.rd-btn-approve {
+    background: var(--rd-black);
+    color: var(--rd-white);
+    border: 2px solid var(--rd-black);
+}
+
+.rd-btn-approve:hover {
+    background: #333333;
+    border-color: #333333;
+}
+
+.rd-btn-reject {
+    background: var(--rd-white);
+    color: #dc2626;
+    border: 2px solid #dc2626;
+}
+
+.rd-btn-reject:hover {
+    background: #fef2f2;
+}
+
+/* ========================================
+   MESSAGES
+   ======================================== */
+
+.rd-messages {
+    margin: 0 40px 24px 40px;
+}
+
+.rd-alert {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-bottom: 8px;
+    border-left: 4px solid;
+    background: var(--rd-white);
+    box-shadow: var(--rd-shadow);
+    border-top: 1px solid var(--rd-border);
+    border-right: 1px solid var(--rd-border);
+    border-bottom: 1px solid var(--rd-border);
+}
+
+.rd-alert .material-icons {
+    font-size: 20px;
+}
+
+.rd-alert-success {
+    color: #16a34a;
+    border-left-color: #16a34a;
+}
+
+.rd-alert-error {
+    color: #dc2626;
+    border-left-color: #dc2626;
+}
+
+/* ========================================
+   GRID LAYOUT
+   ======================================== */
+
+.rd-grid {
+    display: grid;
+    grid-template-columns: 7fr 5fr;
+    gap: 24px;
+    margin: 0 40px 24px 40px;
+    align-items: start;
+}
+
+.rd-column {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* ========================================
+   CARDS
+   ======================================== */
+
+.rd-card {
+    background: var(--rd-white);
+    box-shadow: var(--rd-shadow);
+    border: 1px solid var(--rd-border);
+}
+
+.rd-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 20px 28px;
+    border-bottom: 1px solid var(--rd-border);
+}
+
+.rd-card-header .material-icons {
+    font-size: 20px;
+    color: var(--rd-black);
+}
+
+.rd-card-header h3 {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--rd-black);
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* ========================================
+   CARD BODY & INFO ROWS
+   ======================================== */
+
+.rd-card-body {
+    padding: 24px 28px;
+}
+
+.rd-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--rd-row-border);
+}
+
+.rd-row:last-child {
+    border-bottom: none;
+}
+
+.rd-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--rd-gray);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+}
+
+.rd-value {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--rd-black);
+    text-align: right;
+}
+
+.rd-mono {
+    font-family: 'Courier New', Courier, monospace;
+    letter-spacing: -0.5px;
+    font-size: 0.85rem;
+}
+
+.rd-amount {
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+/* ========================================
+   BADGES — UNIFIED STYLE
+   All badges share the same height/padding
+   ======================================== */
+
+.txn-type-badge,
+.status-badge,
+.wt-label {
+    display: inline-block;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    line-height: 1;
+}
+
+/* Type badges */
+.type-cancellation_refund { background: #fff7ed; color: #c2410c; }
+.type-return_refund { background: #fef3c7; color: #92400e; }
+
+/* Status badges */
+.status-pending { background: #fffbeb; color: #b45309; }
+.status-completed { background: #f0fdf4; color: #16a34a; }
+.status-failed { background: #fef2f2; color: #dc2626; }
+
+/* Wallet label badges */
+.wt-credit { background: #f0fdf4; color: #16a34a; }
+.wt-debit { background: #fef2f2; color: #dc2626; }
+
+/* ============================================================
+   REX CC ADMIN - REFUND DETAIL STYLES
+   File: payments/static/payments/admin/css/refund_detail.css
+   ============================================================ */
+
+.font-montserrat { font-family: 'Montserrat', sans-serif; }
+
+/* ============================================================
+   REJECT MODAL
+   ============================================================ */
+
+.rd-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.5);
+    align-items: center;
+    justify-content: center;
+}
+
+.rd-modal.show {
+    display: flex;
+}
+
+.rd-modal-content {
+    background: var(--rd-white);
+    width: 100%;
+    max-width: 480px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--rd-border);
+}
+
+.rd-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 28px;
+    border-bottom: 1px solid var(--rd-border);
+}
+
+.rd-modal-header h4 {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--rd-black);
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.rd-modal-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--rd-gray);
+    padding: 4px;
+    transition: all 0.2s;
+}
+
+.rd-modal-close:hover {
+    color: var(--rd-black);
+}
+
+.rd-modal-body {
+    padding: 24px 28px;
+}
+
+.rd-form-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--rd-black);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+}
+
+.rd-form-textarea {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid var(--rd-border);
+    font-size: 0.88rem;
+    font-family: 'Montserrat', sans-serif;
+    resize: vertical;
+    transition: border-color 0.2s;
+}
+
+.rd-form-textarea:focus {
+    outline: none;
+    border-color: var(--rd-black);
+    box-shadow: 0 0 0 1px var(--rd-black);
+}
+
+.rd-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 20px 28px;
+    border-top: 1px solid var(--rd-border);
+}
+
+.rd-btn-cancel {
+    background: var(--rd-white);
+    color: #333333;
+    border: 2px solid var(--rd-border);
+}
+
+.rd-btn-cancel:hover {
+    border-color: var(--rd-black);
+}
+
+.rd-btn-reject-confirm {
+    background: #dc2626;
+    color: var(--rd-white);
+}
+
+.rd-btn-reject-confirm:hover {
+    background: #b91c1c;
+}
+
+

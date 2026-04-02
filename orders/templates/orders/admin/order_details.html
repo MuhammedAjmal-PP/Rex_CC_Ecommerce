@@ -1,0 +1,367 @@
+{% extends 'core/admin/base_admin.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Order {{ order.order_number }}{% endblock title %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'orders/admin/css/order_details.css' %}">
+{% endblock extra_css %}
+
+{% block header_title %}Order #{{ order.order_number }}{% endblock header_title %}
+{% block header_subtitle %}Order Details{% endblock header_subtitle %}
+
+{% block content %}
+
+    <!-- Action Bar -->
+    <div class="od-action-bar">
+        <a href="{% url 'admin_orders_list' %}" class="od-back-link">
+            <span class="material-icons">arrow_back</span>
+            <span>Back to Orders</span>
+        </a>
+        <div class="od-action-right">
+            <span class="status-badge order-status-{{ order_current|lower }}">{{ order_current }}</span>
+            {% if order_next %}
+                <form method="post" action="{% url 'admin_order_status_update' order.order_number %}" class="od-status-form">
+                    {% csrf_token %}
+                    <select name="to_status" class="od-status-select">
+                        <option value="">Change status…</option>
+                        {% for status in order_next %}
+                            <option value="{{ status }}">{{ status }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="od-status-btn">
+                        <span class="material-icons">sync</span>
+                        Update
+                    </button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Order Info + Summary Grid -->
+    <div class="od-info-grid">
+        <!-- Left: Order Information -->
+        <div class="od-card">
+            <div class="od-card-title">
+                <span class="material-icons">info</span>
+                Order Information
+            </div>
+            <div class="od-card-body">
+                <div class="od-meta-row">
+                    <span class="od-meta-label">Customer</span>
+                    <span class="od-meta-value">
+                        {% if order.user %}
+                            {{ order.user.email }}
+                        {% else %}
+                            Deleted user
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="od-meta-row">
+                    <span class="od-meta-label">Order Date</span>
+                    <span class="od-meta-value">{{ order.created_at|date:"d M Y, h:i A" }}</span>
+                </div>
+                <div class="od-meta-row">
+                    <span class="od-meta-label">Payment Method</span>
+                    <span class="od-meta-value">{{ payment.get_payment_method_display }}</span>
+                </div>
+                {% if payment %}
+                    <div class="od-meta-row">
+                        <span class="od-meta-label">Transaction ID</span>
+                        <span class="od-meta-value text-mono">{{ payment.transaction_id }}</span>
+                    </div>
+                    <div class="od-meta-row">
+                        <span class="od-meta-label">Payment Status</span>
+                        <span class="od-meta-value">
+                            <span class="status-badge order-status-{{ payment.status|lower }}">{{ payment.get_status_display }}</span>
+                        </span>
+                    </div>
+                    <div class="od-meta-row">
+                        <span class="od-meta-label">Amount Paid</span>
+                        <span class="od-meta-value">₹{{ payment.amount|floatformat:2 }}</span>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Shipping Address -->
+            <div class="od-card-title od-card-title-sub">
+                <span class="material-icons">local_shipping</span>
+                Shipping Address
+            </div>
+            <div class="od-card-body">
+                {% with order.shipping_address as addr %}
+                    <div class="od-address">
+                        <p class="od-address-name">{{ addr.full_name }}</p>
+                        <p>{{ addr.address_line_1 }}</p>
+                        {% if addr.address_line_2 %}<p>{{ addr.address_line_2 }}</p>{% endif %}
+                        <p>{{ addr.city }}, {{ addr.state }} {{ addr.pincode }}</p>
+                        {% if addr.phone %}<p>Phone: {{ addr.phone }}</p>{% endif %}
+                    </div>
+                {% endwith %}
+            </div>
+
+            <!-- Billing Address -->
+            <div class="od-card-title od-card-title-sub">
+                <span class="material-icons">receipt</span>
+                Billing Address
+            </div>
+            <div class="od-card-body">
+                {% with order.billing_address as addr %}
+                    <div class="od-address">
+                        <p class="od-address-name">{{ addr.full_name }}</p>
+                        <p>{{ addr.address_line_1 }}</p>
+                        {% if addr.address_line_2 %}<p>{{ addr.address_line_2 }}</p>{% endif %}
+                        <p>{{ addr.city }}, {{ addr.state }} {{ addr.pincode }}</p>
+                        {% if addr.phone %}<p>Phone: {{ addr.phone }}</p>{% endif %}
+                    </div>
+                {% endwith %}
+            </div>
+        </div>
+
+        <!-- Right: Order Summary -->
+        <div class="od-card">
+            <div class="od-card-title">
+                <span class="material-icons">payments</span>
+                Order Summary
+            </div>
+            <div class="od-card-body od-summary">
+                <div class="od-summary-row">
+                    <span>Total ({{ items_with_transitions|length }} items)</span>
+                    <span>₹{{ order.total|floatformat:2|intcomma }}</span>
+                </div>
+                {% if order.discount > 0 %}
+                    <div class="od-summary-row od-summary-discount">
+                        <span>Discount</span>
+                        <span>−₹{{ order.discount|floatformat:2|intcomma }}</span>
+                    </div>
+                {% endif %}
+                <div class="od-summary-row">
+                    <span>Subtotal</span>
+                    <span>₹{{ order.sub_total|floatformat:2|intcomma }}</span>
+                </div>
+                {% if order.coupon and order.coupon_discount > 0 %}
+                    <div class="od-summary-row od-summary-discount">
+                        <span>
+                            <span class="material-icons coupon-icon">local_offer</span>
+                            Coupon ({{ order.coupon.code }})
+                        </span>
+                        <span>−₹{{ order.coupon_discount|floatformat:2|intcomma }}</span>
+                    </div>
+                {% endif %}
+                <div class="od-summary-row">
+                    <span>Shipping</span>
+                    <span>{% if order.shipping_fee == 0 %}Free{% else %}₹{{ order.shipping_fee|floatformat:2|intcomma }}{% endif %}</span>
+                </div>
+                <div class="od-summary-row">
+                    <span>Tax (GST {{ gst_rate }}%)</span>
+                    <span>₹{{ order.tax|floatformat:2|intcomma }}</span>
+                </div>
+                <div class="od-summary-row od-summary-total">
+                    <span>Grand Total</span>
+                    <span>₹{{ order.grand_total|floatformat:2|intcomma }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Items Section -->
+    <div class="od-section">
+        <div class="od-section-title">
+            <span class="material-icons">inventory_2</span>
+            Order Items ({{ items_with_transitions|length }})
+        </div>
+        <div class="od-items-table-wrap">
+            <table class="od-items-table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Qty</th>
+                        <th>Price</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in items_with_transitions %}
+                        {% with entry.item as item %}
+                            <!-- Item Row -->
+                            <tr class="od-item-row">
+                                <td>
+                                    <div class="od-item-info">
+                                        {% if item.product_variant and item.product_variant.images.all %}
+                                            {% with item.product_variant.images.all|first as img %}
+                                                {% if img %}
+                                                    <img src="{{ img.image.url }}"
+                                                         alt="Product"
+                                                         class="od-item-thumb"
+                                                         loading="lazy">
+                                                {% else %}
+                                                    <div class="od-item-thumb-placeholder">
+                                                        <span class="material-icons">image</span>
+                                                    </div>
+                                                {% endif %}
+                                            {% endwith %}
+                                        {% else %}
+                                            <div class="od-item-thumb-placeholder">
+                                                <span class="material-icons">image</span>
+                                            </div>
+                                        {% endif %}
+                                        <div class="od-item-details">
+                                            {% if item.product_variant and item.product_variant.product and item.product_variant.product.brand %}
+                                                <span class="od-item-brand">{{ item.product_variant.product.brand.name }}</span>
+                                            {% endif %}
+                                            <span class="od-item-name">
+                                                {% if item.product_variant and item.product_variant.product %}
+                                                    {{ item.product_variant.product.name }}
+                                                {% else %}
+                                                    Product unavailable
+                                                {% endif %}
+                                            </span>
+                                            {% if item.product_variant %}
+                                                <span class="od-item-sku">{{ item.product_variant.sku }}</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="od-td-center">{{ item.quantity }}</td>
+                                <!-- Unit Price: MRP (struck) + final -->
+                                <td class="od-td-center">
+                                    {% if item.original_price and item.original_price > item.price %}
+                                        <span class="od-price-original">₹{{ item.original_price|floatformat:2|intcomma }}</span>
+                                    {% endif %}
+                                    <span class="od-price-final">₹{{ item.price|floatformat:2|intcomma }}</span>
+                                </td>
+                                <!-- Total: MRP total (struck) + final total -->
+                                <td class="od-td-center od-item-total">
+                                    {% if item.original_price and item.original_price > item.price %}
+                                        <span class="od-price-original">₹{{ entry.total_original_price|floatformat:2|intcomma }}</span>
+                                    {% endif %}
+                                    <span class="od-price-final">₹{{ item.total_price|floatformat:2|intcomma }}</span>
+                                </td>
+                                <td class="od-td-center">
+                                    <span class="status-badge item-status-{{ entry.current_status|lower }}">
+                                        {{ entry.current_status }}
+                                    </span>
+                                </td>
+                                <td class="od-td-center">
+                                    {% if entry.allowed_next %}
+                                        <form method="post"
+                                              action="{% url 'admin_order_item_status_update' order.order_number item.id %}"
+                                              class="od-item-status-form">
+                                            {% csrf_token %}
+                                            <select name="to_status" class="od-item-select">
+                                                <option value="">—</option>
+                                                {% for st in entry.allowed_next %}
+                                                    <option value="{{ st }}">{{ st }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <button type="submit" class="od-item-update-btn" title="Update">
+                                                <span class="material-icons">sync</span>
+                                            </button>
+                                        </form>
+                                    {% else %}
+                                        <span class="od-no-action">—</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endwith %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Order Status Timeline -->
+    <div class="od-section">
+        <div class="od-section-title">
+            <span class="material-icons">timeline</span>
+            Order Status Timeline
+        </div>
+        <div class="od-status-timeline">
+            <div class="od-timeline-stepper">
+                {% with steps="PLACED,CONFIRMED,SHIPPED,OUT_FOR_DELIVERY,DELIVERED" %}
+                    {% for step in steps|make_list %}
+                    {% endfor %}
+                {% endwith %}
+
+                {% comment %} Build a visual stepper for common statuses {% endcomment %}
+                <div class="od-tl-step {% if order_current == 'PLACED' %}od-tl-active{% elif order_current != 'PLACED' %}od-tl-done{% endif %}">
+                    <div class="od-tl-icon">
+                        <span class="material-icons">receipt_long</span>
+                    </div>
+                    <div class="od-tl-info">
+                        <span class="od-tl-label">Placed</span>
+                        <span class="od-tl-date">{{ order.created_at|date:"d M Y, h:i A" }}</span>
+                    </div>
+                </div>
+
+                <div class="od-tl-step {% if order_current == 'CONFIRMED' %}od-tl-active{% elif order_current == 'SHIPPED' or order_current == 'OUT_FOR_DELIVERY' or order_current == 'DELIVERED' %}od-tl-done{% else %}od-tl-pending{% endif %}">
+                    <div class="od-tl-icon">
+                        <span class="material-icons">check_circle</span>
+                    </div>
+                    <div class="od-tl-info">
+                        <span class="od-tl-label">Confirmed</span>
+                        {% if order_current == 'CONFIRMED' and order.status_updated_at %}
+                            <span class="od-tl-date">{{ order.status_updated_at|date:"d M Y, h:i A" }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="od-tl-step {% if order_current == 'SHIPPED' %}od-tl-active{% elif order_current == 'OUT_FOR_DELIVERY' or order_current == 'DELIVERED' %}od-tl-done{% else %}od-tl-pending{% endif %}">
+                    <div class="od-tl-icon">
+                        <span class="material-icons">local_shipping</span>
+                    </div>
+                    <div class="od-tl-info">
+                        <span class="od-tl-label">Shipped</span>
+                        {% if order_current == 'SHIPPED' and order.status_updated_at %}
+                            <span class="od-tl-date">{{ order.status_updated_at|date:"d M Y, h:i A" }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="od-tl-step {% if order_current == 'OUT_FOR_DELIVERY' %}od-tl-active{% elif order_current == 'DELIVERED' %}od-tl-done{% else %}od-tl-pending{% endif %}">
+                    <div class="od-tl-icon">
+                        <span class="material-icons">delivery_dining</span>
+                    </div>
+                    <div class="od-tl-info">
+                        <span class="od-tl-label">Out for Delivery</span>
+                        {% if order_current == 'OUT_FOR_DELIVERY' and order.status_updated_at %}
+                            <span class="od-tl-date">{{ order.status_updated_at|date:"d M Y, h:i A" }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="od-tl-step {% if order_current == 'DELIVERED' %}od-tl-active{% else %}od-tl-pending{% endif %}">
+                    <div class="od-tl-icon">
+                        <span class="material-icons">inventory</span>
+                    </div>
+                    <div class="od-tl-info">
+                        <span class="od-tl-label">Delivered</span>
+                        {% if order_current == 'DELIVERED' and order.status_updated_at %}
+                            <span class="od-tl-date">{{ order.status_updated_at|date:"d M Y, h:i A" }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% if order_current == 'CANCELLED' %}
+                    <div class="od-tl-step od-tl-cancelled">
+                        <div class="od-tl-icon">
+                            <span class="material-icons">cancel</span>
+                        </div>
+                        <div class="od-tl-info">
+                            <span class="od-tl-label">Cancelled</span>
+                            {% if order.status_updated_at %}
+                                <span class="od-tl-date">{{ order.status_updated_at|date:"d M Y, h:i A" }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}
+

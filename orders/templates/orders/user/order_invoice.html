@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Invoice — {{ order.order_number }}</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap');
+
+        @page {
+            size: A4;
+            margin: 20mm;
+
+            @bottom-center {
+                content: "REX CC — Premium Timepieces";
+                font-family: 'Playfair Display', serif;
+                font-size: 8pt;
+                color: #999;
+                letter-spacing: 2pt;
+                text-transform: uppercase;
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 9.5pt;
+            color: #111;
+            line-height: 1.5;
+        }
+
+        /* ── HEADER ─────────────────────────────────── */
+        .inv-header-table {
+            width: 100%;
+            border-bottom: 2pt solid #111;
+            padding-bottom: 20pt;
+            margin-bottom: 20pt;
+        }
+        
+        .inv-brand-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 32pt;
+            font-weight: 700;
+            color: #111;
+            letter-spacing: 2pt;
+            line-height: 1;
+        }
+
+        .inv-brand-tagline {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 8pt;
+            font-weight: 600;
+            color: #bfa15f;
+            text-transform: uppercase;
+            letter-spacing: 4pt;
+            margin-top: 6pt;
+        }
+
+        .inv-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 24pt;
+            font-weight: 600;
+            color: #bfa15f;
+            letter-spacing: 4pt;
+            text-transform: uppercase;
+            text-align: right;
+            line-height: 1;
+        }
+
+        .inv-title-sub {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 8pt;
+            font-weight: 600;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 2pt;
+            text-align: right;
+            margin-top: 8pt;
+        }
+
+        /* ── META INFO ─── */
+        .inv-meta {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20pt;
+            padding-bottom: 16pt;
+            border-bottom: 1pt solid #eaeaea;
+        }
+
+        .inv-meta td {
+            padding: 4pt 0;
+            vertical-align: top;
+        }
+
+        .inv-meta-label {
+            font-size: 7.5pt;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5pt;
+            color: #888;
+            width: 80pt;
+            padding-right: 10pt;
+        }
+
+        .inv-meta-value {
+            font-size: 9.5pt;
+            font-weight: 600;
+            color: #111;
+        }
+
+        /* ── ADDRESSES ──────────────────────────────── */
+        .inv-addresses-table {
+            width: 100%;
+            margin-bottom: 24pt;
+            padding-bottom: 16pt;
+            border-bottom: 1pt solid #eaeaea;
+        }
+        
+        .inv-addresses-table td {
+            vertical-align: top;
+            width: 48%; /* Creates space between the two columns */
+        }
+
+        .inv-addr-block {
+            background: #fdfdfd;
+            padding: 16pt;
+            border: 1px solid #eaeaea;
+            border-top: 3pt solid #111;
+        }
+
+        .inv-addr-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 11pt;
+            font-weight: 600;
+            color: #111;
+            margin-bottom: 10pt;
+        }
+
+        .inv-addr-name {
+            font-size: 10pt;
+            font-weight: 700;
+            color: #111;
+            margin-bottom: 4pt;
+        }
+
+        .inv-addr-line {
+            font-size: 9pt;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        /* ── ITEMS TABLE ────────────────────────────── */
+        .inv-items-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 14pt;
+            font-weight: 600;
+            color: #111;
+            margin-bottom: 12pt;
+        }
+
+        .inv-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 24pt;
+        }
+
+        .inv-table thead th {
+            background: #111;
+            color: #fff;
+            font-size: 7.5pt;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5pt;
+            padding: 10pt 12pt;
+            text-align: left;
+            border-bottom: 2pt solid #bfa15f;
+        }
+
+        .inv-table tbody tr {
+            border-bottom: 1pt solid #eaeaea;
+        }
+
+        .inv-table tbody tr:nth-child(even) {
+            background: #fdfdfd;
+        }
+
+        .inv-table tbody td {
+            padding: 12pt;
+            font-size: 9.5pt;
+            color: #111;
+            vertical-align: middle;
+        }
+
+        /* ── SUMMARY ────── */
+        .inv-summary-table {
+            width: 100%;
+            margin-bottom: 24pt;
+            padding-top: 12pt;
+            padding-bottom: 16pt;
+            border-top: 1pt solid #eaeaea;
+            border-bottom: 1pt solid #eaeaea;
+            page-break-inside: avoid;
+        }
+
+        .inv-summary-table td {
+            padding: 6pt 0;
+            font-size: 9.5pt;
+            color: #555;
+        }
+
+        .inv-summary-table .inv-s-label {
+            font-weight: 600;
+        }
+
+        .inv-summary-table .inv-s-value {
+            font-weight: 700;
+            color: #111;
+            text-align: right;
+        }
+        
+        .inv-s-discount {
+            color: #2e7d32 !important;
+        }
+
+        /* ── FOOTER ─────────────────────────────────── */
+        .inv-footer {
+            text-align: center;
+            padding-top: 16pt;
+            page-break-inside: avoid;
+        }
+        .inv-footer-thanks {
+            font-family: 'Playfair Display', serif;
+            font-size: 16pt;
+            font-weight: 600;
+            color: #111;
+            margin-bottom: 8pt;
+        }
+        .inv-footer-note {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 8pt;
+            color: #888;
+            letter-spacing: 0.5pt;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER USING TABLE FOR WEASYPRINT -->
+    <table class="inv-header-table">
+        <tr>
+            <td style="vertical-align: top;">
+                <div class="inv-brand-name">REX CC</div>
+                <div class="inv-brand-tagline">Premium Timepieces</div>
+            </td>
+            <td style="vertical-align: top; text-align: right;">
+                <div class="inv-title">Invoice</div>
+                <div class="inv-title-sub">Tax Invoice</div>
+            </td>
+        </tr>
+    </table>
+
+    <table class="inv-meta">
+        <tr>
+            <td class="inv-meta-label">Invoice #</td>
+            <td class="inv-meta-value" style="width: 150pt;">INV-{{ order.order_number }}</td>
+            <td class="inv-meta-label">Date</td>
+            <td class="inv-meta-value">{{ order.created_at|date:"d M Y" }}</td>
+        </tr>
+        <tr>
+            <td class="inv-meta-label">Order #</td>
+            <td class="inv-meta-value">{{ order.order_number }}</td>
+            <td class="inv-meta-label">Payment</td>
+            <td class="inv-meta-value">{{ payment.get_payment_method_display }}</td>
+        </tr>
+        <tr>
+            <td class="inv-meta-label">Txn ID</td>
+            <td class="inv-meta-value">{{ payment.transaction_id|default:"-" }}</td>
+            <td class="inv-meta-label">Status</td>
+            <td class="inv-meta-value">{{ payment.get_status_display }}</td>
+        </tr>
+        <tr>
+            <td class="inv-meta-label">HSN Code</td>
+            <td class="inv-meta-value">{{ hsn_code }}</td>
+            <td class="inv-meta-label">State</td>
+            <td class="inv-meta-value">{{ store_state }} ({{ store_state_code }})</td>
+        </tr>
+    </table>
+
+    <!-- ADDRESSES USING TABLE -->
+    <table class="inv-addresses-table">
+        <tr>
+            <td>
+                {% if order.billing_address %}
+                    <div class="inv-addr-block">
+                        <div class="inv-addr-title">Bill To</div>
+                        <div class="inv-addr-name">{{ order.billing_address.full_name }}</div>
+                        <div class="inv-addr-line">
+                            {{ order.billing_address.address_line_1 }}
+                            {% if order.billing_address.address_line_2 %}<br>{{ order.billing_address.address_line_2 }}{% endif %}
+                            <br>{{ order.billing_address.city }}, {{ order.billing_address.state }} {{ order.billing_address.postal_code }}
+                            {% if order.billing_address.country %}<br>{{ order.billing_address.country }}{% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+            </td>
+            <td style="width: 4%;"></td> <!-- Spacer -->
+            <td>
+                {% if order.shipping_address %}
+                    <div class="inv-addr-block">
+                        <div class="inv-addr-title">Ship To</div>
+                        <div class="inv-addr-name">{{ order.shipping_address.full_name }}</div>
+                        <div class="inv-addr-line">
+                            {{ order.shipping_address.address_line_1 }}
+                            {% if order.shipping_address.address_line_2 %}<br>{{ order.shipping_address.address_line_2 }}{% endif %}
+                            <br>{{ order.shipping_address.city }}, {{ order.shipping_address.state }} {{ order.shipping_address.postal_code }}
+                            {% if order.shipping_address.country %}<br>{{ order.shipping_address.country }}{% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+            </td>
+        </tr>
+    </table>
+
+    <div class="inv-items-title">Order Items</div>
+    <table class="inv-table">
+        <thead>
+            <tr>
+                <th style="width: 30pt; text-align: center;">#</th>
+                <th style="text-align: left;">Product</th>
+                <th style="width: 80pt; text-align: left;">SKU</th>
+                <th style="width: 40pt; text-align: center;">Qty</th>
+                <th style="width: 60pt; text-align: left;">Price</th>
+                <th style="width: 70pt; text-align: right;">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in order_items %}
+            <tr>
+                <td style="text-align: center; color: #888; font-weight: 600;">{{ forloop.counter }}</td>
+                <td>
+                    <div style="font-weight: 700; color: #111;">
+                        {% if item.product_variant and item.product_variant.product %}
+                            {% if item.product_variant.product.brand %}
+                                <span style="font-family: 'Montserrat', sans-serif; font-size: 7pt; font-weight: 700; text-transform: uppercase; color: #bfa15f; display: block; margin-bottom: 3pt; letter-spacing: 1pt;">{{ item.product_variant.product.brand.name }}</span>
+                            {% endif %}
+                            <span style="font-family: 'Playfair Display', serif; font-size: 10.5pt;">{{ item.product_variant.product.name }}</span>
+                        {% else %}
+                            Product unavailable
+                        {% endif %}
+                    </div>
+                </td>
+                <td style="font-size: 8pt; color: #888; font-family: monospace;">
+                    {% if item.product_variant %}{{ item.product_variant.sku }}{% endif %}
+                </td>
+                <td style="text-align: center; font-weight: 600;">{{ item.quantity }}</td>
+                <td>₹{{ item.price|floatformat:2 }}</td>
+                <td style="text-align: right; font-weight: 700;">₹{{ item.total_price|floatformat:2 }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <table class="inv-summary-table">
+        <tr>
+            <td style="width: 55%;"></td>
+            <td style="width: 45%;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <!-- 1. Total (items) -->
+                    <tr>
+                        <td class="inv-s-label" style="width: 50%;">Total ({{ order.items.count }} items)</td>
+                        <td class="inv-s-value" style="width: 50%;">₹{{ order.sub_total|add:order.discount|floatformat:2 }}</td>
+                    </tr>
+                    <!-- 2. Discount -->
+                    {% if order.discount > 0 %}
+                    <tr>
+                        <td class="inv-s-label">Discount</td>
+                        <td class="inv-s-value inv-s-discount">-₹{{ order.discount|floatformat:2 }}</td>
+                    </tr>
+                    {% endif %}
+                    <!-- 3. Subtotal -->
+                    <tr>
+                        <td class="inv-s-label">Subtotal</td>
+                        <td class="inv-s-value">₹{{ order.sub_total|floatformat:2 }}</td>
+                    </tr>
+                    <!-- 4. Coupon -->
+                    {% if order.coupon and order.coupon_discount > 0 %}
+                    <tr>
+                        <td class="inv-s-label">Promo ({{ order.coupon.code }})</td>
+                        <td class="inv-s-value inv-s-discount">-₹{{ order.coupon_discount|floatformat:2 }}</td>
+                    </tr>
+                    {% endif %}
+                    <!-- 5. Shipping -->
+                    <tr>
+                        <td class="inv-s-label">Shipping</td>
+                        <td class="inv-s-value">{% if order.shipping_fee == 0 %}Free{% else %}₹{{ order.shipping_fee|floatformat:2 }}{% endif %}</td>
+                    </tr>
+                    <!-- 6. Tax -->
+                    <tr>
+                        <td class="inv-s-label">Tax (GST {{ gst_rate }}%)</td>
+                        <td class="inv-s-value">₹{{ order.tax|floatformat:2 }}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="border-bottom: 2pt solid #111; padding-top: 8pt; padding-bottom: 0;"></td>
+                    </tr>
+                    <!-- 7. Total Payable -->
+                    <tr>
+                        <td class="inv-s-label" style="font-family: 'Playfair Display', serif; font-size: 12pt; font-weight: 700; color: #111; text-transform: uppercase; padding-top: 12pt;">Total Payable</td>
+                        <td class="inv-s-value" style="font-weight: 800; color: #bfa15f; font-size: 16pt; padding-top: 12pt;">₹{{ order.grand_total|floatformat:2 }}</td>
+                    </tr>
+                </table>
+
+            </td>
+        </tr>
+    </table>
+
+    <div class="inv-footer">
+        <div class="inv-footer-thanks">Thank you for your business.</div>
+        <div class="inv-footer-note">This is a computer-generated invoice. No signature is required.</div>
+    </div>
+
+</body>
+</html>

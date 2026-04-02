@@ -1,0 +1,51 @@
+{% extends "core/user/base_user.html" %}
+{% load static %}
+{% block head_title %}Returns &amp; Exchange | REX CC{% endblock %}
+{% block content %}
+<div class="lux-hub-wrapper">
+    <div class="hub-header mb-24">
+        <div class="hub-user-info">
+            <div class="hub-user-details">
+                <h1 class="hub-name">Returns &amp; Exchange</h1>
+                <p class="hub-contact">Hassle-free returns for your peace of mind</p>
+            </div>
+        </div>
+        <div class="hub-header-actions">
+            <a href="{% url 'home' %}" class="hub-btn-outline">
+                <span class="material-icons" style="font-size:18px; margin-right:6px;">arrow_back</span>
+                Back to Home
+            </a>
+        </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:32px; margin-bottom:40px;">
+        <div class="hub-card" style="padding:32px; border-left:4px solid #22c55e;">
+            <h4 style="font-family:'Playfair Display',serif; font-size:1.2rem; margin:0 0 16px; color:#111;">Easy Returns</h4>
+            <ul style="font-family:'Montserrat',sans-serif; font-size:0.82rem; color:#555; line-height:2.1; margin:0; padding-left:18px;">
+                <li>7-day return window from the date of delivery.</li>
+                <li>Items must be unused, unworn, and in original packaging.</li>
+                <li>Original certificate must be included.</li>
+                <li>Refund processed within 5–7 business days of receiving the item.</li>
+            </ul>
+        </div>
+        <div class="hub-card" style="padding:32px; border-left:4px solid #bfa15f;">
+            <h4 style="font-family:'Playfair Display',serif; font-size:1.2rem; margin:0 0 16px; color:#111;">Exchange Policy</h4>
+            <ul style="font-family:'Montserrat',sans-serif; font-size:0.82rem; color:#555; line-height:2.1; margin:0; padding-left:18px;">
+                <li>Exchange within 15 days for a different variant or model.</li>
+                <li>If the new item is of higher value, you pay the difference.</li>
+                <li>Exchange is subject to stock availability.</li>
+                <li>Contact our team to initiate an exchange request.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div style="background:#fff8f0; border:1px solid #f0e0c0; border-radius:4px; padding:24px 32px; font-family:'Montserrat',sans-serif; font-size:0.82rem; color:#7a5c1a; line-height:1.7;">
+        <strong>Non-returnable items:</strong> Customised / engraved watches, accessories, and items marked "Final Sale" at the time of purchase are not eligible for return or exchange.
+    </div>
+
+    <div style="margin-top:32px; text-align:center;">
+        <p style="font-family:'Montserrat',sans-serif; font-size:0.85rem; color:#888; margin-bottom:16px;">Need help initiating a return?</p>
+        <a href="{% url 'contact_us' %}" class="hub-btn-outline">Contact Our Team</a>
+    </div>
+</div>
+{% endblock %}

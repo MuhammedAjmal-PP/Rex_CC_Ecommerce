@@ -1,0 +1,44 @@
+{% extends "core/user/base_user.html" %}
+{% load static %}
+{% block head_title %}Contact Us | REX CC{% endblock %}
+{% block content %}
+<div class="lux-hub-wrapper">
+    <div class="hub-header mb-24">
+        <div class="hub-user-info">
+            <div class="hub-user-details">
+                <h1 class="hub-name">Contact Us</h1>
+                <p class="hub-contact">Our concierge team is here to assist you</p>
+            </div>
+        </div>
+        <div class="hub-header-actions">
+            <a href="{% url 'home' %}" class="hub-btn-outline">
+                <span class="material-icons" style="font-size:18px; margin-right:6px;">arrow_back</span>
+                Back to Home
+            </a>
+        </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:32px; margin-bottom:48px;">
+        <!-- Email -->
+        <div class="hub-card" style="padding:36px; border-left:4px solid #bfa15f;">
+            <span class="material-icons" style="font-size:36px; color:#bfa15f; margin-bottom:16px; display:block;">email</span>
+            <h3 style="font-family:'Playfair Display',serif; font-size:1.3rem; margin:0 0 8px;">Email Support</h3>
+            <p style="font-family:'Montserrat',sans-serif; font-size:0.85rem; color:#666; line-height:1.7; margin:0 0 20px;">For order queries, product enquiries and general support.</p>
+            <a href="mailto:support@rexcc.com" style="font-family:'Montserrat',sans-serif; font-size:0.85rem; font-weight:600; color:#111; text-decoration:none;">support@rexcc.com</a>
+        </div>
+        <!-- WhatsApp / Phone -->
+        <div class="hub-card" style="padding:36px; border-left:4px solid #bfa15f;">
+            <span class="material-icons" style="font-size:36px; color:#bfa15f; margin-bottom:16px; display:block;">phone</span>
+            <h3 style="font-family:'Playfair Display',serif; font-size:1.3rem; margin:0 0 8px;">Phone &amp; WhatsApp</h3>
+            <p style="font-family:'Montserrat',sans-serif; font-size:0.85rem; color:#666; line-height:1.7; margin:0 0 20px;">Available Monday–Saturday, 10 AM to 7 PM IST.</p>
+            <a href="tel:+919999999999" style="font-family:'Montserrat',sans-serif; font-size:0.85rem; font-weight:600; color:#111; text-decoration:none;">+91 99999 99999</a>
+        </div>
+    </div>
+
+    <!-- Response time note -->
+    <div style="background:#faf9f7; border:1px solid #eaeaea; border-radius:4px; padding:24px 32px; font-family:'Montserrat',sans-serif; font-size:0.82rem; color:#666; line-height:1.7;">
+        <span class="material-icons" style="font-size:16px; vertical-align:middle; color:#bfa15f; margin-right:8px;">schedule</span>
+        We typically respond within <strong style="color:#111;">24 business hours</strong>. For urgent matters, please call or WhatsApp us directly.
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sales Report</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            color: #1a1a1a;
+            padding: 40px;
+            font-size: 11px;
+        }
+
+        /* Header */
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 3px solid #000;
+            padding-bottom: 16px;
+            margin-bottom: 24px;
+        }
+        .report-header h1 {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        .report-header .brand {
+            font-size: 11px;
+            color: #666;
+            margin-top: 4px;
+        }
+        .report-header .period {
+            text-align: right;
+            font-size: 11px;
+            color: #333;
+        }
+        .report-header .period strong {
+            display: block;
+            font-size: 13px;
+            margin-bottom: 2px;
+        }
+
+        /* Summary Cards */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 28px;
+        }
+        .summary-card {
+            border: 1px solid #ddd;
+            padding: 14px;
+            text-align: center;
+        }
+        .summary-card .label {
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #666;
+            margin-bottom: 6px;
+        }
+        .summary-card .value {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 8px;
+        }
+        thead {
+            background: #000;
+        }
+        thead th {
+            color: #fff;
+            padding: 10px 12px;
+            text-align: left;
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        tbody td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #eee;
+            font-size: 10px;
+        }
+        tbody tr:nth-child(even) {
+            background: #fafafa;
+        }
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        .fw-bold { font-weight: 600; }
+
+        /* Footer */
+        .report-footer {
+            margin-top: 32px;
+            padding-top: 12px;
+            border-top: 1px solid #ddd;
+            font-size: 9px;
+            color: #999;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="report-header">
+        <div>
+            <h1>Sales Report</h1>
+            <div class="brand">REX CC — Admin Panel</div>
+        </div>
+        <div class="period">
+            <strong>{{ period_label }}</strong>
+            {{ start_date|date:"d M Y" }} — {{ end_date|date:"d M Y" }}
+        </div>
+    </div>
+
+    <!-- Summary -->
+    <div class="summary-grid">
+        <div class="summary-card">
+            <div class="label">Total Orders</div>
+            <div class="value">{{ total_orders }}</div>
+        </div>
+        <div class="summary-card">
+            <div class="label">Order Amount</div>
+            <div class="value">₹{{ total_order_amount|floatformat:2 }}</div>
+        </div>
+        <div class="summary-card">
+            <div class="label">Offer Discount</div>
+            <div class="value">₹{{ total_discount|floatformat:2 }}</div>
+        </div>
+        <div class="summary-card">
+            <div class="label">Coupon Discount</div>
+            <div class="value">₹{{ total_coupon_discount|floatformat:2 }}</div>
+        </div>
+    </div>
+
+    <!-- Orders Table -->
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Order Number</th>
+                <th>Date</th>
+                <th>Customer</th>
+                <th>Payment</th>
+                <th class="text-right">Discount</th>
+                <th class="text-right">Coupon</th>
+                <th class="text-right">Grand Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+                <tr>
+                    <td class="text-center">{{ forloop.counter }}</td>
+                    <td class="fw-bold">{{ order.order_number }}</td>
+                    <td>{{ order.created_at|date:"d M Y, h:i A" }}</td>
+                    <td>
+                        {% if order.user %}
+                            {% if order.user.first_name or order.user.last_name %}
+                                {{ order.user.first_name }} {{ order.user.last_name }}
+                            {% else %}
+                                {{ order.user.email }}
+                            {% endif %}
+                        {% else %}
+                            Deleted user
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if order.payment_txn %}
+                            {{ order.payment_txn.get_payment_method_display }}
+                        {% else %}—{% endif %}
+                    </td>
+                    <td class="text-right">₹{{ order.discount|floatformat:2 }}</td>
+                    <td class="text-right">
+                        {% if order.coupon_discount %}₹{{ order.coupon_discount|floatformat:2 }}{% else %}—{% endif %}
+                    </td>
+                    <td class="text-right fw-bold">₹{{ order.grand_total|floatformat:2 }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="8" class="text-center" style="padding: 20px;">No orders found for this period.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Footer -->
+    <div class="report-footer">
+        Generated on {% now "d M Y, h:i A" %} &middot; REX CC Admin
+    </div>
+</body>
+</html>

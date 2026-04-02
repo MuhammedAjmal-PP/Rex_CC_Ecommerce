@@ -1,0 +1,215 @@
+{% extends 'core/admin/base_admin.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Refund Detail{% endblock title %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'payments/admin/css/refund_detail.css' %}">
+{% endblock extra_css %}
+
+{% block header_title %}Refund Detail{% endblock header_title %}
+{% block header_subtitle %}<span class="font-montserrat">{{ txn.transaction_id }}</span>{% endblock header_subtitle %}
+
+{% block content %}
+
+    <!-- Action Bar -->
+    <div class="rd-action-bar">
+        <a href="{% url 'admin_refund_list' %}" class="rd-back-btn">
+            <span class="material-icons">arrow_back</span>
+            Back to Refunds
+        </a>
+        {% if can_act %}
+            <div class="rd-actions">
+                <form method="post" action="{% url 'admin_refund_action' txn.transaction_id %}"
+                      class="rd-approve-form"
+                      id="approve-refund-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="APPROVE">
+                    <button type="button" class="rd-btn rd-btn-approve"
+                            onclick="AdminAlert.confirm('Approve Refund', 'Approve this refund? ₹{{ txn.amount|floatformat:2|intcomma }} will be credited to {{ txn.user.email }}\'s wallet.', function() { document.getElementById('approve-refund-form').submit(); });">
+                        <span class="material-icons">check_circle</span>
+                        Approve Refund
+                    </button>
+                </form>
+                <button type="button" class="rd-btn rd-btn-reject" onclick="document.getElementById('rejectModal').classList.add('show')">
+                    <span class="material-icons">cancel</span>
+                    Reject
+                </button>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Reject Modal -->
+    {% if can_act %}
+        <div id="rejectModal" class="rd-modal">
+            <div class="rd-modal-content">
+                <div class="rd-modal-header">
+                    <h4>Reject Refund</h4>
+                    <button type="button" class="rd-modal-close" onclick="document.getElementById('rejectModal').classList.remove('show')">
+                        <span class="material-icons">close</span>
+                    </button>
+                </div>
+                <form method="post" action="{% url 'admin_refund_action' txn.transaction_id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="REJECT">
+                    <div class="rd-modal-body">
+                        <label for="rejectNote" class="rd-form-label">Reason for rejection</label>
+                        <textarea id="rejectNote" name="note" class="rd-form-textarea"
+                                  placeholder="Provide a reason for rejecting this refund..."
+                                  rows="3" required></textarea>
+                    </div>
+                    <div class="rd-modal-footer">
+                        <button type="button" class="rd-btn rd-btn-cancel"
+                                onclick="document.getElementById('rejectModal').classList.remove('show')">Cancel</button>
+                        <button type="submit" class="rd-btn rd-btn-reject-confirm">Reject Refund</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Messages -->
+    {% if messages %}
+        <div class="rd-messages">
+            {% for message in messages %}
+                <div class="rd-alert rd-alert-{{ message.tags }}">
+                    <span class="material-icons">
+                        {% if message.tags == 'success' %}check_circle
+                        {% elif message.tags == 'error' %}error
+                        {% else %}info{% endif %}
+                    </span>
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="rd-grid">
+        <!-- LEFT COLUMN: Refund Info -->
+        <div class="rd-column">
+            <div class="rd-card">
+                <div class="rd-card-header">
+                    <span class="material-icons">receipt</span>
+                    <h3>Refund Info</h3>
+                </div>
+                <div class="rd-card-body">
+                    <div class="rd-row">
+                        <span class="rd-label">Transaction ID</span>
+                        <span class="rd-value rd-mono">{{ txn.transaction_id }}</span>
+                    </div>
+                    <div class="rd-row">
+                        <span class="rd-label">Type</span>
+                        <span class="rd-value">
+                            <span class="txn-type-badge type-{{ txn.transaction_type|lower }}">
+                                {{ txn.get_transaction_type_display }}
+                            </span>
+                        </span>
+                    </div>
+                    <div class="rd-row">
+                        <span class="rd-label">Payment Method</span>
+                        <span class="rd-value">{{ txn.get_payment_method_display }}</span>
+                    </div>
+                    <div class="rd-row">
+                        <span class="rd-label">Amount</span>
+                        <span class="rd-value rd-amount">₹{{ txn.amount|floatformat:2|intcomma }}</span>
+                    </div>
+                    <div class="rd-row">
+                        <span class="rd-label">Status</span>
+                        <span class="rd-value">
+                            <span class="status-badge status-{{ txn.status|lower }}">
+                                {{ txn.get_status_display }}
+                            </span>
+                        </span>
+                    </div>
+                    {% if txn.note %}
+                        <div class="rd-row">
+                            <span class="rd-label">Note</span>
+                            <span class="rd-value">{{ txn.note }}</span>
+                        </div>
+                    {% endif %}
+                    <div class="rd-row">
+                        <span class="rd-label">Created</span>
+                        <span class="rd-value">{{ txn.created_at|date:"d M Y, h:i A" }}</span>
+                    </div>
+                    <div class="rd-row">
+                        <span class="rd-label">Updated</span>
+                        <span class="rd-value">{{ txn.updated_at|date:"d M Y, h:i A" }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN: User Info + Linked Object + Wallet -->
+        <div class="rd-column">
+            <!-- User Info Card -->
+            <div class="rd-card">
+                <div class="rd-card-header">
+                    <span class="material-icons">person</span>
+                    <h3>User Info</h3>
+                </div>
+                <div class="rd-card-body">
+                    <div class="rd-row">
+                        <span class="rd-label">Name</span>
+                        <span class="rd-value">{{ txn.user.first_name }} {{ txn.user.last_name }}</span>
+                    </div>
+                    <div class="rd-row">
+                        <span class="rd-label">Email</span>
+                        <span class="rd-value">{{ txn.user.email }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Linked Object Card -->
+            {% if linked_object %}
+                <div class="rd-card">
+                    <div class="rd-card-header">
+                        <span class="material-icons">link</span>
+                        <h3>Linked Object</h3>
+                    </div>
+                    <div class="rd-card-body">
+                        <div class="rd-row">
+                            <span class="rd-label">Type</span>
+                            <span class="rd-value">{{ txn.content_type }}</span>
+                        </div>
+                        <div class="rd-row">
+                            <span class="rd-label">Object</span>
+                            <span class="rd-value">{{ linked_object }}</span>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- Wallet Transaction Card -->
+            {% if wallet_txn %}
+                <div class="rd-card">
+                    <div class="rd-card-header">
+                        <span class="material-icons">account_balance_wallet</span>
+                        <h3>Wallet Transaction</h3>
+                    </div>
+                    <div class="rd-card-body">
+                        <div class="rd-row">
+                            <span class="rd-label">Label</span>
+                            <span class="rd-value">
+                                <span class="wt-label wt-{{ wallet_txn.label|lower }}">{{ wallet_txn.label }}</span>
+                            </span>
+                        </div>
+                        <div class="rd-row">
+                            <span class="rd-label">Balance Before</span>
+                            <span class="rd-value">₹{{ wallet_txn.balance_before|floatformat:2|intcomma }}</span>
+                        </div>
+                        <div class="rd-row">
+                            <span class="rd-label">Balance After</span>
+                            <span class="rd-value">₹{{ wallet_txn.balance_after|floatformat:2|intcomma }}</span>
+                        </div>
+                        <div class="rd-row">
+                            <span class="rd-label">Date</span>
+                            <span class="rd-value">{{ wallet_txn.created_at|date:"d M Y, h:i A" }}</span>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+{% endblock content %}

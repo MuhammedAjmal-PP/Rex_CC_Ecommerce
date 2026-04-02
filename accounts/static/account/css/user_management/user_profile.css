@@ -1,0 +1,961 @@
+/* ============================================================
+   REX CC ADMIN - USER PROFILE STYLES
+   Black & White Theme with Bootstrap Integration
+   ============================================================ */
+
+:root {
+    /* Black & White Color Palette */
+    --color-black: #000000;
+    --color-dark: #1a1a1a;
+    --color-gray-dark: #333333;
+    --color-gray: #666666;
+    --color-gray-light: #999999;
+    --color-light: #f5f5f5;
+    --color-white: #ffffff;
+
+    /* Status Colors (Keep Colorful) */
+    --color-success: #56ab2f;
+    --color-success-light: #a8e063;
+    --color-inactive: #95a5a6;
+    --color-inactive-light: #bdc3c7;
+    --color-warning: #f39c12;
+    --color-warning-light: #f1c40f;
+    --color-info: #3498db;
+    --color-info-light: #5dade2;
+    --color-danger: #e74c3c;
+    --color-danger-light: #ec7063;
+
+    /* Shadows */
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.16);
+}
+
+/* ========================================
+   HEADER ACTIONS
+   ======================================== */
+
+.header-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 40px 40px 32px 40px;
+}
+
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 24px;
+    background: var(--color-white);
+    border: 2px solid #e0e0e0;
+    border-radius: 0;
+    color: var(--color-dark);
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.back-btn:hover {
+    transform: translateX(-4px);
+}
+
+.back-btn i {
+    font-size: 1.4rem;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 12px;
+}
+
+.btn-deactivate {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 28px;
+    background: var(--color-black);
+    border: 2px solid var(--color-black);
+    border-radius: 0;
+    color: var(--color-white);
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.btn-deactivate:hover {
+    background: var(--color-white);
+    color: var(--color-black);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-deactivate i {
+    font-size: 1.1rem;
+}
+
+/* ========================================
+   PROFILE CONTAINER
+   ======================================== */
+
+.profile-container {
+    background: var(--color-white);
+    border: 2px solid #e0e0e0;
+    padding: 40px;
+    margin: 0 40px 32px 40px;
+    box-shadow: var(--shadow-md);
+    transition: all 0.3s ease;
+}
+
+.profile-container:hover {
+    box-shadow: var(--shadow-lg);
+    /* border-color: var(--color-black); */
+}
+
+.profile-header {
+    display: flex;
+    gap: 32px;
+    align-items: center;
+}
+
+.profile-avatar {
+    flex-shrink: 0;
+}
+
+.user-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 0;
+    object-fit: cover;
+    border: 3px solid var(--color-black);
+    transition: all 0.3s ease;
+}
+
+.user-avatar:hover {
+    transform: scale(1.05);
+    box-shadow: var(--shadow-lg);
+}
+
+.avatar-placeholder {
+    width: 120px;
+    height: 120px;
+    border-radius: 8px;
+    background: var(--color-black);
+    border: 3px solid var(--color-black);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--color-white);
+    transition: all 0.3s ease;
+}
+
+.avatar-placeholder:hover {
+    transform: scale(1.05);
+    box-shadow: var(--shadow-lg);
+}
+
+.profile-info {
+    flex: 1;
+}
+
+.profile-name-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.profile-name {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--color-black);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.profile-badges {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 20px;
+    border-radius: 0;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    border-radius: 20px;
+}
+
+.badge-active {
+    background: linear-gradient(135deg, var(--color-success) 0%, var(--color-success-light) 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(86, 171, 47, 0.3);
+}
+
+.badge-inactive {
+    background: linear-gradient(135deg, var(--color-inactive-light) 0%, var(--color-inactive) 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(149, 165, 166, 0.3);
+}
+
+.badge-verified {
+    background: var(--color-black);
+    color: var(--color-white);
+    border: 2px solid var(--color-black);
+}
+
+.badge:hover {
+    transform: scale(1.05);
+}
+
+.badge-verified i {
+    font-size: 0.875rem;
+}
+
+.profile-details {
+    display: flex;
+    gap: 32px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--color-dark);
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.detail-item i {
+    font-size: 1.2rem;
+    color: var(--color-black);
+}
+
+/* ========================================
+   SECTION CARDS
+   ======================================== */
+
+.section-card {
+    background: var(--color-white);
+    border: 2px solid #e0e0e0;
+    padding: 32px;
+    margin: 0 40px 24px 40px;
+    box-shadow: var(--shadow-md);
+    transition: all 0.3s ease;
+}
+
+.section-card:hover {
+    box-shadow: var(--shadow-lg);
+    /* border-color: var(--color-black); */
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 28px;
+    padding-bottom: 20px;
+    border-bottom: 3px solid var(--color-black);
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.section-title i {
+    font-size: 1.8rem;
+    /* color: var(--color-white); */
+    /* background: var(--color-black); */
+    color: var(--color-black);
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+}
+
+.section-title h3 {
+    margin: 0;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--color-black);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.view-more-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 24px;
+    background: var(--color-white);
+    border: 2px solid #e0e0e0;
+    border-radius: 0;
+    color: var(--color-black);
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.view-more-btn:hover {
+    /* background: var(--color-black);
+    color: var(--color-white); */
+    transform: translateX(4px);
+}
+
+.view-more-btn i {
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.view-more-btn:hover i {
+    transform: translateX(3px);
+}
+
+/* ========================================
+   ADDRESSES SECTION
+   ======================================== */
+
+.addresses-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 24px;
+}
+
+.address-card {
+    background: var(--color-light);
+    border: 2px solid #e0e0e0;
+    border-radius: 0;
+    padding: 24px;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+/* .address-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 6px;
+    height: 100%;
+    background: var(--color-black);
+    opacity: 0;
+    transition: all 0.3s ease;
+} */
+
+.address-card:hover {
+    /* border-color: var(--color-black); */
+    background: var(--color-white);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-4px);
+}
+
+/* .address-card:hover::before {
+    opacity: 1;
+} */
+
+.address-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.address-type {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--color-black);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.address-badge {
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.address-badge.default {
+    background: linear-gradient(135deg, var(--color-success) 0%, var(--color-success-light) 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(86, 171, 47, 0.3);
+}
+
+.address-details {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.address-name {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--color-black);
+    margin: 0;
+    text-transform: uppercase;
+}
+
+.address-line {
+    font-size: 0.9rem;
+    color: var(--color-gray);
+    margin: 0;
+    line-height: 1.6;
+}
+
+.address-phone {
+    font-size: 0.9rem;
+    color: var(--color-black);
+    font-weight: 600;
+    margin: 8px 0 0 0;
+}
+
+/* ========================================
+   TWO COLUMN GRID
+   ======================================== */
+
+.content-grid-two-col {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    margin: 0 40px 24px 40px;
+}
+
+.content-grid-two-col .section-card {
+    margin: 0;
+}
+
+/* ========================================
+   ORDERS SECTION
+   ======================================== */
+
+.orders-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.order-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background: var(--color-light);
+    border: 2px solid #e0e0e0;
+    border-radius: 0;
+    transition: all 0.3s ease;
+}
+
+.order-item:hover {
+    background: var(--color-white);
+    /* border-color: var(--color-black); */
+    box-shadow: var(--shadow-md);
+    transform: translateX(4px);
+}
+
+.order-info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.order-number {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--color-black);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.order-date {
+    font-size: 0.85rem;
+    color: var(--color-gray);
+}
+
+.order-details {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+}
+
+.order-amount {
+    font-weight: 700;
+    font-size: 1.3rem;
+    color: var(--color-black);
+}
+
+.order-status {
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+}
+
+.order-status.status-delivered {
+    background: linear-gradient(135deg, var(--color-success) 0%, var(--color-success-light) 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(86, 171, 47, 0.3);
+}
+
+.order-status.status-processing {
+    background: linear-gradient(135deg, var(--color-warning) 0%, var(--color-warning-light) 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(243, 156, 18, 0.3);
+}
+
+.order-status.status-shipped {
+    background: linear-gradient(135deg, var(--color-info) 0%, var(--color-info-light) 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+}
+
+.order-status.status-cancelled {
+    background: linear-gradient(135deg, var(--color-danger) 0%, var(--color-danger-light) 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+}
+
+.order-status:hover {
+    transform: scale(1.05);
+}
+
+/* ========================================
+   WALLET SECTION
+   ======================================== */
+
+.wallet-card {
+    background: var(--color-black);
+    color: var(--color-white);
+    border: 2px solid var(--color-black);
+}
+
+.wallet-card .section-header {
+    border-bottom-color: var(--color-white);
+}
+
+.wallet-card .section-title i {
+    /* background: var(--color-white);
+    color: var(--color-black); */
+    color: var(--color-white);
+}
+
+.wallet-card .section-title h3 {
+    color: var(--color-white);
+}
+
+.wallet-card .view-more-btn {
+    background: var(--color-black);
+    border-color: var(--color-white);
+    color: var(--color-white);
+}
+
+
+.wallet-balance {
+    text-align: center;
+    padding: 32px;
+    margin-bottom: 24px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 0;
+}
+
+.balance-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin: 0 0 12px 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.balance-amount {
+    font-size: 3rem;
+    font-weight: 800;
+    margin: 0;
+    letter-spacing: 2px;
+}
+
+.wallet-transactions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.wallet-transaction-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 0;
+    transition: all 0.3s ease;
+}
+
+.wallet-transaction-item:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: translateX(4px);
+}
+
+.transaction-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.transaction-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+    border: 2px solid;
+}
+
+.transaction-icon.credit {
+    background: rgba(86, 171, 47, 0.2);
+    color: var(--color-success-light);
+    border-color: var(--color-success-light);
+}
+
+.transaction-icon.debit {
+    background: rgba(231, 76, 60, 0.2);
+    color: var(--color-danger-light);
+    border-color: var(--color-danger-light);
+}
+
+.transaction-details {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.transaction-description {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--color-white);
+}
+
+.transaction-date {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.transaction-amount {
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+.transaction-amount.credit {
+    color: var(--color-success-light);
+}
+
+.transaction-amount.debit {
+    color: var(--color-danger-light);
+}
+
+/* ========================================
+   TRANSACTIONS SECTION
+   ======================================== */
+
+.transactions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.transaction-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background: var(--color-light);
+    border: 2px solid #e0e0e0;
+    border-radius: 0;
+    transition: all 0.3s ease;
+}
+
+.transaction-item:hover {
+    background: var(--color-white);
+    /* border-color: var(--color-black); */
+    box-shadow: var(--shadow-md);
+    transform: translateX(4px);
+}
+
+.transaction-item .transaction-icon {
+    border: 2px solid;
+}
+
+.transaction-item .transaction-icon.credit {
+    background: rgba(86, 171, 47, 0.1);
+    color: var(--color-success);
+    border-color: var(--color-success);
+}
+
+.transaction-item .transaction-icon.payment {
+    background: rgba(52, 152, 219, 0.1);
+    color: var(--color-info);
+    border-color: var(--color-info);
+}
+
+.transaction-item .transaction-description {
+    color: var(--color-black);
+    font-weight: 700;
+}
+
+.transaction-meta {
+    display: flex;
+    gap: 16px;
+    margin-top: 6px;
+}
+
+.transaction-date {
+    font-size: 0.85rem;
+    color: var(--color-gray);
+}
+
+.transaction-method {
+    font-size: 0.85rem;
+    padding: 4px 12px;
+    background: var(--color-black);
+    color: var(--color-white);
+    border-radius: 20px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.transaction-item .transaction-amount.credit {
+    color: var(--color-success);
+}
+
+.transaction-item .transaction-amount.payment {
+    color: var(--color-black);
+}
+
+.transaction-item .transaction-date {
+    color: var(--color-gray);
+}
+
+/* ========================================
+   REFERRAL REWARDS SECTION
+   ======================================== */
+
+.rewards-list {
+    overflow-x: auto;
+}
+
+.rewards-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 2px solid #e0e0e0;
+}
+
+.rewards-table thead {
+    background: var(--color-black);
+}
+
+.rewards-table th {
+    padding: 18px 24px;
+    text-align: left;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--color-white);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: none;
+}
+
+.rewards-table tbody tr {
+    transition: all 0.3s ease;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.rewards-table tbody tr:hover {
+    background: var(--color-light);
+}
+
+.rewards-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.rewards-table td {
+    padding: 20px 24px;
+    font-size: 0.95rem;
+    color: var(--color-dark);
+    font-weight: 500;
+}
+
+.reward-amount {
+    font-weight: 700;
+    color: var(--color-success);
+    font-size: 1.1rem;
+}
+
+/* ========================================
+   MODAL
+   ======================================== */
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 20px;
+}
+
+.modal-container {
+    background: var(--color-white);
+    border: 3px solid var(--color-black);
+    border-radius: 0;
+    max-width: 500px;
+    width: 100%;
+    box-shadow: var(--shadow-lg);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px;
+    border-bottom: 2px solid #e0e0e0;
+    background: var(--color-black);
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--color-white);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    color: var(--color-white);
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 0;
+    transition: all 0.3s ease;
+}
+
+.modal-close:hover {
+    background: var(--color-white);
+    color: var(--color-black);
+}
+
+.modal-body {
+    padding: 32px 24px;
+}
+
+.warning-box {
+    padding: 20px;
+    background: var(--color-light);
+    border: 2px solid var(--color-black);
+    border-radius: 0;
+}
+
+.warning-box p {
+    margin: 0;
+    color: var(--color-dark);
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 24px;
+    border-top: 2px solid #e0e0e0;
+}
+
+.btn-cancel,
+.btn-confirm-deactivate {
+    padding: 14px 28px;
+    border-radius: 0;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.btn-cancel {
+    background: var(--color-white);
+    color: var(--color-black);
+    border-color: var(--color-black);
+}
+
+.btn-cancel:hover {
+    background: var(--color-black);
+    color: var(--color-white);
+}
+
+.btn-confirm-deactivate {
+    background: var(--color-black);
+    color: var(--color-white);
+    border-color: var(--color-black);
+}
+
+.btn-confirm-deactivate:hover {
+    background: var(--color-white);
+    color: var(--color-black);
+    box-shadow: var(--shadow-md);
+}
+
+/* ========================================
+   SMOOTH SCROLLING
+   ======================================== */
+
+html {
+    scroll-behavior: smooth;
+}

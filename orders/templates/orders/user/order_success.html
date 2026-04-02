@@ -1,0 +1,56 @@
+{% extends "core/user/base_user.html" %}
+{% load static %}
+{% load humanize %}
+{% block head_title %}Order Confirmed | REX CC{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'orders/user/css/order_success.css' %}?v=1.1">
+{% endblock %}
+
+{% block content %}
+<div class="success-page">
+    <div class="success-container">
+        
+        <div class="success-icon-wrapper">
+            <svg class="checkmark-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+                <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+            </svg>
+        </div>
+        
+        <div class="success-text-block">
+            <h1 class="success-title">Order Confirmed</h1>
+            <p class="success-subtitle">Thank you for your purchase. Your order has been placed successfully.</p>
+        </div>
+        
+        <div class="order-card">
+            <div class="info-row">
+                <span class="info-label">Order Number</span>
+                <span class="info-value">{{ order.order_number }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Amount Paid</span>
+                <span class="info-value">₹{{ order.grand_total|floatformat:2|intcomma }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Payment Method</span>
+                <span class="info-value">{{ payment.get_payment_method_display }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Date</span>
+                <span class="info-value">{{ order.created_at|date:"d M Y, h:i A" }}</span>
+            </div>
+        </div>
+        
+        <div class="success-actions">
+            <a href="{% url 'user_order_details' order.order_number %}" class="btn-view-order">
+                <span class="material-icons">receipt_long</span> View Order
+            </a>
+            <a href="{% url 'product_list' %}" class="btn-continue-shopping">
+                <span class="material-icons">shopping_bag</span> Continue Shopping
+            </a>
+        </div>
+        
+    </div>
+</div>
+{% endblock %}

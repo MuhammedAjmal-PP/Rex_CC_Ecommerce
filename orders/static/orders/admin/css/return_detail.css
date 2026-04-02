@@ -1,0 +1,524 @@
+/* ============================================================
+   REX CC ADMIN - RETURN DETAIL STYLES
+   File: orders/static/orders/admin/css/return_detail.css
+   ============================================================ */
+
+:root {
+    --rd-black: #000000;
+    --rd-dark: #1A1A1A;
+    --rd-gray: #666666;
+    --rd-gray-light: #999999;
+    --rd-border: #e0e0e0;
+    --rd-white: #FFFFFF;
+}
+
+/* ========================================
+   MESSAGES
+   ======================================== */
+
+.rd-messages {
+    margin: 16px 40px 0 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.rd-alert {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: 1px solid;
+}
+
+.rd-alert-success {
+    background: #f0fdf4;
+    color: #166534;
+    border-color: #bbf7d0;
+}
+
+.rd-alert-error {
+    background: #fef2f2;
+    color: #991b1b;
+    border-color: #fecaca;
+}
+
+.rd-alert-warning {
+    background: #fffbeb;
+    color: #92400e;
+    border-color: #fde68a;
+}
+
+.rd-alert-info {
+    background: #eff6ff;
+    color: #1e40af;
+    border-color: #bfdbfe;
+}
+
+.rd-alert .material-icons {
+    font-size: 20px;
+}
+
+/* ========================================
+   ACTION BAR
+   ======================================== */
+
+.rd-action-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 24px 40px;
+    padding: 20px 28px;
+    background: var(--rd-white);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    border: 1px solid var(--rd-border);
+}
+
+.rd-back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--rd-gray);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    padding: 10px 16px;
+    border: 1px solid var(--rd-border);
+}
+
+.rd-back-link:hover {
+    background: var(--rd-black);
+    color: var(--rd-white);
+    border-color: var(--rd-black);
+}
+
+/* ========================================
+   STATUS BADGES
+   ======================================== */
+
+.status-badge {
+    display: inline-block;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+.return-status-requested {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.return-status-approved {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.return-status-rejected {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.return-status-completed {
+    background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+    color: #ffffff;
+}
+
+/* Item status badges (for order item status display) */
+.item-status-pending { background: #f3f4f6; color: #374151; }
+.item-status-confirmed { background: #dbeafe; color: #1e40af; }
+.item-status-return_requested { background: #fef9c3; color: #854d0e; }
+.item-status-returned { background: #d1d5db; color: #111827; }
+.item-status-delivered { background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%); color: #fff; }
+
+/* ========================================
+   GRID (2-column)
+   ======================================== */
+
+.rd-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin: 0 40px 24px 40px;
+}
+
+/* ========================================
+   CARD
+   ======================================== */
+
+.rd-card {
+    background: var(--rd-white);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    border: 1px solid var(--rd-border);
+    align-self: start;
+}
+
+.rd-card-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 20px 28px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--rd-black);
+    border-bottom: 1px solid var(--rd-border);
+}
+
+.rd-card-title .material-icons {
+    font-size: 20px;
+}
+
+.rd-card-title-sub {
+    border-top: 1px solid var(--rd-border);
+}
+
+.rd-card-body {
+    padding: 24px 28px;
+}
+
+/* ========================================
+   ROWS (label: value)
+   ======================================== */
+
+.rd-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.rd-row:last-child {
+    border-bottom: none;
+}
+
+.rd-row-full {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.rd-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--rd-gray);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.rd-value {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--rd-black);
+}
+
+.text-mono {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.85rem;
+    letter-spacing: -0.5px;
+}
+
+.rd-bold {
+    font-weight: 700;
+}
+
+.rd-reason {
+    color: #92400e;
+    font-weight: 700;
+}
+
+.rd-link {
+    color: var(--rd-black);
+    text-decoration: none;
+    border-bottom: 2px solid var(--rd-border);
+    transition: border-color 0.2s ease;
+}
+
+.rd-link:hover {
+    border-color: var(--rd-black);
+}
+
+.rd-comment {
+    font-size: 0.88rem;
+    color: #333;
+    line-height: 1.7;
+    margin: 0;
+    padding: 12px 16px;
+    background: #fafafa;
+    border-left: 3px solid var(--rd-border);
+}
+
+.rd-admin-note {
+    font-size: 0.88rem;
+    color: #333;
+    line-height: 1.7;
+    margin: 0;
+    padding: 12px 16px;
+    background: #f0f4ff;
+    border-left: 3px solid #1e40af;
+}
+
+/* ========================================
+   PRODUCT INFO
+   ======================================== */
+
+.rd-product {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding-bottom: 16px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.rd-product-img {
+    width: 72px;
+    height: 72px;
+    object-fit: cover;
+    border: 1px solid var(--rd-border);
+    flex-shrink: 0;
+}
+
+.rd-product-img-ph {
+    width: 72px;
+    height: 72px;
+    background: var(--rd-black);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--rd-white);
+    flex-shrink: 0;
+}
+
+.rd-product-img-ph .material-icons {
+    font-size: 28px;
+}
+
+.rd-product-info {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.rd-product-brand {
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: var(--rd-gray-light);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.rd-product-name {
+    font-weight: 600;
+    color: var(--rd-black);
+    font-size: 0.95rem;
+}
+
+.rd-product-sku {
+    font-size: 0.75rem;
+    color: var(--rd-gray);
+    letter-spacing: 0.3px;
+}
+
+/* ========================================
+   ACTION FORM
+   ======================================== */
+
+.rd-action-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.rd-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.rd-form-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--rd-black);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.rd-textarea {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid var(--rd-border);
+    border-radius: 0;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.85rem;
+    resize: vertical;
+    transition: border-color 0.2s ease;
+    box-sizing: border-box;
+}
+
+.rd-textarea:focus {
+    border-color: var(--rd-black);
+    outline: none;
+}
+
+.rd-action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.rd-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 24px;
+    border: 2px solid;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.rd-btn .material-icons {
+    font-size: 20px;
+}
+
+.rd-btn-approve {
+    background: var(--rd-white);
+    color: #166534;
+    border-color: #166534;
+}
+
+.rd-btn-approve:hover {
+    background: #166534;
+    color: var(--rd-white);
+}
+
+.rd-btn-reject {
+    background: var(--rd-white);
+    color: #991b1b;
+    border-color: #991b1b;
+}
+
+.rd-btn-reject:hover {
+    background: #991b1b;
+    color: var(--rd-white);
+}
+
+.rd-btn-complete {
+    background: var(--rd-black);
+    color: var(--rd-white);
+    border-color: var(--rd-black);
+}
+
+.rd-btn-complete:hover {
+    background: #333;
+    border-color: #333;
+}
+
+.rd-no-actions {
+    text-align: center;
+    padding: 24px 0;
+    color: var(--rd-gray-light);
+}
+
+.rd-no-actions .material-icons {
+    font-size: 40px;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.rd-no-actions p {
+    margin: 0;
+    font-size: 0.85rem;
+}
+
+/* ========================================
+   EVIDENCE IMAGES SECTION
+   ======================================== */
+
+.rd-section {
+    margin: 0 40px 24px 40px;
+    background: var(--rd-white);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    border: 1px solid var(--rd-border);
+}
+
+.rd-section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 20px 28px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--rd-black);
+    border-bottom: 1px solid var(--rd-border);
+}
+
+.rd-section-title .material-icons {
+    font-size: 20px;
+}
+
+.rd-images-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 16px;
+    padding: 24px 28px;
+}
+
+.rd-image-card {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--rd-border);
+    aspect-ratio: 1;
+    display: block;
+}
+
+.rd-image-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.rd-image-card:hover img {
+    transform: scale(1.05);
+}
+
+.rd-image-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.rd-image-card:hover .rd-image-overlay {
+    opacity: 1;
+}
+
+.rd-image-overlay .material-icons {
+    color: var(--rd-white);
+    font-size: 32px;
+}
+
+
+

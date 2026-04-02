@@ -1,0 +1,246 @@
+{% extends "core/user/base_user.html" %}
+{% load static %}
+{% block head_title %}
+Edit Profile | REX CC
+{% endblock head_title %}
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
+<link rel="stylesheet" href="{% static 'user_profile/css/profile.css' %}">
+<link rel="stylesheet" href="{% static 'user_profile/css/edit_profile.css' %}">
+{% endblock extra_css %}
+{% block content %}
+<div class="lux-hub-wrapper">
+
+    <!-- HEADER / USER INFO -->
+    <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 48px;">
+        <div>
+            <h1 class="hub-name" style="margin: 0 0 4px 0;">
+                Profile Settings
+            </h1>
+            <p class="hub-contact" style="margin: 0;">
+                Manage your personal identity and preferences
+            </p>
+        </div>
+        <div>
+            <a href="{% url 'user_profile' %}" class="hub-btn-outline">
+                <span class="material-icons" style="font-size: 18px; margin-right: 6px;">arrow_back</span>
+                Back to Hub
+            </a>
+        </div>
+    </header>
+
+    <div class="lux-edit-layout">
+        
+        <!-- PERSONAL DETAILS SECTION -->
+        <section class="hub-card lux-edit-card">
+            <div class="lux-card-header">
+                <h2 class="lux-card-title">Personal Details</h2>
+                <p class="lux-card-subtitle">Manage your identity and contact information.</p>
+            </div>
+            
+            <div class="lux-card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="lux-profile-split">
+                        <!-- AVATAR -->
+                        <div class="lux-avatar-col">
+                            <div class="lux-avatar-wrapper" id="avatarWrapper"
+                                data-has-image="{% if user.avatar %}true{% else %}false{% endif %}">
+                                {% if user.avatar %}
+                                    <img src="{{ user.avatar.url }}" alt="Profile Photo" id="avatar-preview" class="lux-avatar-img">
+                                {% else %}
+                                    <div class="lux-avatar-placeholder" id="avatar-preview">
+                                        <span class="material-icons">person</span>
+                                    </div>
+                                {% endif %}
+                                
+                                <label for="id_avatar" class="lux-avatar-trigger" title="Change photo">
+                                    <span class="material-icons">photo_camera</span>
+                                </label>
+                                
+                                <button type="button" class="lux-avatar-remove" id="removeAvatarBtn"
+                                    title="Remove photo" style="{% if not user.avatar %}display: none;{% endif %}">
+                                    <span class="material-icons">delete_outline</span>
+                                </button>
+                            </div>
+                            <input type="file" name="avatar" id="id_avatar" accept="image/*" class="lux-hidden-input">
+                            <input type="hidden" name="remove_avatar" id="remove_avatar" value="">
+                        </div>
+                        
+                        <!-- FORM FIELDS -->
+                        <div class="lux-fields-col">
+                            <div class="lux-field-row">
+                                <div class="lux-field-group">
+                                    <label>First Name</label>
+                                    {{ form.first_name }}
+                                </div>
+                                <div class="lux-field-group">
+                                    <label>Last Name</label>
+                                    {{ form.last_name }}
+                                </div>
+                            </div>
+                            <div class="lux-field-group">
+                                <label>Phone Number</label>
+                                {{ form.phone_number }}
+                            </div>
+                            <div class="lux-form-actions">
+                                <button type="submit" class="lux-btn-primary">
+                                    Save Changes
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </section>
+        
+        <!-- EMAIL ADDRESSES SECTION -->
+        <section class="hub-card lux-edit-card">
+            <div class="lux-card-header flex-between">
+                <div>
+                    <h2 class="lux-card-title">Email Address</h2>
+                    <p class="lux-card-subtitle">Manage your login email.</p>
+                </div>
+                <a class="lux-btn-outline" id="emailToggleBtn" data-bs-toggle="collapse" href="#emailCollapse" role="button">
+                    <span id="emailToggleText">Edit Email</span>
+                </a>
+            </div>
+            
+            <div class="lux-card-body">
+                <div class="lux-email-list">
+                    {% for email in user.emailaddress_set.all %}
+                    <div class="lux-email-item">
+                        <div class="lux-email-icon">
+                            <span class="material-icons">mail_outline</span>
+                        </div>
+                        <div class="lux-email-info">
+                            <div class="lux-email-address">{{ email.email }}</div>
+                            <div class="lux-email-badges">
+                                {% if email.primary %}
+                                    <span class="lux-badge-primary">Primary</span>
+                                {% endif %}
+                                {% if email.verified %}
+                                    <span class="lux-badge-verified">Verified</span>
+                                {% else %}
+                                    <span class="lux-badge-pending">Pending Verification</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="lux-empty-state">
+                        <span class="material-icons">inbox</span>
+                        <p>No email addresses found.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Collapsible Email Change Form -->
+            <div class="collapse" id="emailCollapse">
+                <div class="lux-card-body lux-email-change-body">
+                    <form id="changeEmailForm" method="post" data-change-email-url="{% url 'change_email' %}">
+                        {% csrf_token %}
+                        <div class="lux-field-group">
+                            <label>New Email Address</label>
+                            <input type="email" name="email" id="id_new_email" class="lux-input"
+                                   placeholder="Enter your new email address" required>
+                        </div>
+                        <p class="lux-info-text">
+                            <span class="material-icons">info_outline</span>
+                            A verification link will be sent to your new email. Your current email stays active until you verify the new one.
+                        </p>
+                        <div class="lux-form-actions">
+                            <button type="submit" class="lux-btn-primary">
+                                Send Verification Link
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+        
+        <!-- SECURITY SECTION -->
+        <section class="hub-card lux-edit-card">
+            <div class="lux-card-header flex-between">
+                <div>
+                    <h2 class="lux-card-title">Security</h2>
+                    <p class="lux-card-subtitle">Update your password and secure your account.</p>
+                </div>
+                <!-- Toggle button for password change via collapse -->
+                <a class="lux-btn-outline" id="passwordToggleBtn" data-bs-toggle="collapse" href="#securityCollapse" role="button">
+                    <span id="passwordToggleText">Change Password</span>
+                </a>
+            </div>
+            
+            <div class="collapse" id="securityCollapse">
+                <div class="lux-card-body lux-security-body">
+                    <form id="changePasswordForm" method="post" data-change-password-url="{% url 'change_password' %}">
+                        {% csrf_token %}
+                        <div class="lux-field-group">
+                            <label>Current Password</label>
+                            <div class="lux-password-wrap">
+                                <input type="password" name="old_password" id="id_current_password" class="lux-input" required>
+                                <button type="button" class="lux-pwd-toggle" onclick="togglePasswordVisibility('id_current_password', this)">
+                                    <span class="material-icons">visibility_off</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="lux-field-group">
+                            <label>New Password</label>
+                            <div class="lux-password-wrap">
+                                <input type="password" name="new_password1" id="id_new_password1" class="lux-input" required>
+                                <button type="button" class="lux-pwd-toggle" onclick="togglePasswordVisibility('id_new_password1', this)">
+                                    <span class="material-icons">visibility_off</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="lux-field-group">
+                            <label>Confirm New Password</label>
+                            <div class="lux-password-wrap">
+                                <input type="password" name="new_password2" id="id_new_password2" class="lux-input" required>
+                                <button type="button" class="lux-pwd-toggle" onclick="togglePasswordVisibility('id_new_password2', this)">
+                                    <span class="material-icons">visibility_off</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="lux-form-actions">
+                            <button type="submit" class="lux-btn-primary">
+                                Update Password
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<!-- CROPPER MODAL (Kept structure identical but updated some wrapper classes if needed) -->
+<div class="modal fade" id="avatarCropModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content lux-modal">
+            <div class="modal-header" style="border-bottom: 1px solid #eaeaea; padding: 24px 32px;">
+                <h5 class="modal-title" style="font-family:'Playfair Display', serif; font-size:1.6rem; color: #111;">Adjust Profile Photo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="padding: 24px 32px; background: #fafafa;">
+                <div class="crop-container" style="max-height: 500px; overflow: hidden; background:#fff; border-radius: 8px; border: 1px solid #eaeaea;">
+                    <img id="cropImage" src="" alt="Crop Preview" style="max-width:100%; display:block;">
+                </div>
+            </div>
+            <div class="modal-footer" style="gap:12px; border-top:1px solid #eaeaea; padding: 24px 32px;">
+                <button type="button" class="hub-btn-outline" id="cancelCropBtn" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" id="cropBtn" class="lux-btn-primary">
+                    Apply
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+<script src="{% static 'user_profile/js/edit_profile.js' %}"></script>
+{% endblock extra_js %}

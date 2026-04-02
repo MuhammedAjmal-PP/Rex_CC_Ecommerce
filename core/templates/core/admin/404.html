@@ -1,0 +1,194 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>REX CC - Admin | 404</title>
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap"
+              rel="stylesheet">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+              rel="stylesheet">
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family: 'Montserrat', sans-serif;
+                background: #f5f5f5;
+                color: #000;
+                min-height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .error-page {
+                text-align: center;
+                max-width: 480px;
+                padding: 40px;
+            }
+
+            /* Logo */
+            .error-logo {
+                margin-bottom: 48px;
+            }
+
+            .error-logo-main {
+                font-family: 'Playfair Display', serif;
+                font-size: 2rem;
+                font-weight: 700;
+                letter-spacing: 3px;
+                color: #000;
+            }
+
+            .error-logo-accent {
+                color: #999;
+            }
+
+            .error-logo-sub {
+                display: block;
+                margin-top: 8px;
+                font-family: 'Montserrat', sans-serif;
+                font-size: 0.6rem;
+                font-weight: 700;
+                letter-spacing: 3px;
+                text-transform: uppercase;
+                color: #999;
+            }
+
+            /* Error code */
+            .error-code {
+                font-family: 'Playfair Display', serif;
+                font-size: 140px;
+                font-weight: 700;
+                line-height: 1;
+                letter-spacing: 8px;
+                color: #000;
+                opacity: 0.06;
+                margin-bottom: -10px;
+                user-select: none;
+            }
+
+            .error-icon {
+                margin-bottom: 28px;
+            }
+
+            .error-icon .material-icons {
+                font-size: 52px;
+                color: #999;
+                animation: error-float 3s ease-in-out infinite;
+            }
+
+            @keyframes error-float {
+                0%, 100% { transform: translateY(0); }
+                50% { transform: translateY(-6px); }
+            }
+
+            .error-label {
+                font-size: 0.7rem;
+                font-weight: 700;
+                letter-spacing: 3px;
+                text-transform: uppercase;
+                color: #999;
+                margin-bottom: 14px;
+            }
+
+            .error-title {
+                font-family: 'Playfair Display', serif;
+                font-size: 1.6rem;
+                font-weight: 600;
+                color: #000;
+                margin: 0 0 14px 0;
+            }
+
+            .error-desc {
+                font-size: 0.88rem;
+                color: #666;
+                line-height: 1.7;
+                margin: 0 0 40px 0;
+            }
+
+            /* Buttons */
+            .error-actions {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 16px;
+            }
+
+            .error-btn {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                padding: 13px 28px;
+                font-family: 'Montserrat', sans-serif;
+                font-size: 0.75rem;
+                font-weight: 700;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                text-decoration: none;
+                border: none;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+
+            .error-btn .material-icons {
+                font-size: 18px;
+            }
+
+            .error-btn-primary {
+                background: #1a1a1a;
+                color: #fff;
+            }
+
+            .error-btn-primary:hover {
+                background: #333;
+                transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            }
+
+            .error-btn-outline {
+                background: transparent;
+                color: #000;
+                border: 1px solid #e0e0e0;
+            }
+
+            .error-btn-outline:hover {
+                border-color: #000;
+                transform: translateY(-1px);
+            }
+        </style>
+    </head>
+    <body>
+        <div class="error-page">
+            <div class="error-logo">
+                <span class="error-logo-main">REX <span class="error-logo-accent">CC</span></span>
+                <span class="error-logo-sub">Admin</span>
+            </div>
+            <div class="error-code">404</div>
+            <div class="error-icon">
+                <span class="material-icons">search_off</span>
+            </div>
+            <p class="error-label">Page Not Found</p>
+            <h1 class="error-title">Resource Not Found</h1>
+            <p class="error-desc">
+                The admin page you're trying to access doesn't exist or has been moved.
+                Please check the URL or navigate back to the dashboard.
+            </p>
+            <div class="error-actions">
+                <a href="{% url 'admin_dashboard' %}" class="error-btn error-btn-primary">
+                    <span class="material-icons">grid_view</span>
+                    Dashboard
+                </a>
+                <a href="javascript:history.back()" class="error-btn error-btn-outline">
+                    <span class="material-icons">arrow_back</span>
+                    Go Back
+                </a>
+            </div>
+        </div>
+    </body>
+</html>

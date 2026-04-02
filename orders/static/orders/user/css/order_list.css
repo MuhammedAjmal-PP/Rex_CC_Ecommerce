@@ -1,0 +1,379 @@
+/* ===================================================================
+   REX CC - ORDER LIST (Card-Based Luxury Layout)
+   =================================================================== */
+
+/* ---------------------------------------------------------
+   PAGE HEADER & BREADCRUMBS
+   --------------------------------------------------------- */
+.ol-header-wrapper {
+  margin-bottom: 40px;
+}
+
+.ol-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.8rem;
+  color: #888;
+  margin-bottom: 24px;
+}
+
+.ol-breadcrumb a {
+  color: #111;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.ol-breadcrumb a:hover {
+  color: var(--color-gold, #bfa15f);
+}
+
+.ol-header-flex {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.ol-title {
+  font-family: "Playfair Display", serif;
+  font-size: 2.2rem;
+  font-weight: 600;
+  color: #111;
+  margin: 0 0 8px 0;
+}
+
+.ol-subtitle {
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.95rem;
+  color: #666;
+  margin: 0;
+}
+
+/* ---------------------------------------------------------
+   SEARCH & FILTERS
+   --------------------------------------------------------- */
+.ol-controls-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.ol-search-box {
+  position: relative;
+  flex: 1;
+  min-width: 250px;
+  max-width: 400px;
+}
+
+.ol-search-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
+  font-size: 20px;
+  pointer-events: none;
+}
+
+.ol-search-input {
+  width: 100%;
+  padding: 14px 16px 14px 44px;
+  border: 1px solid var(--color-border, #eaeaea);
+  border-radius: 8px;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.9rem;
+  background: #fff;
+  transition: all 0.3s;
+}
+
+.ol-search-input:focus {
+  outline: none;
+  border-color: #111;
+  box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.05);
+}
+
+.ol-filters-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ol-filter-pill {
+  padding: 10px 18px;
+  border: 1px solid var(--color-border, #eaeaea);
+  border-radius: 24px;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #555;
+  text-decoration: none;
+  background: #fff;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.ol-filter-pill:hover {
+  border-color: #ccc;
+  color: #111;
+}
+
+.ol-filter-pill.active {
+  background: #111;
+  color: #fff;
+  border-color: #111;
+}
+
+/* ---------------------------------------------------------
+   ORDER CARDS LIST
+   --------------------------------------------------------- */
+.ol-cards-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.ol-card {
+  background: #fff;
+  border: 1px solid var(--color-border, #eaeaea);
+  border-radius: 12px;
+  overflow: hidden;
+  transition:
+    box-shadow 0.3s,
+    transform 0.3s;
+}
+
+.ol-card:hover {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+  border-color: #ddd;
+}
+
+/* Card Header: Grid Data */
+.ol-card-header {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 20px;
+  padding: 24px 32px;
+  background: #fdfdfd;
+  border-bottom: 1px solid var(--color-border, #eaeaea);
+}
+
+.ol-meta-block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ol-meta-label {
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ol-meta-value {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #111;
+}
+
+/* Card Body: Items Preview & Actions */
+.ol-card-body {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 32px;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+/* Order Status Display */
+.ol-status-display {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+}
+
+.ol-status-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ccc;
+}
+.ol-status-dot.status-placed {
+  background: #f57c00;
+  box-shadow: 0 0 0 4px rgba(245, 124, 0, 0.15);
+}
+.ol-status-dot.status-confirmed,
+.ol-status-dot.status-shipped {
+  background: #1976d2;
+  box-shadow: 0 0 0 4px rgba(25, 118, 210, 0.15);
+}
+.ol-status-dot.status-delivered {
+  background: #2e7d32;
+  box-shadow: 0 0 0 4px rgba(46, 125, 50, 0.15);
+}
+.ol-status-dot.status-cancelled,
+.ol-status-dot.status-returned {
+  background: #d32f2f;
+  box-shadow: 0 0 0 4px rgba(211, 47, 47, 0.15);
+}
+.ol-status-dot.status-failed {
+  background: #e74c3c;
+  box-shadow: 0 0 0 4px rgba(231, 76, 60, 0.15);
+}
+
+.ol-status-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ol-status-main {
+  font-family: "Montserrat", sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ol-status-sub {
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.8rem;
+  color: #666;
+}
+
+/* Card Actions */
+.ol-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ol-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: transparent;
+  border: 1px solid #111;
+  color: #111;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.ol-btn-secondary:hover {
+  background: #111;
+  color: #fff;
+}
+
+.ol-btn-gold {
+  background: var(--color-gold, #bfa15f);
+  color: #fff;
+  border-color: var(--color-gold, #bfa15f);
+}
+.ol-btn-gold:hover {
+  background: #a98d51;
+  border-color: #a98d51;
+  color: #fff;
+}
+
+/* ---------------------------------------------------------
+   PAGINATION
+   --------------------------------------------------------- */
+.ol-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 48px;
+}
+
+.ol-page-btn,
+.ol-page-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
+  padding: 0 12px;
+  border-radius: 6px;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #555;
+  text-decoration: none;
+  border: 1px solid var(--color-border, #eaeaea);
+  transition: all 0.2s;
+}
+
+.ol-page-btn:hover,
+.ol-page-num:hover {
+  background: #fdfdfd;
+  border-color: #bfa15f;
+  color: #bfa15f;
+}
+
+.ol-page-num.active {
+  background: var(--color-gold, #bfa15f);
+  color: #fff;
+  border-color: var(--color-gold, #bfa15f);
+}
+
+.ol-page-dots {
+  color: #ccc;
+  padding: 0 8px;
+}
+
+/* ---------------------------------------------------------
+   EMPTY STATE
+   --------------------------------------------------------- */
+.ol-empty-state {
+  text-align: center;
+  padding: 80px 20px;
+  background: #fff;
+  border: 1px dashed #ccc;
+  border-radius: 12px;
+  margin-top: 32px;
+}
+
+.ol-empty-icon {
+  font-size: 48px;
+  color: #ddd;
+  margin-bottom: 24px;
+}
+
+.ol-empty-title {
+  font-family: "Playfair Display", serif;
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #111;
+  margin-bottom: 8px;
+}
+
+.ol-empty-text {
+  font-family: "Montserrat", sans-serif;
+  color: #666;
+  margin-bottom: 32px;
+}
+
+/* ---------------------------------------------------------
+   RESPONSIVE DESIGN
+   --------------------------------------------------------- */
+/* Desktop only - no responsive breakpoints needed */

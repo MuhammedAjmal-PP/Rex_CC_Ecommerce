@@ -1,0 +1,974 @@
+/* ========================================
+   Rex CC - Base User Styles
+   Desktop-Only Design (No Responsive)
+   ======================================== */
+
+/* ========================================
+   1. CSS VARIABLES & ROOT
+   ======================================== */
+
+:root {
+  --color-gold: #bfa15f;
+  --color-bronze: #cd7f32;
+  --black: #000;
+  --white: #fff;
+  --color-text-pri: #111111;
+  --color-text-muted: #666666;
+  --header-height: 80px;
+  --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Montserrat", sans-serif;
+  color: #333;
+  background: var(--white);
+  overflow-x: hidden;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* ========================================
+   TOP BAR — CONTINUOUS ROLLING TICKER
+   ======================================== */
+
+.top-bar {
+  background-color: var(--black);
+  color: var(--white);
+  height: 35px;
+  overflow: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1001;
+  display: flex;
+  align-items: center;
+  font-size: 11px;
+  letter-spacing: 2px;
+  font-weight: 600;
+}
+
+.announcement {
+  white-space: nowrap;
+}
+
+.top-bar.is-rolling .announcement {
+  display: inline-block;
+  padding-left: 100%;
+  animation: announcement-roll 28s linear infinite;
+}
+
+@keyframes announcement-roll {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+/* ========================================
+   3. MAIN HEADER
+   ======================================== */
+
+.site-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 40px;
+  height: var(--header-height);
+  background: var(--white);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  transition:
+    transform 0.4s var(--ease-out-expo),
+    background-color 0.4s ease;
+}
+
+.site-header.is-hidden {
+  transform: translateY(-100%);
+}
+
+.site-header.is-visible {
+  transform: translateY(0);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+}
+
+body:not(.home-page) .site-header {
+  top: 35px;
+}
+
+/* ========================================
+   4. LEFT NAVIGATION
+   ======================================== */
+
+.nav-left {
+  display: flex;
+  align-items: center;
+}
+
+.nav-list {
+  display: flex;
+  gap: 30px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  align-items: center;
+}
+
+.nav-link {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #333;
+  position: relative;
+  transition: color 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.nav-link:hover {
+  color: var(--color-bronze);
+}
+
+.nav-link::after {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: var(--color-bronze);
+  transition: width 0.3s var(--ease-out-expo);
+}
+
+.nav-link:hover::after {
+  width: 100%;
+}
+
+.nav-link .material-icons {
+  font-size: 18px;
+  vertical-align: middle;
+}
+
+/* ========================================
+   5. CENTER BRAND
+   ======================================== */
+
+.brand-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.brand-center a {
+  font-family: "Playfair Display", serif;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: #1a1a1a;
+  transition: color 0.3s;
+}
+
+/* ========================================
+   6. RIGHT ICONS
+   ======================================== */
+
+.header-icons-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.material-icons {
+  font-size: 22px;
+}
+
+.search-icon {
+  font-size: 26px;
+  cursor: pointer;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.nav-links .nav-icon {
+  color: #333;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.nav-links .nav-icon:hover {
+  transform: scale(1.1); /* Slightly stronger zoom for 'bubble' feel */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Subtle shadow bubble */
+}
+
+.nav-icon-wishlist .nav-icon .material-icons {
+  font-size: 26px;
+}
+
+/* ===============================
+   Wishlist Badge — Red Pulse
+   =============================== */
+
+.wishlist-icon-wrapper {
+  position: relative;
+}
+
+.wishlist-badge {
+  position: absolute;
+  top: 1px;
+  right: -2px;
+
+  min-width: 18px;
+  height: 18px;
+  padding: 4px 4px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1;
+
+  color: #fff;
+  background-color: #dc3545;
+
+  border-radius: 50%;
+  border: 2px solid #fff;
+  z-index: 10;
+
+  /* Reset transform from previous styles */
+  transform: none;
+  pointer-events: none;
+  box-shadow: none;
+}
+
+/* 🌊 Pulse Loop (Triggered via JS) */
+.wishlist-badge.pulse-active::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background-color: rgba(255, 59, 48, 0.6);
+  z-index: -1;
+  animation: wishlistPulse 2.5s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+@keyframes wishlistPulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}
+
+/* User Avatar */
+/* User Avatar Image */
+.user-avatar {
+  object-fit: cover;
+  border-radius: 50%;
+  border: 1px solid var(--color-gold);
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.user-avatar:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(191, 161, 95, 0.4);
+}
+
+/* User Initials Icon (No Image) */
+.user-initials-icon {
+  width: 33px;
+  height: 33px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #bfa15f 0%, #b06825 100%);
+  /* Bronze Gradient */
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease;
+}
+
+.user-initials-icon:hover {
+  transform: scale(1.05);
+}
+
+/* ========================================
+   7. SEARCH BAR (Expanding)
+   ======================================== */
+
+.search-wrapper {
+  display: flex;
+  align-items: center;
+  border: 1px solid transparent;
+  padding: 5px;
+  border-radius: 20px;
+  transition: all 0.4s ease;
+}
+
+.search-form-inline {
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: 100%;
+}
+
+.search-input {
+  width: 0;
+  opacity: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  transition: all 0.4s ease;
+  font-family: "Montserrat", sans-serif;
+  font-size: 13px;
+}
+
+.search-wrapper:hover {
+  border-color: #ddd;
+  background: #fff;
+  padding-right: 10px;
+}
+
+.search-wrapper:hover .search-input {
+  width: 180px;
+  opacity: 1;
+  margin-left: 10px;
+}
+
+.search-wrapper:hover .search-icon {
+  color: #333;
+}
+
+.search-wrapper.has-query {
+  border-color: #ddd;
+  background: #fff;
+  padding-right: 10px;
+}
+
+.search-wrapper.has-query .search-input {
+  width: 180px;
+  opacity: 1;
+  margin-left: 10px;
+}
+
+.search-wrapper.has-query .search-icon {
+  color: #333;
+}
+
+.search-wrapper.has-query .search-clear-icon {
+  opacity: 1;
+}
+
+.search-clear-icon {
+  color: #999;
+  font-size: 14px;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  opacity: 0;
+  margin-left: 5px;
+}
+
+.search-wrapper:hover .search-clear-icon {
+  opacity: 1;
+}
+
+.search-clear-icon:hover {
+  color: #e74c3c;
+}
+
+/* ========================================
+   MEGA MENU — LUXURY REFINED
+   ======================================== */
+
+.has-dropdown {
+  position: relative;
+}
+
+.has-dropdown::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 100%;
+  width: 100%;
+  height: 20px;
+}
+
+/* Main container */
+.mega-menu {
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 0;
+  transform: none;
+  background: #ffffff;
+  margin-top: -8px;
+  padding: 36px 40px;
+  display: none;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: 40px;
+  min-width: 880px;
+  border-radius: 6px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+  z-index: 999;
+}
+
+/* Hover trigger */
+.has-dropdown:hover .mega-menu,
+.mega-menu:hover {
+  display: grid;
+}
+
+/* Subtle divider */
+.mega-menu::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 40px;
+  right: 40px;
+  height: 1px;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* ========================================
+   COLUMN HEADINGS
+   ======================================== */
+
+.mega-column h4 {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #999;
+  margin-bottom: 18px;
+}
+
+/* ========================================
+   CATEGORY LINKS
+   ======================================== */
+
+.mega-column a {
+  display: block;
+  padding: 8px 0;
+  font-size: 14px;
+  color: #333;
+  transition: all 0.25s ease;
+}
+
+.mega-column a:hover {
+  color: var(--color-bronze);
+  padding-left: 6px;
+}
+
+/* ========================================
+   TOP BRANDS — CLEAN LUXURY LIST
+   ======================================== */
+
+.mega-brand-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.mega-brand-link {
+  display: block;
+  padding: 10px 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  position: relative;
+  transition: all 0.25s ease;
+}
+
+.mega-brand-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 6px;
+  width: 0;
+  height: 1px;
+  background: var(--color-gold);
+  transition: width 0.3s ease;
+}
+
+.mega-brand-link:hover {
+  color: var(--color-gold);
+  padding-left: 6px;
+}
+
+.mega-brand-link:hover::after {
+  width: 24px;
+}
+
+/* Collapse to 2 columns when no featured product */
+.mega-menu.no-featured {
+  grid-template-columns: 1.1fr 1fr;
+}
+
+/* ========================================
+   FEATURED PRODUCT (RIGHT COLUMN)
+   ======================================== */
+
+#ProductCard {
+  display: none;
+}
+
+.mega-column.featured-img {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.mega-product-preview {
+  max-width: 260px;
+}
+
+.mega-product-img {
+  width: 100%;
+  height: auto;
+  margin-bottom: 14px;
+  border-radius: 4px;
+  transition: transform 0.4s ease;
+}
+
+.mega-product-preview:hover .mega-product-img {
+  transform: scale(1.04);
+}
+
+#megaProductName {
+  display: block;
+  font-family: "Playfair Display", serif;
+  font-size: 15px;
+  line-height: 1.4;
+  color: #111;
+}
+
+/* ========================================
+   FEATURED PRODUCT — RICH CONTENT
+   ======================================== */
+
+.mega-featured-label {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #999;
+  margin-bottom: 12px;
+}
+
+.mega-product-preview {
+  max-width: 260px;
+  text-align: center;
+}
+
+.mega-product-link {
+  display: block;
+}
+
+.mega-product-img {
+  width: 100%;
+  height: auto;
+  margin-bottom: 14px;
+  border-radius: 4px;
+  transition: transform 0.4s ease;
+}
+
+.mega-product-preview:hover .mega-product-img {
+  transform: scale(1.04);
+}
+
+.mega-product-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.mega-product-brand {
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #999;
+}
+
+.mega-product-name {
+  font-family: "Playfair Display", serif;
+  font-size: 16px;
+  line-height: 1.4;
+  color: #111;
+}
+
+.mega-product-spec {
+  font-size: 12px;
+  color: #666;
+}
+
+.mega-product-cta {
+  margin-top: 6px;
+  font-size: 12px;
+  letter-spacing: 1px;
+  color: var(--color-gold);
+}
+
+/* ========================================
+   9. SEARCH OVERLAY
+   ======================================== */
+
+.search-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.95);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+.search-overlay.is-open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.search-close {
+  position: absolute;
+  top: 40px;
+  right: 40px;
+  color: white;
+  font-size: 36px;
+  cursor: pointer;
+}
+
+.search-container {
+  width: 600px;
+  text-align: center;
+}
+
+.search-input-lg {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  font-size: 32px;
+  padding: 20px 0;
+  outline: none;
+  font-family: "Montserrat", sans-serif;
+}
+
+.search-input-lg::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* ========================================
+   10. FOOTER
+   ======================================== */
+
+.site-footer {
+  background: #1a1a1a;
+  color: rgba(255, 255, 255, 0.8);
+  padding: 60px 40px 20px;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 40px;
+  margin-bottom: 40px;
+}
+
+.footer-brand h2 {
+  font-family: "Playfair Display", serif;
+  font-size: 32px;
+  color: white;
+  margin-bottom: 16px;
+}
+
+.footer-quote {
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.footer-col h4 {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--color-bronze);
+  margin-bottom: 20px;
+  margin-left: 30px;
+}
+
+.footer-col ul {
+  list-style: none;
+}
+
+.footer-col ul li {
+  margin-bottom: 12px;
+}
+
+.footer-col ul li a {
+  font-size: 14px;
+  transition: color 0.3s;
+}
+
+.footer-col ul li a:hover {
+  color: var(--color-bronze);
+}
+
+.footer-bottom {
+  text-align: center;
+  padding-top: 30px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* ========================================
+   11. TOAST MESSAGES (Centered - Match Auth Page)
+   ======================================== */
+
+.toast-container {
+  position: fixed;
+  top: 120px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  width: 90%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.toast-msg {
+  background: white;
+  padding: 14px 18px;
+  border-radius: 3px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  font-size: 0.88rem;
+  text-align: center;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ========================================
+   12. HOMEPAGE SPECIFIC STYLES
+   ======================================== */
+
+body.home-page .site-header {
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.7) 0%,
+    rgba(0, 0, 0, 0.3) 100%
+  );
+  box-shadow: none;
+  backdrop-filter: blur(10px);
+}
+
+body.home-page .top-bar {
+  display: none;
+}
+
+body:not(.home-page) .top-bar {
+  display: flex;
+}
+
+body.home-page .nav-link {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+body.home-page .nav-link:hover {
+  color: var(--color-bronze);
+}
+
+body.home-page .nav-link::after {
+  background-color: var(--color-bronze);
+}
+
+body.home-page .brand-center a {
+  color: rgba(255, 255, 255, 0.98);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+body.home-page .nav-icon,
+body.home-page .search-icon {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+body.home-page .nav-icon:hover {
+  color: var(--color-bronze);
+}
+
+/* body.home-page .wishlist-icon-wrapper:hover {
+  color: red;
+} */
+
+body.home-page .search-input {
+  background: rgba(255, 255, 255, 0.95);
+  color: #333;
+}
+
+body.home-page .search-input::placeholder {
+  color: rgba(0, 0, 0, 0.5);
+}
+
+body:not(.home-page) {
+  padding-top: 115px;
+}
+
+body.home-page {
+  padding-top: 0;
+}
+
+/* Cart Icon Wrapper */
+.cart-icon-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Cart Badge Style */
+.cart-badge {
+  position: absolute;
+  top: 1px;
+  right: 1px;
+
+  min-width: 18px;
+  height: 18px;
+  padding: 4px 4px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1;
+
+  color: #fff;
+  background-color: #dc3545;
+
+  border-radius: 50%;
+  border: 2px solid #fff;
+  z-index: 10;
+}
+
+body.home-page .cart-badge {
+  border: none;
+}
+
+/* Base Material Symbol */
+.material-symbol {
+  font-family: "Material Symbols Outlined";
+  font-weight: 400;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  user-select: none;
+
+  /* Default = outlined */
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 24;
+}
+
+/* Filled version */
+.material-symbol.filled {
+  font-variation-settings:
+    "FILL" 1,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 24;
+}
+
+/* Optional sizes */
+.material-symbol.sm {
+  font-size: 20px;
+}
+.material-symbol.md {
+  font-size: 24px;
+}
+.material-symbol.lg {
+  font-size: 28px;
+}
+
+/* Optional luxury color hooks */
+.material-symbol.gold {
+  color: var(--accent-gold);
+}
+.material-symbol.muted {
+  color: var(--text-muted);
+}

@@ -1,0 +1,550 @@
+/* ============================================================
+   REX CC ADMIN - BRAND FORM STYLES
+   Clean Minimal Design
+   ============================================================ */
+
+/* ========================================
+   FORM CONTAINER
+   ======================================== */
+
+.form-container {
+    padding: 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.brand-form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* ========================================
+   FORM CARD
+   ======================================== */
+
+.form-card {
+    background: #fff;
+    border: 1px solid #e5e5e5;
+}
+
+/* ========================================
+   FORM LAYOUT - TWO COLUMNS
+   ======================================== */
+
+.form-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.form-column {
+    padding: 0;
+}
+
+.form-column-left {
+    border-right: 1px solid #e5e5e5;
+}
+
+/* ========================================
+   FORM SECTIONS
+   ======================================== */
+
+.form-section {
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.form-section:last-child {
+    border-bottom: none;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 20px 28px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #000;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.section-title .material-icons {
+    font-size: 18px;
+}
+
+.section-body {
+    padding: 28px;
+}
+
+/* ========================================
+   FORM GROUPS
+   ======================================== */
+
+.form-group {
+    margin-bottom: 24px;
+}
+
+.form-group:last-child {
+    margin-bottom: 0;
+}
+
+.form-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #000;
+    margin-bottom: 10px;
+}
+
+/* ========================================
+   TEXT INPUTS
+   ======================================== */
+
+.brand-form input[type="text"],
+.brand-form select,
+.brand-form textarea {
+    width: 100%;
+    padding: 14px 16px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    border: 1px solid #e5e5e5;
+    background: #fff;
+    color: #1a1a1a;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.brand-form input[type="text"]::placeholder,
+.brand-form textarea::placeholder {
+    color: #999;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+}
+
+.brand-form input[type="text"]:focus,
+.brand-form select:focus,
+.brand-form textarea:focus {
+    border-color: #000;
+}
+
+.brand-form textarea {
+    min-height: 140px;
+    resize: vertical;
+    line-height: 1.6;
+}
+
+.brand-form textarea#id_tagline {
+    min-height: 70px;
+}
+
+/* ========================================
+   UPLOAD AREA
+   ======================================== */
+
+.upload-area {
+    position: relative;
+    border: 2px dashed #e5e5e5;
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+
+.upload-area:hover {
+    border-color: #999;
+}
+
+/* Important: Hide ALL default file input elements */
+.upload-area input[type="file"] {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 10;
+}
+
+/* Hide Django ClearableFileInput text and checkbox */
+.upload-area a,
+.upload-area br,
+.upload-area input[type="checkbox"],
+.upload-area label,
+.upload-area>p,
+.upload-area>span:not(.material-icons):not(.upload-text):not(.upload-hint):not(.upload-icon) {
+    display: none !important;
+}
+
+/* Hide "Currently:" text from Django */
+.upload-area {
+    font-size: 0;
+}
+
+.upload-area * {
+    font-size: 1rem;
+}
+
+.upload-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: #666;
+    pointer-events: none;
+    font-size: 1rem;
+}
+
+.upload-icon {
+    font-size: 40px;
+    padding: 12px;
+    background: #f8f8f8;
+}
+
+.upload-text {
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #1a1a1a;
+}
+
+.upload-hint {
+    font-size: 0.75rem;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.upload-preview {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    font-size: 1rem;
+}
+
+.upload-preview[hidden] {
+    display: none;
+}
+
+.upload-preview img {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+}
+
+/* Preview Actions - Change & Remove buttons */
+.preview-actions {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    background: rgba(0, 0, 0, 0.7);
+    opacity: 0;
+    transition: opacity 0.2s;
+    z-index: 20;
+    pointer-events: none;
+}
+
+/* Trigger on upload-area hover to avoid file input blocking */
+.upload-area:hover .preview-actions {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.preview-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 20px;
+    border: none;
+    cursor: pointer;
+    font-size: 0.75rem;
+    font-weight: 700;
+    font-family: inherit;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.2s;
+}
+
+.preview-change {
+    background: #fff;
+    color: #1a1a1a;
+}
+
+.preview-change:hover {
+    background: #f8f8f8;
+}
+
+.preview-remove {
+    background: #dc2626;
+    color: #fff;
+}
+
+.preview-remove:hover {
+    background: #b91c1c;
+}
+
+.preview-btn .material-icons {
+    font-size: 18px;
+}
+
+/* ========================================
+   TOGGLE ROW (Publishing Section)
+   ======================================== */
+
+.toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e5e5e5;
+    margin-bottom: 20px;
+}
+
+.toggle-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.toggle-label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #1a1a1a;
+}
+
+.toggle-desc {
+    font-size: 0.75rem;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+/* ========================================
+   TOGGLE SWITCH
+   ======================================== */
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 26px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #e5e5e5;
+    transition: 0.3s;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background-color: #fff;
+    transition: 0.3s;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-switch input:checked+.toggle-slider {
+    background-color: #000;
+}
+
+.toggle-switch input:checked+.toggle-slider:before {
+    transform: translateX(24px);
+}
+
+/* ========================================
+   META ROWS
+   ======================================== */
+
+.meta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.meta-row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.meta-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #666;
+}
+
+.meta-value {
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    color: #1a1a1a;
+}
+
+/* ========================================
+   ERROR TEXT
+   ======================================== */
+
+.error-text {
+    display: block;
+    font-size: 0.75rem;
+    color: #dc2626;
+    margin-top: 6px;
+}
+
+/* ========================================
+   FORM ACTIONS
+   ======================================== */
+
+.form-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.btn-cancel,
+.btn-submit {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 18px 24px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    font-family: inherit;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+}
+
+.btn-cancel {
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    color: #1a1a1a;
+}
+
+.btn-cancel:hover {
+    border-color: #000;
+    color: #000;
+}
+
+.btn-submit {
+    background: #000;
+    border: 1px solid #000;
+    color: #fff;
+}
+
+.btn-submit:hover {
+    background: #1a1a1a;
+}
+
+.btn-cancel .material-icons,
+.btn-submit .material-icons {
+    font-size: 18px;
+}
+
+/* ========================================
+   MODAL
+   ======================================== */
+
+#cropModal .modal-content {
+    border-radius: 0;
+    border: none;
+}
+
+#cropModal .modal-header {
+    background: #1a1a1a;
+    color: #fff;
+    padding: 16px 20px;
+}
+
+#cropModal .modal-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+#cropModal .btn-close {
+    filter: invert(1);
+}
+
+#cropModal .modal-body {
+    padding: 0;
+    background: #111;
+}
+
+#cropModal .modal-footer {
+    padding: 16px 20px;
+    gap: 10px;
+}
+
+#cropModal .btn-secondary,
+#cropModal .btn-primary {
+    padding: 12px 24px;
+    font-weight: 600;
+    border-radius: 0;
+}
+
+#cropModal .btn-secondary {
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    color: #666;
+}
+
+#cropModal .btn-primary {
+    background: #000;
+    border: 1px solid #000;
+    color: #fff;
+}
+
+#cropImage {
+    max-width: 100%;
+    display: block;
+}
+
+

@@ -1,0 +1,155 @@
+{% extends "core/user/base_user.html" %}
+{% load static %}
+{% block body_class %}
+    home-page
+{% endblock body_class %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'core/user/css/homepage.css' %}">
+    <link rel="stylesheet"
+          href="{% static 'catalog/css/user/product/product_card.css' %}">
+{% endblock extra_css %}
+{% block content %}
+    <!-- 1. Parallax Video Hero -->
+    <section class="hero-wrap">
+        <video class="hero-video-bg" autoplay muted loop playsinline poster="#">
+            <!-- High Quality Placeholder Video -->
+            <source src="https://res.cloudinary.com/dz3ed3aqa/video/upload/v1771664539/AQPbzyHXmBrFpQyLtiFw_FDQscOy2SEMaDKJBm6GXU_xFwsmPgAcmhv6KPugRgp_jwzjvc.mp4"
+                    type="video/mp4">
+        </video>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <p class="hero-sub">— The 2026 Collection —</p>
+            <h1 class="hero-super-title">
+                Time is an
+                <br>
+                Art Form.
+            </h1>
+        </div>
+        <div class="scroll-indicator">
+            <span class="scroll-line"></span>
+        </div>
+    </section>
+    <!-- 2. Trust/Benefits Section (Compact Line) -->
+    <section class="section-trust">
+        <div class="trust-grid">
+            <div class="trust-item">
+                <div class="trust-icon-circle">
+                    <span class="material-icons trust-icon">local_shipping</span>
+                </div>
+                <div class="trust-text">FREE SHIPPING</div>
+            </div>
+            <div class="trust-item">
+                <div class="trust-icon-circle">
+                    <span class="material-icons trust-icon">verified</span>
+                </div>
+                <div class="trust-text">100% AUTHENTIC</div>
+            </div>
+            <div class="trust-item">
+                <div class="trust-icon-circle">
+                    <span class="material-icons trust-icon">workspace_premium</span>
+                </div>
+                <div class="trust-text">EMI AVAILABLE</div>
+            </div>
+            <div class="trust-item">
+                <div class="trust-icon-circle">
+                    <span class="material-icons trust-icon">replay</span>
+                </div>
+                <div class="trust-text">EASY EXCHANGE</div>
+            </div>
+        </div>
+    </section>
+    <!-- 3. Featured Brands Section -->
+    {% if brands %}
+        <section class="section-brands">
+            <div class="section-header">
+                <p class="section-subtitle">OFFICIAL AUTHORISED DEALER</p>
+                <h2 class="section-title">Featured Brands</h2>
+            </div>
+            <div class="brands-grid">
+                {% for brand in brands %}
+                    <a href="{% url 'product_list' %}?brand={{ brand.slug }}"
+                       class="brand-card">
+                        <div class="brand-image-box">
+                            <img src="{{ brand.logo.url }}" alt="{{ brand.name }}" class="brand-logo">
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
+    <!-- 4. New Arrivals Section -->
+    {% if new_arrivals %}
+        <section class="section-products">
+            <div class="section-header">
+                <h2 class="section-title">New Arrivals</h2>
+                <a href="{% url 'product_list' %}" class="section-link">View All</a>
+            </div>
+            <div class="carousel-container">
+                {% for variant in new_arrivals %}
+                    {% include 'catalog/user/product/product_card.html' with variant=variant %}
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
+    <!-- 5. Featured Products Section -->
+    {% if featured_variants %}
+        <section class="section-products section-featured">
+            <div class="section-header">
+                <h2 class="section-title">Featured Products</h2>
+                <a href="{% url 'product_list' %}?featured=true" class="section-link">View All</a>
+            </div>
+            <div class="product-grid">
+                {% for variant in featured_variants %}
+                    {% include 'catalog/user/product/product_card.html' with variant=variant %}
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
+    <!-- 6. Offer Section -->
+    {% if offer_variants %}
+        <section class="section-offers">
+            <div class="offers-container">
+                <!-- Promotional Banner -->
+                <div class="offer-promo-banner">
+                    <p class="offer-label">OFFER</p>
+                    <h2 class="offer-heading">WATCHES</h2>
+                    <p class="offer-subtext">Take A Look At This Season's Best Offers</p>
+                </div>
+                <!-- Offer Products Carousel -->
+                <div class="offer-carousel">
+                    {% for variant in offer_variants %}
+                        {% include 'catalog/user/product/product_card.html' with variant=variant %}
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+    {% endif %}
+    <!-- 7. Newsletter Section -->
+    <section class="section-newsletter">
+        <div class="newsletter-container">
+            <div class="newsletter-content">
+                <p class="newsletter-label">STAY CONNECTED</p>
+                <h2 class="newsletter-title">Join Our Exclusive Circle</h2>
+                <p class="newsletter-description">
+                    Be the first to discover new arrivals, exclusive offers, and horological insights.
+                    Join our community of watch enthusiasts.
+                </p>
+                <form class="newsletter-form" method="post" action="#">
+                    {% csrf_token %}
+                    <div class="newsletter-input-group">
+                        <input type="email"
+                               name="email"
+                               class="newsletter-input"
+                               placeholder="Enter your email address"
+                               required>
+                        <button type="submit" class="newsletter-submit">
+                            Subscribe
+                            <span class="material-icons">arrow_forward</span>
+                        </button>
+                    </div>
+                    <p class="newsletter-privacy">By subscribing, you agree to our Privacy Policy. Unsubscribe anytime.</p>
+                </form>
+            </div>
+        </div>
+    </section>
+{% endblock content %}

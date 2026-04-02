@@ -1,0 +1,205 @@
+/* ============================================================
+   REX CC ADMIN — REFUND LIST
+   Follows admin_ui_style_guide.md
+   ============================================================ */
+
+/* ========================================
+   STATISTICS CARDS
+   ======================================== */
+
+.stats-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    margin: 40px;
+    margin-bottom: 32px;
+}
+
+.stat-card {
+    background: #ffffff;
+    padding: 28px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    color: inherit;
+    border: 1px solid transparent;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.16);
+    border-color: #000000;
+    text-decoration: none;
+    color: inherit;
+}
+
+.stat-card.active {
+    border: 2px solid #000000;
+}
+
+.stat-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    background: #000000;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover .stat-icon {
+    transform: scale(1.05);
+}
+
+/* Colored stat-icon variants */
+.stat-icon.total { background: #1a1a1a; }
+.stat-icon.pending { background: #b45309; }
+.stat-icon.completed { background: #1a6b3c; }
+.stat-icon.failed { background: #991b1b; }
+
+.stat-content {
+    flex: 1;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #666666;
+    margin: 0 0 8px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0;
+    color: #000000;
+}
+
+/* ========================================
+   TRANSACTION ID
+   ======================================== */
+
+.txn-id-mono {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: #333333;
+    letter-spacing: 0.3px;
+}
+
+
+
+/* ========================================
+   TYPE BADGES
+   ======================================== */
+
+.txn-type-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 0;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+.type-cancellation_refund {
+    background: #fff7ed;
+    color: #c2410c;
+}
+
+.type-return_refund {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+/* ========================================
+   AMOUNT
+   ======================================== */
+
+.txn-amount {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: #000000;
+}
+
+/* ========================================
+   STATUS BADGES (pill-shaped per style guide)
+   ======================================== */
+
+.status-badge {
+    display: inline-block;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-pending { background: #fffbeb; color: #b45309; }
+.status-completed { background: #f0fdf4; color: #16a34a; }
+.status-failed { background: #fef2f2; color: #dc2626; }
+
+/* ========================================
+   DATE CELL
+   ======================================== */
+
+.txn-date-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: 0.85rem;
+}
+
+.txn-time {
+    font-size: 0.75rem;
+    color: #999999;
+}
+
+/* ========================================
+   ACTION BUTTON (40×40 per style guide)
+   ======================================== */
+
+.btn-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    color: #666666;
+    text-decoration: none;
+    border: none;
+    background: transparent;
+    transition: all 0.2s ease;
+}
+
+.btn-action:hover {
+    background: #000000;
+    color: #ffffff;
+    transform: translateY(-2px);
+}
+
+.btn-action .material-icons {
+    font-size: 20px;
+}
+
+/* ========================================
+   DESKTOP LAYOUT ADJUSTMENTS
+   ======================================== */
+
+@media (max-width: 1400px) {
+    .stats-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

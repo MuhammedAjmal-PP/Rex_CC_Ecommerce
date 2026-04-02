@@ -1,0 +1,356 @@
+/* ===================================================================
+   REX CC - CANCEL ORDER STYLES
+   =================================================================== */
+
+/* ---------------------------------------------------------
+   PAGE HEADER
+   --------------------------------------------------------- */
+.co-header-wrapper {
+  margin-bottom: 32px;
+}
+
+.co-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  font-weight: 600;
+  color: #111;
+  margin: 0 0 8px 0;
+}
+
+.co-subtitle {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.95rem;
+  color: #666;
+  margin: 0;
+}
+
+/* ---------------------------------------------------------
+   CANCEL ITEMS LIST
+   --------------------------------------------------------- */
+.co-items-card {
+  background: #fff;
+  border: 1px solid var(--color-border, #eaeaea);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 32px;
+}
+
+/* Form Container */
+.co-main-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Header row for list */
+.co-list-header {
+  display: grid;
+  grid-template-columns: 50px 3fr 1fr 1fr;
+  padding: 16px 24px;
+  background: #fdfdfd;
+  border-bottom: 1px solid var(--color-border, #eaeaea);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Item Row */
+.co-item-row {
+  display: grid;
+  grid-template-columns: 50px 3fr 1fr 1fr;
+  align-items: center;
+  padding: 24px;
+  border-bottom: 1px solid #f5f5f5;
+  transition: background-color 0.2s;
+}
+
+.co-item-row:last-child {
+  border-bottom: none;
+}
+
+.co-item-row:hover {
+  background-color: #fafafa;
+}
+
+.co-disabled {
+  background-color: #faf9f7;
+  opacity: 0.7;
+}
+.co-disabled:hover {
+  background-color: #faf9f7;
+}
+
+/* Checkbox Cell */
+.co-checkbox-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hub-checkbox {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--color-gold, #bfa15f);
+  cursor: pointer;
+}
+
+.hub-checkbox:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Product Info Cell */
+.co-product-cell {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.co-label {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  margin: 0;
+  width: 100%;
+}
+.co-label.cursor-pointer { cursor: pointer; }
+.co-label.cursor-default { cursor: default; }
+
+.co-product-img {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  background: #fff;
+  border: 1px solid #f0f0f0;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.co-product-img-placeholder {
+  width: 72px;
+  height: 72px;
+  background: #fcfcfc;
+  border: 1px solid #eaeaea;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ccc;
+  flex-shrink: 0;
+}
+
+.co-product-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.co-brand {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #888;
+}
+
+.co-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.05rem;
+  color: #111;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.co-meta {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.8rem;
+  color: #666;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.text-muted-divider { color: #ddd; }
+
+/* Price Cell */
+.co-price-cell {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111;
+  text-align: right;
+  padding-right: 16px;
+}
+
+/* Status Cell */
+.co-status-cell {
+  text-align: right;
+}
+
+.order-status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------
+   FORM SECTIONS
+   --------------------------------------------------------- */
+.co-form-card {
+  background: #fff;
+  border: 1px solid var(--color-border, #eaeaea);
+  border-radius: 12px;
+  padding: 32px;
+  margin-bottom: 32px;
+}
+
+.co-section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: #111;
+  margin: 0 0 16px 0;
+}
+
+.text-danger { color: #d32f2f; margin-left: 4px; }
+
+.hub-input {
+  width: 100%;
+  padding: 14px 16px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.95rem;
+  color: #111;
+  border: 1px solid var(--color-border, #eaeaea);
+  border-radius: 8px;
+  background: #fff;
+  transition: all 0.3s ease;
+}
+
+.hub-input:focus {
+  outline: none;
+  border-color: #111;
+  box-shadow: 0 0 0 4px rgba(0,0,0,0.05);
+}
+
+.co-textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+/* ---------------------------------------------------------
+   ACTIONS
+   --------------------------------------------------------- */
+.co-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border, #eaeaea);
+}
+
+.btn-danger {
+  background: #d32f2f !important;
+  color: #fff !important;
+  border: none !important;
+  padding: 14px 28px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-danger:hover {
+  background: #b71c1c !important;
+  box-shadow: 0 4px 12px rgba(211, 47, 47, 0.2);
+}
+
+.hub-btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  border: 1px solid #111;
+  color: #111;
+  background: #fff;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: all 0.3s;
+}
+
+.hub-btn-outline:hover {
+  background: #111;
+  color: #fff;
+}
+
+/* ---------------------------------------------------------
+   EMPTY STATE
+   --------------------------------------------------------- */
+.co-empty-state {
+  text-align: center;
+  padding: 80px 32px;
+  background: #fff;
+  border: 1px dashed #ccc;
+  border-radius: 12px;
+}
+
+.co-empty-icon-wrap {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #fdfdfd;
+  border: 1px solid #eaeaea;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+}
+
+.co-empty-icon-wrap .material-icons {
+  font-size: 36px;
+  color: #d32f2f;
+}
+
+.co-empty-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #111;
+  margin-bottom: 12px;
+}
+
+.co-empty-desc {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 32px;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.6;
+}
+
+/* ---------------------------------------------------------
+   RESPONSIVE DESIGN 
+   --------------------------------------------------------- */
+/* Desktop only - no responsive breakpoints needed */
+

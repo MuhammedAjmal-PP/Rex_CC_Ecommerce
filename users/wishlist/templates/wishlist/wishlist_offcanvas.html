@@ -1,0 +1,89 @@
+<!-- Wishlist Offcanvas -->
+<div class="offcanvas offcanvas-end wishlist-offcanvas"
+     tabindex="-1"
+     id="offcanvasWishlist"
+     aria-labelledby="wishlistOffcanvasLabel">
+    <!-- Offcanvas Header -->
+    <div class="wishlist-offcanvas-header">
+        <div class="wishlist-title-group">
+            <span class="wishlist-icon material-icons">favorite</span>
+            <h5 class="wishlist-title" id="wishlistOffcanvasLabel">My Wishlist</h5>
+        </div>
+        <span class="wishlist-count" id="wishlistCount">0 items</span>
+        <button type="button"
+                class="wishlist-close-btn"
+                data-bs-dismiss="offcanvas"
+                aria-label="Close">
+            <span class="material-icons">close</span>
+        </button>
+    </div>
+    <!-- Offcanvas Body -->
+    <div class="wishlist-offcanvas-body">
+        <!-- Loading State -->
+        <div class="wishlist-loading" id="wishlistLoading">
+            <div class="wishlist-spinner"></div>
+            <p>Loading your wishlist...</p>
+        </div>
+        <!-- Empty State -->
+        <div class="wishlist-empty" id="wishlistEmpty" style="display: none;">
+            <span class="material-icons wishlist-empty-icon">favorite_border</span>
+            <h4>Your Wishlist is Empty</h4>
+            <p>Start adding your favorite timepieces to your collection</p>
+            <a href="{% url 'product_list' %}" class="wishlist-browse-btn">
+                Browse Collection
+                <span class="material-icons">arrow_forward</span>
+            </a>
+        </div>
+        <!-- Wishlist Items Container -->
+        <div class="wishlist-items" id="wishlistItems" style="display: none;">
+            <!-- Items will be populated dynamically -->
+        </div>
+    </div>
+    <!-- Offcanvas Footer -->
+    <div class="wishlist-offcanvas-footer"
+         id="wishlistFooter"
+         style="display: none">
+        <a href="{% url 'user_wishlist' %}" class="wishlist-view-all-btn">
+            View Wishlist
+            <span class="material-icons">arrow_forward</span>
+        </a>
+    </div>
+</div>
+<!-- Wishlist Item Template -->
+<template id="wishlistItemTemplate">
+    <div class="wishlist-item" data-item-id="">
+        <div class="wishlist-item-image">
+            <a href="#" class="wishlist-item-link">
+                <img src="" alt="" class="wishlist-product-img">
+            </a>
+            <span class="wishlist-stock-badge"></span>
+        </div>
+        <div class="wishlist-item-details">
+            <span class="wishlist-item-brand"></span>
+            <h6 class="wishlist-item-name">
+                <a href="#" class="wishlist-item-link"></a>
+            </h6>
+            <span class="wishlist-item-sku"></span>
+            <div class="wishlist-item-price">
+                <span class="wishlist-price-current"></span>
+                <span class="wishlist-price-original"></span>
+            </div>
+        </div>
+        <div class="wishlist-item-actions">
+            {% if request.user.is_authenticated %}
+                <button class="wishlist-add-cart-btn" title="Add to Cart">
+                    <span class="material-icons">shopping_bag</span>
+                </button>
+            {% else %}
+                <a href="{% url 'account_login' %}"
+                   class="wishlist-add-cart-btn-login"
+                   title="Add to Cart">
+                    <span class="material-icons">shopping_bag</span>
+                </a>
+            {% endif %}
+            <button class="wishlist-remove-btn" title="Remove" data-action="remove">
+                <span class="material-icons">delete_outline</span>
+            </button>
+        </div>
+    </div>
+</template>

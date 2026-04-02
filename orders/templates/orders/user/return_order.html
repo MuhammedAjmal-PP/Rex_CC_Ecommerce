@@ -1,0 +1,201 @@
+{% extends "core/user/base_user.html" %}
+{% load static %}
+{% load humanize %}
+{% block head_title %}Return Item from Order {{ order.order_number }} | REX CC{% endblock %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'orders/user/css/return_order.css' %}?v=1.3">
+{% endblock %}
+{% block content %}
+    <div class="lux-hub-wrapper">
+        <!-- BREADCRUMBS & HEADER -->
+        <div class="ro-header-wrapper">
+            <nav class="uc-breadcrumb mb-24">
+                <a href="{% url 'user_profile' %}">Account Dashboard</a>
+                <span class="uc-breadcrumb-sep">›</span>
+                <a href="{% url 'user_order_list' %}">Orders</a>
+                <span class="uc-breadcrumb-sep">›</span>
+                <a href="{% url 'user_order_details' order.order_number %}">{{ order.order_number }}</a>
+                <span class="uc-breadcrumb-sep">›</span>
+                <span class="uc-breadcrumb-current">Return Item</span>
+            </nav>
+            <h1 class="ro-title">Return Item</h1>
+            <p class="ro-subtitle">Provide details for returning this product from Order {{ order.order_number }}.</p>
+        </div>
+
+        <div class="ro-grid">
+            <!-- LEFT PANE: ITEM DETAILS -->
+            <div class="ro-card">
+                <h3 class="ro-section-title">Item to Return</h3>
+                <div class="ro-img-wrap">
+                    {% if primary_image %}
+                        <img src="{{ primary_image.image.url }}" alt="{{ order_item.product_variant.product.name }}" class="ro-img">
+                    {% else %}
+                        <div class="ro-img-placeholder">
+                            <span class="material-icons icon-40">image</span>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="text-center">
+                    {% if order_item.product_variant and order_item.product_variant.product and order_item.product_variant.product.brand %}
+                        <div class="ro-brand">{{ order_item.product_variant.product.brand.name }}</div>
+                    {% endif %}
+                    <h4 class="ro-product-name">
+                        {% if order_item.product_variant and order_item.product_variant.product %}
+                            {{ order_item.product_variant.product.name }}
+                        {% else %}
+                            Product unavailable
+                        {% endif %}
+                    </h4>
+                </div>
+                
+                <div class="ro-summary-box">
+                    <div class="ro-summary-row">
+                        <span class="text-muted">SKU</span>
+                        <span class="font-monospace-500">{% if order_item.product_variant %}{{ order_item.product_variant.sku }}{% endif %}</span>
+                    </div>
+                    <div class="ro-summary-row">
+                        <span class="text-muted">Purchased Quantity</span>
+                        <span class="font-weight-500">{{ order_item.quantity }}</span>
+                    </div>
+                    <div class="ro-summary-row total">
+                        <span class="font-weight-600">Refundable Amount</span>
+                        <span class="ro-refund-val">₹{{ refund_amount|floatformat:2|intcomma }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT PANE: RETURN FORM -->
+            <div class="ro-card-lg">
+                <form method="post" action="{% url 'user_return_order_submit' order.order_number order_item.id %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <!-- REASON -->
+                    <div class="mb-24">
+                        <label for="id_reason_code" class="ro-label">
+                            Reason for return <span class="text-danger">*</span>
+                        </label>
+                        <div class="position-relative">
+                            <select name="reason_code" id="id_reason_code" class="hub-input ro-select" required>
+                                <option value="" disabled {% if not form.reason_code.value %}selected{% endif %}>Select a reason...</option>
+                                {% for code, label in form.fields.reason_code.choices %}
+                                    {% if code %}
+                                        <option value="{{ code }}" {% if form.reason_code.value == code %}selected{% endif %}>
+                                            {{ label }}
+                                        </option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                            <span class="material-icons ro-select-icon">expand_more</span>
+                        </div>
+                        {% if form.reason_code.errors %}
+                            {% for error in form.reason_code.errors %}
+                                <div class="ro-error-text">{{ error }}</div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+
+                    <!-- COMMENT -->
+                    <div class="mb-24">
+                        <label for="id_comment" class="ro-label">Additional Details</label>
+                        <textarea name="comment"
+                                  id="id_comment"
+                                  class="hub-input ro-textarea"
+                                  maxlength="1000"
+                                  placeholder="Tell us more about the issue (e.g., specific defects, size mismatch, missing parts)...">{{ form.comment.value|default:"" }}</textarea>
+                        {% if form.comment.errors %}
+                            {% for error in form.comment.errors %}
+                                <div class="ro-error-text">{{ error }}</div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+
+                    <!-- PHOTOS -->
+                    <div class="mb-32 ro-upload-box">
+                        <label class="ro-upload-label">
+                            <span class="material-icons text-muted">add_photo_alternate</span> Photos (Optional)
+                        </label>
+                        <p class="ro-upload-desc">
+                            Uploading clear pictures detailing the issue speeds up the return approval process. You can upload up to 3 images.
+                        </p>
+                        <input type="file" name="photos" id="id_photos" accept="image/*" multiple class="d-none">
+                        
+                        <div class="ro-upload-actions">
+                            <button type="button" class="ro-btn-browse" id="uploadBtn">
+                                <span class="material-icons" style="font-size: 18px;">cloud_upload</span> Browse Files
+                            </button>
+                            <div class="ro-preview-grid" id="photoPreviewGrid"></div>
+                        </div>
+                        
+                        {% if photo_errors %}
+                            <div class="ro-error-text">{{ photo_errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- SUBMIT -->
+                    <div class="ro-form-footer">
+                        <a href="{% url 'user_order_details' order.order_number %}" class="hub-btn-outline">Cancel</a>
+                        <button type="submit" class="lux-btn-primary">Submit Return Request</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block extra_js %}
+    <script>
+(function() {
+    const input = document.getElementById('id_photos');
+    const grid = document.getElementById('photoPreviewGrid');
+    const uploadBtn = document.getElementById('uploadBtn');
+    let dataTransfer = new DataTransfer();
+
+    uploadBtn.addEventListener('click', () => input.click());
+
+    function render() {
+        grid.innerHTML = '';
+        const files = Array.from(dataTransfer.files);
+
+        files.forEach((file, idx) => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const card = document.createElement('div');
+                card.className = 'ro-preview-card';
+                card.innerHTML = `
+                    <img src="${e.target.result}" alt="Preview ${idx + 1}" class="ro-preview-img">
+                    <button type="button" class="ro-preview-remove" data-idx="${idx}" title="Remove">
+                        <span class="material-icons">close</span>
+                    </button>
+                `;
+                grid.appendChild(card);
+            };
+            reader.readAsDataURL(file);
+        });
+
+        uploadBtn.style.display = files.length >= 3 ? 'none' : '';
+    }
+
+    input.addEventListener('change', function() {
+        const incoming = Array.from(this.files);
+        incoming.forEach(f => {
+            if (dataTransfer.files.length < 3) dataTransfer.items.add(f);
+        });
+        this.files = dataTransfer.files;
+        render();
+    });
+
+    grid.addEventListener('click', function(e) {
+        const btn = e.target.closest('.ro-preview-remove');
+        if (!btn) return;
+        const idx = parseInt(btn.dataset.idx, 10);
+        const newDT = new DataTransfer();
+        Array.from(dataTransfer.files).forEach((f, i) => {
+            if (i !== idx) newDT.items.add(f);
+        });
+        dataTransfer = newDT;
+        input.files = dataTransfer.files;
+        render();
+    });
+})();
+    </script>
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends "core/user/base_user.html" %}
+{% load static %}
+{% load humanize %}
+{% block head_title %}Payment Failed | REX CC{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'orders/user/css/order_failure.css' %}?v=1.1">
+{% endblock %}
+
+{% block content %}
+<div class="failure-page">
+    <div class="failure-container">
+        
+        <div class="failure-icon-wrapper">
+            <svg class="xmark-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                <circle class="xmark-circle" cx="26" cy="26" r="25"/>
+                <path class="xmark-x" d="M16,16 L36,36"/>
+                <path class="xmark-x xmark-x2" d="M36,16 L16,36"/>
+            </svg>
+        </div>
+        
+        <div class="failure-text-block">
+            <h1 class="failure-title">Payment Failed</h1>
+            <p class="failure-subtitle">We couldn't process your payment. No money has been deducted.</p>
+        </div>
+        
+        <div class="failure-info-card">
+            <div class="failure-info-row">
+                <span class="failure-info-label">Order Number</span>
+                <span class="failure-info-value">{{ order.order_number }}</span>
+            </div>
+            <div class="failure-info-row">
+                <span class="failure-info-label">Amount</span>
+                <span class="failure-info-value">₹{{ order.grand_total|floatformat:2|intcomma }}</span>
+            </div>
+            {% if payment %}
+            <div class="failure-info-row">
+                <span class="failure-info-label">Method</span>
+                <span class="failure-info-value">{{ payment.get_payment_method_display }}</span>
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="failure-actions">
+            {% if is_razorpay_failed %}
+                {% csrf_token %}
+                <button type="button" class="btn-retry-payment" data-order-number="{{ order.order_number }}" onclick="retryRazorpayPayment(this)">
+                    <span class="material-icons">refresh</span> Retry Payment
+                </button>
+            {% endif %}
+            <a href="{% url 'product_list' %}" class="btn-continue-shopping">
+                <span class="material-icons">shopping_bag</span> Continue Shopping
+            </a>
+        </div>
+        
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+    {% if is_razorpay_failed %}
+        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+        <script src="{% static 'orders/user/js/retry_payment.js' %}"></script>
+    {% endif %}
+{% endblock %}

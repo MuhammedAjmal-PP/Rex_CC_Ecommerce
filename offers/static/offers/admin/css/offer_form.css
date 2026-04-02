@@ -1,0 +1,352 @@
+/* ────────────────────────────────────────────────────────────────
+   offers/admin/css/offer_form.css
+   Mirrors product_form.css design patterns for the offer form.
+──────────────────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap');
+
+/* ── Container ──────────────────────────────────────────── */
+.form-container {
+    max-width: 1200px;
+    padding: 40px;
+}
+
+/* ── Error Banner ───────────────────────────────────────── */
+.form-errors {
+    background: #fff5f5;
+    border-left: 3px solid #dc3545;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+}
+
+.error-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    color: #dc2626;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.error-item .material-icons { font-size: 1rem; }
+
+.error-text {
+    display: block;
+    font-size: 0.75rem;
+    color: #dc2626;
+    margin-top: 6px;
+    font-family: 'Montserrat', sans-serif;
+}
+
+/* ── Form Card ──────────────────────────────────────────── */
+.form-card {
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 0;
+    margin-bottom: 24px;
+}
+
+.form-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+/* ── Columns ────────────────────────────────────────────── */
+.form-column-left {
+    border-right: 1px solid #e5e5e5;
+}
+
+.form-column-left,
+.form-column-right {
+    padding: 0;               /* sections handle inner padding */
+}
+
+/* ── Sections ───────────────────────────────────────────── */
+.form-section {
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.form-section:last-child { border-bottom: none; }
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 28px;
+    border-bottom: 1px solid #e5e5e5;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #000;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.section-title .material-icons { font-size: 1.1rem; color: #666; }
+
+.section-body { padding: 28px; }
+
+/* ── Form Groups ────────────────────────────────────────── */
+.form-group { margin-bottom: 20px; }
+.form-group:last-child { margin-bottom: 0; }
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.form-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #000;
+    margin-bottom: 8px;
+    font-family: 'Montserrat', sans-serif;
+}
+
+/* ── Inputs ─────────────────────────────────────────────── */
+.offer-form .form-control {
+    display: block;
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid #e5e5e5;
+    border-radius: 0;
+    background: #fff;
+    font-size: 0.9rem;
+    font-family: 'Montserrat', sans-serif;
+    color: #000;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.offer-form .form-control:focus { border-color: #000; }
+
+.offer-form .form-control::placeholder {
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+    color: #999;
+}
+
+/* ── Select Wrapper ─────────────────────────────────────── */
+.select-wrapper {
+    position: relative;
+}
+
+.select-wrapper select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 40px;
+    cursor: pointer;
+}
+
+.select-wrapper .material-icons {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #666;
+    pointer-events: none;
+    font-size: 1.2rem;
+}
+
+/* ── Target Hint / Placeholder ──────────────────────────── */
+.target-hint,
+.target-placeholder {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 16px;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.target-placeholder {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #999;
+}
+
+.target-placeholder .material-icons { font-size: 1rem; }
+
+/* ── Checkbox Tag Grid ──────────────────────────────────── */
+.checkbox-tag-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.checkbox-tag {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 16px;
+    border: 1px solid #e5e5e5;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #333;
+    transition: all 0.2s;
+    font-family: 'Montserrat', sans-serif;
+    user-select: none;
+}
+
+.checkbox-tag input[type="checkbox"] { display: none; }
+
+.tag-check {
+    font-size: 1rem;
+    display: none;
+}
+
+.checkbox-tag:has(input:checked) {
+    background: #000;
+    color: #fff;
+    border-color: #000;
+}
+
+.checkbox-tag:has(input:checked) .tag-check { display: inline; }
+
+/* ── Toggle Switch ──────────────────────────────────────── */
+.toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0;
+    margin-bottom: 16px;
+}
+
+.toggle-info { display: flex; flex-direction: column; }
+
+.toggle-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #000;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.toggle-desc {
+    font-size: 0.75rem;
+    color: #666;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 26px;
+    flex-shrink: 0;
+}
+
+.toggle-switch input { display: none; }
+
+.toggle-slider {
+    position: absolute;
+    inset: 0;
+    background: #e5e5e5;
+    border-radius: 26px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.toggle-slider::before {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    left: 3px;
+    bottom: 3px;
+    background: #fff;
+    border-radius: 50%;
+    transition: transform 0.2s;
+}
+
+.toggle-switch input:checked + .toggle-slider { background: #000; }
+.toggle-switch input:checked + .toggle-slider::before { transform: translateX(24px); }
+
+/* ── Meta Rows ──────────────────────────────────────────── */
+.meta-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-top: 1px solid #f5f5f5;
+}
+
+.meta-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #666;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.date-time {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+}
+
+.date-time .date {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #000;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.date-time .time {
+    font-size: 0.75rem;
+    color: #666;
+    font-family: 'Montserrat', sans-serif;
+}
+
+/* ── Form Actions ───────────────────────────────────────── */
+.form-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.btn-cancel,
+.btn-submit {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 18px 24px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+    font-family: 'Montserrat', sans-serif;
+    border-radius: 0;
+}
+
+.btn-cancel {
+    background: #fff;
+    color: #000;
+    border: 1px solid #e0e0e0;
+}
+
+.btn-cancel:hover {
+    background: #f5f5f5;
+    color: #000;
+}
+
+.btn-submit {
+    background: #000;
+    color: #fff;
+}
+
+.btn-submit:hover {
+    background: #333;
+    transform: translateY(-1px);
+}

@@ -1,0 +1,312 @@
+/* ===================================================================
+   REX CC - USER COMMON UTILITIES
+   Shared across all User Dashboards (Profile, Cart, Wishlist, Orders)
+   =================================================================== */
+
+:root {
+  --color-gold: #bfa15f;
+  --color-gold-dark: #b06825;
+  --color-text: #111;
+  --color-muted: #666;
+  --color-border: #eaeaea;
+  --color-bg: #fff;
+  --color-danger: #d32f2f;
+}
+
+/* ---------------------------------------------------------
+   LAYOUT CONTAINERS
+   --------------------------------------------------------- */
+.lux-hub-wrapper {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 60px 40px 100px;
+}
+
+/* Desktop only - no responsive breakpoints needed */
+
+.hub-card {
+  background: var(--color-bg);
+  border-radius: 4px;
+  border: 1px solid var(--color-border);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+}
+
+/* ---------------------------------------------------------
+   HEADER AREA
+   --------------------------------------------------------- */
+.hub-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 50px;
+}
+
+.hub-user-info {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+}
+
+.hub-user-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.hub-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    font-weight: 400;
+    color: #111;
+    margin: 0 0 8px 0;
+}
+
+.hub-contact {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.hub-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+
+/* ---------------------------------------------------------
+   BUTTONS
+   --------------------------------------------------------- */
+.hub-btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border: 1px solid var(--color-text);
+  color: var(--color-text);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-decoration: none;
+  background: transparent;
+  transition: all 0.3s ease;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.hub-btn-outline:hover {
+  background: var(--color-text);
+  color: #fff;
+}
+
+.lux-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--color-gold) 0%, var(--color-gold-dark) 100%);
+  color: #fff;
+  padding: 16px 32px;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-family: 'Montserrat', sans-serif;
+  border-radius: 3px;
+  transition: all 0.3s;
+  border: none;
+  cursor: pointer;
+}
+
+.lux-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(205, 127, 50, 0.3);
+  color: #fff;
+}
+
+/* ---------------------------------------------------------
+   SEARCH & FILTERS
+   --------------------------------------------------------- */
+.lux-search-form {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 3px;
+  padding: 0 16px;
+  height: 48px;
+  width: 320px;
+  transition: border-color 0.3s;
+}
+
+.lux-search-form:focus-within {
+  border-color: var(--color-gold);
+}
+
+.lux-search-form .search-icon {
+  font-size: 20px;
+  color: var(--color-muted);
+}
+
+.lux-search-input {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.88rem;
+  color: var(--color-text);
+  width: 100%;
+}
+
+.lux-search-input::placeholder {
+  color: #bbb;
+}
+
+.lux-filters-container {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+
+.lux-filter-pill {
+  display: inline-flex;
+  padding: 10px 20px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--color-muted);
+  text-decoration: none;
+  border: 1px solid var(--color-border);
+  border-radius: 3px;
+  transition: all 0.25s ease;
+  background: var(--color-bg);
+}
+
+.lux-filter-pill:hover {
+  border-color: var(--color-gold);
+  color: var(--color-gold-dark);
+}
+
+.lux-filter-pill.active {
+  background: var(--color-text);
+  color: #fff;
+  border-color: var(--color-text);
+}
+
+/* ---------------------------------------------------------
+   PAGINATION
+   --------------------------------------------------------- */
+.lux-pagination {
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+
+.lux-page-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--color-border);
+  border-radius: 3px;
+  color: var(--color-text);
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.lux-page-btn:hover {
+  border-color: var(--color-gold);
+  color: var(--color-gold);
+}
+
+.lux-page-numbers {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lux-page-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--color-text);
+  text-decoration: none;
+  border-radius: 3px;
+  transition: all 0.2s;
+}
+
+.lux-page-num:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.lux-page-num.active {
+  background: var(--color-text);
+  color: #fff;
+  font-weight: 700;
+}
+
+.lux-page-dots {
+  color: var(--color-muted);
+  padding: 0 4px;
+}
+
+/* ---------------------------------------------------------
+   EMPTY STATES
+   --------------------------------------------------------- */
+.lux-empty-state {
+  text-align: center;
+  padding: 80px 40px;
+  max-width: 600px;
+  margin: 0 auto;
+  border-radius: 4px;
+}
+
+.lux-empty-state .empty-icon {
+  font-size: 64px;
+  color: var(--color-gold);
+  margin-bottom: 24px;
+  opacity: 0.4;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.lux-empty-state h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.2rem;
+  color: #111;
+  margin: 0 0 12px 0;
+  font-weight: 600;
+}
+
+.lux-empty-state p {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.1rem;
+  color: #666;
+  margin: 0 0 30px 0;
+  line-height: 1.6;
+}
+
+/* Rotating icon for loaders using this state */
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.rotating {
+  animation: rotate 2s linear infinite;
+}

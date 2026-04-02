@@ -1,0 +1,697 @@
+/* -----------------------------------------------------------
+   REX CC ADMIN BLACK & WHITE LUXURY THEME
+   File: accounts/static/account/css/admin_auth.css
+   Premium Admin Authentication Interface
+   ----------------------------------------------------------- */
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:wght@400;600;700&display=swap');
+
+:root {
+    --bg-main: #F5F5F5;
+    --bg-card: #FFFFFF;
+    --text-pri: #000000;
+    --text-muted: #666666;
+    --text-light: #999999;
+    --accent-dark: #1A1A1A;
+    --btn-primary: #000000;
+    --btn-hover: #333333;
+    --border-light: #E0E0E0;
+    --border-dark: #CCCCCC;
+    --error-red: #DC3545;
+    --success-green: #28A745;
+
+    --font-head: 'Playfair Display', serif;
+    --font-body: 'Montserrat', sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--bg-main);
+    color: var(--text-pri);
+    font-family: var(--font-body);
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Brand Header */
+.auth-brand {
+    text-align: center;
+    padding: 40px 20px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.brand-logo {
+    font-family: var(--font-head);
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-pri);
+    text-decoration: none;
+    letter-spacing: 3px;
+    transition: color 0.3s ease;
+    display: inline-block;
+}
+
+.brand-logo:hover {
+    color: var(--text-muted);
+}
+
+.brand-accent {
+    color: var(--text-muted);
+}
+
+.brand-tagline {
+    font-size: 0.65rem;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    margin-top: 8px;
+    font-weight: 400;
+}
+
+/* Admin badge in header */
+.auth-brand .admin-badge {
+    display: inline-block;
+    background-color: var(--text-pri);
+    color: #FFFFFF;
+    font-size: 0.6rem;
+    font-weight: 600;
+    letter-spacing: 3px;
+    padding: 5px 18px;
+    margin: 0;
+    text-transform: uppercase;
+}
+
+/* Auth Layout Container */
+.auth-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+}
+
+.auth-card {
+    background-color: var(--bg-card);
+    width: 100%;
+    max-width: 480px;
+    padding: 60px 50px;
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--border-light);
+    border-radius: 0;
+    text-align: center;
+    animation: fadeIn 0.5s ease;
+}
+
+/* Typography */
+.auth-title {
+    font-family: var(--font-head);
+    font-size: 2rem;
+    color: var(--text-pri);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.auth-subtitle {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin-bottom: 40px;
+    line-height: 1.6;
+    font-weight: 400;
+}
+
+/* Admin-specific styling */
+.admin-header {
+    margin-bottom: 20px;
+}
+
+.admin-header .auth-title {
+    margin-bottom: 8px;
+}
+
+.admin-badge {
+    display: inline-block;
+    background-color: var(--text-pri);
+    color: #FFFFFF;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 3px;
+    padding: 6px 20px;
+    margin: 0 0 25px 0;
+    text-transform: uppercase;
+}
+
+.admin-welcome {
+    font-family: var(--font-head);
+    font-size: 1.8rem;
+    color: var(--text-pri);
+    font-weight: 400;
+    margin: 0 0 12px 0;
+    letter-spacing: 0.5px;
+}
+
+/* ========================================
+   FORM STYLING
+   ======================================== */
+
+.auth-form {
+    text-align: left;
+    margin-top: 35px;
+}
+
+/* Label styling */
+.auth-form label {
+    display: block;
+    color: var(--text-pri);
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+    text-align: left;
+}
+
+/* Input styling */
+.auth-form input[type="text"],
+.auth-form input[type="email"],
+.auth-form input[type="password"] {
+    width: 100%;
+    background-color: #FAFAFA;
+    border: 1px solid var(--border-light);
+    border-radius: 0;
+    color: var(--text-pri);
+    padding: 15px 18px;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    margin-bottom: 25px;
+}
+
+/* Password input wrapper for toggle button */
+.password-input-wrapper {
+    position: relative;
+    display: block;
+}
+
+.password-input-wrapper input[type="password"],
+.password-input-wrapper input[type="text"] {
+    padding-right: 50px;
+}
+
+/* Password toggle button */
+.password-toggle {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 50px;
+    width: 50px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    transition: all 0.3s ease;
+    padding: 0;
+}
+
+.password-toggle:hover {
+    color: var(--text-pri);
+}
+
+.password-toggle:focus {
+    outline: none;
+    color: var(--text-pri);
+}
+
+.password-toggle:active {
+    transform: scale(0.95);
+}
+
+.eye-icon {
+    display: block;
+    transition: transform 0.2s ease;
+}
+
+.auth-form input::placeholder {
+    color: var(--text-light);
+    font-weight: 300;
+}
+
+/* Focus state */
+.auth-form input:focus {
+    outline: none;
+    background-color: #FFFFFF;
+    border-color: var(--text-pri);
+    box-shadow: 0 0 0 1px var(--text-pri);
+}
+
+/* ========================================
+   BUTTONS
+   ======================================== */
+
+.btn-primary {
+    width: 100%;
+    padding: 16px;
+    background-color: var(--btn-primary);
+    color: #FFFFFF;
+    border: none;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 2px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    margin-top: 10px;
+    border-radius: 0;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    font-family: var(--font-body);
+}
+
+.btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+.btn-primary:hover::before {
+    left: 100%;
+}
+
+.btn-primary:hover {
+    background-color: var(--btn-hover);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transform: translateY(-1px);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+/* ========================================
+   LINKS
+   ======================================== */
+
+.auth-links {
+    margin-top: 25px;
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+.auth-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    position: relative;
+    font-weight: 500;
+}
+
+.auth-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: var(--text-pri);
+    transition: width 0.3s ease;
+}
+
+.auth-links a:hover {
+    color: var(--text-pri);
+}
+
+.auth-links a:hover::after {
+    width: 100%;
+}
+
+.auth-links-bottom {
+    margin-top: 30px;
+    padding-top: 25px;
+    border-top: 1px solid var(--border-light);
+    text-align: center;
+}
+
+.auth-links-bottom a {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    position: relative;
+    font-weight: 500;
+}
+
+.auth-links-bottom a::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: var(--text-pri);
+    transition: width 0.3s ease;
+}
+
+.auth-links-bottom a:hover {
+    color: var(--text-pri);
+}
+
+.auth-links-bottom a:hover::after {
+    width: 100%;
+}
+
+.auth-prompt {
+    color: var(--text-muted);
+    display: block;
+    margin-bottom: 8px;
+    font-size: 0.85rem;
+}
+
+.auth-link-accent {
+    color: var(--text-pri) !important;
+    font-weight: 600;
+}
+
+.auth-link-accent:hover {
+    color: var(--text-muted) !important;
+}
+
+/* ========================================
+   FORM VALIDATION ERRORS
+   ======================================== */
+
+/* Error messages container */
+.form-errors {
+    background-color: #FFF5F5;
+    border-left: 3px solid #DC3545;
+    padding: 15px 20px;
+    margin-bottom: 25px;
+    border-radius: 0;
+}
+
+.form-errors ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.form-errors li {
+    color: #DC3545;
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-bottom: 5px;
+}
+
+.form-errors li:last-child {
+    margin-bottom: 0;
+}
+
+/* Field-specific errors */
+.error,
+.errorlist {
+    color: #DC3545;
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin-top: 5px;
+    display: block;
+}
+
+.errorlist {
+    list-style: none;
+    padding: 0;
+    margin: 8px 0 0 0;
+}
+
+.errorlist li {
+    padding: 8px 12px;
+    background-color: #FFF5F5;
+    border-left: 2px solid #DC3545;
+    margin-bottom: 5px;
+}
+
+.errorlist li:last-child {
+    margin-bottom: 0;
+}
+
+/* Help text for password requirements */
+.helptext {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 5px;
+    line-height: 1.4;
+}
+
+.helptext ul {
+    margin: 5px 0 0 0;
+    padding-left: 20px;
+    list-style: disc;
+}
+
+.helptext li {
+    margin-bottom: 3px;
+    color: var(--text-muted);
+}
+
+/* Input field error state */
+input.error,
+input:invalid:not(:focus):not(:placeholder-shown) {
+    border-color: #DC3545;
+}
+
+/* Non-field errors (form-level errors) */
+.auth-form .errorlist.nonfield {
+    background-color: #FFF5F5;
+    border-left: 3px solid #DC3545;
+    padding: 15px 20px;
+    margin-bottom: 25px;
+    list-style: none;
+}
+
+.auth-form .errorlist.nonfield li {
+    background: none;
+    border: none;
+    padding: 0;
+    margin-bottom: 5px;
+    color: #DC3545;
+    font-size: 0.85rem;
+}
+
+.auth-error-box {
+    background-color: #FFF5F5;
+    border: 1px solid var(--error-red);
+    border-radius: 0;
+    padding: 18px;
+    margin: 25px 0;
+    text-align: center;
+}
+
+.auth-error-box p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--error-red);
+}
+
+/* ========================================
+   MESSAGES
+   ======================================== */
+
+.message-container {
+    position: fixed;
+    top: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2000;
+    width: 90%;
+    max-width: 450px;
+}
+
+.message {
+    padding: 16px 22px;
+    margin-bottom: 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-dark);
+    border-radius: 0;
+    text-align: center;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    animation: slideDown 0.4s ease;
+    font-weight: 500;
+}
+
+.message-icon {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.message-success {
+    border-color: var(--success-green);
+    color: var(--success-green);
+    background-color: #F0FFF4;
+}
+
+.message-success .message-icon {
+    color: var(--success-green);
+}
+
+.message-error {
+    border-color: var(--error-red);
+    color: var(--error-red);
+    background-color: #FFF5F5;
+}
+
+.message-error .message-icon {
+    color: var(--error-red);
+}
+
+.message-warning {
+    border-color: #f59e0b;
+    color: #92400e;
+    background-color: #fffbeb;
+}
+
+.message-warning .message-icon {
+    color: #f59e0b;
+}
+
+.message-info {
+    border-color: var(--text-muted);
+    color: var(--text-muted);
+}
+
+.message-info .message-icon {
+    color: var(--text-muted);
+}
+
+/* ========================================
+   FOOTER
+   ======================================== */
+
+.auth-footer {
+    text-align: center;
+    padding: 25px;
+    font-size: 0.7rem;
+    color: var(--text-light);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.auth-footer p {
+    margin: 0;
+}
+
+/* ========================================
+   ANIMATIONS
+   ======================================== */
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-15px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ========================================
+   DESKTOP-ONLY OVERLAY
+   (moved from inline <style> in admin_base.html)
+   ======================================== */
+
+#desktop-only-overlay {
+    display: none;
+}
+
+@media (max-width: 1023px) {
+    #desktop-only-overlay {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        z-index: 999999;
+        inset: 0;
+        background-color: #f8f9fa;
+        color: #212529;
+        text-align: center;
+        padding: 2rem;
+    }
+
+    body,
+    html {
+        overflow: hidden !important;
+        height: 100vh;
+        margin: 0;
+        padding: 0;
+    }
+
+    #desktop-only-overlay .desktop-only-content {
+        max-width: 400px;
+    }
+
+    #desktop-only-overlay .desktop-icon {
+        font-size: 4rem;
+        color: #6c757d;
+        margin-bottom: 1rem;
+    }
+
+    #desktop-only-overlay h2 {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+            "Helvetica Neue", Arial, sans-serif;
+        font-size: 1.75rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    #desktop-only-overlay p {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+            "Helvetica Neue", Arial, sans-serif;
+        font-size: 1rem;
+        color: #495057;
+        line-height: 1.5;
+        margin-bottom: 1rem;
+    }
+
+    #desktop-only-overlay .small-text {
+        font-size: 0.85rem;
+        color: #adb5bd;
+    }
+
+    body > :not(#desktop-only-overlay) {
+        display: none !important;
+    }
+}

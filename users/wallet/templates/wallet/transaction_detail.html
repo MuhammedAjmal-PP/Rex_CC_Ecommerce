@@ -1,0 +1,166 @@
+{% extends "core/user/base_user.html" %}
+{% load static %}
+{% load humanize %}
+{% block head_title %}Transaction · {{ txn.transaction_id }} | REX CC{% endblock %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'wallet/css/transaction_detail.css' %}?v=3.0">
+{% endblock %}
+{% block content %}
+<div class="lux-hub-wrapper">
+
+    <!-- ══════════════════════════════════════════════
+         HEADER — Transaction type + status badge
+         ══════════════════════════════════════════════ -->
+    <div class="hub-header mb-24">
+        <div class="hub-user-info">
+            <div class="hub-user-details">
+                <h1 class="hub-name">{{ txn.get_transaction_type_display }}</h1>
+                <div class="hub-contact">
+                    <span class="font-montserrat">{{ txn.transaction_id }}</span>
+                </div>
+            </div>
+        </div>
+        <div class="hub-header-actions">
+            <span class="td-header-badge status-{{ txn.status|lower }}">
+                {{ txn.get_status_display }}
+            </span>
+            <a href="{% url 'user_wallet' %}" class="hub-btn-outline">
+                <span class="material-icons" style="font-size:18px; margin-right:6px;">arrow_back</span>
+                Back to Wallet
+            </a>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════
+         MAIN GRID
+         ══════════════════════════════════════════════ -->
+    <div class="td-grid">
+
+        <!-- ── LEFT: Transaction Info ── -->
+        <div class="td-card accent-gold">
+            <div class="td-card-head">
+                <span class="material-icons">receipt_long</span>
+                <span class="td-card-head-title">Transaction Info</span>
+            </div>
+            <div class="td-card-body">
+
+                <div class="td-row">
+                    <span class="td-label">Transaction ID</span>
+                    <span class="td-value td-value-mono">{{ txn.transaction_id }}</span>
+                </div>
+
+                <div class="td-row">
+                    <span class="td-label">Type</span>
+                    <span class="td-value">
+                        <span class="td-badge td-badge-type">{{ txn.get_transaction_type_display }}</span>
+                    </span>
+                </div>
+
+                <div class="td-row">
+                    <span class="td-label">Payment Method</span>
+                    <span class="td-value">{{ txn.get_payment_method_display }}</span>
+                </div>
+
+                <div class="td-row">
+                    <span class="td-label">Amount</span>
+                    <span class="td-value td-value-amount">₹{{ txn.amount|floatformat:2|intcomma }}</span>
+                </div>
+
+                <div class="td-row">
+                    <span class="td-label">Status</span>
+                    <span class="td-value">
+                        <span class="td-badge td-badge-{{ txn.status|lower }}">{{ txn.get_status_display }}</span>
+                    </span>
+                </div>
+
+                {% if txn.note %}
+                <div class="td-row">
+                    <span class="td-label">Note</span>
+                    <span class="td-value">{{ txn.note }}</span>
+                </div>
+                {% endif %}
+
+                <div class="td-row">
+                    <span class="td-label">Created</span>
+                    <span class="td-value">{{ txn.created_at|date:"d M Y, h:i A" }}</span>
+                </div>
+
+                <div class="td-row">
+                    <span class="td-label">Updated</span>
+                    <span class="td-value">{{ txn.updated_at|date:"d M Y, h:i A" }}</span>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ── RIGHT COLUMN ── -->
+        <div class="td-col-right">
+
+            {% if wallet_txn %}
+            <!-- Wallet Impact -->
+            <div class="td-card {% if wallet_txn.label == 'CREDIT' %}accent-credit{% else %}accent-debit{% endif %}">
+                <div class="td-card-head">
+                    <span class="material-icons">account_balance_wallet</span>
+                    <span class="td-card-head-title">Wallet Impact</span>
+                </div>
+                <div class="td-card-body">
+
+                    <div class="td-row">
+                        <span class="td-label">Direction</span>
+                        <span class="td-value">
+                            <span class="td-badge td-badge-{{ wallet_txn.label|lower }}">
+                                {{ wallet_txn.label }}
+                            </span>
+                        </span>
+                    </div>
+
+                    <div class="td-row">
+                        <span class="td-label">Balance Before</span>
+                        <span class="td-value">₹{{ wallet_txn.balance_before|floatformat:2|intcomma }}</span>
+                    </div>
+
+                    <div class="td-row">
+                        <span class="td-label">Balance After</span>
+                        <span class="td-value td-value-amount">₹{{ wallet_txn.balance_after|floatformat:2|intcomma }}</span>
+                    </div>
+
+                    <div class="td-row">
+                        <span class="td-label">Date</span>
+                        <span class="td-value">{{ wallet_txn.created_at|date:"d M Y, h:i A" }}</span>
+                    </div>
+
+                </div>
+            </div>
+            {% endif %}
+
+            {% if linked_obj %}
+            <!-- Linked Record -->
+            <div class="td-card">
+                <div class="td-card-head">
+                    <span class="material-icons">link</span>
+                    <span class="td-card-head-title">Linked Record</span>
+                </div>
+                <div class="td-card-body">
+
+                    <div class="td-row">
+                        <span class="td-label">Type</span>
+                        <span class="td-value">{{ txn.content_type }}</span>
+                    </div>
+
+                    <div class="td-row">
+                        <span class="td-label">Reference</span>
+                        <span class="td-value">{{ linked_obj }}</span>
+                    </div>
+
+                </div>
+            </div>
+            {% endif %}
+
+        </div>
+        <!-- end right col -->
+
+    </div>
+    <!-- end grid -->
+
+</div>
+{% endblock %}

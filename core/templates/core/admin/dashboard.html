@@ -1,0 +1,194 @@
+{% extends 'core/admin/base_admin.html' %}
+{% load static %}
+{% block title %}
+    Dashboard
+{% endblock title %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'core/admin/css/shared/admin_table_listing.css' %}">
+    <link rel="stylesheet" href="{% static 'core/admin/css/dashboard.css' %}">
+{% endblock extra_css %}
+{% block header_title %}
+    Dashboard Overview
+{% endblock header_title %}
+{% block header_subtitle %}
+    Welcome back, Admin
+{% endblock header_subtitle %}
+{% block content %}
+    <!-- Statistics Cards -->
+    <div class="stats-container">
+        <div class="stat-card">
+            <div class="stat-icon revenue">
+                <span class="material-icons fs-2">account_balance_wallet</span>
+            </div>
+            <div class="stat-content">
+                <p class="stat-label">Total Revenue</p>
+                <h3 class="stat-value">₹{{ summary.total_revenue|floatformat:2 }}</h3>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon orders">
+                <span class="material-icons fs-2">shopping_bag</span>
+            </div>
+            <div class="stat-content">
+                <p class="stat-label">Total Orders</p>
+                <h3 class="stat-value">{{ summary.total_orders }}</h3>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon users">
+                <span class="material-icons fs-2">group</span>
+            </div>
+            <div class="stat-content">
+                <p class="stat-label">Total Customers</p>
+                <h3 class="stat-value">{{ summary.total_customers }}</h3>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon products">
+                <span class="material-icons fs-2">inventory_2</span>
+            </div>
+            <div class="stat-content">
+                <p class="stat-label">Total Products</p>
+                <h3 class="stat-value">{{ summary.total_products }}</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- Revenue & Orders Chart -->
+    <div class="content-section chart-section">
+        <div class="section-header">
+            <h2>Revenue & Orders</h2>
+            <div class="chart-filters">
+                <button class="chart-filter-btn" data-filter="daily">Daily</button>
+                <button class="chart-filter-btn" data-filter="weekly">Weekly</button>
+                <button class="chart-filter-btn active" data-filter="monthly">Monthly</button>
+                <button class="chart-filter-btn" data-filter="yearly">Yearly</button>
+            </div>
+        </div>
+        <div class="chart-container">
+            <canvas id="revenueChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Best Selling Leaderboards -->
+    <div class="leaderboard-grid">
+
+        <!-- Top 10 Products -->
+        <div class="content-section leaderboard-card">
+            <div class="section-header">
+                <h2>Best Selling Products</h2>
+                <span class="badge-top">Top 10</span>
+            </div>
+            <div class="table-container" style="margin: 0; box-shadow: none; border: none;">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Product</th>
+                            <th>Qty Sold</th>
+                            <th>Revenue</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in top_products %}
+                        <tr>
+                            <td style="text-align: center;">
+                                <span class="rank-badge rank-{{ forloop.counter }}">{{ forloop.counter }}</span>
+                            </td>
+                            <td class="product-name">{{ p.name }}</td>
+                            <td>{{ p.total_qty }}</td>
+                            <td>₹{{ p.total_revenue|floatformat:2 }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="empty-state">No data available</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Top 10 Categories -->
+        <div class="content-section leaderboard-card">
+            <div class="section-header">
+                <h2>Best Selling Categories</h2>
+                <span class="badge-top">Top 10</span>
+            </div>
+            <div class="table-container" style="margin: 0; box-shadow: none; border: none;">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Category</th>
+                            <th>Qty Sold</th>
+                            <th>Revenue</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for c in top_categories %}
+                        <tr>
+                            <td style="text-align: center;">
+                                <span class="rank-badge rank-{{ forloop.counter }}">{{ forloop.counter }}</span>
+                            </td>
+                            <td class="product-name">{{ c.name }}</td>
+                            <td>{{ c.total_qty }}</td>
+                            <td>₹{{ c.total_revenue|floatformat:2 }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="empty-state">No data available</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Top 10 Brands -->
+        <div class="content-section leaderboard-card">
+            <div class="section-header">
+                <h2>Best Selling Brands</h2>
+                <span class="badge-top">Top 10</span>
+            </div>
+            <div class="table-container" style="margin: 0; box-shadow: none; border: none;">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Brand</th>
+                            <th>Qty Sold</th>
+                            <th>Revenue</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for b in top_brands %}
+                        <tr>
+                            <td style="text-align: center;">
+                                <span class="rank-badge rank-{{ forloop.counter }}">{{ forloop.counter }}</span>
+                            </td>
+                            <td class="product-name">{{ b.name }}</td>
+                            <td>{{ b.total_qty }}</td>
+                            <td>₹{{ b.total_revenue|floatformat:2 }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="empty-state">No data available</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+{% endblock content %}
+
+{% block extra_js %}
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+    <script>
+        const CHART_DATA_URL = "{% url 'admin_dashboard_chart_data' %}";
+    </script>
+    <script src="{% static 'core/admin/js/dashboard.js' %}"></script>
+{% endblock extra_js %}

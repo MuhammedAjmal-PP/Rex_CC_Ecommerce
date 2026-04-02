@@ -1,0 +1,217 @@
+/* ============================================================
+   REX CC ADMIN - RETURN LIST STYLES
+   File: orders/static/orders/admin/css/return_list.css
+   ============================================================ */
+
+.fs-64 { font-size: 64px; }
+
+/* ========================================
+   STATISTICS CARDS
+   ======================================== */
+
+.stats-container {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 24px;
+    margin: 40px;
+    margin-bottom: 32px;
+}
+
+.stat-card {
+    background: #ffffff;
+    padding: 28px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    color: inherit;
+    border: 1px solid transparent;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.16);
+    border-color: #000000;
+    text-decoration: none;
+    color: inherit;
+}
+
+.stat-card.active {
+    border: 2px solid #000000;
+}
+
+.stat-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    background: #000000;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover .stat-icon {
+    transform: scale(1.05);
+}
+
+/* Colored stat-icon variants */
+.stat-icon.total { background: #1a1a1a; }
+.stat-icon.requested { background: #b45309; }
+.stat-icon.approved { background: #1e40af; }
+.stat-icon.rejected { background: #991b1b; }
+.stat-icon.completed { background: #1a6b3c; }
+
+.stat-content {
+    flex: 1;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #666666;
+    margin: 0 0 8px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0;
+    color: #000000;
+}
+
+/* ========================================
+   RETURN STATUS BADGES
+   ======================================== */
+
+.return-status-requested {
+    background: #fef3c7;
+    color: #92400e;
+    box-shadow: 0 4px 12px rgba(146, 64, 14, 0.15);
+}
+
+.return-status-approved {
+    background: #dbeafe;
+    color: #1e40af;
+    box-shadow: 0 4px 12px rgba(30, 64, 175, 0.15);
+}
+
+.return-status-rejected {
+    background: #fee2e2;
+    color: #991b1b;
+    box-shadow: 0 4px 12px rgba(153, 27, 27, 0.15);
+}
+
+.return-status-completed {
+    background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(86, 171, 47, 0.3);
+}
+
+/* ========================================
+   RETURN NUMBER LINK
+   ======================================== */
+
+.return-number {
+    font-weight: 700;
+    color: #000000;
+    font-size: 0.85rem;
+    letter-spacing: 0.3px;
+}
+
+.item-info-link:hover .return-number {
+    text-decoration: underline;
+}
+
+/* ========================================
+   CUSTOMER INFO
+   ======================================== */
+
+.customer-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.customer-name {
+    font-weight: 600;
+    color: #000000;
+    font-size: 0.9rem;
+}
+
+.customer-email {
+    font-size: 0.8rem;
+    color: #666666;
+}
+
+/* ========================================
+   REFUND STATUS
+   ======================================== */
+
+.refund-status-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    background: #f3f4f6;
+    color: #374151;
+    border: 1px solid #e5e7eb;
+}
+
+.refund-status-paid, .refund-status-completed {
+    background: #d1fae5;
+    color: #065f46;
+    border-color: #a7f3d0;
+}
+
+.refund-status-pending {
+    background: #ffedd5;
+    color: #9a3412;
+    border-color: #fed7aa;
+}
+
+.refund-amount {
+    font-size: 0.75rem;
+    color: #666;
+    margin-top: 2px;
+}
+
+.no-refund {
+    color: #999;
+    font-size: 0.8rem;
+}
+
+
+
+/* ========================================
+   TABLE ALIGNMENT
+   ======================================== */
+
+.admin-table tbody td {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.admin-table tbody td:first-child,
+.admin-table tbody td:nth-child(2),
+.admin-table tbody td:nth-child(3) {
+    text-align: left;
+}
+
+/* ========================================
+   DESKTOP LAYOUT ADJUSTMENTS
+   ======================================== */
+
+@media (max-width: 1400px) {
+    .stats-container {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}

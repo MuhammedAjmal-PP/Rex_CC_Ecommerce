@@ -1,0 +1,248 @@
+{% extends "core/admin/base_admin.html" %}
+{% load static %}
+{% load cloudinary %}
+{% block title %}
+    View Variant - {{ variant.sku }}
+{% endblock title %}
+{% block extra_css %}
+    <link rel="stylesheet"
+          href="{% static 'catalog/css/admin/product/variant_view.css' %}">
+{% endblock extra_css %}
+{% block header_title %}
+    View Variant
+{% endblock header_title %}
+{% block header_subtitle %}
+    {{ variant.sku }}
+{% endblock header_subtitle %}
+{% block content %}
+    <div class="form-container">
+        <!-- Back Link -->
+        <div class="product-banner">
+            <div class="product-banner-content">
+                {% if product.thumbnail %}
+                    <img src="{{ product.thumbnail.url }}"
+                         alt="{{ product.name }}"
+                         class="product-banner-img"
+                         width="60"
+                         height="60">
+                {% else %}
+                    <div class="product-banner-placeholder">
+                        <span class="material-icons">watch</span>
+                    </div>
+                {% endif %}
+                <div class="product-banner-info">
+                    <span class="product-banner-label">Parent Product</span>
+                    <h2 class="product-banner-name">{{ product.name }}</h2>
+                    <span class="product-banner-brand">{{ product.brand.name }}</span>
+                </div>
+            </div>
+            <a href="{% url 'admin_product_view' product.id %}"
+               class="product-banner-link">
+                <span class="material-icons">arrow_back</span>
+                Back to Product
+            </a>
+        </div>
+        <!-- Hero Section -->
+        <div class="variant-hero">
+            <!-- Image Gallery with Horizontal Scroll -->
+            <div class="hero-gallery">
+                <div class="hero-main-image{% if not images %} empty{% endif %}"
+                     id="mainImage"
+                     onmousemove="zoom(event)"
+                     onmouseleave="resetZoom()">
+                    {% if images %}
+                        {% for image in images %}
+                            {% if image.is_primary %}
+                                <img src="{{ image.image.url }}"
+                                     alt="{{ variant.sku }}"
+                                     id="mainImageSrc"
+                                     width="400"
+                                     height="400">
+                            {% endif %}
+                        {% endfor %}
+                        {% if not images.0.is_primary %}
+                            <img src="{{ images.0.image.url }}"
+                                 alt="{{ variant.sku }}"
+                                 id="mainImageSrc"
+                                 width="400"
+                                 height="400">
+                        {% endif %}
+                    {% else %}
+                        <span class="material-icons">hide_image</span>
+                    {% endif %}
+                </div>
+                {% if images %}
+                    <div class="gallery-count">
+                        <span class="material-icons">photo_library</span>
+                        {{ images.count }} image{{ images.count|pluralize }}
+                    </div>
+                    <div class="hero-thumbnails">
+                        {% for image in images %}
+                            <div class="hero-thumb{% if forloop.first %} active{% endif %}{% if image.is_primary %} primary{% endif %}"
+                                 onclick="changeMainImage('{{ image.image.url }}', this)">
+                                <img src="{{ image.image.url }}"
+                                     alt="Image {{ forloop.counter }}"
+                                     width="72"
+                                     height="72">
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            <!-- Variant Info -->
+            <div class="hero-info">
+                <!-- Status Badges -->
+                <div class="hero-badges">
+                    {% if variant.is_deleted %}
+                        <span class="badge badge-deleted">
+                            <span class="material-icons">delete</span>
+                            Deleted
+                        </span>
+                    {% elif variant.is_drafted %}
+                        <span class="badge badge-draft">
+                            <span class="material-icons">edit_note</span>
+                            Draft
+                        </span>
+                    {% else %}
+                        <span class="badge badge-published">
+                            <span class="material-icons">check_circle</span>
+                            Published
+                        </span>
+                    {% endif %}
+                    {% if variant.is_featured %}
+                        <span class="badge badge-featured">
+                            <span class="material-icons">star</span>
+                            Featured
+                        </span>
+                    {% endif %}
+                </div>
+                <span class="hero-sku">SKU: {{ variant.sku }}</span>
+                <h1 class="hero-title">{{ product.name }}</h1>
+                <span class="hero-brand">{{ product.brand.name }}</span>
+                <div class="hero-price">₹{{ variant.price|floatformat:2 }}</div>
+                <div class="hero-stock">
+                    <span class="stock-count">{{ variant.stock }} in stock</span>
+                    {% if variant.stock == 0 %}
+                        <span class="stock-badge out-of-stock">Out of Stock</span>
+                    {% elif variant.stock < 10 %}
+                        <span class="stock-badge low-stock">Low Stock</span>
+                    {% else %}
+                        <span class="stock-badge in-stock">Available</span>
+                    {% endif %}
+                </div>
+                <!-- Action Buttons -->
+                <div class="hero-actions">
+                    <a href="{% url 'admin_variant_edit' product.id variant.id %}"
+                       class="action-btn action-btn-primary">
+                        <span class="material-icons">edit</span>
+                        Edit Variant
+                    </a>
+                    {% if variant.is_drafted %}
+                        <a href="{% url 'admin_variant_draft_toggle' product.id variant.id %}"
+                           class="action-btn action-btn-success">
+                            <span class="material-icons">publish</span>
+                            Publish
+                        </a>
+                    {% else %}
+                        <a href="{% url 'admin_variant_draft_toggle' product.id variant.id %}"
+                           class="action-btn action-btn-warning">
+                            <span class="material-icons">unpublished</span>
+                            Unpublish
+                        </a>
+                    {% endif %}
+                    {% if variant.is_deleted %}
+                        <a href="{% url 'admin_variant_delete_toggle' product.id variant.id %}"
+                           class="action-btn action-btn-success">
+                            <span class="material-icons">restore</span>
+                            Restore
+                        </a>
+                    {% else %}
+                        <a href="javascript:void(0)"
+                           class="action-btn action-btn-danger"
+                           onclick="AdminAlert.confirm('Delete Variant', 'Are you sure you want to delete this variant?', function() { window.location.href='{% url 'admin_variant_delete_toggle' product.id variant.id %}'; });">
+                            <span class="material-icons">delete</span>
+                            Delete
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <!-- Specifications Section -->
+        <div class="specs-section">
+            <div class="card-header">
+                <span class="material-icons">tune</span>
+                <span>Specifications</span>
+            </div>
+            <div class="card-body">
+                <div class="specs-grid">
+                    <div class="form-group">
+                        <label class="form-label">Dial Color</label>
+                        <div class="detail-value {% if not variant.dial_color %}empty{% endif %}">
+                            {{ variant.dial_color|default:"Not specified" }}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Case Size</label>
+                        <div class="detail-value {% if not variant.case_size_mm %}empty{% endif %}">
+                            {% if variant.case_size_mm %}
+                                {{ variant.case_size_mm }} mm
+                            {% else %}
+                                Not specified
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Case Material</label>
+                        <div class="detail-value {% if not variant.case_material %}empty{% endif %}">
+                            {{ variant.case_material|default:"Not specified" }}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Movement Type</label>
+                        <div class="detail-value {% if not variant.movement_type %}empty{% endif %}">
+                            {{ variant.movement_type|default:"Not specified" }}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Strap Color</label>
+                        <div class="detail-value {% if not variant.strap_color %}empty{% endif %}">
+                            {{ variant.strap_color|default:"Not specified" }}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Strap Material</label>
+                        <div class="detail-value {% if not variant.strap_material %}empty{% endif %}">
+                            {{ variant.strap_material|default:"Not specified" }}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Discount</label>
+                        <div class="detail-value {% if not variant.discount_percentage %}empty{% endif %}">
+                            {{ variant.discount_percentage|default:"0" }}%
+                        </div>
+                    </div>
+                </div>
+                <!-- Meta Info -->
+                <div class="meta-info">
+                    <div class="meta-item">
+                        <span class="meta-item-label">Created</span>
+                        <span class="meta-item-value">{{ variant.created_at|date:"M d, Y" }}</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-item-label">Last Updated</span>
+                        <span class="meta-item-value">{{ variant.updated_at|date:"M d, Y H:i" }}</span>
+                    </div>
+                    {% if variant.is_deleted %}
+                        <div class="meta-item">
+                            <span class="meta-item-label">Deleted</span>
+                            <span class="meta-item-value">{{ variant.deleted_at|date:"M d, Y H:i" }}</span>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+{% block extra_js %}
+    <script src="{% static 'catalog/js/admin/product/variant_view.js' %}"></script>
+{% endblock extra_js %}

@@ -1,0 +1,245 @@
+{% extends 'core/admin/base_admin.html' %}
+{% load static %}
+
+{% block title %}Returns{% endblock title %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'core/admin/css/shared/admin_search_filter.css' %}">
+    <link rel="stylesheet" href="{% static 'core/admin/css/shared/admin_table_listing.css' %}">
+    <link rel="stylesheet" href="{% static 'orders/admin/css/return_list.css' %}">
+{% endblock extra_css %}
+
+{% block header_title %}Returns{% endblock header_title %}
+{% block header_subtitle %}Manage customer return requests{% endblock header_subtitle %}
+
+{% block content %}
+
+    <!-- Statistics Cards -->
+    <div class="stats-container">
+        <div class="stat-card {% if status_filter == 'ALL' %}active{% endif %}">
+            <div class="stat-icon total">
+                <span class="material-icons fs-2">assignment_return</span>
+            </div>
+            <div class="stat-content">
+                <p class="stat-label">Total Returns</p>
+                <h3 class="stat-value">{{ status_counts.total }}</h3>
+            </div>
+        </div>
+        <div class="stat-card {% if status_filter == 'REQUESTED' %}active{% endif %}">
+            <div class="stat-icon requested">
+                <span class="material-icons fs-2">pending_actions</span>
+            </div>
+            <div class="stat-content">
+                <p class="stat-label">Requested</p>
+                <h3 class="stat-value">{{ status_counts.requested }}</h3>
+            </div>
+        </div>
+        <div class="stat-card {% if status_filter == 'APPROVED' %}active{% endif %}">
+            <div class="stat-icon approved">
+                <span class="material-icons fs-2">thumb_up</span>
+            </div>
+            <div class="stat-content">
+                <p class="stat-label">Approved</p>
+                <h3 class="stat-value">{{ status_counts.approved }}</h3>
+            </div>
+        </div>
+        <div class="stat-card {% if status_filter == 'REJECTED' %}active{% endif %}">
+            <div class="stat-icon rejected">
+                <span class="material-icons fs-2">thumb_down</span>
+            </div>
+            <div class="stat-content">
+                <p class="stat-label">Rejected</p>
+                <h3 class="stat-value">{{ status_counts.rejected }}</h3>
+            </div>
+        </div>
+        <div class="stat-card {% if status_filter == 'COMPLETED' %}active{% endif %}">
+            <div class="stat-icon completed">
+                <span class="material-icons fs-2">check_circle</span>
+            </div>
+            <div class="stat-content">
+                <p class="stat-label">Completed</p>
+                <h3 class="stat-value">{{ status_counts.completed }}</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search and Filter Bar -->
+    <div class="search-filter-bar">
+        <div class="search-box">
+            <form method="get" class="search-form">
+                <input type="hidden" name="status" value="{{ status_filter }}">
+                <div class="search-input-wrapper">
+                    <input type="text"
+                           name="qs"
+                           placeholder="Search by return number, order number or email..."
+                           value="{{ search_query }}"
+                           class="form-control">
+                    <button type="submit" class="search-btn">
+                        <span class="material-icons">search</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+        <div class="filter-group">
+            <form method="get" class="filter-form">
+                <input type="hidden" name="qs" value="{{ search_query }}">
+                <div class="select-wrapper">
+                    <span class="material-icons filter-icon">filter_alt</span>
+                    <select name="status" class="status-select" onchange="this.form.submit()">
+                        <option value="all" {% if status_filter == 'ALL' %}selected{% endif %}>Status: All</option>
+                        <option value="requested" {% if status_filter == 'REQUESTED' %}selected{% endif %}>Status: Requested</option>
+                        <option value="approved" {% if status_filter == 'APPROVED' %}selected{% endif %}>Status: Approved</option>
+                        <option value="rejected" {% if status_filter == 'REJECTED' %}selected{% endif %}>Status: Rejected</option>
+                        <option value="completed" {% if status_filter == 'COMPLETED' %}selected{% endif %}>Status: Completed</option>
+                    </select>
+                    <span class="material-icons dropdown-icon">arrow_drop_down</span>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Returns Table -->
+    <div class="table-container">
+        {% if returns %}
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Return #</th>
+                        <th>Order #</th>
+                        <th>Customer</th>
+
+                        <th>Status</th>
+                        <th>Refund</th>
+                        <th>Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ret in returns %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'admin_return_detail' ret.return_number %}" class="item-info-link">
+                                    <span class="return-number">{{ ret.return_number }}</span>
+                                </a>
+                            </td>
+                            <td>
+                                {% if ret.order_item and ret.order_item.order %}
+                                    <a href="{% url 'admin_order_details' ret.order_item.order.order_number %}"
+                                       class="item-info-link">
+                                        {{ ret.order_item.order.order_number }}
+                                    </a>
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if ret.order_item and ret.order_item.order and ret.order_item.order.user %}
+                                    <div class="customer-info">
+                                        <span class="customer-name">
+                                            {% if ret.order_item.order.user.first_name or ret.order_item.order.user.last_name %}
+                                                {{ ret.order_item.order.user.first_name }} {{ ret.order_item.order.user.last_name }}
+                                            {% else %}
+                                                —
+                                            {% endif %}
+                                        </span>
+                                        <span class="customer-email">{{ ret.order_item.order.user.email|truncatechars:28 }}</span>
+                                    </div>
+                                {% else %}
+                                    <span class="customer-email">—</span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                <span class="status-badge return-status-{{ ret.status|lower }}">{{ ret.status }}</span>
+                            </td>
+                            <td>
+                                {% with ret.transactions.all|first as refund_txn %}
+                                    {% if refund_txn %}
+                                        <span class="refund-status-badge refund-status-{{ refund_txn.status|lower }}">
+                                            {{ refund_txn.get_status_display }}
+                                        </span>
+                                        <div class="refund-amount">₹{{ refund_txn.amount|floatformat:2 }}</div>
+                                    {% else %}
+                                        <span class="no-refund">—</span>
+                                    {% endif %}
+                                {% endwith %}
+                            </td>
+                            <td>
+                                <div class="date-time">
+                                    <span class="date">{{ ret.created_at|date:"Y-m-d" }}</span>
+                                    <span class="time">{{ ret.created_at|date:"h:i A" }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                <a href="{% url 'admin_return_detail' ret.return_number %}"
+                                   class="action-btn"
+                                   title="View Details">
+                                    <span class="material-icons fs-6">visibility</span>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <!-- Pagination -->
+            {% if returns.paginator.num_pages > 1 %}
+                <div class="pagination-container">
+                    <div class="pagination-info">
+                        Showing {{ returns.start_index }} to {{ returns.end_index }} of {{ returns.paginator.count }} returns
+                    </div>
+                    <div class="pagination">
+                        {% if returns.has_previous %}
+                            <a href="?page={{ returns.previous_page_number }}{% if search_query %}&qs={{ search_query }}{% endif %}{% if status_filter != 'ALL' %}&status={{ status_filter|lower }}{% endif %}"
+                               class="page-btn-nav"
+                               aria-label="Previous page">
+                                <span class="material-icons">chevron_left</span>
+                            </a>
+                        {% else %}
+                            <button class="page-btn-nav" disabled aria-label="Previous page (disabled)">
+                                <span class="material-icons">chevron_left</span>
+                            </button>
+                        {% endif %}
+
+                        {% for num in returns.paginator.page_range %}
+                            {% if returns.number == num %}
+                                <span class="page-btn active" aria-current="page">{{ num }}</span>
+                            {% elif num > returns.number|add:'-3' and num < returns.number|add:'3' %}
+                                <a href="?page={{ num }}{% if search_query %}&qs={{ search_query }}{% endif %}{% if status_filter != 'ALL' %}&status={{ status_filter|lower }}{% endif %}"
+                                   class="page-btn"
+                                   aria-label="Page {{ num }}">{{ num }}</a>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if returns.has_next %}
+                            <a href="?page={{ returns.next_page_number }}{% if search_query %}&qs={{ search_query }}{% endif %}{% if status_filter != 'ALL' %}&status={{ status_filter|lower }}{% endif %}"
+                               class="page-btn-nav"
+                               aria-label="Next page">
+                                <span class="material-icons">chevron_right</span>
+                            </a>
+                        {% else %}
+                            <button class="page-btn-nav" disabled aria-label="Next page (disabled)">
+                                <span class="material-icons">chevron_right</span>
+                            </button>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+
+        {% else %}
+            <!-- Empty State -->
+            <div class="empty-state">
+                <span class="material-icons fs-64">assignment_return</span>
+                <h3>No returns found</h3>
+                <p>
+                    {% if search_query or status_filter != 'ALL' %}
+                        Try adjusting your search terms or clear the filter.
+                    {% else %}
+                        No return requests have been submitted yet.
+                    {% endif %}
+                </p>
+            </div>
+        {% endif %}
+    </div>
+
+{% endblock content %}

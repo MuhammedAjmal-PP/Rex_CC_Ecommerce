@@ -1,0 +1,327 @@
+/* ============================================================
+   CART PAGE STYLES - LUXURY HUB
+   ============================================================ */
+
+/* Reusing Profile Variables */
+:root {
+  --font-serif: "Playfair Display", serif;
+  --font-sans: "Montserrat", sans-serif;
+  --color-gold: #bfa15f;
+  --color-gold-dark: #b06825;
+  --color-text: #111;
+  --color-muted: #666;
+  --color-border: #eaeaea;
+  --color-bg: #fff;
+  --color-gold: #bfa15f;
+  --color-gold-dark: #b06825;
+  --color-text: #111;
+  --color-muted: #666;
+  --color-border: #eaeaea;
+  --color-bg: #fff;
+  --color-danger: #d32f2f;
+}
+
+/* Layout */
+.lux-cart-layout {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 32px;
+  align-items: start;
+}
+
+/* Cart Items Container */
+.lux-cart-items {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Individual Cart Card */
+.lux-cart-card {
+  padding: 16px;
+}
+
+.lux-cart-inner {
+  display: flex;
+  gap: 24px;
+}
+
+/* Image Wrapper */
+.lux-cart-img-wrap {
+  width: 90px;
+  height: 110px;
+  border-radius: 4px;
+  border: 1px solid var(--color-border);
+  background: #fafafa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.lux-cart-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+}
+
+/* Content Area */
+.lux-cart-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.lux-cart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.lux-cart-brand {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--color-muted);
+  font-weight: 600;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.lux-cart-name {
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin: 0 0 6px;
+}
+
+.lux-cart-name a {
+  color: var(--color-text);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.lux-cart-name a:hover {
+  color: var(--color-gold);
+}
+
+.lux-cart-sku {
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  color: var(--color-muted);
+}
+
+/* Remove Button */
+.lux-cart-remove {
+  background: transparent;
+  border: none;
+  color: #999;
+  cursor: pointer;
+  padding: 4px;
+  transition: all 0.3s ease;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lux-cart-remove:hover {
+  color: var(--color-danger);
+  background: rgba(211, 47, 47, 0.05);
+  transform: rotate(90deg);
+}
+
+.lux-cart-remove .material-icons {
+  font-size: 20px;
+}
+
+/* Pricing and Quantity Bottom Row */
+.lux-cart-actions-row {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-end;
+  gap: 40px;
+  margin-top: 16px;
+}
+
+.lux-cart-price-block {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.final-price {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.original-price {
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  color: #999;
+  text-decoration: line-through;
+}
+
+.lux-item-total {
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+    color: var(--color-gold-dark);
+    font-weight: 600;
+    margin-top: 4px;
+}
+
+/* Keep Javascript Hooks for Qty */
+.qty-control {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--color-border);
+  height: 36px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--color-bg);
+}
+
+.qty-btn {
+  width: 32px;
+  height: 100%;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 1.1rem;
+  color: var(--color-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.qty-btn:hover:not(:disabled) {
+  background: #fafafa;
+  color: var(--color-text);
+}
+
+.qty-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background: #f5f5f5;
+}
+
+.qty-input {
+  width: 40px;
+  height: 100%;
+  border: none;
+  border-left: 1px solid var(--color-border);
+  border-right: 1px solid var(--color-border);
+  text-align: center;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  background: #fff;
+  -moz-appearance: textfield;
+  appearance: textfield;
+  padding: 0;
+}
+
+.stock-warning {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  color: var(--color-gold);
+  margin-top: 6px;
+  font-weight: 600;
+  display: block;
+}
+
+.stock-error {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  color: var(--color-danger);
+  margin-top: 6px;
+  font-weight: 600;
+  display: block;
+}
+
+/* ============================================================
+   SUMMARY CARD
+   ============================================================ */
+
+.lux-cart-summary-wrap {
+  position: sticky;
+  top: 100px;
+}
+
+.lux-cart-summary {
+  padding: 32px;
+}
+
+.summary-title {
+  font-family: var(--font-serif);
+  font-size: 1.4rem;
+  margin-bottom: 24px;
+  font-weight: 600;
+  color: var(--color-text);
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  font-size: 0.95rem;
+  color: var(--color-muted);
+  font-family: var(--font-sans);
+}
+
+.summary-row.discount {
+  color: #2e7d32;
+  font-weight: 500;
+}
+
+.summary-row.total {
+  font-weight: 700;
+  color: var(--color-text);
+  font-size: 1.3rem;
+  margin-top: 24px;
+  margin-bottom: 32px;
+  align-items: flex-end;
+}
+
+.summary-divider {
+  height: 1px;
+  background: var(--color-border);
+  margin: 24px 0;
+}
+
+/* Actions */
+.summary-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.summary-note {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  color: #999;
+  margin-top: 24px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: center;
+}
+
+.summary-note .material-icons {
+  font-size: 14px;
+}
+
+/* Responsive */
+/* Desktop only - no responsive breakpoints needed */
+
+/* Desktop only - no responsive breakpoints needed */

@@ -1,0 +1,455 @@
+/* ============================================================
+   REX CC – PRODUCT LISTING (OFFCANVAS FILTERS EVERYWHERE)
+   FINAL, BUG-FREE VERSION
+   ============================================================ */
+
+/* =========================
+   BREADCRUMB
+========================= */
+
+/* =========================
+   PAGE HEADER (PREMIUM)
+========================= */
+
+/* =========================
+   BREADCRUMB STRIP (MINIMAL)
+========================= */
+
+.breadcrumb-strip {
+  padding: 20px 40px;
+  font-size: 0.85rem;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  /* border-bottom: 1px solid #eee; */
+  background: #fff;
+  display: flex;
+  justify-content: center;
+  /* CENTER ALIGNMENT */
+  gap: 8px;
+  align-items: center;
+}
+
+.breadcrumb-strip a {
+  color: #999;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.breadcrumb-strip a:hover {
+  color: #111;
+}
+
+.breadcrumb-strip .current {
+  color: #111;
+  font-weight: 500;
+}
+
+/* =========================
+   LAYOUT (FULL WIDTH)
+========================= */
+
+.listing-container {
+  display: block;
+  width: 100%;
+  padding: 30px 40px;
+  /* Full width with side padding */
+}
+
+.listing-main {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+/* Offcanvas Styling Enhancement */
+.offcanvas {
+  border-left: 1px solid #e5e5e5 !important;
+  box-shadow: -5px 0 30px rgba(0, 0, 0, 0.05) !important;
+  background-color: #fff !important;
+  /* FORCE WHITE BG */
+  z-index: 1050;
+}
+
+.offcanvas-backdrop {
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+}
+
+/* =========================
+   TOOLBAR (FILTER + SORT)
+========================= */
+
+.listing-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  /* ALL CONTENTS RIGHT ALIGNED */
+  align-items: center;
+  padding-bottom: 20px;
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+.toolbar-controls {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.filter-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: #fff;
+  border: 1px solid var(--border-light);
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #111;
+  cursor: pointer;
+}
+
+.filter-trigger .material-icons {
+  font-size: 18px;
+  color: #111;
+}
+
+.filter-trigger:hover {
+  border-color: #cd7f32;
+  color: #cd7f32;
+  background: #fffaf0;
+}
+
+.filter-trigger:hover .material-icons {
+  color: #cd7f32;
+}
+
+/* Hide legacy sort-container styles handled by toolbar-controls */
+.sort-container {
+  display: block;
+}
+
+.sort-label {
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* =========================
+   CUSTOM SORT DROPDOWN
+========================= */
+
+.custom-dropdown {
+  position: relative;
+}
+
+.custom-dropdown .dropdown-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 160px;
+  justify-content: space-between;
+}
+
+.custom-dropdown .dropdown-toggle:hover,
+.custom-dropdown .dropdown-toggle[aria-expanded="true"] {
+  border-color: #cd7f32;
+  color: #cd7f32;
+}
+
+.custom-dropdown .dropdown-toggle::after {
+  display: none;
+  /* Hide default bootstrap arrow */
+}
+
+.custom-dropdown .dropdown-arrow {
+  font-size: 18px;
+  color: #999;
+  transition: transform 0.2s ease;
+}
+
+.custom-dropdown .dropdown-toggle[aria-expanded="true"] .dropdown-arrow {
+  transform: rotate(180deg);
+  color: #cd7f32;
+}
+
+.custom-dropdown .dropdown-menu {
+  border: none;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 8px 0;
+  margin-top: 8px;
+  min-width: 180px;
+}
+
+.custom-dropdown .dropdown-item {
+  font-size: 0.85rem;
+  padding: 10px 20px;
+  color: #555;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.custom-dropdown .dropdown-item:hover,
+.custom-dropdown .dropdown-item:focus {
+  background-color: #fffaf0;
+  color: #cd7f32;
+}
+
+.custom-dropdown .dropdown-item.active {
+  background-color: transparent;
+  color: #cd7f32;
+  font-weight: 600;
+}
+
+/* =========================
+   RESULTS INFO
+========================= */
+
+.results-info {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+/* =========================
+   PRODUCTS GRID (NO OVERLAP)
+========================= */
+
+.products-grid-listing {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  /* SWITCH BACK TO 5 COLUMNS */
+  gap: 30px;
+}
+
+/* IMPORTANT: let grid control size */
+.products-grid-listing .product-card {
+  width: 100%;
+}
+
+/* =========================
+   FILTER OFFCANVAS
+========================= */
+
+.offcanvas {
+  background: var(--bg-card);
+}
+
+.offcanvas-header {
+  border-bottom: 1px solid var(--border-light);
+  padding: 30px 20px;
+  /* MORE PADDING FOR HEADER */
+}
+
+.offcanvas-title {
+  font-family: var(--font-head);
+  font-weight: 600;
+}
+
+/* =========================
+   FILTER FORM
+========================= */
+
+.filter-group {
+  margin-bottom: 25px;
+}
+
+.filter-group-title {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+}
+
+.filter-option {
+  position: relative;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+/* DO NOT hide completely */
+.filter-option input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.filter-option-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  transition: 0.2s ease;
+}
+
+.filter-option-label:hover {
+  color: var(--btn-bronze);
+}
+
+.filter-checkbox {
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid #999;
+  border-radius: 50%;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.filter-option input:checked+.filter-option-label {
+  color: #cd7f32;
+  font-weight: 500;
+}
+
+.filter-option input:checked+.filter-option-label .filter-checkbox {
+  background: #cd7f32;
+  border-color: #cd7f32;
+}
+
+.filter-option input:checked+.filter-option-label .filter-checkbox::after {
+  content: "";
+  width: 8px;
+  height: 8px;
+  background: #fff;
+  border-radius: 50%;
+  display: block;
+}
+
+/* =========================
+   PRICE RANGE
+========================= */
+
+.price-range {
+  display: flex;
+  gap: 10px;
+}
+
+.price-range input {
+  width: 100%;
+  padding: 10px 12px;
+  /* border: 1px solid var(--btn-bronze); */
+  border-radius: 4px;
+  font-size: 0.85rem;
+}
+
+/* =========================
+   APPLY BUTTON
+========================= */
+
+.filter-apply-btn {
+  width: 100%;
+  margin-top: 20px;
+  padding: 14px;
+  background: linear-gradient(135deg, #cd7f32 0%, #b06825 100%);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.filter-apply-btn:hover {
+  box-shadow: 0 8px 20px rgba(205, 127, 50, 0.35);
+}
+
+/* =========================
+   EMPTY STATE
+========================= */
+
+.no-products-listing {
+  text-align: center;
+  padding: 80px 20px;
+}
+
+.no-products-listing .material-icons {
+  font-size: 4rem;
+  color: var(--border-light);
+}
+
+/* =========================
+   PAGINATION
+========================= */
+
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+  padding-top: 30px;
+  border-top: 1px solid var(--border-light);
+}
+
+.pagination {
+  display: flex;
+  gap: 8px;
+  list-style: none;
+  padding: 0;
+}
+
+.page-item .page-link {
+  min-width: 40px;
+  height: 40px;
+  border: none;
+  background: #f4f4f4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.page-item.active .page-link {
+  background: linear-gradient(135deg, #cd7f32 0%, #b06825 100%);
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(205, 127, 50, 0.3);
+}
+
+.page-item .page-link:hover:not(.active) {
+  background: #e0e0e0;
+  color: #111;
+}
+
+/* =========================
+   RESPONSIVE GRID
+========================= */
+
+@media (max-width: 992px) {
+  .products-grid-listing {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .products-grid-listing {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+}
+
+@media (max-width: 400px) {
+  .products-grid-listing {
+    grid-template-columns: 1fr;
+  }
+}

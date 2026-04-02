@@ -1,0 +1,202 @@
+/* =========================================================
+   REX CC — Luxury Account Modal (Final)
+   ========================================================= */
+
+.account-modal-premium {
+  border: none;
+  border-radius: 0;
+  overflow: hidden;
+  background: transparent;
+  box-shadow: 0 40px 120px rgba(0, 0, 0, 0.55);
+}
+
+.account-modal-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  min-height: 600px;
+}
+
+/* -----------------------------------------
+   Close Button
+----------------------------------------- */
+
+.account-modal-close {
+  position: absolute;
+  top: 22px;
+  right: 22px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(10px);
+  color: #fff;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.35s ease;
+}
+
+.account-modal-close:hover {
+  background: rgba(0, 0, 0, 0.55);
+  transform: rotate(90deg) scale(1.05);
+}
+
+/* -----------------------------------------
+   LEFT — Editorial Panel
+----------------------------------------- */
+
+.account-modal-promo {
+  position: relative;
+  padding: 72px 64px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: #fff;
+  background:
+    radial-gradient(
+      circle at top left,
+      rgba(205, 127, 50, 0.15),
+      transparent 45%
+    ),
+    linear-gradient(135deg, #0f0f0f, #1c1c1c);
+}
+
+.account-modal-promo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("/static/img/luxury-grain.png");
+  opacity: 0.04;
+  pointer-events: none;
+}
+
+.promo-tagline {
+  font-size: 11px;
+  letter-spacing: 4px;
+  font-weight: 600;
+  color: #cd7f32;
+  margin-bottom: 28px;
+}
+
+.promo-title {
+  font-family: "Playfair Display", serif;
+  font-size: 56px;
+  font-weight: 500;
+  line-height: 1.05;
+  margin-bottom: 28px;
+}
+
+.promo-accent {
+  color: #cd7f32;
+  font-style: italic;
+}
+
+.promo-description {
+  max-width: 420px;
+  font-size: 15px;
+  line-height: 1.9;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* -----------------------------------------
+   RIGHT — Auth Panel
+----------------------------------------- */
+
+.account-modal-auth {
+  background: #fff;
+  padding: 72px 64px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.auth-title {
+  font-family: "Playfair Display", serif;
+  font-size: 38px;
+  font-weight: 500;
+  margin-bottom: 14px;
+  color: #111;
+}
+
+.auth-subtitle {
+  font-size: 14px;
+  line-height: 1.7;
+  color: #666;
+  max-width: 360px;
+  margin-bottom: 42px;
+}
+
+/* Actions */
+
+.auth-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-bottom: 48px;
+}
+
+.auth-btn {
+  padding: 18px 36px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.35s ease;
+}
+
+.auth-btn-primary {
+  background: linear-gradient(135deg, #cd7f32, #b06825);
+  color: #fff;
+  border: none;
+}
+
+.auth-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 40px rgba(205, 127, 50, 0.35);
+}
+
+.auth-btn-outline {
+  background: transparent;
+  border: 1px solid #e0e0e0;
+  color: #444;
+}
+
+.auth-btn-outline:hover {
+  border-color: #cd7f32;
+  color: #cd7f32;
+}
+
+/* Partners */
+
+.auth-partners {
+  border-top: 1px solid #eee;
+  padding-top: 32px;
+}
+
+.partners-label {
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: #999;
+  margin-bottom: 16px;
+  display: block;
+}
+
+.partners-brands {
+  display: flex;
+  gap: 24px;
+}
+
+.partner-brand {
+  font-size: 11px;
+  letter-spacing: 1px;
+  font-weight: 700;
+  color: #bbb;
+}
+
+/* Desktop only - no responsive breakpoints needed */

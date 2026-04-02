@@ -1,0 +1,152 @@
+/* ────────────────────────────────────────────────────────────────
+   coupons/admin/css/coupon_list.css
+   Coupon-list-specific styles — sits on top of the shared:
+     • admin_search_filter.css  (search bar, create btn, empty state)
+     • admin_table_listing.css  (table, pagination, action btns)
+   Only adds coupon-specific overrides.
+──────────────────────────────────────────────────────────────── */
+
+/* ── Stat Cards ─────────────────────────────────────────── */
+.stats-container {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 24px;
+    margin: 40px;
+}
+
+.stat-card {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.stat-card:hover,
+.stat-card.active {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.16);
+    border-color: #000;
+}
+
+.stat-icon {
+    width: 64px;
+    height: 64px;
+    background: #000;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+}
+
+.stat-card:hover .stat-icon {
+    transform: scale(1.05);
+}
+
+/* Colored stat-icon variants */
+.stat-icon.total { background: #1a1a1a; }
+.stat-icon.active-icon { background: #1a6b3c; }
+.stat-icon.inactive-icon { background: #991b1b; }
+.stat-icon.valid { background: #1e40af; }
+.stat-icon.expired { background: #b45309; }
+
+.stat-content { flex: 1; }
+
+.stat-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #666;
+    margin: 0 0 6px;
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #000;
+    margin: 0;
+    font-family: 'Montserrat', sans-serif;
+}
+
+/* ── Type Badges ──────────────────────────────────────── */
+.offer-type-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.offer-type-percentage { background: #eef2ff; color: #4f46e5; }
+.offer-type-fixed      { background: #fff7ed; color: #c2410c; }
+
+/* ── Coupon Code ─────────────────────────────────────── */
+.coupon-code {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #000;
+    font-family: 'Montserrat', sans-serif;
+    letter-spacing: 1px;
+}
+
+.coupon-desc {
+    font-size: 0.8rem;
+    color: #666;
+    margin-top: 4px;
+}
+
+/* ── Discount ────────────────────────────────────────── */
+.discount-value {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #000;
+    font-family: 'Montserrat', sans-serif;
+}
+
+/* ── Usage Info ───────────────────────────────────────── */
+.usage-info {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #000;
+    font-family: 'Montserrat', sans-serif;
+}
+
+/* ── Date/Time ───────────────────────────────────────── */
+.date-time {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.date-time .date {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #000;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.date-time .time {
+    font-size: 0.75rem;
+    color: #666;
+    font-family: 'Montserrat', sans-serif;
+}
+
+/* ── Status Badges ──────────────────────────────────── */
+.offer-valid    { background: linear-gradient(135deg, #56ab2f, #a8e063); color: #fff; }
+.offer-active   { background: linear-gradient(135deg, #bdc3c7, #95a5a6); color: #fff; }
+.offer-inactive { background: #fee2e2; color: #991b1b; }
+
+/* ── Utilities ──────────────────────────────────────── */
+.search-box-flex { flex: 1; }
+.coupon-subtext { display: block; opacity: 0.7; }
+.fs-64 { font-size: 64px; }

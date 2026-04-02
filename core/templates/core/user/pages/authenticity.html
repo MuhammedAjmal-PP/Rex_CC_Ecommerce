@@ -1,0 +1,54 @@
+{% extends "core/user/base_user.html" %}
+{% load static %}
+{% block head_title %}Authenticity Guarantee | REX CC{% endblock %}
+{% block content %}
+<div class="lux-hub-wrapper">
+    <div class="hub-header mb-24">
+        <div class="hub-user-info">
+            <div class="hub-user-details">
+                <h1 class="hub-name">Authenticity Guarantee</h1>
+                <p class="hub-contact">Every timepiece we sell is 100% genuine</p>
+            </div>
+        </div>
+        <div class="hub-header-actions">
+            <a href="{% url 'home' %}" class="hub-btn-outline">
+                <span class="material-icons" style="font-size:18px; margin-right:6px;">arrow_back</span>
+                Back to Home
+            </a>
+        </div>
+    </div>
+
+    <!-- Hero pledge -->
+    <div style="background:linear-gradient(135deg,#111 0%,#2a2a2a 100%); border-radius:6px; padding:48px 56px; margin-bottom:40px; position:relative; overflow:hidden;">
+        <div style="position:absolute;top:-40%;right:-5%;width:300px;height:300px;background:radial-gradient(circle,rgba(191,161,95,0.18) 0%,transparent 70%);border-radius:50%;pointer-events:none;"></div>
+        <span class="material-icons" style="font-size:48px; color:#bfa15f; display:block; margin-bottom:16px;">verified</span>
+        <h2 style="font-family:'Playfair Display',serif; font-size:2rem; color:#fff; margin:0 0 12px; font-weight:600;">REX CC Authenticity Pledge</h2>
+        <p style="font-family:'Montserrat',sans-serif; font-size:0.9rem; color:rgba(255,255,255,0.65); line-height:1.8; max-width:640px; margin:0;">
+            Every watch sold on REX CC is sourced directly from authorised distributors and verified against manufacturer specifications. We never sell grey-market, refurbished, or unauthorised products.
+        </p>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:24px; margin-bottom:40px;">
+        <div class="hub-card" style="padding:28px; text-align:center; border-top:3px solid #bfa15f;">
+            <span class="material-icons" style="font-size:36px; color:#bfa15f; margin-bottom:12px; display:block;">assignment_turned_in</span>
+            <h4 style="font-family:'Playfair Display',serif; font-size:1.05rem; margin:0 0 8px;">Official Certificate</h4>
+            <p style="font-family:'Montserrat',sans-serif; font-size:0.78rem; color:#666; line-height:1.7; margin:0;">Every watch ships with the original manufacturer's warranty card and certificate of authenticity.</p>
+        </div>
+        <div class="hub-card" style="padding:28px; text-align:center; border-top:3px solid #bfa15f;">
+            <span class="material-icons" style="font-size:36px; color:#bfa15f; margin-bottom:12px; display:block;">manage_search</span>
+            <h4 style="font-family:'Playfair Display',serif; font-size:1.05rem; margin:0 0 8px;">Expert Verification</h4>
+            <p style="font-family:'Montserrat',sans-serif; font-size:0.78rem; color:#666; line-height:1.7; margin:0;">Our specialists inspect every timepiece before dispatch to verify it meets brand specification and is in perfect condition.</p>
+        </div>
+        <div class="hub-card" style="padding:28px; text-align:center; border-top:3px solid #bfa15f;">
+            <span class="material-icons" style="font-size:36px; color:#bfa15f; margin-bottom:12px; display:block;">lock</span>
+            <h4 style="font-family:'Playfair Display',serif; font-size:1.05rem; margin:0 0 8px;">Tamper-Proof Seal</h4>
+            <p style="font-family:'Montserrat',sans-serif; font-size:0.78rem; color:#666; line-height:1.7; margin:0;">Shipments are sealed with our security seal. A broken seal at delivery entitles you to an immediate full refund.</p>
+        </div>
+    </div>
+
+    <div style="background:#faf9f7; border:1px solid #eaeaea; border-radius:4px; padding:24px 32px; font-family:'Montserrat',sans-serif; font-size:0.82rem; color:#666; line-height:1.7;">
+        If you have any doubts about the authenticity of a product you received, contact us immediately at
+        <a href="mailto:support@rexcc.com" style="color:#bfa15f; font-weight:600;">support@rexcc.com</a>. We will resolve it within 48 hours.
+    </div>
+</div>
+{% endblock %}

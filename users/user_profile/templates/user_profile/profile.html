@@ -1,0 +1,170 @@
+{% extends "core/user/base_user.html" %}
+{% load static %}
+{% block head_title %}
+    My Hub | REX CC
+{% endblock head_title %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'user_profile/css/profile.css' %}">
+{% endblock extra_css %}
+{% block content %}
+    <div class="lux-hub-wrapper">
+
+        <!-- HEADER / USER INFO -->
+        <header class="hub-header">
+            <div class="hub-user-info">
+                <div class="hub-avatar-wrap">
+                    {% if user.avatar %}
+                        <img src="{{ user.avatar.url }}" alt="{{ user.first_name }}" class="hub-avatar">
+                    {% else %}
+                        <div class="hub-avatar-placeholder">
+                            <span class="material-icons">person</span>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="hub-user-details">
+
+                    <h1 class="hub-name">
+                        {{ user.first_name }} {% if user.last_name %}{{ user.last_name }}{% endif %}
+                    </h1>
+                    <div class="hub-contact">
+                        <span>{{ user.email }}</span>
+                        {% if user.phone_number %}
+                            <span class="hub-dot">•</span>
+                            <span>{{ user.phone_number }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="hub-header-actions">
+                <a href="{% url 'edit_profile' %}" class="hub-btn-outline">
+                    Edit Profile
+                </a>
+                <a href="{% url 'account_logout' %}" class="hub-btn-text">
+                    Sign Out
+                </a>
+            </div>
+        </header>
+
+        <!-- HIGHLIGHT CARDS (WALLET & REFERRAL) -->
+        <div class="hub-highlights">
+            
+            <!-- WALLET CARD -->
+            <div class="hub-card wallet-card">
+                <div class="wc-header">
+                    <h3>REX CC Wallet</h3>
+                    <span class="material-icons">account_balance_wallet</span>
+                </div>
+                <div class="wc-balance">
+                    <span class="wc-currency">₹</span>
+                    <span class="wc-amount">{% if user.wallet %}{{ user.wallet.balance }}{% else %}0.00{% endif %}</span>
+                </div>
+                <p class="wc-desc">Available for your next timepiece.</p>
+                <div class="wc-actions">
+                    <a href="{% url 'user_wallet' %}" class="hub-btn-light">View Transactions</a>
+                </div>
+                <!-- Decorative background elements -->
+                <div class="wc-pattern"></div>
+            </div>
+
+            <!-- REFERRAL CARD -->
+            <div class="hub-card referral-card">
+                <div class="rc-content">
+                    <div class="rc-badge">Earn ₹1,000</div>
+                    <h3>Invite & Earn Rewards</h3>
+                    <p>Share your referral code with friends. Both of you earn ₹1,000 in your wallet when they sign up!</p>
+                    
+                    <div class="rc-link-wrap">
+                        <input type="text" class="rc-input" value="{{ user.referral_code }}" readonly id="referralInput">
+                        <button class="rc-copy-btn" onclick="copyReferralLink()" aria-label="Copy Code">
+                            <span class="material-icons" id="copyIcon">content_copy</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- NAVIGATION GRID -->
+        <div class="hub-nav-section">
+            <h2 class="hub-section-title">Manage Account</h2>
+            <div class="hub-grid">
+                
+                <a href="{% url 'user_order_list' %}" class="hub-grid-item">
+                    <div class="hgi-icon"><span class="material-icons">inventory_2</span></div>
+                    <div class="hgi-text">
+                        <h4>Order History</h4>
+                        <p>Track, return, or buy again</p>
+                    </div>
+                </a>
+
+                <a href="{% url 'user_wishlist' %}" class="hub-grid-item">
+                    <div class="hgi-icon">
+                        <span class="material-icons">favorite_border</span>
+                        <span class="hgi-badge" id="profileWishlistBadge" {% if user.wishlist.items.count == 0 %}style="display:none"{% endif %}>{{ user.wishlist.items.count }}</span>
+                    </div>
+                    <div class="hgi-text">
+                        <h4>My Wishlist</h4>
+                        <p>Your curated collection</p>
+                    </div>
+                </a>
+
+                <a href="{% url 'user_cart' %}" class="hub-grid-item">
+                    <div class="hgi-icon">
+                        <span class="material-icons">local_mall</span>
+                        <span class="hgi-badge" id="profileCartBadge" {% if user.cart.items.count == 0 %}style="display:none"{% endif %}>{{ user.cart.items.count }}</span>
+                    </div>
+                    <div class="hgi-text">
+                        <h4>Shopping Cart</h4>
+                        <p>Checkout selected items</p>
+                    </div>
+                </a>
+
+                <a href="{% url 'user_address' %}" class="hub-grid-item">
+                    <div class="hgi-icon"><span class="material-icons">place</span></div>
+                    <div class="hgi-text">
+                        <h4>Addresses</h4>
+                        <p>Manage shipping locations</p>
+                    </div>
+                </a>
+
+                <a href="{% url 'edit_profile' %}" class="hub-grid-item">
+                    <div class="hgi-icon"><span class="material-icons">security</span></div>
+                    <div class="hgi-text">
+                        <h4>Security</h4>
+                        <p>Passwords and authentication</p>
+                    </div>
+                </a>
+
+                <a href="#" class="hub-grid-item">
+                    <div class="hgi-icon"><span class="material-icons">support_agent</span></div>
+                    <div class="hgi-text">
+                        <h4>Client Care</h4>
+                        <p>Contact your concierge</p>
+                    </div>
+                </a>
+
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+
+{% block extra_js %}
+<script>
+    function copyReferralLink() {
+        var copyText = document.getElementById("referralInput");
+        var icon = document.getElementById("copyIcon");
+        
+        copyText.select();
+        copyText.setSelectionRange(0, 99999); // For mobile devices
+        
+        navigator.clipboard.writeText(copyText.value);
+        
+        icon.textContent = "check";
+        icon.style.color = "#4caf50";
+        setTimeout(() => {
+            icon.textContent = "content_copy";
+            icon.style.color = "inherit";
+        }, 2000);
+    }
+</script>
+<script src="{% static 'user_profile/js/profile.js' %}"></script>
+{% endblock extra_js %}

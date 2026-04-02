@@ -1,0 +1,601 @@
+/* -----------------------------------------------------------
+   REX CC LIGHT LUXURY AUTH THEME - Bootstrap Enhanced
+   File: accounts/static/account/css/user_auth.css
+   Premium Luxury Watch E-Commerce
+   Bootstrap 5.3.3 as primary framework
+   ----------------------------------------------------------- */
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:wght@400;600;700&display=swap');
+
+:root {
+    --bg-main: #F2F2F2;
+    --bg-card: #FFFFFF;
+    --text-pri: #111111;
+    --text-muted: #666666;
+    --accent-gold: #BFA15F;
+    --btn-bronze: #CD7F32;
+    --border-light: #E0E0E0;
+    --error-red: #D32F2F;
+    --success-green: #2E7D32;
+
+    --font-serif: 'Playfair Display', serif;
+    --font-body: 'Montserrat', sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--bg-main);
+    color: var(--text-pri);
+    font-family: var(--font-body);
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ========================================
+   BRAND HEADER
+   ======================================== */
+
+.auth-brand {
+    text-align: center;
+    padding: 30px 20px 0;
+}
+
+.brand-logo {
+    font-family: var(--font-serif);
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text-pri);
+    text-decoration: none;
+    letter-spacing: 2px;
+    transition: color 0.3s ease;
+}
+
+.brand-logo:hover {
+    color: var(--btn-bronze);
+}
+
+.brand-accent {
+    color: var(--btn-bronze);
+}
+
+.brand-tagline {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    margin-top: 5px;
+}
+
+/* ========================================
+   AUTH LAYOUT CONTAINER
+   ======================================== */
+
+.auth-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+}
+
+.auth-card {
+    background-color: var(--bg-card);
+    width: 100%;
+    max-width: 500px;
+    padding: 50px 45px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    border: 1px solid #fff;
+    border-radius: 3px;
+    text-align: center;
+    animation: fadeIn 0.4s ease;
+}
+
+/* ========================================
+   TYPOGRAPHY
+   ======================================== */
+
+.auth-title {
+    font-family: var(--font-serif);
+    font-size: 2.2rem;
+    color: var(--text-pri);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+    font-weight: 700;
+}
+
+.auth-subtitle {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 32px;
+    line-height: 1.5;
+}
+
+/* ========================================
+   AUTH ICONS
+   ======================================== */
+
+.auth-icon {
+    margin-bottom: 25px;
+    color: var(--text-muted);
+}
+
+.auth-icon svg {
+    stroke: var(--btn-bronze);
+}
+
+.auth-icon-success svg {
+    stroke: var(--btn-bronze);
+}
+
+/* ========================================
+   FORM STYLING - Bootstrap Enhanced
+   ======================================== */
+
+.auth-form {
+    text-align: left;
+}
+
+/* Override Bootstrap form-label styling */
+.auth-form .form-label,
+.auth-form label {
+    display: block;
+    color: var(--text-pri);
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-top: 7px;
+    margin-bottom: 7px;
+    text-align: left;
+}
+
+/* Hide the inline forgot password link from allauth */
+.auth-form label a {
+    display: none !important;
+}
+
+/* Override Bootstrap form-control styling */
+.auth-form .form-control,
+.auth-form input[type="text"],
+.auth-form input[type="email"],
+.auth-form input[type="password"],
+.auth-form input[type="tel"] {
+    background-color: #FAFAFA;
+    border: 1px solid var(--border-light);
+    border-radius: 3px;
+    color: var(--text-pri);
+    padding: 13px 15px;
+    font-family: var(--font-body);
+    font-size: 0.92rem;
+    transition: all 0.25s ease;
+}
+
+/* Password input wrapper for toggle button */
+.password-input-wrapper {
+    position: relative;
+    display: block;
+}
+
+.password-input-wrapper .form-control,
+.password-input-wrapper input[type="password"],
+.password-input-wrapper input[type="text"] {
+    padding-right: 45px;
+}
+
+/* Password toggle button */
+.password-toggle {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #aaa;
+    transition: all 0.25s ease;
+    border-radius: 3px;
+    opacity: 0.6;
+    z-index: 10;
+}
+
+.password-toggle:hover {
+    color: var(--btn-bronze);
+    opacity: 1;
+    transform: translateY(-50%) scale(1.05);
+}
+
+.password-toggle:focus {
+    outline: none;
+    color: var(--btn-bronze);
+    opacity: 1;
+}
+
+.password-toggle:active {
+    transform: translateY(-50%) scale(0.95);
+}
+
+.eye-icon {
+    display: block;
+    transition: transform 0.2s ease;
+}
+
+/* Placeholder styling */
+.auth-form .form-control::placeholder,
+.auth-form input::placeholder {
+    color: #bbb;
+    font-weight: 300;
+}
+
+/* Focus state - override Bootstrap */
+.auth-form .form-control:focus,
+.auth-form input:focus {
+    outline: none;
+    background-color: #fff;
+    border-color: var(--btn-bronze);
+    box-shadow: 0 0 0 3px rgba(205, 127, 50, 0.08);
+}
+
+/* Help text */
+.helptext {
+    display: none;
+}
+
+.auth-form p:focus-within .helptext {
+    display: block;
+    font-size: 0.7rem;
+    color: #888;
+    margin-top: 7px;
+    padding: 9px 11px;
+    background: #fafafa;
+    border-radius: 3px;
+    line-height: 1.5;
+    border-left: 2px solid var(--accent-gold);
+}
+
+.helptext ul {
+    margin: 0;
+    padding-left: 16px;
+}
+
+.helptext li {
+    margin-bottom: 2px;
+}
+
+/* ========================================
+   BUTTONS - Bootstrap Enhanced
+   ======================================== */
+
+.btn-primary,
+.auth-form .btn-primary {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, var(--btn-bronze) 0%, #b06825 100%);
+    color: #fff;
+    border: none;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    font-size: 0.82rem;
+    cursor: pointer;
+    margin-top: 8px;
+    border-radius: 3px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-primary:hover,
+.auth-form .btn-primary:hover {
+    background: linear-gradient(135deg, #b06825 0%, #9a5a1f 100%);
+    box-shadow: 0 8px 20px rgba(205, 127, 50, 0.35);
+    transform: translateY(-1px);
+    color: #fff;
+}
+
+.btn-primary:active,
+.auth-form .btn-primary:active {
+    transform: translateY(0);
+}
+
+/* ========================================
+   SOCIAL LOGIN
+   ======================================== */
+
+.social-login-section {
+    margin-top: 28px;
+    padding-top: 28px;
+    border-top: 1px solid var(--border-light);
+}
+
+.social-divider-text {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-bottom: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-align: center;
+}
+
+.btn-google {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 13px;
+    background-color: #fff;
+    border: 1px solid var(--border-light);
+    color: var(--text-muted);
+    text-transform: uppercase;
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    border-radius: 3px;
+}
+
+.btn-google:hover {
+    border-color: var(--btn-bronze);
+    color: var(--btn-bronze);
+    background-color: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.google-icon {
+    margin-right: 10px;
+    display: flex;
+    align-items: center;
+}
+
+/* ========================================
+   LINKS
+   ======================================== */
+
+.auth-links {
+    margin-top: 18px;
+    font-size: 0.88rem;
+    text-align: center;
+}
+
+.auth-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.auth-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: var(--btn-bronze);
+    transition: width 0.3s ease;
+}
+
+.auth-links a:hover {
+    color: var(--btn-bronze);
+}
+
+.auth-links a:hover::after {
+    width: 100%;
+}
+
+.auth-links-bottom {
+    margin-top: 22px;
+}
+
+.auth-prompt {
+    color: var(--text-muted);
+    display: block;
+    margin-bottom: 5px;
+}
+
+.auth-link-accent {
+    color: var(--accent-gold) !important;
+    font-weight: 500;
+}
+
+.auth-link-accent:hover {
+    color: var(--btn-bronze) !important;
+}
+
+.auth-link-divider {
+    color: var(--border-light);
+    margin: 0 10px;
+}
+
+/* ========================================
+   INFO & ERROR BOXES
+   ======================================== */
+
+.auth-info-box {
+    background-color: #FAFAFA;
+    border: 1px solid var(--border-light);
+    border-radius: 3px;
+    padding: 18px;
+    margin: 22px 0;
+    text-align: left;
+}
+
+.auth-info-box p {
+    margin: 0 0 9px 0;
+    font-size: 0.88rem;
+    color: var(--text-pri);
+}
+
+.auth-info-box ul {
+    margin: 0;
+    padding-left: 18px;
+}
+
+.auth-info-box li {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+    line-height: 1.5;
+}
+
+.auth-error-box {
+    background-color: #FDECEA;
+    border: 1px solid var(--error-red);
+    border-radius: 3px;
+    padding: 18px;
+    margin: 22px 0;
+    text-align: left;
+}
+
+.auth-error-box p {
+    margin: 0;
+    font-size: 0.88rem;
+    color: var(--error-red);
+}
+
+.auth-error-box p+p {
+    margin-top: 9px;
+    font-weight: normal;
+}
+
+/* Form Errors - Bootstrap override */
+.errorlist,
+.invalid-feedback {
+    list-style: none;
+    padding: 11px 14px;
+    background-color: #FDECEA;
+    border-left: 3px solid var(--error-red);
+    color: var(--error-red);
+    font-size: 0.82rem;
+    text-align: left;
+    margin-bottom: 14px;
+    border-radius: 0 3px 3px 0;
+    display: block;
+}
+
+.errorlist li {
+    margin-bottom: 3px;
+}
+
+.errorlist li:last-child {
+    margin-bottom: 0;
+}
+
+/* Bootstrap form validation override */
+.was-validated .form-control:invalid,
+.form-control.is-invalid {
+    border-color: var(--error-red);
+    background-image: none;
+}
+
+.was-validated .form-control:valid,
+.form-control.is-valid {
+    border-color: var(--success-green);
+    background-image: none;
+}
+
+/* ========================================
+   MESSAGES
+   ======================================== */
+
+.message-container {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2000;
+    width: 90%;
+    max-width: 400px;
+}
+
+.message {
+    padding: 14px 18px;
+    margin-bottom: 9px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: 3px;
+    text-align: center;
+    font-size: 0.88rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    animation: slideDown 0.3s ease;
+}
+
+.message-icon {
+    font-weight: bold;
+}
+
+.message-success {
+    border-color: var(--success-green);
+    color: var(--success-green);
+}
+
+.message-error {
+    border-color: var(--error-red);
+    color: var(--error-red);
+}
+
+.message-info {
+    border-color: var(--accent-gold);
+    color: var(--accent-gold);
+}
+
+/* ========================================
+   FOOTER
+   ======================================== */
+
+.auth-footer {
+    text-align: center;
+    padding: 18px;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+}
+
+.auth-footer p {
+    margin: 0;
+}
+
+/* ========================================
+   ANIMATIONS
+   ======================================== */
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Desktop only - mobile access blocked via mobile_block.css overlay */

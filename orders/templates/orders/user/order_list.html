@@ -1,0 +1,160 @@
+{% extends "core/user/base_user.html" %}
+{% load static %}
+{% load humanize %}
+{% block head_title %}My Orders | REX CC{% endblock %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'orders/user/css/order_list.css' %}">
+{% endblock %}
+{% block content %}
+    <div class="lux-hub-wrapper">
+        
+        <!-- HEADER & BREADCRUMBS -->
+        <div class="ol-header-wrapper">
+            <nav class="ol-breadcrumb">
+                <a href="{% url 'user_profile' %}">Account Dashboard</a>
+                <span class="material-icons" style="font-size:14px">chevron_right</span>
+                <span>My Orders</span>
+            </nav>
+            <div class="ol-header-flex">
+                <div>
+                    <h1 class="ol-title">My Orders</h1>
+                    <p class="ol-subtitle">Track and manage your timepiece acquisitions.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SEARCH & FILTERS -->
+        <div class="ol-controls-bar">
+            <form class="ol-search-box" method="get" action="">
+                <span class="material-icons ol-search-icon">search</span>
+                <input type="text"
+                       name="q"
+                       class="ol-search-input"
+                       placeholder="Search by order ID..."
+                       value="{{ q|default:'' }}">
+                {% if date_filter %}<input type="hidden" name="date_filter" value="{{ date_filter }}">{% endif %}
+            </form>
+
+            <div class="ol-filters-group">
+                <a href="?{% if q %}q={{ q }}{% endif %}" class="ol-filter-pill {% if not date_filter %}active{% endif %}">All Time</a>
+                <a href="?date_filter=today{% if q %}&q={{ q }}{% endif %}" class="ol-filter-pill {% if date_filter == 'today' %}active{% endif %}">Today</a>
+                <a href="?date_filter=7d{% if q %}&q={{ q }}{% endif %}" class="ol-filter-pill {% if date_filter == '7d' %}active{% endif %}">Last 7 Days</a>
+                <a href="?date_filter=30d{% if q %}&q={{ q }}{% endif %}" class="ol-filter-pill {% if date_filter == '30d' %}active{% endif %}">Last 30 Days</a>
+                <a href="?date_filter=last_year{% if q %}&q={{ q }}{% endif %}" class="ol-filter-pill {% if date_filter == 'last_year' %}active{% endif %}">Last Year</a>
+            </div>
+        </div>
+
+        <!-- ORDERS LIST -->
+        {% if orders %}
+            <div class="ol-cards-container">
+                {% for order in orders %}
+                <div class="ol-card">
+                    <!-- Card Header (Meta Info) -->
+                    <div class="ol-card-header">
+                        <div class="ol-meta-block">
+                            <span class="ol-meta-label">Order Number</span>
+                            <span class="ol-meta-value">{{ order.order_number }}</span>
+                        </div>
+                        <div class="ol-meta-block">
+                            <span class="ol-meta-label">Date Placed</span>
+                            <span class="ol-meta-value">{{ order.created_at|date:"d M Y" }}</span>
+                        </div>
+                        <div class="ol-meta-block">
+                            <span class="ol-meta-label">Total Amount</span>
+                            <span class="ol-meta-value" style="color:var(--color-gold, #bfa15f);">₹{{ order.grand_total|floatformat:2|intcomma }}</span>
+                        </div>
+                        <div class="ol-meta-block">
+                            <span class="ol-meta-label">Payment Method</span>
+                            <span class="ol-meta-value" style="font-size: 0.95rem; font-family: 'Montserrat', sans-serif;">{{ order.payment_txn.get_payment_method_display }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Card Body (Status & Actions) -->
+                    <div class="ol-card-body">
+                        <div class="ol-status-display">
+                            <div class="ol-status-dot status-{{ order.status|lower }}"></div>
+                            <div class="ol-status-text">
+                                <span class="ol-status-main">{{ order.get_status_display }}</span>
+                                {% if order.status == 'DELIVERED' %}
+                                    <span class="ol-status-sub">Delivered on {{ order.status_updated_at|date:"d M, Y" }}</span>
+                                {% elif order.status == 'SHIPPED' or order.status == 'OUT_FOR_DELIVERY' %}
+                                    <span class="ol-status-sub">Expected delivery arriving soon</span>
+                                {% elif order.status == 'FAILED' %}
+                                    <span class="ol-status-sub">Payment failed or cancelled</span>
+                                {% else %}
+                                    <span class="ol-status-sub">We are processing your order</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="ol-card-actions">
+                            {% if order.pk in razorpay_retry_ids %}
+                                {% csrf_token %}
+                                <button type="button"
+                                        class="ol-btn-secondary ol-btn-gold retry-btn"
+                                        data-order-number="{{ order.order_number }}"
+                                        onclick="retryRazorpayPayment(this)">
+                                    <span class="material-icons" style="font-size:16px;">replay</span> Retry Payment
+                                </button>
+                            {% endif %}
+                            
+                            {% if order.status != 'FAILED' %}
+                            <a href="{% url 'user_order_details' order.order_number %}" class="ol-btn-secondary">
+                                View Details <span class="material-icons" style="font-size:16px;">arrow_forward</span>
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- PAGINATION -->
+            {% if page_obj.has_other_pages %}
+                <nav class="ol-pagination">
+                    {% if page_obj.has_previous %}
+                        <a href="?page={{ page_obj.previous_page_number }}{% if q %}&q={{ q }}{% endif %}{% if date_filter %}&date_filter={{ date_filter }}{% endif %}" class="ol-page-btn">
+                            <span class="material-icons">chevron_left</span>
+                        </a>
+                    {% endif %}
+                    
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <span class="ol-page-num active">{{ num }}</span>
+                        {% elif num > page_obj.number|add:"-3" and num < page_obj.number|add:"3" %}
+                            <a href="?page={{ num }}{% if q %}&q={{ q }}{% endif %}{% if date_filter %}&date_filter={{ date_filter }}{% endif %}" class="ol-page-num">{{ num }}</a>
+                        {% elif num == 1 or num == page_obj.paginator.num_pages %}
+                            <a href="?page={{ num }}{% if q %}&q={{ q }}{% endif %}{% if date_filter %}&date_filter={{ date_filter }}{% endif %}" class="ol-page-num">{{ num }}</a>
+                        {% elif num == page_obj.number|add:"-3" or num == page_obj.number|add:"3" %}
+                            <span class="ol-page-dots">…</span>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}{% if q %}&q={{ q }}{% endif %}{% if date_filter %}&date_filter={{ date_filter }}{% endif %}" class="ol-page-btn">
+                            <span class="material-icons">chevron_right</span>
+                        </a>
+                    {% endif %}
+                </nav>
+            {% endif %}
+
+        {% else %}
+            <!-- EMPTY STATE -->
+            <div class="ol-empty-state">
+                <div class="ol-empty-icon">
+                    <span class="material-icons" style="font-size: 64px;">inventory_2</span>
+                </div>
+                <h2 class="ol-empty-title">No Orders Found</h2>
+                <p class="ol-empty-text">{% if q or date_filter %}No orders match your search criteria.{% else %}You haven't placed any orders yet. Begin your journey with us.{% endif %}</p>
+                <a href="{% url 'product_list' %}" class="ol-btn-secondary ol-btn-gold">Explore Collection</a>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    {% if razorpay_retry_ids %}
+        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+        <script src="{% static 'orders/user/js/retry_payment.js' %}"></script>
+    {% endif %}
+{% endblock %}

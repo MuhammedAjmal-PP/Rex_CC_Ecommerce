@@ -1,0 +1,43 @@
+# ─── Virtual environments ───
+.venv/
+.testvenv/
+venv/
+env/
+
+# ─── Git ───
+.git/
+.gitignore
+
+# ─── Python cache ───
+__pycache__/
+*.py[cod]
+*$py.class
+
+# ─── IDE settings ───
+.vscode/
+.idea/
+
+# ─── OS files ───
+Thumbs.db
+.DS_Store
+
+# ─── Local env files ───
+.env
+.env.*
+
+# ─── Database dumps ───
+*.dump
+*.sql
+*.sql.gz
+
+# ─── Docker files (no need to copy into container) ───
+docker-compose.yml
+docker-compose.yaml
+Dockerfile
+
+# ─── Reference/docs ───
+reference/
+local/
+
+# ─── Collected static (will be regenerated inside container) ───
+staticfiles/

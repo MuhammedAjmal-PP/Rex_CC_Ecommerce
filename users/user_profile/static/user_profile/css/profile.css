@@ -1,0 +1,366 @@
+/* ===================================================================
+   REX CC - ACCOUNT HUB (LUXURY OVERHAUL)
+   File: user_profile/static/user_profile/css/profile.css
+
+   NOTE: Common styles (.lux-hub-wrapper, .hub-header, .hub-name,
+   .hub-contact, .hub-btn-outline, .hub-card, etc.) live in
+   core/user/css/user_common.css — DO NOT re-define them here.
+   =================================================================== */
+
+/* ---------------------------------------------------------
+   AVATAR (profile page only)
+   --------------------------------------------------------- */
+.hub-avatar-wrap {
+    position: relative;
+}
+
+.hub-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--color-gold, #bfa15f);
+    padding: 3px;
+}
+
+.hub-avatar-placeholder {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: #fdfaf5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--color-gold, #bfa15f);
+    color: var(--color-gold, #bfa15f);
+}
+
+.hub-avatar-placeholder .material-icons {
+    font-size: 48px;
+}
+
+.hub-dot {
+    color: #ccc;
+}
+
+/* Sign Out link */
+.hub-btn-text {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #999;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.hub-btn-text:hover {
+    color: #d32f2f;
+}
+
+/* ---------------------------------------------------------
+   HIGHLIGHT CARDS (WALLET & REFERRAL)
+   --------------------------------------------------------- */
+.hub-highlights {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 24px;
+    margin-bottom: 50px;
+}
+
+/* Override card for highlight cards (richer look) */
+.hub-highlights .hub-card {
+    border-radius: 8px;
+    padding: 32px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.06);
+}
+
+/* Wallet Card */
+.wallet-card {
+    background: linear-gradient(135deg, #111 0%, #2a2a2a 100%);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.wc-pattern {
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(191,161,95,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.wc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    z-index: 1;
+}
+
+.wc-header h3 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--color-gold, #bfa15f);
+    margin: 0;
+}
+
+.wc-header .material-icons {
+    color: rgba(255,255,255,0.4);
+}
+
+.wc-balance {
+    margin-bottom: 8px;
+    display: flex;
+    align-items: flex-start;
+    gap: 4px;
+    z-index: 1;
+}
+
+.wc-currency {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.2rem;
+    color: var(--color-gold, #bfa15f);
+    margin-top: 6px;
+}
+
+.wc-amount {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 2.8rem;
+    font-weight: 300;
+    color: #fff;
+    letter-spacing: -1px;
+}
+
+.wc-desc {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.6);
+    margin: 0 0 32px 0;
+    z-index: 1;
+}
+
+.wc-actions {
+    z-index: 1;
+}
+
+.hub-btn-light {
+    display: inline-flex;
+    padding: 10px 20px;
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    border-radius: 4px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+.hub-btn-light:hover {
+    background: #fff;
+    color: #111;
+}
+
+/* Referral Card */
+.referral-card {
+    background: #fff;
+    border: 1px solid #eaeaea;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.rc-content {
+    max-width: 400px;
+}
+
+.rc-badge {
+    display: inline-block;
+    background: #e8f5e9;
+    color: #2e7d32;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+}
+
+.rc-content h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    color: #111;
+    margin: 0 0 12px 0;
+}
+
+.rc-content p {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: #666;
+    margin: 0 0 24px 0;
+}
+
+.rc-link-wrap {
+    display: flex;
+    align-items: stretch;
+    background: #fafafa;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+    height: 48px;
+}
+
+.rc-input {
+    flex-grow: 1;
+    background: transparent;
+    border: none;
+    padding: 0 16px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.85rem;
+    color: #333;
+    outline: none;
+}
+
+.rc-copy-btn {
+    background: #111;
+    border: none;
+    color: #fff;
+    width: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.rc-copy-btn:hover {
+    background: var(--color-gold, #bfa15f);
+}
+
+.rc-copy-btn .material-icons {
+    font-size: 18px;
+}
+
+/* ---------------------------------------------------------
+   NAVIGATION GRID
+   --------------------------------------------------------- */
+.hub-section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    color: #111;
+    margin-bottom: 24px;
+    border-bottom: 1px solid #eaeaea;
+    padding-bottom: 12px;
+}
+
+.hub-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.hub-grid-item {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 24px;
+    background: #fff;
+    border: 1px solid #eaeaea;
+    border-radius: 4px;
+    text-decoration: none !important;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.hub-grid-item:hover {
+    border-color: #111;
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.04);
+}
+
+.hgi-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: #fafafa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #111;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.hub-grid-item:hover .hgi-icon {
+    background: #111;
+    color: #fff;
+}
+
+.hgi-icon .material-icons {
+    font-size: 24px;
+}
+
+.hgi-badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    background: #d32f2f;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    height: 18px;
+    min-width: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #fff;
+}
+
+.hgi-text {
+    flex-grow: 1;
+}
+
+.hgi-text h4 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #111;
+    margin: 0 0 4px 0;
+    transition: color 0.3s ease;
+}
+
+.hub-grid-item:hover .hgi-text h4 {
+    color: var(--color-gold, #bfa15f);
+}
+
+.hgi-text p {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.8rem;
+    color: #666;
+    margin: 0;
+}
+
+/* ---------------------------------------------------------
+   RESPONSIVE
+   --------------------------------------------------------- */
+/* Desktop only - no responsive breakpoints needed */
+
+/* Desktop only - no responsive breakpoints needed */

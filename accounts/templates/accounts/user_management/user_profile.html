@@ -1,0 +1,291 @@
+{% extends 'core/admin/base_admin.html' %}
+{% load static %}
+{% load cloudinary %}
+{% load humanize %}
+{% block title %}
+    {{ user.name }}
+{% endblock title %}
+{% block extra_css %}
+    <link rel="stylesheet"
+          href="{% static 'account/css/user_management/user_profile.css' %}">
+{% endblock extra_css %}
+{% block header_title %}
+    User Profile
+{% endblock header_title %}
+{% block header_subtitle %}
+    Manage user accounts and profiles
+{% endblock header_subtitle %}
+{% block content %}
+    <!-- Back Button and Actions -->
+    <div class="header-actions">
+        <a href="{% url 'admin_users_list' %}" class="back-btn">
+            <span class="material-icons">arrow_back</span>
+        Back</a>
+        <div class="action-buttons">
+            {% if user.is_active %}
+                <a href="javascript:void(0)"
+                   class="btn-deactivate"
+                   onclick="AdminAlert.confirm('Deactivate User', 'Are you sure you want to deactivate this user? They will no longer be able to log in.', function() { window.location.href='{% url 'admin_user_stats_toggle' user.id %}'; });">
+                    <span class="material-icons fs-5">person_off</span>
+                    Deactivate User
+                </a>
+            {% else %}
+                <a href="javascript:void(0)"
+                   class="btn-deactivate"
+                   onclick="AdminAlert.confirm('Activate User', 'Are you sure you want to activate this user? They will be able to log in again.', function() { window.location.href='{% url 'admin_user_stats_toggle' user.id %}'; });">
+                    <span class="material-icons fs-5">how_to_reg</span>
+                    Activate User
+                </a>
+            {% endif %}
+        </div>
+    </div>
+    <!-- User Profile Section -->
+    <div class="profile-container">
+        <div class="profile-header">
+            <div class="profile-avatar">
+                {% if user.avatar %}
+                    <img src="{{ user.avatar.url }}"
+                         alt="{{ user.avatar.name }}"
+                         class="user-avatar"
+                         loading="lazy">
+                {% else %}
+                    <div class="avatar-placeholder">
+                        {% if user.first_name %}
+                            {{ user.first_name|first|upper }}
+                        {% elif user.last_name %}
+                            {{ user.last_name|first|upper }}
+                        {% else %}
+                            {{ user.email|first|upper }}
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+            <div class="profile-info">
+                <div class="profile-name-row">
+                    <h2 class="profile-name">
+                        {% if user.get_full_name %}
+                            {{ user.get_full_name }}
+                        {% else %}
+                            {{ user_detail.email|truncatechars:30 }}
+                        {% endif %}
+                    </h2>
+                    <div class="profile-badges">
+                        {% if user.is_active %}
+                            <span class="badge badge-active">Active</span>
+                        {% else %}
+                            <span class="badge badge-inactive">Inactive</span>
+                        {% endif %}
+                        <span class="badge badge-verified">
+                            <span class="material-icons">verified</span>
+                            Verified
+                        </span>
+                    </div>
+                </div>
+                <div class="profile-details">
+                    <div class="detail-item">
+                        <span class="material-icons">email</span>
+                        <span>{{ user.email }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="material-icons">phone</span>
+                        <span>{{ user.phone_number|default:"Not provided" }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Main Content -->
+    <!-- Addresses Section - Full Width at Top -->
+    <div class="section-card">
+        <div class="section-header">
+            <div class="section-title">
+                <span class="material-icons">location_on</span>
+                <h3>Addresses</h3>
+            </div>
+            <a href="#" class="view-more-btn">
+                View More
+                <span class="material-icons">chevron_right</span>
+            </a>
+        </div>
+        <div class="addresses-container">
+            {% for address in addresses %}
+            <div class="address-card">
+                <div class="address-header">
+                    <span class="address-type">{{ address.label|default:"Address" }}</span>
+                    {% if address.is_default %}
+                    <span class="address-badge default">Default</span>
+                    {% endif %}
+                </div>
+                <div class="address-details">
+                    <p class="address-name">{{ address.full_name }}</p>
+                    <p class="address-line">{{ address.address_line_1 }}</p>
+                    {% if address.address_line_2 %}
+                    <p class="address-line">{{ address.address_line_2 }}</p>
+                    {% endif %}
+                    <p class="address-line">{{ address.city }}, {{ address.state }} {{ address.postal_code }}</p>
+                    <p class="address-phone">{{ address.phone_number }}</p>
+                </div>
+            </div>
+            {% empty %}
+            <div class="address-card">
+                <div class="address-details">
+                    <p class="address-name">No addresses saved</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <!-- Two Column Grid for Orders and Wallet -->
+    <div class="content-grid-two-col">
+        <!-- Recent Orders Section -->
+        <div class="section-card">
+            <div class="section-header">
+                <div class="section-title">
+                    <span class="material-icons">shopping_bag</span>
+                    <h3>Recent Orders</h3>
+                </div>
+                <a href="#" class="view-more-btn">
+                    View More
+                    <span class="material-icons">chevron_right</span>
+                </a>
+            </div>
+            <div class="orders-list">
+                {% for order in recent_orders %}
+                    <div class="order-item">
+                        <div class="order-info">
+                            <span class="order-number">Order {{ order.order_number }}</span>
+                            <span class="order-date">{{ order.created_at|date:"M d, Y" }}</span>
+                        </div>
+                        <div class="order-details">
+                            <span class="order-amount">${{ order.grand_total|floatformat:2|intcomma }}</span>
+                            <span class="order-status status-{{ order.status|lower }}">{{ order.get_status_display }}</span>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p style="padding: 1rem; color: var(--text-secondary);">No recent orders found.</p>
+                {% endfor %}
+            </div>
+        </div>
+        <!-- Wallet Section with Transactions -->
+        <div class="section-card wallet-card">
+            <div class="section-header">
+                <div class="section-title">
+                    <span class="material-icons">wallet</span>
+                    <h3>Wallet</h3>
+                </div>
+                <a href="#" class="view-more-btn">
+                    View More
+                    <span class="material-icons">chevron_right</span>
+                </a>
+            </div>
+            <div class="wallet-balance">
+                <p class="balance-label">Current Balance</p>
+                <h2 class="balance-amount">${{ wallet_balance|floatformat:2|intcomma }}</h2>
+            </div>
+            <!-- Wallet Transactions inside wallet card -->
+            <div class="wallet-transactions-list">
+                {% for transaction in wallet_transactions %}
+                    <div class="wallet-transaction-item">
+                        <div class="transaction-info">
+                            <div class="transaction-icon {% if transaction.label == 'CREDIT' %}credit{% else %}debit{% endif %}">
+                                {% if transaction.label == 'CREDIT' %}
+                                    <span class="material-icons">expand_less</span>
+                                {% else %}
+                                    <span class="material-icons">expand_more</span>
+                                {% endif %}
+                            </div>
+                            <div class="transaction-details">
+                                <span class="transaction-description">{{ transaction.transaction.get_transaction_type_display|default:transaction.get_label_display }}</span>
+                                <span class="transaction-date">{{ transaction.created_at|date:"M d, Y" }}</span>
+                            </div>
+                        </div>
+                        <span class="transaction-amount {% if transaction.label == 'CREDIT' %}credit{% else %}debit{% endif %}">
+                            {% if transaction.label == 'CREDIT' %}+{% else %}-{% endif %}
+                            ${{ transaction.transaction.amount|default:0.00|floatformat:2|intcomma }}
+                        </span>
+                    </div>
+                {% empty %}
+                    <p style="padding: 1rem; color: var(--text-secondary);">No transactions found.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <!-- Transactions Section - Full Width -->
+    <div class="section-card">
+        <div class="section-header">
+            <div class="section-title">
+                <span class="material-icons">history</span>
+                <h3>Transactions</h3>
+            </div>
+            <a href="#" class="view-more-btn">
+                View More
+                <span class="material-icons">chevron_right</span>
+            </a>
+        </div>
+        <div class="transactions-list">
+            {% for transaction in transactions %}
+                <div class="transaction-item">
+                    <div class="transaction-info">
+                        <div class="transaction-icon {% if transaction.transaction_type == 'CANCELLATION_REFUND' or transaction.transaction_type == 'RETURN_REFUND' or transaction.transaction_type == 'WALLET_TOPUP' %}credit{% else %}payment{% endif %}">
+                            {% if transaction.transaction_type == 'CANCELLATION_REFUND' or transaction.transaction_type == 'RETURN_REFUND' or transaction.transaction_type == 'WALLET_TOPUP' %}
+                                <span class="material-icons">expand_less</span>
+                            {% else %}
+                                <span class="material-icons">expand_more</span>
+                            {% endif %}
+                        </div>
+                        <div class="transaction-details">
+                            <span class="transaction-description">{{ transaction.get_transaction_type_display }}</span>
+                            <div class="transaction-meta">
+                                <span class="transaction-date">{{ transaction.created_at|date:"M d, Y" }}</span>
+                                <span class="transaction-method">{{ transaction.get_payment_method_display }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <span class="transaction-amount {% if transaction.transaction_type == 'CANCELLATION_REFUND' or transaction.transaction_type == 'RETURN_REFUND' or transaction.transaction_type == 'WALLET_TOPUP' %}credit{% else %}payment{% endif %}">
+                        {% if transaction.transaction_type == 'CANCELLATION_REFUND' or transaction.transaction_type == 'RETURN_REFUND' or transaction.transaction_type == 'WALLET_TOPUP' %}+{% endif %}
+                        ${{ transaction.amount|floatformat:2|intcomma }}
+                    </span>
+                </div>
+            {% empty %}
+                <p style="padding: 1rem; color: var(--text-secondary);">No transactions found.</p>
+            {% endfor %}
+        </div>
+    </div>
+    <!-- Referral Rewards Section - Full Width -->
+    <div class="section-card">
+        <div class="section-header">
+            <div class="section-title">
+                <span class="material-icons">payments</span>
+                <h3>Referral Rewards</h3>
+            </div>
+            <a href="#" class="view-more-btn">
+                View More
+                <span class="material-icons">chevron_right</span>
+            </a>
+        </div>
+        <div class="rewards-list">
+            <table class="rewards-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Referred User</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for reward in referral_rewards %}
+                        <tr>
+                            <td>{{ reward.created_at|date:"M d, Y" }}</td>
+                            <td>{{ reward.note|default:"Unknown User" }}</td>
+                            <td class="reward-amount">+${{ reward.amount|floatformat:2 }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="3" style="padding: 1rem; text-align: center; color: var(--text-secondary);">No referral rewards found.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock content %}

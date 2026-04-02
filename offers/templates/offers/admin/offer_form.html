@@ -1,0 +1,229 @@
+{% extends 'core/admin/base_admin.html' %}
+{% load static %}
+{% block title %}
+    {% if offer %}
+        Edit Offer
+    {% else %}
+        Add Offer
+    {% endif %}
+{% endblock title %}
+{% block extra_css %}
+    <link rel="stylesheet"
+          href="{% static 'offers/admin/css/offer_form.css' %}">
+{% endblock extra_css %}
+{% block header_title %}
+    {% if offer %}
+        Edit Offer
+    {% else %}
+        Add Offer
+    {% endif %}
+{% endblock header_title %}
+{% block header_subtitle %}
+    {% if offer %}
+        Update offer details
+    {% else %}
+        Create a new discount offer
+    {% endif %}
+{% endblock header_subtitle %}
+{% block content %}
+    <div class="form-container">
+        <form method="post"
+              class="offer-form"
+              id="offerForm"
+              data-edit="{% if offer %}true{% else %}false{% endif %}">
+            {% csrf_token %}
+            {# ── Non-field errors ── #}
+            {% if form.non_field_errors %}
+                <div class="form-errors">
+                    {% for error in form.non_field_errors %}
+                        <div class="error-item">
+                            <span class="material-icons">error_outline</span>
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <div class="form-card">
+                <div class="form-layout">
+                    {# ── LEFT COLUMN ── #}
+                    <div class="form-column form-column-left">
+                        {# Basic Info #}
+                        <div class="form-section">
+                            <div class="section-title">
+                                <span class="material-icons">info</span>
+                                <span>Basic Information</span>
+                            </div>
+                            <div class="section-body">
+                                <div class="form-group">
+                                    <label class="form-label">Offer Name</label>
+                                    {{ form.name }}
+                                    {% if form.name.errors %}<span class="error-text">{{ form.name.errors.0 }}</span>{% endif %}
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Offer Type</label>
+                                    <div class="select-wrapper">
+                                        {{ form.offer_type }}
+                                        <span class="material-icons">expand_more</span>
+                                    </div>
+                                    {% if form.offer_type.errors %}<span class="error-text">{{ form.offer_type.errors.0 }}</span>{% endif %}
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">Discount Type</label>
+                                        <div class="select-wrapper">
+                                            {{ form.discount_type }}
+                                            <span class="material-icons">expand_more</span>
+                                        </div>
+                                        {% if form.discount_type.errors %}<span class="error-text">{{ form.discount_type.errors.0 }}</span>{% endif %}
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Discount Value (%)</label>
+                                        {{ form.discount_value }}
+                                        {% if form.discount_value.errors %}<span class="error-text">{{ form.discount_value.errors.0 }}</span>{% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {# Date Range #}
+                        <div class="form-section">
+                            <div class="section-title">
+                                <span class="material-icons">date_range</span>
+                                <span>Date Range</span>
+                            </div>
+                            <div class="section-body">
+                                <div class="form-group">
+                                    <label class="form-label">Start Date</label>
+                                    {{ form.start_date }}
+                                    {% if form.start_date.errors %}<span class="error-text">{{ form.start_date.errors.0 }}</span>{% endif %}
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">End Date</label>
+                                    {{ form.end_date }}
+                                    {% if form.end_date.errors %}<span class="error-text">{{ form.end_date.errors.0 }}</span>{% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {# ── RIGHT COLUMN ── #}
+                    <div class="form-column form-column-right">
+                        {# Dynamic Target Section #}
+                        <div class="form-section">
+                            <div class="section-title">
+                                <span class="material-icons">track_changes</span>
+                                <span>Offer Target</span>
+                            </div>
+                            <div class="section-body">
+                                <p class="target-hint">Select the items this offer applies to.</p>
+                                {# Products #}
+                                <div id="target-product" class="target-group" style="display:none;">
+                                    <label class="form-label">Products</label>
+                                    <div class="checkbox-tag-grid">
+                                        {% for choice in form.products %}
+                                            <label class="checkbox-tag" for="{{ choice.id_for_label }}">
+                                                {{ choice.tag }}
+                                                <span class="tag-text">{{ choice.choice_label }}</span>
+                                                <span class="tag-check material-icons">check</span>
+                                            </label>
+                                        {% endfor %}
+                                    </div>
+                                    {% if form.products.errors %}<span class="error-text">{{ form.products.errors.0 }}</span>{% endif %}
+                                </div>
+                                {# Categories #}
+                                <div id="target-category" class="target-group" style="display:none;">
+                                    <label class="form-label">Categories</label>
+                                    <div class="checkbox-tag-grid">
+                                        {% for choice in form.categories %}
+                                            <label class="checkbox-tag" for="{{ choice.id_for_label }}">
+                                                {{ choice.tag }}
+                                                <span class="tag-text">{{ choice.choice_label }}</span>
+                                                <span class="tag-check material-icons">check</span>
+                                            </label>
+                                        {% endfor %}
+                                    </div>
+                                    {% if form.categories.errors %}<span class="error-text">{{ form.categories.errors.0 }}</span>{% endif %}
+                                </div>
+                                {# Brands #}
+                                <div id="target-brand" class="target-group" style="display:none;">
+                                    <label class="form-label">Brands</label>
+                                    <div class="checkbox-tag-grid">
+                                        {% for choice in form.brands %}
+                                            <label class="checkbox-tag" for="{{ choice.id_for_label }}">
+                                                {{ choice.tag }}
+                                                <span class="tag-text">{{ choice.choice_label }}</span>
+                                                <span class="tag-check material-icons">check</span>
+                                            </label>
+                                        {% endfor %}
+                                    </div>
+                                    {% if form.brands.errors %}<span class="error-text">{{ form.brands.errors.0 }}</span>{% endif %}
+                                </div>
+                                <p id="target-placeholder" class="target-placeholder">
+                                    <span class="material-icons">arrow_back</span>
+                                    Choose an offer type to see target options.
+                                </p>
+                            </div>
+                        </div>
+                        {# Settings #}
+                        <div class="form-section">
+                            <div class="section-title">
+                                <span class="material-icons">tune</span>
+                                <span>Settings</span>
+                            </div>
+                            <div class="section-body">
+                                <div class="toggle-row">
+                                    <div class="toggle-info">
+                                        <span class="toggle-label">Active</span>
+                                        <span class="toggle-desc">Enable this offer</span>
+                                    </div>
+                                    <label class="toggle-switch">
+                                        {{ form.is_active }}
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                {% if offer %}
+                                    <div class="meta-row">
+                                        <span class="meta-label">Created</span>
+                                        <div class="date-time">
+                                            <span class="date">{{ offer.created_at|date:"Y-m-d" }}</span>
+                                            <span class="time">{{ offer.created_at|date:"h:i A" }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="meta-row">
+                                        <span class="meta-label">Updated</span>
+                                        <div class="date-time">
+                                            <span class="date">{{ offer.updated_at|date:"Y-m-d" }}</span>
+                                            <span class="time">{{ offer.updated_at|date:"h:i A" }}</span>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {# ── Form Actions ── #}
+            <div class="form-actions">
+                <a href="{% url 'admin_offers' %}" class="btn-cancel">
+                    <span class="material-icons">arrow_back</span>
+                    Cancel
+                </a>
+                <button type="submit" class="btn-submit">
+                    <span class="material-icons">
+                        {% if offer %}
+                            save
+                        {% else %}
+                            add
+                        {% endif %}
+                    </span>
+                    {% if offer %}
+                        Save Changes
+                    {% else %}
+                        Create Offer
+                    {% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+{% endblock content %}
+{% block extra_js %}
+    <script src="{% static 'offers/admin/js/offer_form.js' %}"></script>
+{% endblock extra_js %}

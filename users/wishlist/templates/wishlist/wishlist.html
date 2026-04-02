@@ -1,0 +1,102 @@
+{% extends "core/user/base_user.html" %}
+{% load static %}
+
+{% block head_title %}My Wishlist | REX CC{% endblock head_title %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'catalog/css/user/product/product_card.css' %}">
+<link rel="stylesheet" href="{% static 'wishlist/css/wishlist.css' %}?v=3.0">
+{% endblock extra_css %}
+
+{% block content %}
+<div class="lux-hub-wrapper">
+
+    <!-- HEADER -->
+    <header class="hub-header">
+        <div class="hub-user-info">
+            <div class="hub-user-details">
+                <h1 class="hub-name">My Wishlist</h1>
+                <p class="hub-contact">
+                    A curated collection of your favorite timepieces
+                    &nbsp;·&nbsp;
+                    <span id="wishlist-count-display">0</span> items
+                </p>
+            </div>
+        </div>
+        <div class="hub-header-actions">
+            <a href="{% url 'product_list' %}" class="hub-btn-outline">
+                <span class="material-icons" style="font-size:17px; margin-right:6px;">explore</span>
+                Discover More
+            </a>
+        </div>
+    </header>
+
+    <!-- LOADING STATE -->
+    <div id="wishlist-loading" class="wl-page-loading">
+        <div class="wl-page-loading-icon"></div>
+        <p>Loading your collection...</p>
+    </div>
+
+    <!-- EMPTY STATE -->
+    <div id="wishlist-empty" class="wl-page-empty" style="display:none;">
+        <div class="wl-page-empty-icon">
+            <span class="material-icons">favorite_border</span>
+        </div>
+        <h2>Your Wishlist is Empty</h2>
+        <p>Start building your collection of exquisite timepieces</p>
+        <a href="{% url 'product_list' %}" class="wl-page-empty-btn">
+            <span class="material-icons" style="font-size:16px;">watch</span>
+            Explore Watches
+        </a>
+    </div>
+
+    <!-- WISHLIST GRID (populated by JS) -->
+    <div id="wishlist-grid" style="display:none;"></div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════
+     ITEM CARD TEMPLATE (cloned by JS for each item)
+     Uses the same product-card.css classes as homepage / product list
+     ══════════════════════════════════════════════ -->
+<template id="wishlist-page-item-template">
+    <div data-variant-id="">
+        <div class="product-card" style="position:relative; width:100%;">
+
+            <!-- Remove (×) Button — top-right overlay -->
+            <button type="button" class="wishlist-remove-btn" aria-label="Remove from wishlist">
+                <span class="material-icons">close</span>
+            </button>
+
+            <!-- Image Box -->
+            <a href="" class="card-link-wrapper product-card__image-box">
+                <img src="" alt="" class="product-card__image">
+                <span class="product-card__stock-badge" style="display:none;">Out of Stock</span>
+                <span class="product-card__discount-badge" style="display:none;"></span>
+                <div class="product-card__overlay">View Details</div>
+            </a>
+
+            <!-- Card Info -->
+            <div class="product-card__info">
+                <span class="product-card__brand"></span>
+                <h3 class="product-card__name"></h3>
+                <div class="product-card__variant-info"></div>
+                <div class="product-card__pricing">
+                    <span class="product-card__price"></span>
+                    <span class="product-card__original-price" style="display:none;"></span>
+                </div>
+                <a href="#" class="btn-add-to-cart-wishlist">
+                    <span class="material-icons">local_mall</span>
+                    Add to Cart
+                </a>
+            </div>
+
+        </div>
+    </div>
+</template>
+
+{% endblock content %}
+
+{% block extra_js %}
+<script src="{% static 'wishlist/js/wishlist.js' %}"></script>
+{% endblock extra_js %}

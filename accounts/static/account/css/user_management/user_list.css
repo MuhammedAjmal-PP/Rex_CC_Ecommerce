@@ -1,0 +1,141 @@
+/* ============================================================
+   REX CC ADMIN - USER MANAGEMENT SPECIFIC STYLES
+   User-specific styles (stats cards, date-time, email display)
+   ============================================================ */
+
+:root {
+  /* Black & White Color Palette */
+  --color-black: #000000;
+  --color-dark: #1a1a1a;
+  --color-gray-dark: #333333;
+  --color-gray: #666666;
+  --color-gray-light: #999999;
+  --color-light: #f5f5f5;
+  --color-white: #ffffff;
+
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.16);
+}
+
+/* ========================================
+   MAIN CONTENT WRAPPER
+   ======================================== */
+
+.main-content {
+  padding: 0;
+  background: var(--color-light);
+  min-height: 100vh;
+}
+
+/* ========================================
+   STATISTICS CARDS (User Management Specific)
+   ======================================== */
+
+.stats-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin: 40px;
+  margin-bottom: 32px;
+}
+
+.stat-card {
+  background: var(--color-white);
+  padding: 28px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  box-shadow: var(--shadow-md);
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--color-black);
+}
+
+.stat-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-white);
+  background: var(--color-black);
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.stat-icon.active-users {
+  background: #1a6b3c;
+}
+
+.stat-icon.blocked-users {
+  background: #b45309;
+}
+
+.stat-icon.active {
+  background: #1a6b3c;
+}
+
+.stat-icon.inactive {
+  background: #b45309;
+}
+
+.stat-card:hover .stat-icon {
+  transform: scale(1.05);
+}
+
+.stat-content {
+  flex: 1;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-gray);
+  margin: 0 0 8px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--color-black);
+}
+
+/* ========================================
+   USER-SPECIFIC TABLE CONTENT
+   ======================================== */
+
+.email-text {
+  color: var(--color-gray);
+  font-size: 0.9rem;
+}
+
+/* ========================================
+   DATE & TIME (User Management Specific)
+   ======================================== */
+
+.date-time {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.date {
+  font-weight: 600;
+  color: var(--color-black);
+  font-size: 0.9rem;
+}
+
+.time {
+  color: var(--color-gray);
+  font-size: 0.8rem;
+}

@@ -1,0 +1,292 @@
+{% extends "core/user/base_user.html" %}
+{% load static %}
+{% load humanize %}
+{% block head_title %}{{ product.name }} | {{ product.brand.name }} | REX CC{% endblock %}
+{% block extra_css %}
+    <link rel="stylesheet"
+          href="{% static 'catalog/css/user/product/product_details.css' %}">
+    <link rel="stylesheet"
+          href="{% static 'catalog/css/user/product/product_card.css' %}">
+{% endblock %}
+{% block content %}
+    <div class="pdp-wrapper">
+        <!-- =========================
+         BREADCRUMBS
+         ========================= -->
+        <nav class="pdp-breadcrumbs" aria-label="Breadcrumb">
+            <ul>
+                {% for crumb in breadcrumbs %}
+                    <li class="{% if not crumb.url %}active{% endif %}">
+                        {% if crumb.url %}
+                            <a href="{{ crumb.url }}">{{ crumb.name }}</a>
+                        {% else %}
+                            {{ crumb.name }}
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        </nav>
+        <div class="pdp-grid">
+            <!-- =========================
+             LEFT COLUMN: GALLERY
+             ========================= -->
+            <div class="pdp-gallery">
+                <div class="pdp-main-image-container">
+                    <img src="{{ primary_image.image.url }}"
+                         alt="{{ product.name }} - Main View"
+                         class="pdp-main-image">
+                </div>
+                {% if variant_images %}
+                    <div class="pdp-thumbnails">
+                        {% for img in variant_images %}
+                            <button class="pdp-thumb-btn {% if img == primary_image %}active{% endif %}"
+                                    aria-label="View Image {{ forloop.counter }}">
+                                <img src="{{ img.image.url }}"
+                                     alt="{{ product.name }} view {{ forloop.counter }}">
+                            </button>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            <!-- =========================
+             RIGHT COLUMN: DETAILS
+             ========================= -->
+            <div class="pdp-details">
+                <!-- WISHLIST BUTTON (Top Right) -->
+                <button class="pdp-wishlist-btn add-to-wishlist {% if selected_variant.id in wishlist_ids %}is-active{% endif %}"
+                        data-variant-id="{{ selected_variant.id }}"
+                        data-toggle-url="{% url 'wishlist_toggle' selected_variant.product.slug selected_variant.sku %}"
+                        aria-label="Add to wishlist">
+                    <span class="material-icons">
+                        {% if selected_variant.id in wishlist_ids %}
+                            favorite
+                        {% else %}
+                            favorite_border
+                        {% endif %}
+                    </span>
+                </button>
+                <div class="pdp-header-group">
+                    <a href="{% url 'product_list' %}?brand={{ product.brand.slug }}"
+                       class="pdp-brand width-fit">{{ product.brand.name }}</a>
+                    <h1 class="pdp-title width-fit">{{ product.name }}</h1>
+                    <!-- RATINGS -->
+                    <div class="pdp-rating-summary width-fit">
+                        <div class="pdp-rating-stars"
+                             aria-label="Rated {{ ratings_data.average }} out of 5 stars">
+                            {% for i in "12345" %}
+                                <span class="material-icons">
+                                    {% if forloop.counter <= ratings_data.average|floatformat:0 %}
+                                        star
+                                    {% else %}
+                                        star_border
+                                    {% endif %}
+                                </span>
+                            {% endfor %}
+                        </div>
+                        <span class="pdp-review-count">({{ ratings_data.total_reviews }} Reviews)</span>
+                    </div>
+                </div>
+                <!-- PRICE -->
+                <div class="pdp-price-box width-fit">
+                    <span class="pdp-price-final width-fit">₹{{ price|floatformat:2|intcomma }}</span>
+                    {% if discount_percentage > 0 %}
+                        <span class="pdp-price-original width-fit">₹{{ original_price|floatformat:2|intcomma }}</span>
+                        <span class="pdp-discount-badge width-fit">-{{ discount_percentage }}% OFF</span>
+                    {% endif %}
+                </div>
+                <!-- STOCK MESSAGE -->
+                <div id="pdp-stock-container"
+                     class="pdp-stock-status width-fit {{ stock_status }}"
+                     data-stock-url="{% url 'api_stock_fetch' product.slug selected_variant.sku %}">
+                    {% if stock_status == 'in_stock' %}
+                        <span class="material-icons" style="font-size: 1.2em;">check_circle</span>
+                    {% elif stock_status == 'low_stock' %}
+                        <span class="material-icons" style="font-size: 1.2em;">warning</span>
+                    {% else %}
+                        <span class="material-icons" style="font-size: 1.2em;">highlight_off</span>
+                    {% endif %}
+                    {{ stock_message }}
+                </div>
+                <!-- SHORT DESCRIPTION -->
+                <div class="pdp-description-short">
+                    <p>{{ product.description|truncatewords:40|linebreaksbr }}</p>
+                    <a href="#details-section"
+                       style="color: var(--pdp-accent);
+                              text-decoration: underline;
+                              font-size: 0.9em">Read More</a>
+                </div>
+                <!-- VARIANTS -->
+                <div class="pdp-variants-section width-fit">
+                    <span class="pdp-variant-label">Select Version: <span style="color: var(--pdp-text-light); font-weight: 400">{{ selected_variant.sku }}</span></span>
+                    <div class="pdp-variant-grid width-fit">
+                        {% for v in variants %}
+                            <a href="{% url 'product_detail' v.product.slug v.sku %}"
+                               class="pdp-variant-option {% if v == selected_variant %}active{% endif %} {% if v.stock == 0 %}out-of-stock{% endif %}"
+                               title="{{ v.sku }} - {% if v.stock == 0 %}Out of Stock{% else %}In Stock{% endif %}">
+                                {% if v.primary_image %}
+                                    <img src="{{ v.primary_image.image.url }}" alt="{{ v.sku }}">
+                                {% else %}
+                                    <div style="width:100%;
+                                                height:100%;
+                                                display:flex;
+                                                align-items:center;
+                                                justify-content:center;
+                                                background:#eee;
+                                                font-size: 10px">{{ v.sku|slice:":3" }}</div>
+                                {% endif %}
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+                <!-- ACTIONS (Qty / Add / Wish) -->
+                <form method="POST"
+                      id="addToCartForm"
+                      action="{% url 'add_cart' selected_variant.product.slug selected_variant.sku %}">
+                    {% csrf_token %}
+                    <div class="pdp-actions">
+                        <!-- QTY -->
+                        <div class="pdp-qty-wrapper">
+                            <button type="button" class="pdp-qty-btn" data-action="decrease">−</button>
+                            <input type="number"
+                                   name="quantity"
+                                   value="1"
+                                   min="1"
+                                   max="{{ max_qunatity_purchase }}"
+                                   class="pdp-qty-input"
+                                   aria-label="Quantity">
+                            <button type="button" class="pdp-qty-btn" data-action="increase">+</button>
+                        </div>
+                        <!-- ADD TO CART -->
+                        {% if not user.is_authenticated %}
+                            <a href="{% url 'account_login' %}?next={% url 'product_detail' selected_variant.product.slug selected_variant.sku %}"
+                               class="pdp-btn-add {% if stock_status == 'out_of_stock' %}disabled{% endif %}"
+                               style="text-decoration: none;
+                                      display: flex;
+                                      align-items: center;
+                                      justify-content: center"
+                               {% if stock_status == 'out_of_stock' %}aria-disabled="true"{% endif %}>
+                                {% if stock_status == 'out_of_stock' %}
+                                    Out of Stock
+                                {% else %}
+                                    Add to Cart
+                                {% endif %}
+                            </a>
+                        {% else %}
+                            <button type="submit"
+                                    id="pdp-add-to-cart-btn"
+                                    class="pdp-btn-add"
+                                    {% if stock_status == 'out_of_stock' %}disabled{% endif %}>
+                                {% if stock_status == 'out_of_stock' %}
+                                    Out of Stock
+                                {% else %}
+                                    Add to Cart
+                                {% endif %}
+                            </button>
+                        {% endif %}
+                    </div>
+                </form>
+                <div class="pdp-meta-info"
+                     style="margin-top: auto;
+                            font-size: 0.85rem;
+                            color: var(--pdp-text-light)">
+                    <p>
+                        <strong>Category:</strong>
+                        {% for cat in categories %}
+                            {{ cat.name }}
+                            {% if not forloop.last %},{% endif %}
+                        {% endfor %}
+                    </p>
+                    <p>
+                        <strong>SKU:</strong> {{ selected_variant.sku }}
+                    </p>
+                </div>
+            </div>
+            <!-- End Details -->
+        </div>
+        <!-- End Grid -->
+        <!-- =========================
+         DETAIL SECTIONS
+========================= -->
+        <!-- 1. About / Story -->
+        <section id="details-section" class="pdp-content-section">
+            <h2 class="pdp-section-title">About This Timepiece</h2>
+            <div style="max-width: 800px;
+                        margin: 0 auto;
+                        text-align: center;
+                        font-size: 1.1rem;
+                        line-height: 1.8;
+                        color: var(--pdp-text)">
+                <p>{{ product.description|linebreaksbr }}</p>
+                <br>
+                <p>
+                    Crafted by <strong>{{ product.brand.name }}</strong>, this model combines precision engineering with
+                    timeless aesthetics. Whether for a formal occasion or daily wear, the
+                    <strong>{{ selected_variant.sku }}</strong> variant stands out with its
+                    {% if selected_variant.dial_color %}{{ selected_variant.dial_color }} dial{% endif %}
+                    and
+                    {% if selected_variant.strap_material %}{{ selected_variant.strap_material }} strap{% endif %}
+                    .
+                </p>
+            </div>
+        </section>
+        <!-- 2. Specifications -->
+        {% if specifications %}
+            <section class="pdp-content-section">
+                <h2 class="pdp-section-title">Technical Specifications</h2>
+                <table class="pdp-specs-table">
+                    <tbody>
+                        {% for label, value in specifications %}
+                            <tr>
+                                <th>{{ label }}</th>
+                                <td>{{ value }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </section>
+        {% endif %}
+        <!-- 3. Reviews -->
+        <section class="pdp-content-section">
+            <h2 class="pdp-section-title">Customer Reviews</h2>
+            <div class="pdp-reviews-grid">
+                {% for review in reviews %}
+                    <article class="pdp-review-card">
+                        <div class="pdp-review-header">
+                            <span class="pdp-review-author">{{ review.author }}</span>
+                            <span class="pdp-review-date">{{ review.date }}</span>
+                        </div>
+                        <div class="pdp-rating-stars"
+                             style="font-size: 1rem;
+                                    margin-bottom: 0.5rem">
+                            {% for i in "12345" %}
+                                <span class="material-icons">
+                                    {% if forloop.counter <= review.rating %}
+                                        star
+                                    {% else %}
+                                        star_border
+                                    {% endif %}
+                                </span>
+                            {% endfor %}
+                        </div>
+                        <strong style="display:block; margin-bottom: 0.5rem;">{{ review.title }}</strong>
+                        <p class="pdp-review-body">{{ review.comment }}</p>
+                    </article>
+                {% endfor %}
+            </div>
+        </section>
+        <!-- 4. Related Products -->
+        {% if related_variants %}
+            <section class="pdp-content-section" style="border-bottom: none;">
+                <h2 class="pdp-section-title">You May Also Like</h2>
+                <div class="pdp-related-grid">
+                    {% for variant in related_variants %}
+                        {% include "catalog/user/product/product_card.html" with variant=variant %}
+                    {% endfor %}
+                </div>
+            </section>
+        {% endif %}
+    </div>
+{% endblock %}
+{% block extra_js %}
+    <script src="{% static 'catalog/js/user/product/product_details.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,299 @@
+{% extends 'core/admin/base_admin.html' %}
+{% load static %}
+{% block title %}
+    Categories
+{% endblock title %}
+{% block extra_css %}
+    <link rel="stylesheet"
+          href="{% static 'core/admin/css/shared/admin_search_filter.css' %}">
+    <link rel="stylesheet"
+          href="{% static 'core/admin/css/shared/admin_table_listing.css' %}">
+    <link rel="stylesheet"
+          href="{% static 'catalog/css/admin/category/category_modal.css' %}">
+{% endblock extra_css %}
+{% block header_title %}
+    Category Management
+{% endblock header_title %}
+{% block header_subtitle %}
+    Manage product categories
+{% endblock header_subtitle %}
+{% block content %}
+    <br>
+    <!-- Search and Filter Bar -->
+    <div class="search-filter-bar">
+        <div class="search-box">
+            <form method="get" class="search-form">
+                <input type="hidden" name="status" value="{{ status_filter }}">
+                <div class="search-input-wrapper">
+                    <input type="text"
+                           name="search"
+                           placeholder="Search Categories..."
+                           value="{{ search_query }}"
+                           class="form-control">
+                    <button type="submit" class="search-btn">
+                        <span class="material-icons">search</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+        <div class="filter-group">
+            <form method="get" class="filter-form">
+                <input type="hidden" name="search" value="{{ search_query }}">
+                <div class="select-wrapper">
+                    <span class="material-icons filter-icon">filter_alt</span>
+                    <select name="status" class="status-select" onchange="this.form.submit()">
+                        <option value="all" {% if status_filter == 'all' %}selected{% endif %}>Status: All</option>
+                        <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Status: Active</option>
+                        <option value="inactive"
+                                {% if status_filter == 'inactive' %}selected{% endif %}>Status: Inactive</option>
+                    </select>
+                    <span class="material-icons dropdown-icon">arrow_drop_down</span>
+                </div>
+            </form>
+        </div>
+        <div class="create-btn">
+            <a href="{% url "admin_category_add" %}"
+               data-bs-toggle="modal"
+               data-bs-target="#addCategoryModal">
+                <span class="material-icons">add</span>
+                <span>Add Category</span>
+            </a>
+        </div>
+    </div>
+    <!-- Categories Table -->
+    <div class="table-container">
+        {% if categories %}
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Slug</th>
+                        <th>Products</th>
+                        <th>Status</th>
+                        <th>Created At</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for category in categories %}
+                        <tr>
+                            <td>
+                                <div class="item-info">
+                                    <div class="item-details">
+                                        <div class="item-name">{{ category.name }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="slug-text">{{ category.slug }}</span>
+                            </td>
+                            <td>
+                                <div class="product-count">
+                                    <span class="material-icons">inventory_2</span>
+                                    <span>{{ category.products.count }} product{{ category.products.count|pluralize }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                {% if category.is_active %}
+                                    <span class="status-badge active">Active</span>
+                                {% else %}
+                                    <span class="status-badge inactive">Inactive</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="date-time">
+                                    <span class="date">{{ category.created_at|date:"Y-m-d" }}</span>
+                                    <span class="time">{{ category.created_at|date:"h:i A" }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="action d-flex gap-3">
+                                    <a href="#"
+                                       class="action-btn edit-category-btn"
+                                       title="Edit"
+                                       data-bs-toggle="modal"
+                                       data-bs-target="#editCategoryModal"
+                                       data-category-id="{{ category.id }}"
+                                       data-category-name="{{ category.name }}"
+                                       data-category-active="{{ category.is_active|yesno:'true,false' }}">
+                                        <span class="material-icons">edit</span>
+                                    </a>
+                                    {% if category.is_active %}
+                                        <a href="javascript:void(0)"
+                                           class="action-btn"
+                                           title="Deactivate"
+                                           onclick="AdminAlert.confirm('Deactivate Category', 'Are you sure you want to deactivate this category?', function() { window.location.href='{% url "admin_category_status_toggle" category.id %}'; });">
+                                            <span class="material-icons fs-6">cancel</span>
+                                        </a>
+                                    {% else %}
+                                        <a href="javascript:void(0)"
+                                           class="action-btn"
+                                           title="Activate"
+                                           onclick="AdminAlert.confirm('Activate Category', 'Are you sure you want to activate this category?', function() { window.location.href='{% url "admin_category_status_toggle" category.id %}'; });">
+                                            <span class="material-icons fs-6">check_circle</span>
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <!-- Pagination -->
+            {% if categories.paginator.num_pages > 1 %}
+                <div class="pagination-container">
+                    <div class="pagination-info">
+                        Showing {{ categories.start_index }} to {{ categories.end_index }} of {{ categories.paginator.count }} categories
+                    </div>
+                    <div class="pagination">
+                        {% if categories.has_previous %}
+                            <a href="?page={{ categories.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}"
+                               class="page-btn-nav"
+                               aria-label="Previous page"><span class="material-icons">chevron_left</span></a>
+                        {% else %}
+                            <button class="page-btn-nav" disabled aria-label="Previous page (disabled)">
+                                <span class="material-icons">chevron_left</span>
+                            </button>
+                        {% endif %}
+                        {% for num in categories.paginator.page_range %}
+                            {% if categories.number == num %}
+                                <span class="page-btn active" aria-current="page">{{ num }}</span>
+                            {% elif num > categories.number|add:'-3' and num < categories.number|add:'3' %}
+                                <a href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}"
+                                   class="page-btn"
+                                   aria-label="Page {{ num }}">{{ num }}</a>
+                            {% endif %}
+                        {% endfor %}
+                        {% if categories.has_next %}
+                            <a href="?page={{ categories.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}"
+                               class="page-btn-nav"
+                               aria-label="Next page"><span class="material-icons">chevron_right</span></a>
+                        {% else %}
+                            <button class="page-btn-nav" disabled aria-label="Next page (disabled)">
+                                <span class="material-icons">chevron_right</span>
+                            </button>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+        {% else %}
+            <!-- Empty State -->
+            <div class="empty-state">
+                <span class="material-icons fs-2">category</span>
+                <h3>No categories found</h3>
+                <p>
+                    {% if search_query or status_filter != 'all' %}
+                        Try adjusting your search terms or clear the filter.
+                    {% else %}
+                        No categories have been added yet.
+                    {% endif %}
+                </p>
+            </div>
+        {% endif %}
+    </div>
+    <!-- Add Category Modal -->
+    <div class="modal fade"
+         id="addCategoryModal"
+         tabindex="-1"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content category-modal">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <span class="material-icons">add</span>
+                        Add Category
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="addCategoryForm"
+                      method="post"
+                      data-action-url="{% url 'admin_category_add' %}">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label class="form-label">Name</label>
+                            {{ form.name }}
+                            <div id="nameError" class="error-text"></div>
+                        </div>
+                        <div class="toggle-row">
+                            <div class="toggle-info">
+                                <span class="toggle-label">Active</span>
+                                <span class="toggle-desc">Show on storefront</span>
+                            </div>
+                            <label class="toggle-switch">
+                                {{ form.is_active }}
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-cancel" data-bs-dismiss="modal">
+                            <span class="material-icons">arrow_back</span>
+                            Cancel
+                        </button>
+                        <button type="submit" class="btn-submit" id="submitCategoryBtn">
+                            <span class="material-icons">add</span>
+                            Create
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Edit Category Modal -->
+    <div class="modal fade"
+         id="editCategoryModal"
+         tabindex="-1"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content category-modal">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <span class="material-icons">edit</span>
+                        Edit Category
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="editCategoryForm" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" id="editCategoryId" name="category_id" value="">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label class="form-label">Name</label>
+                            <input type="text"
+                                   class="form-control"
+                                   id="editCategoryName"
+                                   name="name"
+                                   required>
+                            <div id="editNameError" class="error-text"></div>
+                        </div>
+                        <div class="toggle-row">
+                            <div class="toggle-info">
+                                <span class="toggle-label">Active</span>
+                                <span class="toggle-desc">Show on storefront</span>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="editCategoryActive" name="is_active">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-cancel" data-bs-dismiss="modal">
+                            <span class="material-icons">arrow_back</span>
+                            Cancel
+                        </button>
+                        <button type="submit" class="btn-submit" id="submitEditCategoryBtn">
+                            <span class="material-icons">check</span>
+                            Save
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+{% block extra_js %}
+    <script>const CATEGORY_EDIT_URL_TEMPLATE = "{% url 'admin_category_edit' 0 %}".replace('/0/', '/{id}/');</script>
+    <script src="{% static 'catalog/js/admin/category/category_modal.js' %}"></script>
+{% endblock extra_js %}

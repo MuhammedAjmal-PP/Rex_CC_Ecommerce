@@ -1,0 +1,249 @@
+/* ============================================================
+   REX CC — WISHLIST PAGE  |  Luxury Light Mode
+   Desktop only — no responsive breakpoints
+   ============================================================ */
+
+/* ============================================================
+   WISHLIST GRID
+   ============================================================ */
+
+#wishlist-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 32px 24px;
+}
+
+/* Override product-card fixed width so it fills grid cells;
+   also make it a proper flex column so button sticks to bottom */
+#wishlist-grid .product-card {
+  width: 100%;
+  flex-shrink: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Stretch the info section to fill remaining card height */
+#wishlist-grid .product-card__info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+/* Stick the pricing + button to the bottom */
+#wishlist-grid .product-card__pricing {
+  margin-top: auto;
+  padding-top: 8px;
+}
+
+
+/* ============================================================
+   WISHLIST ITEM WRAPPER — for animation/removal
+   ============================================================ */
+
+#wishlist-grid > div {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ============================================================
+   REMOVE BUTTON — top-right corner overlay
+   ============================================================ */
+
+.wishlist-remove-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 30px;
+  height: 30px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid #e0e0e0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.22s ease;
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.wishlist-remove-btn .material-icons {
+  font-size: 15px;
+  color: #888;
+  transition: color 0.2s;
+}
+
+.wishlist-remove-btn:hover {
+  background: #fff;
+  border-color: #d32f2f;
+  box-shadow: 0 4px 12px rgba(211, 47, 47, 0.15);
+}
+
+.wishlist-remove-btn:hover .material-icons {
+  color: #d32f2f;
+}
+
+/* ============================================================
+   ADD TO CART BUTTON (inside wishlist card)
+   ============================================================ */
+
+.btn-add-to-cart-wishlist {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 10px 16px;
+  margin-top: 14px;
+  background: transparent;
+  border: 1px solid #e0e0e0;
+  border-radius: 3px;
+  color: #111;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.22s ease;
+}
+
+.btn-add-to-cart-wishlist:hover {
+  background: #111;
+  border-color: #111;
+  color: #fff;
+}
+
+.btn-add-to-cart-wishlist .material-icons {
+  font-size: 15px;
+}
+
+/* ============================================================
+   LOADING STATE
+   ============================================================ */
+
+.wl-page-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100px 40px;
+  gap: 16px;
+  text-align: center;
+}
+
+.wl-page-loading-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 3px solid #eaeaea;
+  border-top-color: #bfa15f;
+  animation: wl-spin 0.9s linear infinite;
+}
+
+@keyframes wl-spin {
+  to { transform: rotate(360deg); }
+}
+
+.wl-page-loading p {
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #aaa;
+  margin: 0;
+}
+
+/* ============================================================
+   EMPTY STATE
+   ============================================================ */
+
+.wl-page-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100px 40px;
+  gap: 16px;
+  text-align: center;
+}
+
+.wl-page-empty-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: #f5f4f2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.wl-page-empty-icon .material-icons {
+  font-size: 32px;
+  color: #ccc;
+}
+
+.wl-page-empty h2 {
+  font-family: "Playfair Display", serif;
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #111;
+  margin: 0;
+}
+
+.wl-page-empty p {
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.88rem;
+  color: #888;
+  max-width: 340px;
+  line-height: 1.7;
+  margin: 0;
+}
+
+.wl-page-empty-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 28px;
+  background: #111;
+  color: #fff;
+  text-decoration: none;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  border-radius: 3px;
+  transition: all 0.22s ease;
+  margin-top: 8px;
+}
+
+.wl-page-empty-btn:hover {
+  background: #cd7f32;
+  color: #fff;
+}
+
+/* ============================================================
+   COUNT BADGE (header)
+   ============================================================ */
+
+.wl-count-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 8px;
+  border-radius: 12px;
+  background: #f3f2ef;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #555;
+  margin-left: 8px;
+}
+
+/* Desktop only */

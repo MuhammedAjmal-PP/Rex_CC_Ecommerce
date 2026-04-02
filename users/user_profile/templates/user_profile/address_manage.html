@@ -1,0 +1,42 @@
+{% extends "core/user/base_user.html" %}
+{% load static %}
+
+{% block head_title %}
+    {{ title }} | REX CC
+{% endblock head_title %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'user_profile/css/profile.css' %}">
+    <link rel="stylesheet" href="{% static 'user_profile/css/address_form.css' %}">
+{% endblock extra_css %}
+
+{% block content %}
+<div class="lux-hub-wrapper">
+    <!-- HEADER -->
+    <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 48px;">
+        <div>
+            <h1 class="hub-name" style="margin: 0 0 4px 0;">
+                {{ title }}
+            </h1>
+            <p class="hub-contact" style="margin: 0;">
+                Carefully curated delivery details
+            </p>
+        </div>
+        <div>
+            <a href="{% url 'user_address' %}" class="hub-btn-outline">
+                <span class="material-icons" style="font-size: 18px; margin-right: 6px;">arrow_back</span>
+                Back
+            </a>
+        </div>
+    </header>
+
+    <!-- FORM WRAPPER -->
+    <div class="hub-card lux-form-card" style="max-width: 800px; margin: 0 auto; padding: 40px;">
+        {% include "user_profile/partials/address_form.html" %}
+    </div>
+</div>
+{% endblock content %}
+
+{% block extra_js %}
+    <script src="{% static 'user_profile/js/address_form.js' %}"></script>
+{% endblock extra_js %}

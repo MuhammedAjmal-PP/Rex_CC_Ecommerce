@@ -1,0 +1,202 @@
+{% extends 'core/admin/base_admin.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Transactions{% endblock title %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'core/admin/css/shared/admin_search_filter.css' %}">
+    <link rel="stylesheet" href="{% static 'core/admin/css/shared/admin_table_listing.css' %}">
+    <link rel="stylesheet" href="{% static 'payments/admin/css/transaction_list.css' %}">
+{% endblock extra_css %}
+
+{% block header_title %}Transactions{% endblock header_title %}
+{% block header_subtitle %}View and manage all financial transactions{% endblock header_subtitle %}
+
+{% block content %}
+
+    <!-- Statistics Cards -->
+    <div class="stats-container">
+        <div class="stat-card {% if status_filter == 'ALL' %}active{% endif %}">
+            <div class="stat-icon total">
+                <span class="material-icons fs-2">receipt</span>
+            </div>
+            <div class="stat-content">
+                <p class="stat-label">Total</p>
+                <h3 class="stat-value">{{ status_counts.total }}</h3>
+            </div>
+        </div>
+        <div class="stat-card {% if status_filter == 'PENDING' %}active{% endif %}">
+            <div class="stat-icon pending">
+                <span class="material-icons fs-2">pending_actions</span>
+            </div>
+            <div class="stat-content">
+                <p class="stat-label">Pending</p>
+                <h3 class="stat-value">{{ status_counts.pending }}</h3>
+            </div>
+        </div>
+        <div class="stat-card {% if status_filter == 'COMPLETED' %}active{% endif %}">
+            <div class="stat-icon completed">
+                <span class="material-icons fs-2">check_circle</span>
+            </div>
+            <div class="stat-content">
+                <p class="stat-label">Completed</p>
+                <h3 class="stat-value">{{ status_counts.completed }}</h3>
+            </div>
+        </div>
+        <div class="stat-card {% if status_filter == 'FAILED' %}active{% endif %}">
+            <div class="stat-icon failed">
+                <span class="material-icons fs-2">cancel</span>
+            </div>
+            <div class="stat-content">
+                <p class="stat-label">Failed</p>
+                <h3 class="stat-value">{{ status_counts.failed }}</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search and Filter Bar -->
+    <div class="search-filter-bar">
+        <div class="search-box">
+            <form method="get" class="search-form">
+                <input type="hidden" name="status" value="{{ status_filter }}">
+                <input type="hidden" name="type" value="{{ type_filter }}">
+                <div class="search-input-wrapper">
+                    <input type="text"
+                           name="qs"
+                           placeholder="Search by transaction ID or email..."
+                           value="{{ search_query }}"
+                           class="form-control">
+                    <button type="submit" class="search-btn">
+                        <span class="material-icons">search</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+        <div class="filter-group">
+            <form method="get" class="filter-form">
+                <input type="hidden" name="qs" value="{{ search_query }}">
+                <input type="hidden" name="type" value="{{ type_filter }}">
+                <div class="select-wrapper">
+                    <span class="material-icons filter-icon">filter_alt</span>
+                    <select name="status" class="status-select" onchange="this.form.submit()">
+                        <option value="all" {% if status_filter == 'ALL' %}selected{% endif %}>Status: All</option>
+                        <option value="pending" {% if status_filter == 'PENDING' %}selected{% endif %}>Status: Pending</option>
+                        <option value="paid" {% if status_filter == 'PAID' %}selected{% endif %}>Status: Paid</option>
+                        <option value="completed" {% if status_filter == 'COMPLETED' %}selected{% endif %}>Status: Completed</option>
+                        <option value="failed" {% if status_filter == 'FAILED' %}selected{% endif %}>Status: Failed</option>
+                    </select>
+                    <span class="material-icons dropdown-icon">arrow_drop_down</span>
+                </div>
+            </form>
+            <form method="get" class="filter-form">
+                <input type="hidden" name="qs" value="{{ search_query }}">
+                <input type="hidden" name="status" value="{{ status_filter }}">
+                <div class="select-wrapper">
+                    <span class="material-icons filter-icon">category</span>
+                    <select name="type" class="status-select" onchange="this.form.submit()">
+                        <option value="all" {% if type_filter == 'ALL' %}selected{% endif %}>Type: All</option>
+                        <option value="order_payment" {% if type_filter == 'ORDER_PAYMENT' %}selected{% endif %}>Order Payment</option>
+                        <option value="cancellation_refund" {% if type_filter == 'CANCELLATION_REFUND' %}selected{% endif %}>Cancellation Refund</option>
+                        <option value="return_refund" {% if type_filter == 'RETURN_REFUND' %}selected{% endif %}>Return Refund</option>
+                    </select>
+                    <span class="material-icons dropdown-icon">arrow_drop_down</span>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Transactions Table -->
+    <div class="table-container">
+        {% if transactions %}
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Transaction ID</th>
+
+                        <th>Type</th>
+                        <th>Method</th>
+                        <th class="text-end">Amount</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th class="text-center">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for txn in transactions %}
+                        <tr>
+                            <td>
+                                <span class="txn-id-mono">{{ txn.transaction_id }}</span>
+                            </td>
+
+                            <td>
+                                <span class="txn-type-badge type-{{ txn.transaction_type|lower }}">
+                                    {{ txn.get_transaction_type_display }}
+                                </span>
+                            </td>
+                            <td>{{ txn.get_payment_method_display }}</td>
+                            <td class="text-end">
+                                <span class="txn-amount">₹{{ txn.amount|floatformat:2|intcomma }}</span>
+                            </td>
+                            <td>
+                                <span class="status-badge status-{{ txn.status|lower }}">
+                                    {{ txn.get_status_display }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="txn-date-cell">
+                                    <span>{{ txn.created_at|date:"d M Y" }}</span>
+                                    <span class="txn-time">{{ txn.created_at|date:"h:i A" }}</span>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <a href="{% url 'admin_transaction_detail' txn.transaction_id %}"
+                                   class="btn-action" title="View Details">
+                                    <span class="material-icons">visibility</span>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <!-- Pagination -->
+            {% if transactions.paginator.num_pages > 1 %}
+                <div class="pagination-container">
+                    <div class="pagination-info">
+                        Showing {{ transactions.start_index }} to {{ transactions.end_index }} of {{ transactions.paginator.count }} transactions
+                    </div>
+                    <nav class="pagination">
+                        {% if transactions.has_previous %}
+                            <a href="?page={{ transactions.previous_page_number }}{% if search_query %}&qs={{ search_query }}{% endif %}{% if status_filter != 'ALL' %}&status={{ status_filter|lower }}{% endif %}{% if type_filter != 'ALL' %}&type={{ type_filter|lower }}{% endif %}"
+                               class="page-btn-nav">
+                                <span class="material-icons">chevron_left</span>
+                            </a>
+                        {% endif %}
+                        {% for num in transactions.paginator.page_range %}
+                            {% if transactions.number == num %}
+                                <span class="page-btn active">{{ num }}</span>
+                            {% elif num > transactions.number|add:'-3' and num < transactions.number|add:'3' %}
+                                <a href="?page={{ num }}{% if search_query %}&qs={{ search_query }}{% endif %}{% if status_filter != 'ALL' %}&status={{ status_filter|lower }}{% endif %}{% if type_filter != 'ALL' %}&type={{ type_filter|lower }}{% endif %}"
+                                   class="page-btn">{{ num }}</a>
+                            {% endif %}
+                        {% endfor %}
+                        {% if transactions.has_next %}
+                            <a href="?page={{ transactions.next_page_number }}{% if search_query %}&qs={{ search_query }}{% endif %}{% if status_filter != 'ALL' %}&status={{ status_filter|lower }}{% endif %}{% if type_filter != 'ALL' %}&type={{ type_filter|lower }}{% endif %}"
+                               class="page-btn-nav">
+                                <span class="material-icons">chevron_right</span>
+                            </a>
+                        {% endif %}
+                    </nav>
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="empty-state">
+                <span class="material-icons">receipt</span>
+                <h3>No transactions found</h3>
+                <p>{% if search_query or status_filter != 'ALL' or type_filter != 'ALL' %}Try adjusting your search or filters.{% else %}No transactions have been recorded yet.{% endif %}</p>
+            </div>
+        {% endif %}
+    </div>
+
+{% endblock content %}

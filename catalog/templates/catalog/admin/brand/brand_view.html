@@ -1,0 +1,171 @@
+{% extends 'core/admin/base_admin.html' %}
+{% load static %}
+{% load cloudinary %}
+{% block title %}
+    {{ brand.name }} - Brand Details
+{% endblock title %}
+{% block extra_css %}
+    <link rel="stylesheet"
+          href="{% static 'catalog/css/admin/brand/brand_view.css' %}">
+{% endblock extra_css %}
+{% block header_title %}
+    {{ brand.name }}
+{% endblock header_title %}
+{% block header_subtitle %}
+    Brand Details
+{% endblock header_subtitle %}
+{% block content %}
+    <div class="view-container">
+        <!-- Brand Details Section -->
+        <div class="details-layout">
+            <!-- Left: Brand Info -->
+            <div class="details-column">
+                <div class="details-card">
+                    <div class="card-header">
+                        <span class="material-icons">info</span>
+                        <h3>Brand Information</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="info-row">
+                            <span class="info-label">Name</span>
+                            <span class="info-value">{{ brand.name }}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Slug</span>
+                            <span class="info-value slug">{{ brand.slug }}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Tagline</span>
+                            <span class="info-value">{{ brand.tagline|default:"—" }}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Status</span>
+                            <span class="info-value">
+                                {% if brand.is_active %}
+                                    <span class="status-badge active">
+                                        <span class="material-icons">check_circle</span> Active
+                                    </span>
+                                {% else %}
+                                    <span class="status-badge inactive">
+                                        <span class="material-icons">cancel</span> Inactive
+                                    </span>
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Created</span>
+                            <span class="info-value">{{ brand.created_at|date:"M d, Y" }}</span>
+                        </div>
+                        {% if brand.description %}
+                            <div class="info-row full-width">
+                                <span class="info-label">Description</span>
+                                <p class="info-description">{{ brand.description }}</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <!-- Right: Brand Logo -->
+            <div class="details-column">
+                <div class="details-card">
+                    <div class="card-header">
+                        <span class="material-icons">image</span>
+                        <h3>Brand Logo</h3>
+                    </div>
+                    <div class="card-body logo-container">
+                        {% if brand.logo %}
+                            <img src="{{ brand.logo.url }}"
+                                 alt="{{ brand.name }} Logo"
+                                 class="brand-logo-preview"
+                                 width="200"
+                                 height="200"
+                                 loading="lazy">
+                        {% else %}
+                            <div class="no-logo">
+                                <span class="material-icons">image</span>
+                                <span>No logo uploaded</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <!-- Quick Actions -->
+                <div class="details-card">
+                    <div class="card-header">
+                        <span class="material-icons">bolt</span>
+                        <h3>Quick Actions</h3>
+                    </div>
+                    <div class="card-body actions-container">
+                        <a href="{% url 'admin_brand_edit' brand.id %}" class="action-btn edit">
+                            <span class="material-icons">edit</span>
+                            <span>Edit Brand</span>
+                        </a>
+                        <a href="{% url 'admin_brand_status_toggle' brand.id %}"
+                           class="action-btn toggle">
+                            {% if brand.is_active %}
+                                <span class="material-icons">pause_circle</span>
+                                <span>Deactivate</span>
+                            {% else %}
+                                <span class="material-icons">play_circle</span>
+                                <span>Activate</span>
+                            {% endif %}
+                        </a>
+                        <a href="{% url 'admin_brands' %}" class="action-btn back">
+                            <span class="material-icons">arrow_back</span>
+                            <span>Back to List</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Products Section -->
+        <div class="products-section">
+            <div class="details-card">
+                <div class="card-header">
+                    <span class="material-icons">inventory_2</span>
+                    <h3>Products</h3>
+                    <span class="product-count">{{ products.count }} product{{ products.count|pluralize }}</span>
+                </div>
+                {% if products %}
+                    <div class="card-body brand-products-list">
+                        {% for product in products %}
+                            <div class="brand-product-row">
+                                <div class="brand-product-info">
+                                    {% if product.thumbnail %}
+                                        <img src="{{ product.thumbnail.url }}"
+                                             alt="{{ product.name }}"
+                                             class="brand-product-thumb"
+                                             loading="lazy">
+                                    {% else %}
+                                        <div class="brand-product-thumb-placeholder">
+                                            <span class="material-icons">watch</span>
+                                        </div>
+                                    {% endif %}
+                                    <div class="brand-product-details">
+                                        <span class="brand-product-name">{{ product.name }}</span>
+                                        <span class="brand-product-meta">{{ product.variants.count }} variant{{ product.variants.count|pluralize }}</span>
+                                    </div>
+                                </div>
+                                <div class="brand-product-status">
+                                    {% if product.is_drafted %}
+                                        <span class="status-badge drafted">Drafted</span>
+                                    {% else %}
+                                        <span class="status-badge active">Published</span>
+                                    {% endif %}
+                                </div>
+                                <a href="{% url 'admin_product_view' product.id %}" class="brand-product-link">
+                                    <span class="material-icons">visibility</span>
+                                </a>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="card-body empty-products">
+                        <span class="material-icons">inbox</span>
+                        <p>No products found for this brand</p>
+                        <span class="hint">Products will appear here once added</span>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock content %}

@@ -1,0 +1,186 @@
+import string
+import uuid
+from django.db import models
+from django.contrib.auth.models import (
+    AbstractBaseUser,
+    PermissionsMixin,
+    BaseUserManager,
+)
+from django.core.exceptions import ValidationError
+from django.utils.crypto import get_random_string
+from phonenumber_field.modelfields import PhoneNumberField
+from core.validators import (
+    image_size_validator,
+    image_file_extension_validator,
+    name_validator,
+    min_len_name_validator,
+)
+
+# Create your models here.
+
+
+class CustomUserManager(BaseUserManager):
+    """Define a model manager for User model with no username field."""
+
+    def _create_user(self, email, password=None, **extra_fields):
+        """Create and save a User with the given email and password."""
+        if not email:
+            raise ValueError("The given email must be set")
+        email = self.normalize_email(email)
+        user = self.model(email=email, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_user(self, email, password=None, **extra_fields):
+        extra_fields.setdefault("is_staff", False)
+        extra_fields.setdefault("is_superuser", False)
+        return self._create_user(email, password, **extra_fields)
+
+    def create_superuser(self, email, password=None, **extra_fields):
+        """Create and save a SuperUser with the given email and password."""
+        extra_fields.setdefault("is_staff", True)
+        extra_fields.setdefault("is_superuser", True)
+
+        if extra_fields.get("is_staff") is not True:
+            raise ValueError("Superuser must have is_staff=True.")
+        if extra_fields.get("is_superuser") is not True:
+            raise ValueError("Superuser must have is_superuser=True.")
+
+        return self._create_user(email, password, **extra_fields)
+
+
+class CustomUser(AbstractBaseUser, PermissionsMixin):
+    # Basic info
+    first_name = models.CharField(
+        max_length=100,
+        null=True,
+        blank=True,
+        validators=[
+            name_validator,
+            min_len_name_validator,
+        ],
+    )
+    last_name = models.CharField(
+        max_length=100,
+        null=True,
+        blank=True,
+        validators=[
+            name_validator,
+            min_len_name_validator,
+        ],
+    )
+    avatar = models.ImageField(
+        upload_to="user_avatar",
+        null=True,
+        blank=True,
+        help_text="User Profile Pic",
+        validators=[image_size_validator, image_file_extension_validator],
+    )
+
+    email = models.EmailField(unique=True)
+    phone_number = PhoneNumberField(blank=True)
+
+    # ── Referral ──
+    referral_code = models.CharField(
+        max_length=10,
+        unique=True,
+        blank=True,
+        editable=False,
+        help_text="Auto-generated unique referral code",
+    )
+    referred_by = models.ForeignKey(
+        "self",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="referrals",
+        help_text="User who referred this account",
+    )
+
+    is_active = models.BooleanField(default=True)
+    is_superuser = models.BooleanField(default=False)
+    is_staff = models.BooleanField(default=False)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = []
+
+    objects = CustomUserManager()
+
+    @property
+    def get_full_name(self):
+        """
+        Return the first_name plus the last_name, with a space in between.
+        """
+        full_name = "%s %s" % (self.first_name, self.last_name)
+        return full_name.strip()
+
+    @property
+    def get_short_name(self):
+        """Return the short name for the user."""
+        return self.first_name
+
+    @staticmethod
+    def _generate_referral_code():
+        """Generate a unique REX-XXXXXX referral code."""
+        chars = string.ascii_uppercase + string.digits
+        for _ in range(10):  # retry limit
+            code = "REX-" + get_random_string(6, chars)
+            if not CustomUser.objects.filter(referral_code=code).exists():
+                return code
+        raise RuntimeError("Could not generate a unique referral code")
+
+    def clean(self):
+        super().clean()
+        if self.email and BlacklistedEmail.objects.filter(email=self.email).exists():
+            raise ValidationError({"email": "This email is no longer available."})
+
+    def save(self, *args, **kwargs):
+        if self.pk:
+            old = CustomUser.objects.filter(pk=self.pk).first()
+            if old and old.avatar and old.avatar != self.avatar:
+                old.avatar.delete(save=False)
+
+        if not self.referral_code:
+            self.referral_code = self._generate_referral_code()
+
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.email
+
+
+class PasswordReset(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    reset_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    created_at = models.DateTimeField(auto_now_add=True, editable=False)
+
+    def __str__(self):
+        return f"Password reset for {self.user.email} at {self.created_at}"
+
+
+class BlacklistedEmail(models.Model):
+    """
+    Stores old emails that were replaced via the 'Edit Email' flow.
+    Prevents anyone (including the original owner) from reusing them.
+    """
+
+    email = models.EmailField(unique=True, db_index=True)
+    original_user = models.ForeignKey(
+        CustomUser,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="blacklisted_emails",
+        help_text="User who originally owned this email",
+    )
+    reason = models.CharField(max_length=30, default="EMAIL_CHANGED")
+    blacklisted_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-blacklisted_at"]
+
+    def __str__(self):
+        return f"{self.email} (blacklisted)"

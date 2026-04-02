@@ -1,0 +1,137 @@
+<form method="post" class="lux-address-form">
+    {% csrf_token %}
+
+    <!-- ADDRESS LABEL SELECTION -->
+    <div class="lux-form-section">
+        <h3 class="lux-section-title">Address Label</h3>
+        <div class="lux-label-grid">
+            <label class="lux-radio-card">
+                <input type="radio"
+                       name="label_choice"
+                       value="Home"
+                       id="label_home"
+                       {% if form.label.value == 'Home' %}checked{% endif %}>
+                <div class="lux-radio-content">
+                    <span class="material-icons">home</span>
+                    <span class="lux-radio-text">Home</span>
+                </div>
+            </label>
+            <label class="lux-radio-card">
+                <input type="radio"
+                       name="label_choice"
+                       value="Work"
+                       id="label_work"
+                       {% if form.label.value == 'Work' %}checked{% endif %}>
+                <div class="lux-radio-content">
+                    <span class="material-icons">business</span>
+                    <span class="lux-radio-text">Work</span>
+                </div>
+            </label>
+            <label class="lux-radio-card">
+                <input type="radio"
+                       name="label_choice"
+                       value="Other"
+                       id="label_other"
+                       {% if form.label.value and form.label.value != 'Home' and form.label.value != 'Work' %}checked{% endif %}>
+                <div class="lux-radio-content">
+                    <span class="material-icons">location_on</span>
+                    <span class="lux-radio-text">Other</span>
+                </div>
+            </label>
+        </div>
+
+        <!-- Custom Label Input -->
+        <div id="customLabelGroup" class="lux-custom-label-group" style="display: none; margin-top: 16px;">
+            <label class="lux-input-label">Custom Label Name</label>
+            <input type="text"
+                   id="custom_label"
+                   name="custom_label"
+                   class="lux-input"
+                   placeholder="e.g., Parents House, Office"
+                   value="{% if form.label.value != 'Home' and form.label.value != 'Work' %}{{ form.label.value }}{% endif %}">
+        </div>
+        <input type="hidden" id="label" name="label" value="{{ form.label.value|default:'Home' }}">
+    </div>
+
+    <!-- CONTACT INFORMATION -->
+    <div class="lux-form-section">
+        <h3 class="lux-section-title">Contact Information</h3>
+        <div class="lux-form-row">
+            <div class="lux-form-group">
+                <label class="lux-input-label">Full Name</label>
+                {{ form.full_name }}
+                {% if form.full_name.errors %}<div class="lux-form-error">{{ form.full_name.errors.0 }}</div>{% endif %}
+            </div>
+            <div class="lux-form-group">
+                <label class="lux-input-label">Phone Number</label>
+                {{ form.phone_number }}
+                {% if form.phone_number.errors %}<div class="lux-form-error">{{ form.phone_number.errors.0 }}</div>{% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- ADDRESS DETAILS -->
+    <div class="lux-form-section">
+        <h3 class="lux-section-title">Delivery Details</h3>
+        <div class="lux-form-group">
+            <label class="lux-input-label">Address Line 1</label>
+            {{ form.address_line_1 }}
+            {% if form.address_line_1.errors %}<div class="lux-form-error">{{ form.address_line_1.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="lux-form-group">
+            <label class="lux-input-label">Address Line 2 <span class="lux-optional">(Optional)</span></label>
+            {{ form.address_line_2 }}
+        </div>
+        
+        <div class="lux-form-row">
+            <div class="lux-form-group">
+                <label class="lux-input-label">City</label>
+                {{ form.city }}
+                {% if form.city.errors %}<div class="lux-form-error">{{ form.city.errors.0 }}</div>{% endif %}
+            </div>
+            <div class="lux-form-group">
+                <label class="lux-input-label">State</label>
+                {{ form.state }}
+                {% if form.state.errors %}<div class="lux-form-error">{{ form.state.errors.0 }}</div>{% endif %}
+            </div>
+        </div>
+        
+        <div class="lux-form-row">
+            <div class="lux-form-group">
+                <label class="lux-input-label">Postal Code</label>
+                {{ form.postal_code }}
+                {% if form.postal_code.errors %}<div class="lux-form-error">{{ form.postal_code.errors.0 }}</div>{% endif %}
+            </div>
+            <div class="lux-form-group">
+                <label class="lux-input-label">Country</label>
+                {{ form.country }}
+                {% if form.country.errors %}<div class="lux-form-error">{{ form.country.errors.0 }}</div>{% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- DEFAULT CHECKBOX -->
+    <div class="lux-form-section lux-default-wrapper">
+        <label class="lux-checkbox">
+            <input type="checkbox" name="is_default" id="is_default" {% if form.is_default.value %}checked{% endif %}>
+            <span class="lux-checkmark"></span>
+            <div class="lux-check-text">
+                <span class="title">Set as Default Address</span>
+                <span class="desc">We will automatically select this address for your future orders.</span>
+            </div>
+        </label>
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="lux-form-actions">
+        <!-- Checking context to see if it's the checkout vs profile. Usually checkout doesn't have the "Cancel" link pointing back to `user_address` -->
+        {% if request.resolver_match.url_name != 'checkout' %}
+        <a href="{% url 'user_address' %}" class="hub-btn-outline" style="text-decoration:none;">
+            Cancel
+        </a>
+        {% endif %}
+        <button type="submit" class="lux-btn-primary" style="padding: 14px 32px; font-size: 0.9rem;">
+            Save
+        </button>
+    </div>
+</form>

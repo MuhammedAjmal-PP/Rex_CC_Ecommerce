@@ -1,0 +1,275 @@
+/* ============================================================
+   REX CC - LUXURY ADDRESS FORM
+   ============================================================ */
+
+.lux-form-card {
+    background: #fff;
+    border: 1px solid #eaeaea;
+    border-radius: 8px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.06);
+}
+
+.lux-address-form {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+/* Form Sections */
+.lux-form-section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.lux-section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    color: #111;
+    margin: 0 0 8px 0;
+    font-weight: 600;
+    border-bottom: 1px solid #eaeaea;
+    padding-bottom: 16px;
+}
+
+/* Radio Cards (Labels) */
+.lux-label-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.lux-radio-card {
+    position: relative;
+    cursor: pointer;
+}
+
+.lux-radio-card input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.lux-radio-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 24px 16px;
+    border: 1px solid #eaeaea;
+    border-radius: 6px;
+    background: #fff;
+    transition: all 0.3s ease;
+}
+
+.lux-radio-content .material-icons {
+    font-size: 28px;
+    color: #aaa;
+    transition: color 0.3s ease;
+}
+
+.lux-radio-text {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.lux-radio-card:hover .lux-radio-content {
+    border-color: #111;
+}
+
+.lux-radio-card input[type="radio"]:checked + .lux-radio-content {
+    border-color: var(--color-gold, #bfa15f);
+    background: #fafafa;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.lux-radio-card input[type="radio"]:checked + .lux-radio-content .material-icons {
+    color: var(--color-gold, #bfa15f);
+}
+
+.lux-radio-card input[type="radio"]:checked + .lux-radio-content .lux-radio-text {
+    color: #111;
+}
+
+/* Input Fields */
+.lux-form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+.lux-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.lux-input-label {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #111;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.lux-optional {
+    color: #999;
+    text-transform: none;
+    font-weight: 400;
+    letter-spacing: 0;
+}
+
+.lux-input, 
+.lux-address-form input[type="text"], 
+.lux-address-form input[type="tel"], 
+.lux-address-form select {
+    width: 100%;
+    padding: 14px 16px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.95rem;
+    color: #111;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.lux-input:focus,
+.lux-address-form input[type="text"]:focus,
+.lux-address-form input[type="tel"]:focus,
+.lux-address-form select:focus {
+    border-color: var(--color-gold, #bfa15f);
+    box-shadow: 0 0 0 1px var(--color-gold, #bfa15f);
+}
+
+.lux-form-error {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.8rem;
+    color: #d32f2f;
+    margin-top: 4px;
+}
+
+/* Custom Checkbox */
+.lux-default-wrapper {
+    background: #fafafa;
+    padding: 24px;
+    border-radius: 6px;
+    border: 1px solid #eaeaea;
+}
+
+.lux-checkbox {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    cursor: pointer;
+    position: relative;
+    user-select: none;
+}
+
+.lux-checkbox input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.lux-checkmark {
+    position: relative;
+    height: 22px;
+    width: 22px;
+    background-color: #fff;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.lux-checkbox:hover input ~ .lux-checkmark {
+    border-color: #111;
+}
+
+.lux-checkbox input:checked ~ .lux-checkmark {
+    background-color: #111;
+    border-color: #111;
+}
+
+.lux-checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+    left: 6px;
+    top: 2px;
+    width: 6px;
+    height: 12px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.lux-checkbox input:checked ~ .lux-checkmark:after {
+    display: block;
+}
+
+.lux-check-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.lux-check-text .title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #111;
+}
+
+.lux-check-text .desc {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.85rem;
+    color: #666;
+}
+
+/* Form Actions */
+.lux-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 16px;
+    margin-top: 10px;
+}
+
+/* Reused button syntax */
+.lux-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 16px 32px;
+    background: #111;
+    color: #fff;
+    border: 1px solid #111;
+    border-radius: 4px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.lux-btn-primary:hover {
+    background: var(--color-gold, #bfa15f);
+    border-color: var(--color-gold, #bfa15f);
+}
+
+/* Desktop only - no responsive breakpoints needed */

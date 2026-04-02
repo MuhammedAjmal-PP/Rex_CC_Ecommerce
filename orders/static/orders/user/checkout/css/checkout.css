@@ -1,0 +1,74 @@
+/* ===================================================================
+   REX CC - CHECKOUT LAYOUT
+   =================================================================== */
+
+.chk-grid {
+    display: grid;
+    grid-template-columns: 2fr 1.1fr;
+    gap: 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+    align-items: start;
+}
+
+.chk-main {
+    min-width: 0;
+}
+
+.chk-sidebar {
+    min-width: 0;
+    /* overflow: hidden removed — it breaks position: sticky on child elements */
+}
+
+.chk-sidebar .hub-card {
+    box-sizing: border-box;
+}
+
+/* Sticky sidebar card — accounts for top-bar (35px) + header (80px) + 16px gap */
+.chk-sidebar-card {
+    padding: 24px;
+    position: sticky;
+    top: 131px;
+}
+
+.chk-steps-container {
+    position: relative;
+    min-height: 400px;
+}
+
+.chk-step {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Base override for default input styles used in checkout partials */
+.chk-input {
+  width: 100%;
+  padding: 12px 14px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.9rem;
+  color: #111;
+  border: 1px solid #eaeaea;
+  border-radius: 2px;
+  background: #fff;
+  transition: all 0.2s ease;
+}
+
+.chk-input:focus {
+  outline: none;
+  border-color: var(--color-gold);
+  box-shadow: 0 0 0 2px rgba(191, 161, 95, 0.1);
+}
+
+.chk-section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.3rem;
+  color: #111;
+  margin: 0 0 24px 0;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #eaeaea;
+}

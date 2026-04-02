@@ -1,0 +1,268 @@
+/* ============================================================
+   REX CC ADMIN DASHBOARD - DASHBOARD SPECIFIC STYLES
+   File: core/static/core/admin/css/dashboard.css
+   Bootstrap 5.3.3 Enhanced
+   ============================================================ */
+
+:root {
+    /* Black & White Color Palette */
+    --color-black: #000000;
+    --color-dark: #1a1a1a;
+    --color-gray-dark: #333333;
+    --color-gray: #666666;
+    --color-gray-light: #999999;
+    --color-light: #f5f5f5;
+    --color-white: #ffffff;
+
+    /* Shadows */
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.16);
+}
+
+/* ========================================
+   STATISTICS CARDS (Matching Other Admin Pages)
+   ======================================== */
+
+.stats-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    margin: 40px;
+    margin-bottom: 32px;
+}
+
+.stat-card {
+    background: var(--color-white);
+    padding: 28px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: var(--shadow-md);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    color: inherit;
+    border: 1px solid transparent;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--color-black);
+    text-decoration: none;
+    color: inherit;
+}
+
+.stat-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-white);
+    background: var(--color-black);
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover .stat-icon {
+    transform: scale(1.05);
+}
+
+/* Colored stat-icon variants */
+.stat-icon.revenue { background: #1a6b3c; }
+.stat-icon.orders { background: #1e40af; }
+.stat-icon.users { background: #7c3aed; }
+.stat-icon.products { background: #b45309; }
+
+.stat-content {
+    flex: 1;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-gray);
+    margin: 0 0 8px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--color-black);
+}
+
+/* ========================================
+   CHART SECTION
+   ======================================== */
+
+.chart-section {
+    margin: 0 40px 30px;
+    background: var(--color-white);
+    border-radius: 8px;
+    padding: 30px;
+    box-shadow: var(--shadow-md);
+    border: 1px solid transparent;
+}
+
+.chart-section .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.chart-section .section-header h2 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--color-black);
+    margin: 0;
+}
+
+.chart-filters {
+    display: flex;
+    gap: 8px;
+}
+
+.chart-filter-btn {
+    padding: 7px 18px;
+    border: 1px solid #e0e0e0;
+    background: var(--color-white);
+    color: var(--color-gray-dark);
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    letter-spacing: 0.3px;
+}
+
+.chart-filter-btn:hover {
+    border-color: var(--color-black);
+    color: var(--color-black);
+}
+
+.chart-filter-btn.active {
+    background: var(--color-black);
+    color: var(--color-white);
+    border-color: var(--color-black);
+}
+
+.chart-container {
+    position: relative;
+    width: 100%;
+    height: 350px;
+}
+
+/* ========================================
+   LEADERBOARD GRID
+   ======================================== */
+
+.leaderboard-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+    padding: 0 40px 40px;
+}
+
+.leaderboard-card {
+    background: var(--color-white);
+    border-radius: 8px;
+    padding: 25px;
+    box-shadow: var(--shadow-md);
+    border: 1px solid transparent;
+}
+
+.leaderboard-card .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+}
+
+.leaderboard-card .section-header h2 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-black);
+    margin: 0;
+}
+
+.badge-top {
+    background: var(--color-black);
+    color: var(--color-white);
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.product-name {
+    font-weight: 500;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.empty-state {
+    text-align: center;
+    color: var(--color-gray-light);
+    padding: 30px 10px !important;
+    font-style: italic;
+}
+
+/* Rank Badges */
+.rank-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 0.75rem;
+    font-weight: 700;
+    background: var(--color-light);
+    color: var(--color-gray);
+}
+
+.rank-badge.rank-1 {
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(255, 215, 0, 0.4);
+}
+
+.rank-badge.rank-2 {
+    background: linear-gradient(135deg, #C0C0C0, #A0A0A0);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(192, 192, 192, 0.4);
+}
+
+.rank-badge.rank-3 {
+    background: linear-gradient(135deg, #CD7F32, #B87333);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(205, 127, 50, 0.3);
+}
+
+/* ========================================
+   DESKTOP LAYOUT ADJUSTMENTS
+   ======================================== */
+
+@media (max-width: 1600px) {
+    .leaderboard-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 1400px) {
+    .stats-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

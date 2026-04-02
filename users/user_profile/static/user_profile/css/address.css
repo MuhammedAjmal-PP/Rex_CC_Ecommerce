@@ -1,0 +1,224 @@
+/* ============================================================
+   REX CC - ADDRESS LIST (LUXURY)
+   ============================================================ */
+
+.lux-address-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.lux-address-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Base button styles matching edit profile */
+.lux-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px 32px;
+  background: #111;
+  color: #fff;
+  border: 1px solid #111;
+  border-radius: 4px;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.lux-btn-primary:hover {
+  background: var(--color-gold, #bfa15f);
+  border-color: var(--color-gold, #bfa15f);
+}
+
+.lux-btn-primary .material-icons {
+  font-size: 18px;
+}
+
+/* Address Grid */
+.lux-address-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 24px;
+}
+
+/* Address Card overrides */
+.lux-address-card {
+  display: flex;
+  flex-direction: column;
+  padding: 32px;
+  background: #fff;
+  border: 1px solid #eaeaea;
+  border-radius: 8px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06);
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.lux-address-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--color-gold, #bfa15f);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.08);
+}
+
+.lux-address-card.is-default {
+  border: 2px solid var(--color-gold, #bfa15f);
+  background: linear-gradient(180deg, #fff 0%, #fafafa 100%);
+}
+
+/* Header Elements */
+.lux-address-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.lux-address-badge {
+  background: #111;
+  color: #fff;
+  padding: 6px 12px;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-radius: 4px;
+}
+
+.lux-address-default-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--color-gold, #bfa15f);
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.lux-address-default-badge .material-icons {
+  font-size: 14px;
+}
+
+/* Body Elements */
+.lux-address-body {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.lux-address-name {
+  font-family: "Playfair Display", serif;
+  font-size: 1.4rem;
+  font-weight: 400;
+  color: #111;
+  margin: 0;
+}
+
+.lux-address-lines {
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.95rem;
+  color: #666;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.lux-address-phone {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.9rem;
+  color: #111;
+  margin: 0;
+  padding-top: 8px;
+}
+
+.lux-address-phone .material-icons {
+  font-size: 16px;
+  color: var(--color-gold, #bfa15f);
+}
+
+/* Footer / Actions */
+.lux-address-footer {
+  display: flex;
+  gap: 16px;
+  border-top: 1px solid #eaeaea;
+  padding-top: 20px;
+}
+
+.lux-action-btn {
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #555;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  text-decoration: none;
+}
+
+.lux-action-btn:hover {
+  color: var(--color-gold, #bfa15f);
+}
+
+.lux-action-btn.delete-btn:hover {
+  color: #c62828;
+}
+
+/* Empty State */
+.lux-empty-state {
+  text-align: center;
+  padding: 80px 40px;
+  /* background: #fafafa;
+    border: 1px dashed #e0e0e0; */
+  border-radius: 8px;
+}
+
+.lux-empty-state .material-icons {
+  font-size: 48px;
+  color: #e0e0e0;
+  margin-bottom: 24px;
+}
+
+.lux-empty-state h3 {
+  font-family: "Playfair Display", serif;
+  font-size: 1.6rem;
+  color: #111;
+  margin-bottom: 12px;
+}
+
+.lux-empty-state p {
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.95rem;
+  color: #666;
+}
+
+/* Toast from exact address.js */
+.address-toast-error {
+  border-left: 4px solid #f44336;
+  color: #c62828;
+}
+
+.address-toast-error .material-icons {
+  color: #f44336;
+  font-size: 24px;
+}
+
+/* Desktop only - no responsive breakpoints needed */

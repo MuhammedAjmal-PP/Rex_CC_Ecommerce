@@ -1,0 +1,137 @@
+{% extends "core/user/base_user.html" %}
+{% load static %}
+{% block head_title %}Shop Luxury Watches | REX CC{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'catalog/css/user/product/product_card.css' %}">
+<link rel="stylesheet" href="{% static 'catalog/css/user/product/product_list.css' %}">
+{% endblock %}
+{% block content %}
+<!-- =========================
+ BREADCRUMB
+========================= -->
+<!-- =========================
+     BREADCRUMB STRIP
+    ========================= -->
+<div class="breadcrumb-strip">
+    <a href="{% url 'home' %}">Home</a>
+    <span class="separator">/</span>
+    <a href="{% url 'product_list' %}" class="current">Products</a>
+</div>
+<!-- =========================
+     LISTING LAYOUT (FULL WIDTH)
+    ========================= -->
+<div class="listing-container">
+    <main class="listing-main">
+        <!-- TOOLBAR (RIGHT ALIGNED) -->
+        <div class="listing-toolbar">
+            <div class="toolbar-controls">
+                <!-- Sort -->
+                <div class="sort-dropdown custom-dropdown">
+                    <button class="dropdown-toggle" type="button" id="sortDropdown" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        <span class="current-sort-label">
+                            {% for value, label in sort_options %}
+                            {% if sort == value %}{{ label }}{% endif %}
+                            {% empty %}
+                            Default
+                            {% endfor %}
+                        </span>
+                        <span class="material-icons dropdown-arrow">expand_more</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="sortDropdown">
+                        {% for value, label in sort_options %}
+                        <li>
+                            <button class="dropdown-item {% if sort == value %}active{% endif %}" type="button"
+                                onclick="updateSort('{{ value }}')">
+                                {{ label }}
+                            </button>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <!-- Filter Button -->
+                <button class="filter-trigger" data-bs-toggle="offcanvas" data-bs-target="#filterOffcanvas">
+                    <span class="material-icons">tune</span>
+                    Filters
+                </button>
+            </div>
+        </div>
+        <!-- RESULTS INFO -->
+        <div class="results-info">
+            <span class="results-count">{{ page_obj.paginator.count }} products found</span>
+        </div>
+        <!-- =========================
+             PRODUCTS GRID
+            ========================= -->
+        {% if variants %}
+        <div class="products-grid-listing product-grid">
+            {% for variant in variants %}
+            {% include "catalog/user/product/product_card.html" with variant=variant %}
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="no-products-listing">
+            <span class="material-icons">watch_off</span>
+            <h3>No Products Found</h3>
+            <p>Try adjusting your filters.</p>
+        </div>
+        {% endif %}
+        <!-- =========================
+             PAGINATION
+            ========================= -->
+        {% if page_obj.has_other_pages %}
+        <nav class="pagination-container">
+            <ul class="pagination">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link"
+                        href="?{{ request.GET.urlencode|safe }}&page={{ page_obj.previous_page_number }}">
+                        <span class="material-icons">chevron_left</span>
+                    </a>
+                </li>
+                {% endif %}
+                {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                <li class="page-item active">
+                    <span class="page-link">{{ num }}</span>
+                </li>
+                {% elif num > page_obj.number|add:"-3" and num < page_obj.number|add:"3" %} <li class="page-item">
+                    <a class="page-link" href="?{{ request.GET.urlencode|safe }}&page={{ num }}">{{ num }}</a>
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link"
+                            href="?{{ request.GET.urlencode|safe }}&page={{ page_obj.next_page_number }}">
+                            <span class="material-icons">chevron_right</span>
+                        </a>
+                    </li>
+                    {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </main>
+</div>
+<!-- =========================
+     OFFCANVAS FILTER (RIGHT SIDE)
+    ========================= -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="filterOffcanvas">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title">Filters</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body">{% include "catalog/user/product/partials/filter_form.html" %}</div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+    function updateSort(value) {
+        const url = new URL(window.location.href);
+        value
+            ? url.searchParams.set("sort", value)
+            : url.searchParams.delete("sort");
+        window.location.href = url.toString();
+    }
+</script>
+{% endblock %}

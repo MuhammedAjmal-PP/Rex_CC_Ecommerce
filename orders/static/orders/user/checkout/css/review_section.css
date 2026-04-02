@@ -1,0 +1,112 @@
+/* ===================================================================
+   REX CC - REVIEW SECTION CHECKOUT
+   =================================================================== */
+
+.chk-review-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+.chk-review-block {
+    padding: 24px;
+    height: 100%;
+}
+
+.review-section-header {
+    display: flex;
+    align-items: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: #111;
+    margin: 0 0 16px 0;
+}
+
+.review-content-box {
+    font-family: 'Montserrat', sans-serif;
+}
+
+.review-strong-text {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #111;
+    margin-bottom: 8px;
+}
+
+.review-muted-text {
+    font-size: 0.85rem;
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 8px;
+}
+
+.review-info-sub {
+    font-size: 0.85rem;
+    color: #888;
+}
+
+.review-payment-flex {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+/* Order Items */
+.review-item-row {
+    display: grid;
+    grid-template-columns: 80px 2fr 1fr auto;
+    gap: 24px;
+    align-items: center;
+    padding: 16px 0;
+    border-bottom: 1px dashed #eaeaea;
+}
+
+.review-item-row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.review-item-img {
+    width: 72px;
+    height: 72px;
+    object-fit: contain;
+    background: #fff;
+    border: 1px solid #eaeaea;
+    border-radius: 2px;
+    padding: 4px;
+}
+
+.review-item-brand {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #999;
+    margin-bottom: 4px;
+}
+
+.review-item-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.05rem;
+    color: #111;
+    margin: 0 0 4px 0;
+    line-height: 1.2;
+}
+
+.review-item-sku {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.75rem;
+    color: #888;
+    margin-bottom: 8px;
+}
+
+/* Disabled/Loading Button Overlay */
+#btn-place-order:disabled {
+    background: #a98f5a;
+    border-color: #a98f5a;
+    cursor: wait;
+    opacity: 0.8;
+}
+
+/* Desktop only - no responsive breakpoints needed */

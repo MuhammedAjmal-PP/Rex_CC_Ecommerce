@@ -1,0 +1,55 @@
+/* ============================================================
+   REX CC ADMIN - BRAND MANAGEMENT SPECIFIC STYLES
+   Brand-specific styles (slug display, brand-specific elements)
+   ============================================================ */
+
+:root {
+    /* Black & White Color Palette */
+    --color-black: #000000;
+    --color-dark: #1a1a1a;
+    --color-gray: #666666;
+    --color-gray-light: #999999;
+    --color-white: #ffffff;
+}
+
+/* ========================================
+   BRAND-SPECIFIC TABLE CONTENT
+   ======================================== */
+
+.slug-text {
+    color: var(--color-gray);
+    font-size: 0.9rem;
+    font-family: 'Courier New', monospace;
+    background: rgba(0, 0, 0, 0.05);
+    padding: 4px 8px;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+/* ========================================
+   PRODUCT COUNT DISPLAY
+   ======================================== */
+
+.product-count {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: #f8f8f8;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-black);
+    transition: all 0.2s ease;
+}
+
+.product-count:hover {
+    background: #f0f0f0;
+    border-color: var(--color-black);
+}
+
+.product-count .material-icons {
+    font-size: 16px;
+    color: var(--color-gray);
+}

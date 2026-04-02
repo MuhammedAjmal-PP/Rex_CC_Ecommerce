@@ -1,0 +1,97 @@
+/* ===================================================================
+   REX CC - PAYMENT SECTION CHECKOUT
+   =================================================================== */
+
+.chk-payment-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.checkout-payment-card {
+    display: flex;
+    align-items: center;
+    padding: 24px;
+    cursor: pointer;
+    border: 1px solid #eaeaea;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    gap: 20px;
+}
+
+.checkout-payment-card:hover:not(.disabled) {
+    border-color: #ccc;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+}
+
+.checkout-payment-card.selected {
+    border-color: var(--color-gold-dark) !important;
+    background: rgba(250, 249, 247, 0.5) !important;
+}
+
+.pay-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #fdfdfd;
+    border: 1px solid #eaeaea;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pay-icon .material-icons {
+    font-size: 24px;
+    color: #111;
+}
+
+.checkout-payment-card.selected .pay-icon {
+    border-color: var(--color-gold-light);
+    color: var(--color-gold-dark);
+}
+
+.checkout-payment-card.selected .pay-icon .material-icons {
+    color: var(--color-gold-dark);
+}
+
+.pay-info {
+    flex: 1;
+}
+
+.pay-name {
+    display: block;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: #111;
+    margin-bottom: 4px;
+}
+
+.pay-desc {
+    display: block;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.pay-check-overlay {
+    color: var(--color-gold-dark);
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+}
+
+.checkout-payment-card.selected .pay-check-overlay {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Disabled Next Button */
+#btn-next-review:disabled {
+    background: #ccc;
+    border-color: #ccc;
+    cursor: not-allowed;
+    opacity: 0.7;
+}

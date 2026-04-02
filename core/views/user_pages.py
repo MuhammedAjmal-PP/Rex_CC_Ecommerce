@@ -1,0 +1,158 @@
+from django.shortcuts import render
+from django.views.decorators.cache import never_cache
+from catalog.models import Category, Brand, ProductVariant, Product
+from django.http import JsonResponse
+from django.views.decorators.http import require_GET
+from catalog.utils import pack_variants, get_offer_variants
+from users.wishlist.utils import get_session_wishlist
+from users.wishlist.models import WishlistItem
+
+
+# ── Static / informational pages ────────────────────────────
+def contact_us(request):
+    return render(request, "core/user/pages/contact_us.html")
+
+
+def shipping_service(request):
+    return render(request, "core/user/pages/shipping_service.html")
+
+
+def returns_exchange(request):
+    return render(request, "core/user/pages/returns_exchange.html")
+
+
+def privacy_policy(request):
+    return render(request, "core/user/pages/privacy_policy.html")
+
+
+def terms_of_service(request):
+    return render(request, "core/user/pages/terms_of_service.html")
+
+
+def authenticity(request):
+    return render(request, "core/user/pages/authenticity.html")
+
+
+@never_cache
+def home(request):
+    """
+    Homepage view
+    """
+
+    # Get brands with logos for featured brands section
+    brands = Brand.objects.filter(is_active=True, logo__isnull=False).only(
+        "slug", "name", "logo"
+    )[:5]
+
+    product_variant = (
+        ProductVariant.objects.filter(
+            product__is_drafted=False,
+            product__is_deleted=False,
+            is_drafted=False,
+            is_deleted=False,
+            stock__gt=0,
+        )
+        .select_related("product", "product__brand")
+        .prefetch_related("images", "product__category")
+    )
+
+    new_arrivals = product_variant.order_by("-created_at")[:8]
+    new_arrivals = pack_variants(new_arrivals)
+
+    featured_variants = product_variant.filter(is_featured=True).order_by(
+        "-created_at"
+    )[:8]
+    featured_variants = pack_variants(featured_variants)
+
+    offer_variants = get_offer_variants(product_variant, limit=8)
+
+    wishlist_ids = []
+    if request.user.is_authenticated:
+        wishlist_ids = list(
+            WishlistItem.objects.filter(wishlist__user=request.user).values_list(
+                "product_variant_id", flat=True
+            )
+        )
+    else:
+        wishlist_ids = get_session_wishlist(request)
+
+    context = {
+        "brands": brands,
+        "new_arrivals": new_arrivals,
+        "featured_variants": featured_variants,
+        "offer_variants": offer_variants,
+        "wishlist_ids": wishlist_ids,
+    }
+
+    return render(request, "core/user/homepage.html", context)
+
+
+@require_GET
+def get_latest_product(request):
+    category_slug = request.GET.get("category")
+    brand_slug = request.GET.get("brand")
+
+    variants = (
+        ProductVariant.objects.filter(
+            product__is_drafted=False,
+            product__is_deleted=False,
+            is_drafted=False,
+            is_deleted=False,
+            stock__gt=0,
+        )
+        .select_related("product", "product__brand")
+        .prefetch_related("images")
+        .order_by("-created_at")
+    )
+
+    if category_slug:
+        variants = variants.filter(product__category__slug=category_slug)
+    if brand_slug:
+        variants = variants.filter(product__brand__slug=brand_slug)
+
+    latest_variant = variants.first()
+
+    if not latest_variant:
+        return JsonResponse({"success": False})
+
+    primary_image = latest_variant.images.filter(is_primary=True).first()
+
+    if primary_image:
+        image_url = primary_image.image.url
+    else:
+        image_url = latest_variant.product.thumbnail.url
+
+    return JsonResponse(
+        {
+            "success": True,
+            "variant": {
+                "name": latest_variant.product.name,
+                "slug": latest_variant.product.slug,
+                "brand": latest_variant.product.brand.name,
+                "image": image_url,
+                "category": getattr(
+                    latest_variant.product.category.first(), "name", ""
+                ),
+                "sku": latest_variant.sku,
+            },
+        }
+    )
+
+
+@require_GET
+def get_mega_menu_data(request):
+    """
+    API to fetch Categories and Top Brands for the Mega Menu.
+    Used for global access across all pages.
+    """
+    categories = list(
+        Category.objects.filter(is_active=True).values("name", "slug")[:5]
+    )
+
+    brands = list(
+        Brand.objects.filter(is_active=True, logo__isnull=False).values("name", "slug")[
+            :6
+        ]
+    )
+
+    return JsonResponse({"success": True, "categories": categories, "brands": brands})

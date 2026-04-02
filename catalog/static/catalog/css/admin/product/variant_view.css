@@ -1,0 +1,552 @@
+/* ============================================================
+   REX CC ADMIN - VARIANT VIEW STYLES
+   ============================================================ */
+
+:root {
+    --black: #000000;
+    --dark: #1a1a1a;
+    --gray: #666666;
+    --gray-light: #999999;
+    --border: #e5e5e5;
+    --bg: #f8f8f8;
+    --white: #ffffff;
+    --error: #dc2626;
+    --success: #16a34a;
+    --warning: #f59e0b;
+}
+
+/* ========================================
+   FORM CONTAINER
+   ======================================== */
+
+.form-container {
+    padding: 40px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* ========================================
+   PRODUCT BANNER
+   ======================================== */
+
+.product-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--white);
+    border: 1px solid var(--border);
+    padding: 20px 28px;
+    margin-bottom: 28px;
+}
+
+.product-banner-content {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.product-banner-img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border: 1px solid var(--border);
+}
+
+.product-banner-placeholder {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    border: 1px solid var(--border);
+}
+
+.product-banner-placeholder .material-icons {
+    font-size: 28px;
+    color: var(--gray-light);
+}
+
+.product-banner-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.product-banner-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--gray);
+}
+
+.product-banner-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--black);
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.product-banner-brand {
+    font-size: 0.85rem;
+    color: var(--gray);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.product-banner-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border: 1px solid var(--border);
+    color: var(--dark);
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.2s;
+}
+
+.product-banner-link:hover {
+    border-color: var(--black);
+    background: var(--black);
+    color: var(--white);
+}
+
+.product-banner-link .material-icons {
+    font-size: 18px;
+}
+
+/* ========================================
+   CARD STYLES
+   ======================================== */
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 18px 24px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--black);
+    border-bottom: 1px solid var(--border);
+}
+
+.card-header .material-icons {
+    font-size: 20px;
+}
+
+.card-body {
+    padding: 24px;
+}
+
+/* ========================================
+   FORM GROUPS
+   ======================================== */
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group:last-child {
+    margin-bottom: 0;
+}
+
+.form-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--black);
+    margin-bottom: 10px;
+}
+
+/* ========== HERO SECTION ========== */
+.variant-hero {
+    display: flex;
+    gap: 40px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    padding: 32px;
+    margin-bottom: 28px;
+}
+
+/* ========== IMAGE GALLERY ========== */
+.hero-gallery {
+    flex: 0 0 420px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.hero-main-image {
+    width: 100%;
+    aspect-ratio: 1;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    overflow: hidden;
+    position: relative;
+    cursor: zoom-in;
+}
+
+.hero-main-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: transform 0.1s ease-out;
+    transform-origin: center center;
+
+}
+/* When zooming is active */
+.hero-main-image.zooming img {
+    transform: scale(2.5);  /* Adjust zoom level as needed */
+}
+
+.hero-main-image.empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hero-main-image.empty .material-icons {
+    font-size: 64px;
+    color: var(--gray-light);
+}
+
+/* Horizontal scrolling thumbnails */
+.hero-thumbnails {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--gray-light) transparent;
+}
+
+.hero-thumbnails::-webkit-scrollbar {
+    height: 6px;
+}
+
+.hero-thumbnails::-webkit-scrollbar-track {
+    background: var(--bg);
+}
+
+.hero-thumbnails::-webkit-scrollbar-thumb {
+    background: var(--gray-light);
+    border-radius: 3px;
+}
+
+.hero-thumbnails::-webkit-scrollbar-thumb:hover {
+    background: var(--gray);
+}
+
+.hero-thumb {
+    flex: 0 0 72px;
+    height: 72px;
+    border: 2px solid var(--border);
+    cursor: pointer;
+    transition: all 0.2s;
+    overflow: hidden;
+    position: relative;
+}
+
+.hero-thumb:hover {
+    border-color: var(--gray);
+}
+
+.hero-thumb.active {
+    border-color: var(--black);
+}
+
+.hero-thumb.primary::after {
+    content: "";
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 8px;
+    height: 8px;
+    background: var(--black);
+    border-radius: 50%;
+}
+
+.hero-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.gallery-count {
+    font-size: 0.7rem;
+    color: var(--gray);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.gallery-count .material-icons {
+    font-size: 14px;
+}
+
+/* ========== HERO INFO ========== */
+.hero-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.hero-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 12px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge .material-icons {
+    font-size: 14px;
+}
+
+.badge-published {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.badge-draft {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.badge-featured {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.badge-deleted {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.hero-sku {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--gray);
+    margin-bottom: 8px;
+}
+
+.hero-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--black);
+    margin: 0 0 8px 0;
+}
+
+.hero-brand {
+    font-size: 0.9rem;
+    color: var(--gray);
+    margin-bottom: 24px;
+}
+
+.hero-price {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--black);
+    margin-bottom: 16px;
+}
+
+.hero-stock {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 32px;
+}
+
+.stock-count {
+    font-size: 0.85rem;
+    color: var(--gray);
+}
+
+.stock-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.stock-badge.in-stock {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.stock-badge.low-stock {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.stock-badge.out-of-stock {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+/* ========== ACTION BUTTONS ========== */
+.hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: auto;
+}
+
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    font-family: inherit;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid var(--border);
+}
+
+.action-btn .material-icons {
+    font-size: 18px;
+}
+
+.action-btn-primary {
+    background: var(--black);
+    border-color: var(--black);
+    color: var(--white);
+}
+
+.action-btn-primary:hover {
+    background: var(--dark);
+}
+
+.action-btn-secondary {
+    background: var(--white);
+    color: var(--dark);
+}
+
+.action-btn-secondary:hover {
+    border-color: var(--black);
+    color: var(--black);
+}
+
+.action-btn-warning {
+    background: #fef3c7;
+    border-color: #f59e0b;
+    color: #92400e;
+}
+
+.action-btn-warning:hover {
+    background: #fcd34d;
+}
+
+.action-btn-danger {
+    background: #fee2e2;
+    border-color: #ef4444;
+    color: #991b1b;
+}
+
+.action-btn-danger:hover {
+    background: #fca5a5;
+}
+
+.action-btn-success {
+    background: #dcfce7;
+    border-color: #22c55e;
+    color: #166534;
+}
+
+.action-btn-success:hover {
+    background: #86efac;
+}
+
+/* ========== SPECIFICATIONS SECTION ========== */
+.specs-section {
+    background: var(--white);
+    border: 1px solid var(--border);
+}
+
+.detail-value {
+    padding: 14px 16px;
+    font-size: 0.9rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--dark);
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+}
+
+.detail-value.empty {
+    color: var(--gray-light);
+    font-style: italic;
+}
+
+.specs-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+/* ========== META INFO ========== */
+.meta-info {
+    display: flex;
+    gap: 24px;
+    padding: 16px 0;
+    border-top: 1px solid var(--border);
+    margin-top: 16px;
+}
+
+.meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.meta-item-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--gray);
+}
+
+.meta-item-value {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--dark);
+}
+
+
