@@ -116,12 +116,4 @@
     opacity: 0.7;
 }
 
-@media (max-width: 600px) {
-    .chk-step-wrapper {
-        padding: 24px 20px;
-    }
-    
-    .chk-address-grid {
-        grid-template-columns: 1fr;
-    }
-}
+/* Desktop only - no responsive breakpoints needed */

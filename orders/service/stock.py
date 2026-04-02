@@ -49,4 +49,3 @@ def lock_variants_for_update(*, items):
             id__in=variant_ids
         )
     }
-

@@ -76,22 +76,32 @@ def user_profile(request, id):
     """
     user = get_object_or_404(User, id=id, is_superuser=False)
 
-    #user addresses
-    addresses = Address.objects.filter(user=user, is_active=True).order_by("-is_default", "-created_at")[:2]
-    #user recent orders
+    # user addresses
+    addresses = Address.objects.filter(user=user, is_active=True).order_by(
+        "-is_default", "-created_at"
+    )[:2]
+    # user recent orders
     recent_orders = Order.objects.filter(user=user).order_by("-created_at")[:5]
-    
+
     # Wallet
     wallet, _ = Wallet.objects.get_or_create(user=user)
-    
+
     # Wallet transactions
-    wallet_transactions = WalletTransaction.objects.filter(wallet__user=user).order_by("-created_at")[:5]
-    
+    wallet_transactions = WalletTransaction.objects.filter(wallet__user=user).order_by(
+        "-created_at"
+    )[:5]
+
     # Overall transactions
-    transactions = Transaction.objects.filter(user=user).exclude(transaction_type="REFERRAL_REWARD").order_by("-created_at")[:5]
-    
+    transactions = (
+        Transaction.objects.filter(user=user)
+        .exclude(transaction_type="REFERRAL_REWARD")
+        .order_by("-created_at")[:5]
+    )
+
     # Referral transactions
-    referral_rewards = Transaction.objects.filter(user=user, transaction_type="REFERRAL_REWARD").order_by("-created_at")[:5]
+    referral_rewards = Transaction.objects.filter(
+        user=user, transaction_type="REFERRAL_REWARD"
+    ).order_by("-created_at")[:5]
 
     context = {
         "user": user,

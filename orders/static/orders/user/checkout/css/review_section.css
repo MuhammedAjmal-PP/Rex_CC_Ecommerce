@@ -109,29 +109,4 @@
     opacity: 0.8;
 }
 
-@media (max-width: 768px) {
-    .chk-review-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .review-item-row {
-        grid-template-columns: 60px 1fr;
-        gap: 16px;
-    }
-    
-    .review-item-img {
-        width: 60px;
-        height: 60px;
-    }
-    
-    .review-col-pricing, .review-col-total {
-        grid-column: 2;
-    }
-    
-    .review-col-total {
-        text-align: left !important;
-        margin-top: 8px;
-        border-top: 1px dashed #eaeaea;
-        padding-top: 12px;
-    }
-}
+/* Desktop only - no responsive breakpoints needed */

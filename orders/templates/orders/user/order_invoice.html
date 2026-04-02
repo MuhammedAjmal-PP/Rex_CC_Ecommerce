@@ -369,26 +369,36 @@
             <td style="width: 55%;"></td>
             <td style="width: 45%;">
                 <table style="width: 100%; border-collapse: collapse;">
+                    <!-- 1. Total (items) -->
                     <tr>
-                        <td class="inv-s-label" style="width: 50%;">Sub Total</td>
-                        <td class="inv-s-value" style="width: 50%;">₹{{ order.sub_total|floatformat:2 }}</td>
+                        <td class="inv-s-label" style="width: 50%;">Total ({{ order.items.count }} items)</td>
+                        <td class="inv-s-value" style="width: 50%;">₹{{ order.sub_total|add:order.discount|floatformat:2 }}</td>
                     </tr>
+                    <!-- 2. Discount -->
                     {% if order.discount > 0 %}
                     <tr>
                         <td class="inv-s-label">Discount</td>
                         <td class="inv-s-value inv-s-discount">-₹{{ order.discount|floatformat:2 }}</td>
                     </tr>
                     {% endif %}
+                    <!-- 3. Subtotal -->
+                    <tr>
+                        <td class="inv-s-label">Subtotal</td>
+                        <td class="inv-s-value">₹{{ order.sub_total|floatformat:2 }}</td>
+                    </tr>
+                    <!-- 4. Coupon -->
                     {% if order.coupon and order.coupon_discount > 0 %}
                     <tr>
                         <td class="inv-s-label">Promo ({{ order.coupon.code }})</td>
                         <td class="inv-s-value inv-s-discount">-₹{{ order.coupon_discount|floatformat:2 }}</td>
                     </tr>
                     {% endif %}
+                    <!-- 5. Shipping -->
                     <tr>
                         <td class="inv-s-label">Shipping</td>
-                        <td class="inv-s-value">₹{{ order.shipping_fee|floatformat:2 }}</td>
+                        <td class="inv-s-value">{% if order.shipping_fee == 0 %}Free{% else %}₹{{ order.shipping_fee|floatformat:2 }}{% endif %}</td>
                     </tr>
+                    <!-- 6. Tax -->
                     <tr>
                         <td class="inv-s-label">Tax (GST {{ gst_rate }}%)</td>
                         <td class="inv-s-value">₹{{ order.tax|floatformat:2 }}</td>
@@ -396,11 +406,13 @@
                     <tr>
                         <td colspan="2" style="border-bottom: 2pt solid #111; padding-top: 8pt; padding-bottom: 0;"></td>
                     </tr>
+                    <!-- 7. Total Payable -->
                     <tr>
-                        <td class="inv-s-label" style="font-family: 'Playfair Display', serif; font-size: 12pt; font-weight: 700; color: #111; text-transform: uppercase; padding-top: 12pt;">Total</td>
+                        <td class="inv-s-label" style="font-family: 'Playfair Display', serif; font-size: 12pt; font-weight: 700; color: #111; text-transform: uppercase; padding-top: 12pt;">Total Payable</td>
                         <td class="inv-s-value" style="font-weight: 800; color: #bfa15f; font-size: 16pt; padding-top: 12pt;">₹{{ order.grand_total|floatformat:2 }}</td>
                     </tr>
                 </table>
+
             </td>
         </tr>
     </table>

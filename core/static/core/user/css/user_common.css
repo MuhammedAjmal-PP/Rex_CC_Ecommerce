@@ -22,11 +22,7 @@
     padding: 60px 40px 100px;
 }
 
-@media (max-width: 768px) {
-    .lux-hub-wrapper {
-        padding: 40px 20px 80px;
-    }
-}
+/* Desktop only - no responsive breakpoints needed */
 
 .hub-card {
   background: var(--color-bg);
@@ -79,21 +75,6 @@
     gap: 20px;
 }
 
-@media (max-width: 768px) {
-    .hub-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 24px;
-    }
-    .hub-user-info {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 20px;
-    }
-    .hub-name {
-        font-size: 1.8rem;
-    }
-}
 
 /* ---------------------------------------------------------
    BUTTONS

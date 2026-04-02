@@ -13,7 +13,6 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 from pathlib import Path
 import environ
 
-
 # ───────────────────────────────────────────────────────────────
 # PATH & ENVIRONMENT SETUP
 # ───────────────────────────────────────────────────────────────
@@ -136,7 +135,9 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 AUTH_PASSWORD_VALIDATORS = [
-    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
+    {
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
+    },
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
@@ -295,13 +296,15 @@ WALLET_TOPUP_MAX = env.int("WALLET_TOPUP_MAX", default=75_000)
 
 # Order expiry — how long to wait before auto-expiring a failed Razorpay order
 # Dev: 120s (2 min) | Prod: 18000s (5 hours)
-FAILED_ORDER_EXPIRY_SECONDS = env.int("FAILED_ORDER_EXPIRY_SECONDS", default=5 * 60 * 60)
+FAILED_ORDER_EXPIRY_SECONDS = env.int(
+    "FAILED_ORDER_EXPIRY_SECONDS", default=5 * 60 * 60
+)
 
 # Tax — store base location
 STORE_STATE = "KERALA"
 STORE_STATE_CODE = "32"
 DEFAULT_WATCH_HSN = "9102"  # HSN code for wristwatches
-GST_RATE = 18               # Standard GST rate for watches (%)
+GST_RATE = 18  # Standard GST rate for watches (%)
 
 
 # ───────────────────────────────────────────────────────────────

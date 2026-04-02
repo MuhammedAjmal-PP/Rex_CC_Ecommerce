@@ -361,24 +361,6 @@
 /* ---------------------------------------------------------
    RESPONSIVE
    --------------------------------------------------------- */
-@media (max-width: 992px) {
-    .hub-highlights {
-        grid-template-columns: 1fr;
-    }
-    
-    .hub-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
+/* Desktop only - no responsive breakpoints needed */
 
-@media (max-width: 768px) {
-    .hub-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .hub-avatar,
-    .hub-avatar-placeholder {
-        width: 80px;
-        height: 80px;
-    }
-}
+/* Desktop only - no responsive breakpoints needed */

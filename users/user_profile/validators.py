@@ -1,6 +1,5 @@
 from django.core.validators import RegexValidator
 
-
 full_name_validator = RegexValidator(
     regex=r"^[A-Za-zÀ-ÿ]+([-'\s][A-Za-zÀ-ÿ]+)*$",
     message="Name must start with a letter and can only contain letters, hyphens, apostrophes, and spaces.",

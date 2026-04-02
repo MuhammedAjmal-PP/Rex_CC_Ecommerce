@@ -94,7 +94,7 @@
         const template = itemTemplate.content.cloneNode(true);
         // The root is a document fragment, we need the column div
         const colWrapper = template.querySelector("div");
-        const card = colWrapper.querySelector(".hub-card");
+        const card = colWrapper.querySelector(".product-card");
 
         // Set ID for easy removal on the wrapper/col
         colWrapper.dataset.variantId = product.variant;
@@ -337,7 +337,7 @@
     }
 
     function showLoading() {
-        if (wishlistLoading) wishlistLoading.style.display = "block";
+        if (wishlistLoading) wishlistLoading.style.display = "flex";
         if (wishlistGrid) wishlistGrid.style.display = "none";
         if (wishlistEmpty) wishlistEmpty.style.display = "none";
     }
@@ -347,13 +347,13 @@
     }
 
     function showEmpty() {
-        if (wishlistEmpty) wishlistEmpty.style.display = "block";
+        if (wishlistEmpty) wishlistEmpty.style.display = "flex";
         if (wishlistGrid) wishlistGrid.style.display = "none";
     }
 
     function showGrid() {
         if (wishlistEmpty) wishlistEmpty.style.display = "none";
-        if (wishlistGrid) wishlistGrid.style.display = "flex"; // Row is flex
+        if (wishlistGrid) wishlistGrid.style.display = "grid";
     }
 
     function formatPrice(price) {

@@ -226,12 +226,4 @@
 }
 
 /* RESPONSIVE */
-@media (max-width: 640px) {
-  .success-page { padding: 40px 16px; }
-  .success-title { font-size: 1.8rem; }
-  .checkmark-svg { width: 64px; height: 64px; }
-  .order-card { padding: 20px 20px; }
-  .success-actions { flex-direction: column; }
-  .btn-view-order,
-  .btn-continue-shopping { width: 100%; justify-content: center; }
-}
+/* Desktop only - no responsive breakpoints needed */

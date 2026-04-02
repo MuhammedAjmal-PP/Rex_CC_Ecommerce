@@ -1,6 +1,10 @@
 from django.urls import path
 from orders.views.user.place_order import place_order_view
-from orders.views.user.razorpay import razorpay_callback, razorpay_payment_failed, retry_razorpay_payment
+from orders.views.user.razorpay import (
+    razorpay_callback,
+    razorpay_payment_failed,
+    retry_razorpay_payment,
+)
 from orders.views.user.order_results import order_success_view, order_failure_view
 from orders.views.user.checkout import checkoutview, get_addresses
 from orders.views.user.user_orders import (
@@ -16,7 +20,6 @@ from orders.views.user.return_order import (
     return_order,
     return_order_submit,
 )
-
 
 urlpatterns = [
     path("checkout/", checkoutview, name="checkout"),

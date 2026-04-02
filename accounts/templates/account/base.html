@@ -16,10 +16,26 @@
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
               rel="stylesheet">
         <!-- Custom User Auth CSS -->
+        <link rel="stylesheet" href="{% static 'core/user/css/mobile_block.css' %}">
         <link rel="stylesheet" href="{% static 'account/css/user_auth.css' %}">
         {% block extra_head %}{% endblock %}
     </head>
     <body>
+        <!-- ── DESKTOP-ONLY GATE ── -->
+        <div id="mobile-blocker">
+            <div class="mb-brand">REX <span>CC</span></div>
+            <div class="mb-icon">
+                <span class="material-icons">watch</span>
+            </div>
+            <div class="mb-divider"></div>
+            <p class="mb-label">Desktop Experience</p>
+            <h2 class="mb-title">Built for the Bigger Screen</h2>
+            <p class="mb-desc">
+                REX CC is crafted for a premium desktop experience.
+                Please visit us on a laptop or desktop computer to explore our collection.
+            </p>
+            <div class="mb-footer">&copy; {% now "Y" %} REX CC. All rights reserved.</div>
+        </div>
         <!-- Brand Header -->
         <div class="auth-brand">
             <a href="/" class="brand-logo">REX <span class="brand-accent">CC</span></a>

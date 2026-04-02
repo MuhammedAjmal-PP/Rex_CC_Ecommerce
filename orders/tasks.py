@@ -41,7 +41,8 @@ def expire_failed_order(order_id):
     if order.status != "FAILED":
         logger.info(
             "expire_failed_order: Order %s is '%s', not FAILED — skipping.",
-            order.order_number, order.status,
+            order.order_number,
+            order.status,
         )
         return
 

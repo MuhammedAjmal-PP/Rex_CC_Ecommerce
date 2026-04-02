@@ -38,7 +38,9 @@ def create_razorpay_order(amount_paise, receipt):
     )
 
 
-def verify_razorpay_signature(razorpay_order_id, razorpay_payment_id, razorpay_signature):
+def verify_razorpay_signature(
+    razorpay_order_id, razorpay_payment_id, razorpay_signature
+):
     """
     Verify the payment signature returned by Razorpay checkout.
 

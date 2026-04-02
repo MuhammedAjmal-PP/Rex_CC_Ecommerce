@@ -1,6 +1,7 @@
 """
 Order result pages — success and failure.
 """
+
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
@@ -30,7 +31,9 @@ def order_success_view(request, order_number):
         elif payment.payment_method != "COD" and current_status != "CONFIRMED":
             return redirect("user_order_list")
 
-    return render(request, "orders/user/order_success.html", {"order": order, "payment": payment})
+    return render(
+        request, "orders/user/order_success.html", {"order": order, "payment": payment}
+    )
 
 
 @login_required
@@ -46,9 +49,7 @@ def order_failure_view(request, order_number):
 
     payment = get_payment_transaction(order)
     is_razorpay_failed = (
-        order.status == "FAILED"
-        and payment
-        and payment.payment_method == "RAZORPAY"
+        order.status == "FAILED" and payment and payment.payment_method == "RAZORPAY"
     )
 
     return render(

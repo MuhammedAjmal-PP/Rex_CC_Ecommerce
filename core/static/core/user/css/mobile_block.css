@@ -1,0 +1,108 @@
+/* ============================================================
+   REX CC — DESKTOP-ONLY GATE
+   Blocks viewports narrower than 1024px with a luxury
+   light-mode overlay consistent with the site design.
+   ============================================================ */
+
+/* Hidden on desktop — shown only below 1024px */
+#mobile-blocker {
+    display: none;
+}
+
+@media (max-width: 1023px) {
+    /* Block all page content */
+    body > *:not(#mobile-blocker) {
+        display: none !important;
+    }
+
+    /* Show the overlay */
+    #mobile-blocker {
+        display: flex;
+        position: fixed;
+        inset: 0;
+        z-index: 999999;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: #faf9f7;
+        padding: 40px 24px;
+        text-align: center;
+    }
+
+    .mb-brand {
+        font-family: 'Playfair Display', serif;
+        font-size: 22px;
+        font-weight: 700;
+        letter-spacing: 3px;
+        color: #111;
+        margin-bottom: 48px;
+    }
+
+    .mb-brand span {
+        color: #cd7f32;
+    }
+
+    .mb-icon {
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #bfa15f 0%, #cd7f32 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 32px;
+    }
+
+    .mb-icon .material-icons {
+        font-size: 36px;
+        color: #fff;
+    }
+
+    .mb-divider {
+        width: 48px;
+        height: 1px;
+        background: #bfa15f;
+        margin: 0 auto 28px;
+        opacity: 0.5;
+    }
+
+    .mb-label {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: #bfa15f;
+        margin-bottom: 16px;
+    }
+
+    .mb-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 24px;
+        font-weight: 600;
+        color: #111;
+        margin: 0 0 14px 0;
+        line-height: 1.3;
+    }
+
+    .mb-desc {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 13px;
+        color: #888;
+        line-height: 1.7;
+        max-width: 320px;
+        margin: 0 auto 40px;
+    }
+
+    .mb-footer {
+        position: absolute;
+        bottom: 24px;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 10px;
+        letter-spacing: 1px;
+        color: #bbb;
+    }
+}

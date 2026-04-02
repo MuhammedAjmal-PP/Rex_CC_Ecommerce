@@ -32,4 +32,3 @@ def validate_return_eligibility(order_item):
         raise ReturnNotEligibleError(
             "The 7-day return window has expired for this item."
         )
-

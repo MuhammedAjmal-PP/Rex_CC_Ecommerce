@@ -266,31 +266,4 @@
    RESPONSIVE
    ============================================================ */
 
-@media (max-width: 640px) {
-  .failure-page {
-    padding: 40px 16px;
-  }
-
-  .failure-title {
-    font-size: 1.8rem;
-  }
-
-  .xmark-svg {
-    width: 64px;
-    height: 64px;
-  }
-
-  .failure-info-card {
-    padding: 16px 18px;
-  }
-
-  .failure-actions {
-    flex-direction: column;
-  }
-
-  .btn-retry-payment,
-  .btn-continue-shopping {
-    width: 100%;
-    justify-content: center;
-  }
-}
+/* Desktop only - no responsive breakpoints needed */

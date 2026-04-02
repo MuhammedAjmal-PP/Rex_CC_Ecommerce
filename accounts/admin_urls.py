@@ -12,7 +12,6 @@ from .views.admin_views.user_management import (
     user_status_toggle,
 )
 
-
 urlpatterns = [
     path("login/", admin_login, name="admin_login"),
     path("logout/", admin_logout, name="admin_logout"),

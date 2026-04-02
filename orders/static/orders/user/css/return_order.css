@@ -442,22 +442,4 @@
 /* ---------------------------------------------------------
    RESPONSIVE DESIGN 
    --------------------------------------------------------- */
-@media (max-width: 992px) {
-  .ro-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .ro-card,
-  .ro-card-lg {
-    padding: 24px;
-  }
-
-  .ro-form-footer {
-    flex-direction: column-reverse;
-  }
-
-  .ro-form-footer .hub-btn-outline,
-  .ro-form-footer .lux-btn-primary {
-    width: 100%;
-  }
-}
+/* Desktop only - no responsive breakpoints needed */

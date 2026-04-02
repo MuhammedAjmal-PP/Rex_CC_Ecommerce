@@ -4,7 +4,6 @@ from django.db import transaction as db_transaction
 from payments.models import Transaction
 from users.wallet.service import credit_wallet
 
-
 # ────────────────────────────────────────────
 # Create Transaction Record
 # ────────────────────────────────────────────
@@ -47,6 +46,7 @@ def update_transaction(*, order, amount, note=""):
     when a partial cancellation occurs.
     """
     from orders.utils import get_payment_transaction
+
     txn = get_payment_transaction(order)
     if txn and txn.status == "PENDING":
         new_amount = txn.amount - amount

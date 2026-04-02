@@ -1,7 +1,6 @@
 from decimal import Decimal
 from django.db import models
 
-
 # ======================================================
 # WALLET MODEL
 # ======================================================
@@ -23,8 +22,6 @@ class Wallet(models.Model):
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
-
 
     class Meta:
         ordering = ["-created_at"]
@@ -63,7 +60,7 @@ class WalletTransaction(models.Model):
     label = models.CharField(
         max_length=10,
         choices=LABEL_CHOICES,
-        default="CREDIT", # Default needed for migration, will remove later or set correctly
+        default="CREDIT",  # Default needed for migration, will remove later or set correctly
     )
     balance_before = models.DecimalField(max_digits=10, decimal_places=2)
     balance_after = models.DecimalField(max_digits=10, decimal_places=2)

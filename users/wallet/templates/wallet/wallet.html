@@ -3,225 +3,253 @@
 {% load humanize %}
 {% block head_title %}My Wallet | REX CC{% endblock %}
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'wallet/css/wallet.css' %}?v=2.0">
+    <link rel="stylesheet" href="{% static 'wallet/css/wallet.css' %}?v=3.0">
 {% endblock %}
 {% block content %}
-    <div class="lux-hub-wrapper">
-        <!-- HEADER -->
-        <header class="hub-header mb-24">
-            <div class="hub-user-info">
-                <div class="hub-user-details">
-                    <h1 class="hub-name">My Wallet</h1>
-                    <div class="hub-contact">
-                        <span>Your transaction history and balance overview</span>
-                    </div>
-                </div>
-            </div>
-            <div class="hub-header-actions">
-                <div class="wallet-balance-chic">
-                    <span class="wallet-balance-label">Available Balance</span>
-                    <span class="wallet-balance-amount" id="walletBalance">₹{{ wallet.balance|floatformat:2|intcomma }}</span>
-                    {% if not wallet.is_active %}
-                        <span class="wallet-inactive-badge">Inactive</span>
-                    {% endif %}
-                </div>
-                {% if wallet.is_active %}
-                    <button type="button" class="topup-btn" id="openTopupModal">
-                        <span class="material-icons">add</span> Add Money
-                    </button>
-                {% endif %}
-            </div>
-        </header>
+<div class="lux-hub-wrapper">
 
-        <!-- TAB TOGGLE -->
-        <div class="lux-tabs-container">
-            <a href="?tab=wallet" class="lux-tab {{ active_tab|yesno:'active,,' }}">
-                <span class="material-icons">account_balance_wallet</span> Wallet Impact
-            </a>
-            <a href="?tab=all" class="lux-tab {{ active_tab|yesno:',active,' }}">
-                <span class="material-icons">receipt_long</span> All Transactions
+    <!-- ══════════════════════════════════════════════
+         HEADER — Title + Balance Hero
+         ══════════════════════════════════════════════ -->
+    <div class="hub-header mb-24">
+        <div class="hub-user-info">
+            <div class="hub-user-details">
+                <h1 class="hub-name">My Wallet</h1>
+                <div class="hub-contact">
+                    <span>Your transaction history and balance overview</span>
+                </div>
+            </div>
+        </div>
+        <div class="hub-header-actions">
+            <a href="{% url 'user_profile' %}" class="hub-btn-outline">
+                <span class="material-icons" style="font-size:18px; margin-right:6px;">arrow_back</span>
+                Back to Hub
             </a>
         </div>
+    </div>
 
-        <!-- TRANSACTION CARDS -->
-        {% if transactions %}
-            <div class="txn-grid mb-32">
-                {% if active_tab == "wallet" %}
-                    {% for txn in transactions %}
-                        <a href="{% if txn.transaction %}{% url 'user_transaction_detail' txn.transaction.transaction_id %}{% else %}#{% endif %}" class="wl-card {% if txn.label == 'CREDIT' %}wl-card-credit{% else %}wl-card-debit{% endif %}">
-                            <div class="wl-card-header">
-                                <div>
-                                    <h4 class="wl-card-title">
-                                        {% if txn.transaction %}
-                                            {{ txn.transaction.get_transaction_type_display }}
-                                        {% else %}
-                                            Wallet Adjustment
-                                        {% endif %}
-                                    </h4>
-                                    <span class="wl-card-subtitle">{{ txn.created_at|date:"d M Y, h:i A" }}</span>
-                                </div>
-                                <span class="txn-badge {% if txn.label == 'CREDIT' %}txn-credit{% else %}txn-debit{% endif %}">
-                                    {{ txn.label }}
-                                </span>
-                            </div>
-
-                            <div class="wl-card-footer">
-                                {% if txn.transaction %}
-                                    <span class="wl-card-subtitle font-monospace">ID: {{ txn.transaction.transaction_id }}</span>
-                                {% else %}
-                                    <span></span>
-                                {% endif %}
-                            </div>
-
-                            <div class="wl-card-body">
-                                <div class="wl-card-amount">
-                                    <span class="wl-card-amount-label">Amount</span>
-                                    {% if txn.label == "CREDIT" %}
-                                        <span class="amount-val amount-credit">+₹{{ txn.transaction.amount|floatformat:2|intcomma }}</span>
-                                    {% else %}
-                                        <span class="amount-val amount-debit">-₹{{ txn.transaction.amount|floatformat:2|intcomma }}</span>
-                                    {% endif %}
-                                </div>
-                                <div class="wl-card-balance">
-                                    <div class="wl-card-balance-label">Balance After</div>
-                                    <div class="balance-val">₹{{ txn.balance_after|floatformat:2|intcomma }}</div>
-                                </div>
-                            </div>
-                        </a>
-                    {% endfor %}
-
-                {% else %}
-                    <!-- ALL TRANSACTIONS -->
-                    {% for txn in transactions %}
-                        <a href="{% url 'user_transaction_detail' txn.transaction_id %}" class="wl-card">
-                            <div class="wl-card-header">
-                                <div>
-                                    <h4 class="wl-card-title">{{ txn.get_transaction_type_display }}</h4>
-                                    <span class="wl-card-subtitle">{{ txn.created_at|date:"d M Y, h:i A" }}</span>
-                                </div>
-                                <span class="txn-status-badge status-{{ txn.status|lower }}">
-                                    {{ txn.get_status_display }}
-                                </span>
-                            </div>
-                            
-                            <div class="wl-card-footer">
-                                <span class="wl-card-subtitle font-monospace">ID: {{ txn.transaction_id }}</span>
-                                <span class="txn-method-badge method-badge">{{ txn.get_payment_method_display }}</span>
-                            </div>
-
-                            <div class="wl-card-body">
-                                <div class="wl-card-amount">
-                                    <span class="wl-card-amount-label">Total Amount</span>
-                                    <span class="amount-val amount-neutral">₹{{ txn.amount|floatformat:2|intcomma }}</span>
-                                </div>
-                            </div>
-                        </a>
-                    {% endfor %}
-                {% endif %}
-            </div>
-
-            <!-- PAGINATION -->
-            {% if page_obj.has_other_pages %}
-                <nav class="wallet-pagination">
-                    {% if page_obj.has_previous %}
-                        <a href="?tab={{ active_tab }}&page={{ page_obj.previous_page_number }}" class="pagination-btn">
-                            <span class="material-icons">chevron_left</span> Prev
-                        </a>
-                    {% endif %}
-                    
-                    {% for num in page_obj.paginator.page_range %}
-                        {% if page_obj.number == num %}
-                            <span class="pagination-page active">{{ num }}</span>
-                        {% elif num > page_obj.number|add:"-3" and num < page_obj.number|add:"3" %}
-                            <a href="?tab={{ active_tab }}&page={{ num }}" class="pagination-page">{{ num }}</a>
-                        {% elif num == 1 or num == page_obj.paginator.num_pages %}
-                            <a href="?tab={{ active_tab }}&page={{ num }}" class="pagination-page">{{ num }}</a>
-                        {% elif num == page_obj.number|add:"-3" or num == page_obj.number|add:"3" %}
-                            <span class="pagination-ellipsis">…</span>
-                        {% endif %}
-                    {% endfor %}
-
-                    {% if page_obj.has_next %}
-                        <a href="?tab={{ active_tab }}&page={{ page_obj.next_page_number }}" class="pagination-btn">
-                            Next <span class="material-icons">chevron_right</span>
-                        </a>
-                    {% endif %}
-                </nav>
+    <!-- Balance Hero -->
+    <div class="wl-hero">
+        <div class="wl-hero-left">
+            <span class="wl-hero-label">Available Balance</span>
+            <span class="wl-hero-balance" id="walletBalance">₹{{ wallet.balance|floatformat:2|intcomma }}</span>
+            {% if not wallet.is_active %}
+                <span class="wl-inactive-badge">
+                    <span class="material-icons" style="font-size:12px;">block</span>
+                    Inactive
+                </span>
             {% endif %}
-
-        {% else %}
-            <!-- EMPTY STATE -->
-            <div class="lux-empty-state">
-                <span class="material-icons empty-icon">account_balance_wallet</span>
-                <h2>No transactions yet</h2>
-                <p>
-                    {% if active_tab == "wallet" %}
-                        Your wallet history will appear here once you receive a refund or make a payment.
-                    {% else %}
-                        You don't have any transactions yet. They will appear here after you place an order.
-                    {% endif %}
-                </p>
-                <div style="margin-top: 16px;">
-                    <a href="{% url 'product_list' %}" class="btn-primary">Start Shopping</a>
-                </div>
-            </div>
+        </div>
+        {% if wallet.is_active %}
+            <button type="button" class="wl-topup-btn" id="openTopupModal">
+                <span class="material-icons">add</span>
+                Add Money
+            </button>
         {% endif %}
     </div>
 
-    <!-- ═══════════════════════════════════════════════════════════
-         TOP-UP MODAL
-         ═══════════════════════════════════════════════════════════ -->
-    {% if wallet.is_active %}
-    <div class="topup-modal-overlay" id="topupOverlay">
-        <div class="topup-modal">
-            <button type="button" class="topup-modal-close" id="closeTopupModal">
+    <!-- ══════════════════════════════════════════════
+         TABS
+         ══════════════════════════════════════════════ -->
+    <div class="wl-tabs">
+        <a href="?tab=wallet" class="wl-tab {% if active_tab == 'wallet' or not active_tab %}active{% endif %}">
+            <span class="material-icons">account_balance_wallet</span>
+            Wallet Impact
+        </a>
+        <a href="?tab=all" class="wl-tab {% if active_tab == 'all' %}active{% endif %}">
+            <span class="material-icons">receipt_long</span>
+            All Transactions
+        </a>
+    </div>
+
+    <!-- ══════════════════════════════════════════════
+         TRANSACTION LIST
+         ══════════════════════════════════════════════ -->
+    {% if transactions %}
+        <div class="wl-txn-list">
+
+            {% if active_tab == "wallet" or not active_tab %}
+                <!-- WALLET IMPACT TAB -->
+                {% for txn in transactions %}
+                    <a href="{% if txn.transaction %}{% url 'user_transaction_detail' txn.transaction.transaction_id %}{% else %}#{% endif %}"
+                       class="wl-txn-row {% if txn.label == 'CREDIT' %}is-credit{% else %}is-debit{% endif %}">
+
+                        <!-- Icon -->
+                        <div class="wl-txn-icon">
+                            <span class="material-icons">
+                                {% if txn.label == 'CREDIT' %}arrow_downward{% else %}arrow_upward{% endif %}
+                            </span>
+                        </div>
+
+                        <!-- Body -->
+                        <div class="wl-txn-body">
+                            <p class="wl-txn-title">
+                                {% if txn.transaction %}
+                                    {{ txn.transaction.get_transaction_type_display }}
+                                {% else %}
+                                    Wallet Adjustment
+                                {% endif %}
+                            </p>
+                            <div class="wl-txn-meta">
+                                <span class="wl-txn-date">{{ txn.created_at|date:"d M Y, h:i A" }}</span>
+                                {% if txn.transaction %}
+                                    <span class="wl-txn-id">{{ txn.transaction.transaction_id }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Right -->
+                        <div class="wl-txn-right">
+                            <span class="wl-txn-amount {% if txn.label == 'CREDIT' %}is-credit{% else %}is-debit{% endif %}">
+                                {% if txn.label == "CREDIT" %}+{% else %}-{% endif %}₹{{ txn.transaction.amount|floatformat:2|intcomma }}
+                            </span>
+                            <span class="wl-txn-balance-after">Balance: ₹{{ txn.balance_after|floatformat:2|intcomma }}</span>
+                            <span class="wl-badge {% if txn.label == 'CREDIT' %}wl-badge-credit{% else %}wl-badge-debit{% endif %}">
+                                {{ txn.label }}
+                            </span>
+                        </div>
+                    </a>
+                {% endfor %}
+
+            {% else %}
+                <!-- ALL TRANSACTIONS TAB -->
+                {% for txn in transactions %}
+                    <a href="{% url 'user_transaction_detail' txn.transaction_id %}"
+                       class="wl-txn-row">
+
+                        <!-- Icon -->
+                        <div class="wl-txn-icon">
+                            <span class="material-icons">receipt</span>
+                        </div>
+
+                        <!-- Body -->
+                        <div class="wl-txn-body">
+                            <p class="wl-txn-title">{{ txn.get_transaction_type_display }}</p>
+                            <div class="wl-txn-meta">
+                                <span class="wl-txn-date">{{ txn.created_at|date:"d M Y, h:i A" }}</span>
+                                <span class="wl-txn-id">{{ txn.transaction_id }}</span>
+                                <span class="wl-method-badge">{{ txn.get_payment_method_display }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Right -->
+                        <div class="wl-txn-right">
+                            <span class="wl-txn-amount">₹{{ txn.amount|floatformat:2|intcomma }}</span>
+                            <span class="wl-badge wl-badge-{{ txn.status|lower }}">{{ txn.get_status_display }}</span>
+                        </div>
+                    </a>
+                {% endfor %}
+            {% endif %}
+
+        </div>
+
+        <!-- PAGINATION -->
+        {% if page_obj.has_other_pages %}
+            <nav class="wl-pagination">
+                {% if page_obj.has_previous %}
+                    <a href="?tab={{ active_tab }}&page={{ page_obj.previous_page_number }}" class="wl-page-btn">
+                        <span class="material-icons">chevron_left</span> Prev
+                    </a>
+                {% endif %}
+
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                        <span class="wl-page-num active">{{ num }}</span>
+                    {% elif num > page_obj.number|add:"-3" and num < page_obj.number|add:"3" %}
+                        <a href="?tab={{ active_tab }}&page={{ num }}" class="wl-page-num">{{ num }}</a>
+                    {% elif num == 1 or num == page_obj.paginator.num_pages %}
+                        <a href="?tab={{ active_tab }}&page={{ num }}" class="wl-page-num">{{ num }}</a>
+                    {% elif num == page_obj.number|add:"-3" or num == page_obj.number|add:"3" %}
+                        <span class="wl-page-ellipsis">&hellip;</span>
+                    {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                    <a href="?tab={{ active_tab }}&page={{ page_obj.next_page_number }}" class="wl-page-btn">
+                        Next <span class="material-icons">chevron_right</span>
+                    </a>
+                {% endif %}
+            </nav>
+        {% endif %}
+
+    {% else %}
+        <!-- EMPTY STATE -->
+        <div class="wl-empty">
+            <div class="wl-empty-icon">
+                <span class="material-icons">account_balance_wallet</span>
+            </div>
+            <h3>No transactions yet</h3>
+            <p>
+                {% if active_tab == "wallet" %}
+                    Your wallet history will appear here once you receive a refund or make a payment using your wallet.
+                {% else %}
+                    You don't have any transactions yet. They will appear here after you place an order.
+                {% endif %}
+            </p>
+            <a href="{% url 'product_list' %}" class="wl-empty-btn">
+                <span class="material-icons">shopping_bag</span>
+                Start Shopping
+            </a>
+        </div>
+    {% endif %}
+
+</div>
+
+<!-- ══════════════════════════════════════════════
+     TOP-UP MODAL (JS IDs are UNCHANGED)
+     ══════════════════════════════════════════════ -->
+{% if wallet.is_active %}
+<div class="wl-modal-overlay" id="topupOverlay">
+    <div class="wl-modal" role="dialog" aria-modal="true" aria-label="Add money to wallet">
+
+        <div class="wl-modal-header">
+            <button type="button" class="wl-modal-close" id="closeTopupModal">
                 <span class="material-icons">close</span>
             </button>
-
-            <div class="topup-modal-header">
-                <span class="material-icons topup-modal-icon">account_balance_wallet</span>
-                <h2>Add Money to Wallet</h2>
-                <p class="topup-modal-subtitle">Top up your wallet using Razorpay for instant checkout</p>
+            <div class="wl-modal-header-icon">
+                <span class="material-icons">account_balance_wallet</span>
             </div>
+            <h2>Add Money to Wallet</h2>
+            <p class="wl-modal-subtitle">Top up your wallet using Razorpay for instant checkout</p>
+        </div>
 
-            <div class="topup-modal-body">
-                <label class="topup-amount-label" for="topupAmount">Enter Amount (₹)</label>
-                <div class="topup-amount-wrapper">
-                    <span class="topup-currency">₹</span>
-                    <input type="number"
-                           id="topupAmount"
-                           class="topup-amount-input"
-                           placeholder="{{ topup_min|intcomma }}"
-                           min="{{ topup_min }}"
-                           max="{{ topup_max }}"
-                           step="1">
-                </div>
-                <span class="topup-amount-hint">
-                    Min ₹{{ topup_min|intcomma }} · Max ₹{{ topup_max|intcomma }}
-                </span>
-
-                <div class="topup-quick-amounts">
-                    <button type="button" class="topup-quick-btn" data-amount="{{ topup_min }}">₹{{ topup_min|intcomma }}</button>
-                    <button type="button" class="topup-quick-btn" data-amount="10000">₹10,000</button>
-                    <button type="button" class="topup-quick-btn" data-amount="25000">₹25,000</button>
-                    <button type="button" class="topup-quick-btn" data-amount="50000">₹50,000</button>
-                    <button type="button" class="topup-quick-btn" data-amount="{{ topup_max }}">₹{{ topup_max|intcomma }}</button>
-                </div>
+        <div class="wl-modal-body">
+            <label class="wl-amount-label" for="topupAmount">Enter Amount (₹)</label>
+            <div class="wl-amount-wrapper">
+                <span class="wl-amount-currency">₹</span>
+                <input type="number"
+                       id="topupAmount"
+                       class="wl-amount-input"
+                       placeholder="{{ topup_min|intcomma }}"
+                       min="{{ topup_min }}"
+                       max="{{ topup_max }}"
+                       step="1">
             </div>
+            <span class="wl-amount-hint">Min ₹{{ topup_min|intcomma }} &middot; Max ₹{{ topup_max|intcomma }}</span>
 
-            <div class="topup-modal-footer">
-                <button type="button" class="topup-submit-btn" id="topupSubmitBtn">
-                    <span class="material-icons">lock</span>
-                    Proceed to Pay
-                </button>
-                <div class="topup-secure-note">
-                    <span class="material-icons" style="font-size: 14px;">verified_user</span>
-                    Secured by Razorpay · 256-bit encryption
-                </div>
+            <div class="wl-quick-amounts">
+                <button type="button" class="wl-quick-btn topup-quick-btn" data-amount="{{ topup_min }}">₹{{ topup_min|intcomma }}</button>
+                <button type="button" class="wl-quick-btn topup-quick-btn" data-amount="10000">₹10,000</button>
+                <button type="button" class="wl-quick-btn topup-quick-btn" data-amount="25000">₹25,000</button>
+                <button type="button" class="wl-quick-btn topup-quick-btn" data-amount="50000">₹50,000</button>
+                <button type="button" class="wl-quick-btn topup-quick-btn" data-amount="{{ topup_max }}">₹{{ topup_max|intcomma }}</button>
             </div>
         </div>
+
+        <div class="wl-modal-footer">
+            <button type="button" class="wl-modal-pay-btn" id="topupSubmitBtn">
+                <span class="material-icons">lock</span>
+                Proceed to Pay
+            </button>
+            <div class="wl-secure-note">
+                <span class="material-icons">verified_user</span>
+                Secured by Razorpay &middot; 256-bit encryption
+            </div>
+        </div>
+
     </div>
-    {% endif %}
+</div>
+{% endif %}
 
 {% endblock %}
 
@@ -368,7 +396,6 @@
         .then(data => {
             _setLoading(false);
             if (data.success) {
-                /* Update balance on page */
                 const newBal = parseFloat(data.new_balance);
                 if (balanceEl && !isNaN(newBal)) {
                     balanceEl.textContent = "₹" + newBal.toLocaleString("en-IN", {
@@ -377,7 +404,6 @@
                     });
                 }
                 showToast("Wallet topped up successfully!", "success");
-                /* Reload after short delay to show updated transactions */
                 setTimeout(() => location.reload(), 1500);
             } else {
                 showToast(data.error || "Payment verification failed.", "error");
@@ -406,9 +432,7 @@
             showToast("Payment was cancelled.", "error");
             _setLoading(false);
         })
-        .catch(() => {
-            _setLoading(false);
-        });
+        .catch(() => { _setLoading(false); });
     }
 
     /* ── Loading state ── */

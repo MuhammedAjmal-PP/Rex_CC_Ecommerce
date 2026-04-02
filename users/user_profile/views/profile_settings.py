@@ -37,12 +37,12 @@ def edit_profile(request):
     if request.method == "POST":
         form = ProfileEditForm(request.POST, request.FILES, instance=request.user)
         if form.is_valid():
-            
+
             # Handle avatar removal
             if request.POST.get("remove_avatar") == "true":
                 request.user.avatar.delete()
                 request.user.avatar = None
-                
+
             form.save()
             messages.success(request, "Profile updated successfully!")
             return redirect("user_profile")
@@ -110,17 +110,18 @@ def change_email(request):
         )
 
     # ── Clean up any previous pending (unverified) email change ──
-    EmailAddress.objects.filter(
-        user=request.user, verified=False
-    ).exclude(email=request.user.email).delete()
+    EmailAddress.objects.filter(user=request.user, verified=False).exclude(
+        email=request.user.email
+    ).delete()
 
     # ── Create unverified EmailAddress → allauth sends confirmation ──
     email_address = EmailAddress.objects.add_email(
         request, request.user, new_email, confirm=True
     )
 
-    return JsonResponse({
-        "success": True,
-        "message": f"Verification link sent to {new_email}. Please check your inbox.",
-    })
-
+    return JsonResponse(
+        {
+            "success": True,
+            "message": f"Verification link sent to {new_email}. Please check your inbox.",
+        }
+    )

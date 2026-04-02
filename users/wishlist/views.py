@@ -89,7 +89,6 @@ def list_wishlist(request):
     return JsonResponse({"success": True, "count": len(products), "products": products})
 
 
-
 @require_POST
 def wishlist_toggle(request, slug, sku):
     """Toggle wishlist item for user or guest (remove or add items into wishlist)"""

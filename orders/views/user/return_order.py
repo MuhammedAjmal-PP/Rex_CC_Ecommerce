@@ -33,7 +33,9 @@ def return_order(request, order_number, item_id):
     order = get_object_or_404(Order, user=request.user, order_number=order_number)
     order_item = get_object_or_404(
         OrderItem.objects.select_related(
-            "product_variant", "product_variant__product", "product_variant__product__brand"
+            "product_variant",
+            "product_variant__product",
+            "product_variant__product__brand",
         ).prefetch_related("product_variant__images"),
         id=item_id,
         order=order,
@@ -75,7 +77,9 @@ def return_order_submit(request, order_number, item_id):
     """
     order = get_object_or_404(Order, user=request.user, order_number=order_number)
     order_item = get_object_or_404(
-        OrderItem.objects.select_related("product_variant").prefetch_related("product_variant__images"),
+        OrderItem.objects.select_related("product_variant").prefetch_related(
+            "product_variant__images"
+        ),
         id=item_id,
         order=order,
     )

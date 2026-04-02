@@ -1,11 +1,7 @@
 /* ============================================================
-   REX CC — USER TRANSACTION DETAIL PAGE
-   Luxury theme matching wallet/order detail design system
+   REX CC — TRANSACTION DETAIL PAGE  |  Luxury Light Mode
+   Tokens mirror wallet.css
    ============================================================ */
-.align-items-start { align-items: flex-start; }
-.font-montserrat { font-family: 'Montserrat', sans-serif; }
-.td-status-md { padding: 6px 14px; font-size: 0.75rem; }
-.mb-24 { margin-bottom: 24px; }
 
 :root {
   --td-bg: #faf9f7;
@@ -14,8 +10,9 @@
   --td-text-muted: #666666;
   --td-border: #eaeaea;
   --td-gold: #bfa15f;
-  --td-gold-light: #d1b882;
   --td-gold-dark: #a98d51;
+  --td-bronze: #cd7f32;
+
   --td-credit: #16a34a;
   --td-credit-bg: #f0fdf4;
   --td-debit: #dc2626;
@@ -26,7 +23,60 @@
 }
 
 /* ============================================================
-   MAIN GRID
+   BACK BUTTON
+   ============================================================ */
+
+.td-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--td-text-muted);
+  text-decoration: none;
+  padding: 10px 18px;
+  border: 1px solid var(--td-border);
+  border-radius: 3px;
+  background: var(--td-surface);
+  transition: all 0.2s ease;
+  margin-bottom: 28px;
+  display: inline-flex;
+}
+
+.td-back-link .material-icons { font-size: 18px; }
+
+.td-back-link:hover {
+  border-color: var(--td-gold);
+  color: var(--td-gold-dark);
+}
+
+/* ============================================================
+   STATUS BADGE (in header)
+   ============================================================ */
+
+.td-header-badge {
+  font-family: var(--font-sans);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 6px 16px;
+  border-radius: 3px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.td-header-badge.status-paid,
+.td-header-badge.status-completed  { background: var(--td-credit-bg); color: var(--td-credit); }
+.td-header-badge.status-pending    { background: #fefce8; color: #a16207; }
+.td-header-badge.status-failed,
+.td-header-badge.status-cancelled  { background: var(--td-debit-bg);  color: var(--td-debit); }
+
+/* ============================================================
+   MAIN TWO-COLUMN GRID
    ============================================================ */
 
 .td-grid {
@@ -36,41 +86,53 @@
   align-items: start;
 }
 
-.td-right-stack {
+.td-col-right {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 20px;
 }
 
 /* ============================================================
-   CARD INTERNALS (OVERRIDING .hub-card)
+   DETAIL CARD
    ============================================================ */
 
-.td-card-header {
+.td-card {
+  background: var(--td-surface);
+  border: 1px solid var(--td-border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.td-card-head {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 18px 24px;
-  border-bottom: 1px solid var(--td-border);
+  padding: 16px 22px;
   background: #faf9f7;
+  border-bottom: 1px solid var(--td-border);
 }
 
-.td-card-header .material-icons {
-  font-size: 20px;
-  color: var(--td-gold);
+.td-card-head .material-icons {
+  font-size: 18px;
+  color: var(--td-gold-dark);
 }
 
-.td-card-title {
+.td-card-head-title {
   font-family: var(--font-sans);
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   font-weight: 700;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
-  letter-spacing: 0.8px;
   color: var(--td-text);
 }
 
+/* colored top accent on cards */
+.td-card.accent-credit { border-top: 3px solid var(--td-credit); }
+.td-card.accent-debit  { border-top: 3px solid var(--td-debit);  }
+.td-card.accent-gold   { border-top: 3px solid var(--td-gold);   }
+
 .td-card-body {
-  padding: 20px 24px;
+  padding: 6px 0;
 }
 
 /* ============================================================
@@ -81,168 +143,66 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 0;
-  border-bottom: 1px solid #f0f0f0;
+  padding: 13px 22px;
+  border-bottom: 1px solid #f5f4f2;
   gap: 16px;
 }
 
-.td-row:last-child {
-  border-bottom: none;
-}
+.td-row:last-child { border-bottom: none; }
 
 .td-label {
   font-family: var(--font-sans);
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 600;
-  color: var(--td-text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.8px;
+  color: var(--td-text-muted);
   flex-shrink: 0;
 }
 
 .td-value {
   font-family: var(--font-sans);
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   font-weight: 500;
   color: var(--td-text);
   text-align: right;
+  word-break: break-all;
 }
 
-.td-mono {
+.td-value-mono {
+  font-family: monospace;
   font-size: 0.82rem;
   letter-spacing: 0.3px;
+  color: #555;
 }
 
-.td-amount {
+.td-value-amount {
+  font-size: 1.05rem;
   font-weight: 700;
-  font-size: 1rem;
-  color: var(--td-text);
 }
 
 /* ============================================================
-   BADGES
+   INLINE BADGES (in rows)
    ============================================================ */
 
-.td-type-badge {
-  font-family: var(--font-sans);
-  font-size: 0.7rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  padding: 4px 12px;
-  border-radius: 3px;
-  background: #f3f2ef;
-  color: var(--td-text);
-  display: inline-block;
-}
-
-.td-status-badge {
-  font-family: var(--font-sans);
-  font-size: 0.72rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  padding: 5px 14px;
-  border-radius: 3px;
-  display: inline-block;
-}
-
-.status-paid,
-.status-completed {
-  background: #f0fdf4;
-  color: #16a34a;
-}
-
-.status-pending {
-  background: #fefce8;
-  color: #a16207;
-}
-
-.status-failed {
-  background: #fef2f2;
-  color: #dc2626;
-}
-
-/* Wallet label badges */
-.txn-type-badge {
-  font-family: var(--font-sans);
-  font-size: 0.7rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  padding: 4px 10px;
-  border-radius: 3px;
-  display: inline-block;
-}
-
-.txn-credit {
-  background: var(--td-credit-bg);
-  color: var(--td-credit);
-}
-
-.txn-debit {
-  background: var(--td-debit-bg);
-  color: var(--td-debit);
-}
-
-/* ============================================================
-   BACK BUTTON
-   ============================================================ */
-
-.td-back {
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.td-back-btn {
+.td-badge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 10px 20px;
   font-family: var(--font-sans);
-  font-size: 0.8rem;
-  font-weight: 600;
-  text-transform: uppercase;
+  font-size: 0.62rem;
+  font-weight: 700;
   letter-spacing: 0.8px;
-  color: var(--td-text-muted);
-  text-decoration: none;
-  border: 1px solid var(--td-border);
+  text-transform: uppercase;
+  padding: 4px 10px;
   border-radius: 3px;
-  background: var(--td-surface);
-  transition: all 0.2s ease;
 }
 
-.td-back-btn .material-icons {
-  font-size: 18px;
-}
+.td-badge-type  { background: #f3f2ef; color: var(--td-text); }
+.td-badge-credit { background: var(--td-credit-bg); color: var(--td-credit); }
+.td-badge-debit  { background: var(--td-debit-bg);  color: var(--td-debit);  }
+.td-badge-paid,
+.td-badge-completed { background: var(--td-credit-bg); color: var(--td-credit); }
+.td-badge-pending   { background: #fefce8; color: #a16207; }
+.td-badge-failed    { background: var(--td-debit-bg); color: var(--td-debit); }
 
-.td-back-btn:hover {
-  border-color: var(--td-gold);
-  color: var(--td-gold);
-}
-
-/* ============================================================
-   RESPONSIVE
-   ============================================================ */
-
-@media (max-width: 900px) {
-  .td-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 768px) {
-  .td-card-body {
-    padding: 16px 18px;
-  }
-
-  .td-row {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 4px;
-  }
-
-  .td-value {
-    text-align: left;
-  }
-}
+/* Desktop only - no responsive breakpoints needed */

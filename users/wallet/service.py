@@ -16,6 +16,7 @@ class WalletInactiveError(Exception):
 # Wallet CRUD
 # ────────────────────────────────────────────
 
+
 def get_or_create_wallet(user):
     """Get existing wallet or create one with zero balance."""
     wallet, _ = Wallet.objects.get_or_create(user=user)
@@ -31,6 +32,7 @@ def can_pay_with_wallet(user, amount):
 # ────────────────────────────────────────────
 # Credit / Debit
 # ────────────────────────────────────────────
+
 
 def credit_wallet(user, amount, transaction_obj=None):
     """

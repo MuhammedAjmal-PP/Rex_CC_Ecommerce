@@ -11,7 +11,6 @@ from django.utils import timezone
 from accounts.service import send_admin_password_reset_email
 from django.contrib.auth.forms import SetPasswordForm
 
-
 # Get User model
 User = get_user_model()
 

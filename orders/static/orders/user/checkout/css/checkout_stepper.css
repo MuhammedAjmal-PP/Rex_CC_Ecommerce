@@ -87,13 +87,4 @@
   background: #bfa15f;
 }
 
-@media (max-width: 600px) {
-  .chk-stepper {
-    padding: 20px;
-    margin-bottom: 24px;
-  }
-
-  .chk-step-label {
-    font-size: 0.7rem;
-  }
-}
+/* Desktop only - no responsive breakpoints needed */

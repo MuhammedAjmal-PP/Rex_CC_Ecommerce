@@ -272,23 +272,4 @@
     border-color: var(--color-gold, #bfa15f);
 }
 
-@media (max-width: 768px) {
-    .lux-form-row {
-        grid-template-columns: 1fr;
-        gap: 20px;
-    }
-    
-    .lux-label-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .lux-form-actions {
-        flex-direction: column-reverse;
-    }
-
-    .lux-form-actions a, .lux-form-actions button {
-        width: 100%;
-        text-align: center;
-        justify-content: center;
-    }
-}
+/* Desktop only - no responsive breakpoints needed */

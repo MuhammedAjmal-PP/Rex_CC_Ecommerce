@@ -4,8 +4,8 @@
 {% block head_title %}My Wishlist | REX CC{% endblock head_title %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'wishlist/css/wishlist.css' %}">
 <link rel="stylesheet" href="{% static 'catalog/css/user/product/product_card.css' %}">
+<link rel="stylesheet" href="{% static 'wishlist/css/wishlist.css' %}?v=3.0">
 {% endblock extra_css %}
 
 {% block content %}
@@ -16,79 +16,85 @@
         <div class="hub-user-info">
             <div class="hub-user-details">
                 <h1 class="hub-name">My Wishlist</h1>
-                <p class="hub-contact">A curated collection of your favorite timepieces</p>
+                <p class="hub-contact">
+                    A curated collection of your favorite timepieces
+                    &nbsp;·&nbsp;
+                    <span id="wishlist-count-display">0</span> items
+                </p>
             </div>
         </div>
         <div class="hub-header-actions">
-             <a href="{% url 'product_list' %}" class="hub-btn-outline">
-                <span class="material-icons" style="font-size: 18px; margin-right: 6px;">explore</span>
+            <a href="{% url 'product_list' %}" class="hub-btn-outline">
+                <span class="material-icons" style="font-size:17px; margin-right:6px;">explore</span>
                 Discover More
             </a>
         </div>
     </header>
 
-
     <!-- LOADING STATE -->
-    <div id="wishlist-loading" class="lux-empty-state">
-        <span class="material-icons rotating empty-icon">watch_later</span>
-        <h2>Loading your collection...</h2>
+    <div id="wishlist-loading" class="wl-page-loading">
+        <div class="wl-page-loading-icon"></div>
+        <p>Loading your collection...</p>
     </div>
 
     <!-- EMPTY STATE -->
-    <div id="wishlist-empty" class="lux-empty-state" style="display:none;">
-        <span class="material-icons empty-icon">favorite_border</span>
+    <div id="wishlist-empty" class="wl-page-empty" style="display:none;">
+        <div class="wl-page-empty-icon">
+            <span class="material-icons">favorite_border</span>
+        </div>
         <h2>Your Wishlist is Empty</h2>
         <p>Start building your collection of exquisite timepieces</p>
-        <div style="margin-top: 30px;">
-            <a href="{% url 'product_list' %}" class="lux-btn-primary">Explore Watches</a>
-        </div>
+        <a href="{% url 'product_list' %}" class="wl-page-empty-btn">
+            <span class="material-icons" style="font-size:16px;">watch</span>
+            Explore Watches
+        </a>
     </div>
 
-    <!-- WISHLIST GRID (Populated by JS) -->
-    <div id="wishlist-grid" class="lux-product-grid">
-        <!-- Items injected here -->
-    </div>
+    <!-- WISHLIST GRID (populated by JS) -->
+    <div id="wishlist-grid" style="display:none;"></div>
 
 </div>
 
-<!-- TEMPLATE FOR WISHLIST ITEMS -->
-<!-- IMPORTANT: The inner structure must perfectly match product_card.html to retain styling -->
+<!-- ══════════════════════════════════════════════
+     ITEM CARD TEMPLATE (cloned by JS for each item)
+     Uses the same product-card.css classes as homepage / product list
+     ══════════════════════════════════════════════ -->
 <template id="wishlist-page-item-template">
-    <div data-variant-id="" style="width: 100%;">
-        <div class="hub-card" style="display: flex; padding: 16px; gap: 16px; position: relative;">
-            
-            <!-- Remove Button Element -->
-            <button type="button" class="wishlist-remove-btn is-active" aria-label="Remove from wishlist">
+    <div data-variant-id="">
+        <div class="product-card" style="position:relative; width:100%;">
+
+            <!-- Remove (×) Button — top-right overlay -->
+            <button type="button" class="wishlist-remove-btn" aria-label="Remove from wishlist">
                 <span class="material-icons">close</span>
             </button>
-            
-            <a href="" class="card-link-wrapper" style="width: 90px; height: 110px; flex-shrink: 0; background: #faf9f7; border-radius: 4px; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative;">
-                <img src="" alt="" class="product-card__image" style="max-width: 100%; max-height: 100%; mix-blend-mode: multiply; object-fit: contain;">
-                <span class="product-card__stock-badge" style="display: none; position: absolute; top: 4px; left: 4px; background: #d32f2f; color: white; font-size: 9px; padding: 2px 4px; border-radius: 2px;">Out</span>
-                <span class="product-card__discount-badge" style="display: none; position: absolute; top: 4px; right: 4px; background: var(--color-gold); color: white; font-size: 9px; padding: 2px 4px; border-radius: 2px;"></span>
+
+            <!-- Image Box -->
+            <a href="" class="card-link-wrapper product-card__image-box">
+                <img src="" alt="" class="product-card__image">
+                <span class="product-card__stock-badge" style="display:none;">Out of Stock</span>
+                <span class="product-card__discount-badge" style="display:none;"></span>
+                <div class="product-card__overlay">View Details</div>
             </a>
 
-            <div class="product-card__info" style="display: flex; flex-direction: column; flex-grow: 1; padding-right: 24px;">
-                <span class="product-card__brand brand-name" style="font-family: 'Montserrat', sans-serif; font-size: 0.65rem; text-transform: uppercase; color: #666; font-weight: 600; letter-spacing: 1px;"></span>
-                <h3 class="product-card__name product-title" style="font-family: 'Playfair Display', serif; font-size: 1rem; color: #111; margin: 4px 0 6px;"></h3>
-                
-                <div class="product-card__variant-info variant-details-container" style="font-family: 'Montserrat', sans-serif; font-size: 0.7rem; color: #999; margin-bottom: 8px; display: flex; gap: 8px; flex-wrap: wrap;">
-                    <!-- Variant details injected here dynamically -->
+            <!-- Card Info -->
+            <div class="product-card__info">
+                <span class="product-card__brand"></span>
+                <h3 class="product-card__name"></h3>
+                <div class="product-card__variant-info"></div>
+                <div class="product-card__pricing">
+                    <span class="product-card__price"></span>
+                    <span class="product-card__original-price" style="display:none;"></span>
                 </div>
-
-                <div class="product-card__pricing" style="margin-bottom: 12px;">
-                    <span class="product-card__price current-price" style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 0.9rem; color: #111;"></span>
-                    <span class="product-card__original-price original-price" style="font-size: 0.75rem; color: #999; text-decoration: line-through; margin-left: 6px;"></span>
-                </div>
-
-                 <a href="#" class="btn-add-to-cart-wishlist" style="margin-top: auto; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 16px; border: 1px solid #111; font-family: 'Montserrat', sans-serif; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; color: #111; text-decoration: none; transition: all 0.3s; border-radius: 3px; align-self: flex-start;">
-                    <span class="material-icons" style="font-size:14px;">local_mall</span>
+                <a href="#" class="btn-add-to-cart-wishlist">
+                    <span class="material-icons">local_mall</span>
                     Add to Cart
                 </a>
             </div>
+
         </div>
     </div>
 </template>
+
 {% endblock content %}
 
 {% block extra_js %}

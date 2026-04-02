@@ -1,211 +1,305 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Page Not Found | REX CC</title>
-        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:wght@400;600;700&display=swap"
-              rel="stylesheet">
-        <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
-              rel="stylesheet">
-        <style>
-            :root {
-                --color-gold: #bfa15f;
-                --color-bronze: #cd7f32;
-                --black: #000;
-                --white: #fff;
-            }
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Not Found — REX CC</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'core/user/css/mobile_block.css' %}">
+    <style>
+        /* === REX CC 404 — Light Luxury === */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-            * {
-                margin: 0;
-                padding: 0;
-                box-sizing: border-box;
-            }
+        :root {
+            --gold: #bfa15f;
+            --bronze: #cd7f32;
+            --text: #111;
+            --muted: #888;
+            --border: #e8e4de;
+            --bg: #faf9f7;
+        }
 
-            body {
-                font-family: "Montserrat", sans-serif;
-                background: var(--black);
-                color: var(--white);
-                min-height: 100vh;
-                display: flex;
-                flex-direction: column;
-                overflow: hidden;
-            }
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
 
-            /* Ambient background */
-            .error-bg {
-                position: fixed;
-                inset: 0;
-                z-index: 0;
-                background:
-                    radial-gradient(ellipse at 20% 50%, rgba(191, 161, 95, 0.06) 0%, transparent 60%),
-                    radial-gradient(ellipse at 80% 50%, rgba(205, 127, 50, 0.04) 0%, transparent 60%),
-                    var(--black);
-            }
+        /* Brand Bar */
+        .err-brand-bar {
+            padding: 28px 48px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
 
-            /* Top brand bar */
-            .error-brand-bar {
-                position: relative;
-                z-index: 1;
-                padding: 28px 40px;
-                border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-            }
+        .err-brand-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            color: var(--text);
+            text-decoration: none;
+        }
 
-            .error-brand-bar a {
-                font-family: "Playfair Display", serif;
-                font-size: 24px;
-                font-weight: 700;
-                letter-spacing: 3px;
-                color: var(--white);
-                text-decoration: none;
-            }
+        .err-brand-logo span { color: var(--bronze); }
 
-            .error-brand-bar a span {
-                color: var(--color-gold);
-            }
+        .err-tagline {
+            font-size: 10px;
+            font-weight: 500;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
 
-            /* Main content */
-            .error-main {
-                position: relative;
-                z-index: 1;
-                flex: 1;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                padding: 40px;
-            }
+        /* Main Content */
+        .err-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 80px 48px;
+            text-align: center;
+        }
 
-            .error-content {
-                text-align: center;
-                max-width: 600px;
-            }
+        /* Decorative number */
+        .err-code-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
+            margin-bottom: 48px;
+            user-select: none;
+        }
 
-            /* Error code */
-            .error-code {
-                font-family: "Playfair Display", serif;
-                font-size: 140px;
-                font-weight: 700;
-                line-height: 1;
-                letter-spacing: 8px;
-                background: linear-gradient(135deg, var(--color-gold) 0%, var(--color-bronze) 50%, var(--color-gold) 100%);
-                background-size: 200% auto;
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
-                background-clip: text;
-                animation: shimmer 4s ease-in-out infinite;
-                margin-bottom: 20px;
-            }
+        .err-num {
+            font-family: 'Playfair Display', serif;
+            font-size: 10rem;
+            font-weight: 700;
+            color: transparent;
+            -webkit-text-stroke: 1px var(--gold);
+            letter-spacing: -4px;
+            line-height: 1;
+        }
 
-            @keyframes shimmer {
-                0%, 100% { background-position: 0% center; }
-                50% { background-position: 200% center; }
-            }
+        .err-watch-icon {
+            width: 100px;
+            height: 100px;
+            border: 2px solid var(--gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 12px;
+            flex-shrink: 0;
+            position: relative;
+        }
 
-            /* Decorative line */
-            .error-divider {
-                width: 60px;
-                height: 1px;
-                background: var(--color-gold);
-                margin: 0 auto 30px;
-                opacity: 0.6;
-            }
+        .err-watch-icon::before {
+            content: '';
+            position: absolute;
+            inset: 6px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--gold) 0%, var(--bronze) 100%);
+            opacity: 0.1;
+        }
 
-            .error-label {
-                font-size: 11px;
-                font-weight: 600;
-                letter-spacing: 4px;
-                text-transform: uppercase;
-                color: var(--color-gold);
-                margin-bottom: 16px;
-            }
+        .err-watch-icon .material-icons {
+            font-size: 48px;
+            color: var(--gold);
+        }
 
-            .error-title {
-                font-family: "Playfair Display", serif;
-                font-size: 28px;
-                font-weight: 600;
-                color: var(--white);
-                margin-bottom: 16px;
-                letter-spacing: 0.5px;
-            }
+        /* Gold divider */
+        .err-divider {
+            width: 60px;
+            height: 1px;
+            background: var(--gold);
+            margin: 0 auto 28px;
+            opacity: 0.6;
+        }
 
-            .error-description {
-                font-size: 14px;
-                color: rgba(255, 255, 255, 0.5);
-                line-height: 1.8;
-                margin-bottom: 40px;
-                font-weight: 300;
-            }
+        /* Label */
+        .err-label {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 18px;
+        }
 
-            /* CTA button */
-            .error-cta {
-                display: inline-flex;
-                align-items: center;
-                gap: 10px;
-                padding: 14px 36px;
-                background: transparent;
-                border: 1px solid rgba(191, 161, 95, 0.4);
-                color: var(--color-gold);
-                font-family: "Montserrat", sans-serif;
-                font-size: 12px;
-                font-weight: 600;
-                letter-spacing: 2px;
-                text-transform: uppercase;
-                text-decoration: none;
-                transition: all 0.4s ease;
-            }
+        /* Headline */
+        .err-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.8rem;
+            font-weight: 600;
+            color: var(--text);
+            line-height: 1.2;
+            margin-bottom: 18px;
+        }
 
-            .error-cta:hover {
-                background: var(--color-gold);
-                color: var(--black);
-                border-color: var(--color-gold);
-            }
+        /* Description */
+        .err-desc {
+            font-size: 0.95rem;
+            color: var(--muted);
+            line-height: 1.8;
+            max-width: 480px;
+            margin: 0 auto 48px;
+        }
 
-            .error-cta .material-icons {
-                font-size: 18px;
-                transition: transform 0.3s ease;
-            }
+        /* CTA Buttons */
+        .err-actions {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+        }
 
-            .error-cta:hover .material-icons {
-                transform: translateX(-4px);
-            }
+        .err-btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 16px 36px;
+            background: var(--text);
+            color: #fff;
+            text-decoration: none;
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
 
-            /* Footer */
-            .error-footer {
-                position: relative;
-                z-index: 1;
-                text-align: center;
-                padding: 24px;
-                border-top: 1px solid rgba(255, 255, 255, 0.06);
-                font-size: 11px;
-                color: rgba(255, 255, 255, 0.25);
-                letter-spacing: 1px;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="error-bg"></div>
-        <div class="error-brand-bar">
-            <a href="/">REX <span>CC</span></a>
-        </div>
-        <div class="error-main">
-            <div class="error-content">
-                <div class="error-code">404</div>
-                <div class="error-divider"></div>
-                <p class="error-label">Page Not Found</p>
-                <h1 class="error-title">This Timepiece Has Eluded Us</h1>
-                <p class="error-description">
-                    The page you're looking for doesn't exist or has been moved.
-                    Let us guide you back to our collection.
-                </p>
-                <a href="/" class="error-cta">
-                    <span class="material-icons">arrow_back</span>
-                    Return Home
-                </a>
+        .err-btn-primary:hover {
+            background: var(--bronze);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(205, 127, 50, 0.3);
+            color: #fff;
+        }
+
+        .err-btn-outline {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 16px 32px;
+            border: 1px solid #d0ccc5;
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+            background: transparent;
+        }
+
+        .err-btn-outline:hover {
+            border-color: var(--text);
+            color: var(--text);
+        }
+
+        /* Footer */
+        .err-footer {
+            padding: 24px 48px;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            font-size: 11px;
+            letter-spacing: 1px;
+            color: #bbb;
+            text-transform: uppercase;
+        }
+
+        /* Subtle background decoration */
+        .err-bg-deco {
+            position: fixed;
+            bottom: -80px;
+            right: -80px;
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            border: 1px solid rgba(191, 161, 95, 0.12);
+            pointer-events: none;
+            z-index: 0;
+        }
+        .err-bg-deco-2 {
+            position: fixed;
+            bottom: -40px;
+            right: -40px;
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            border: 1px solid rgba(191, 161, 95, 0.08);
+            pointer-events: none;
+            z-index: 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Blocker -->
+    <div id="mobile-blocker">
+        <div class="mb-brand">REX <span>CC</span></div>
+        <div class="mb-icon"><span class="material-icons">watch</span></div>
+        <div class="mb-divider"></div>
+        <p class="mb-label">Desktop Experience</p>
+        <h2 class="mb-title">Built for the Bigger Screen</h2>
+        <p class="mb-desc">REX CC is crafted for a premium desktop experience. Please visit us on a laptop or desktop computer.</p>
+        <div class="mb-footer">&copy; {% now "Y" %} REX CC. All rights reserved.</div>
+    </div>
+
+    <!-- Background decorations -->
+    <div class="err-bg-deco"></div>
+    <div class="err-bg-deco-2"></div>
+
+    <!-- Brand Bar -->
+    <header class="err-brand-bar">
+        <a href="{% url 'home' %}" class="err-brand-logo">REX <span>CC</span></a>
+        <span class="err-tagline">Precision Timepieces</span>
+    </header>
+
+    <!-- Main Error Content -->
+    <main class="err-main">
+        <!-- 404 Number Display -->
+        <div class="err-code-wrap">
+            <span class="err-num">4</span>
+            <div class="err-watch-icon">
+                <span class="material-icons">watch</span>
             </div>
+            <span class="err-num">4</span>
         </div>
-        <footer class="error-footer">
-            &copy; {% now "Y" %} REX CC. All rights reserved.
-        </footer>
-    </body>
+
+        <div class="err-divider"></div>
+        <p class="err-label">Error 404 — Page Not Found</p>
+
+        <h1 class="err-title">This Timepiece Has Eluded Us.</h1>
+        <p class="err-desc">
+            The page you are looking for may have been moved, removed, or never existed.
+            Every collection has its gaps — let us guide you back to what matters.
+        </p>
+
+        <div class="err-actions">
+            <a href="{% url 'home' %}" class="err-btn-primary">
+                <span class="material-icons" style="font-size: 16px;">arrow_back</span>
+                Return Home
+            </a>
+            <a href="{% url 'product_list' %}" class="err-btn-outline">
+                <span class="material-icons" style="font-size: 16px;">grid_view</span>
+                Browse Collection
+            </a>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="err-footer">
+        &copy; {% now "Y" %} REX CC &mdash; Luxury Timepieces
+    </footer>
+</body>
 </html>

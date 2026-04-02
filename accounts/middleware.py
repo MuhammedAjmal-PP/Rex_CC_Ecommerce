@@ -52,7 +52,6 @@ class AuthFlowRedirectMiddleware:
             if user.is_authenticated:
                 return redirect("home")
 
-
         return self.get_response(request)
 
 

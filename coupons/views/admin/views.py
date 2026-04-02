@@ -21,8 +21,7 @@ def coupon_list(request):
     search_query = request.GET.get("q", "").strip()
     if search_query:
         coupons = coupons.filter(
-            Q(code__icontains=search_query)
-            | Q(description__icontains=search_query)
+            Q(code__icontains=search_query) | Q(description__icontains=search_query)
         ).distinct()
 
     # ── Filter: status ───────────────────────────

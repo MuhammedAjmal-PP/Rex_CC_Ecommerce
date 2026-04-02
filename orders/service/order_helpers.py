@@ -1,6 +1,7 @@
 """
 Order placement helpers — business logic used by place_order and razorpay views.
 """
+
 from datetime import timedelta
 from decimal import Decimal
 from functools import partial
@@ -24,7 +25,8 @@ def schedule_order_expiry(order):
     transaction.on_commit(
         partial(
             expire_failed_order.using(
-                run_after=timezone.now() + timedelta(seconds=settings.FAILED_ORDER_EXPIRY_SECONDS)
+                run_after=timezone.now()
+                + timedelta(seconds=settings.FAILED_ORDER_EXPIRY_SECONDS)
             ).enqueue,
             order_id=order.pk,
         )
@@ -46,12 +48,14 @@ def build_cart_snapshot(cart_items, packed_prices, locked_variants):
     for item in cart_items:
         vid = item.product_variant_id
         locked = locked_variants[vid]
-        snapshot.append({
-            "variant_id": vid,
-            "quantity": item.quantity,
-            "price": str(packed_prices.get(vid, locked.price)),
-            "original_price": str(locked.price),
-        })
+        snapshot.append(
+            {
+                "variant_id": vid,
+                "quantity": item.quantity,
+                "price": str(packed_prices.get(vid, locked.price)),
+                "original_price": str(locked.price),
+            }
+        )
     return snapshot
 
 

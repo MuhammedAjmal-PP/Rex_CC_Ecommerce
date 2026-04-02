@@ -11,7 +11,6 @@ from orders.utils import compute_cancel_refund, get_payment_transaction
 from coupons.service import revoke_coupon_if_invalid
 from payments.service import complete_refund, initiate_refund, update_transaction
 
-
 CANCELLABLE_ITEM_STATUSES = {"PENDING", "CONFIRMED", "PACKING", "READY"}
 
 

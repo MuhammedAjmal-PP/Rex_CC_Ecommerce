@@ -19,7 +19,6 @@ from coupons.service import get_exhausted_coupon_ids
 from django.utils import timezone
 from django.db.models import Count
 
-
 # Create your views here.
 
 

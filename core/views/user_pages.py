@@ -7,7 +7,30 @@ from catalog.utils import pack_variants, get_offer_variants
 from users.wishlist.utils import get_session_wishlist
 from users.wishlist.models import WishlistItem
 
-# Create your views here.
+
+# ── Static / informational pages ────────────────────────────
+def contact_us(request):
+    return render(request, "core/user/pages/contact_us.html")
+
+
+def shipping_service(request):
+    return render(request, "core/user/pages/shipping_service.html")
+
+
+def returns_exchange(request):
+    return render(request, "core/user/pages/returns_exchange.html")
+
+
+def privacy_policy(request):
+    return render(request, "core/user/pages/privacy_policy.html")
+
+
+def terms_of_service(request):
+    return render(request, "core/user/pages/terms_of_service.html")
+
+
+def authenticity(request):
+    return render(request, "core/user/pages/authenticity.html")
 
 
 @never_cache

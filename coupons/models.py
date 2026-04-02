@@ -9,7 +9,6 @@ from django.core.validators import (
 from django.db import models
 from django.utils import timezone
 
-
 # ======================================================
 # COUPON MODEL
 # ======================================================
@@ -17,6 +16,7 @@ from django.utils import timezone
 
 class ActiveCouponManager(models.Manager):
     """Returns only non-deleted coupons."""
+
     def get_queryset(self):
         return super().get_queryset().filter(is_deleted=False)
 
@@ -90,8 +90,8 @@ class Coupon(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    objects = models.Manager()          # default — includes deleted
-    active = ActiveCouponManager()      # excludes soft-deleted
+    objects = models.Manager()  # default — includes deleted
+    active = ActiveCouponManager()  # excludes soft-deleted
 
     class Meta:
         ordering = ["-created_at"]
@@ -148,9 +148,7 @@ class Coupon(models.Model):
         if not self.pk:
             return True
         saved = (
-            Coupon.objects.filter(pk=self.pk)
-            .values_list(field_name, flat=True)
-            .first()
+            Coupon.objects.filter(pk=self.pk).values_list(field_name, flat=True).first()
         )
         return saved != getattr(self, field_name)
 

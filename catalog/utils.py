@@ -25,7 +25,6 @@ from django.utils import timezone
 from catalog.models import Product
 from offers.models import Offer
 
-
 # ─── INTERNAL HELPERS ───────────────────────────────────────
 
 
@@ -60,11 +59,9 @@ def _load_category_map(product_ids):
     """
     category_map = {}
     if product_ids:
-        rows = (
-            Product.category.through.objects
-            .filter(product_id__in=product_ids)
-            .values_list("product_id", "category_id")
-        )
+        rows = Product.category.through.objects.filter(
+            product_id__in=product_ids
+        ).values_list("product_id", "category_id")
         for pid, cid in rows:
             category_map.setdefault(pid, set()).add(cid)
     return category_map
@@ -132,9 +129,7 @@ def pack_variants(variants, offer_data=None):
         variant.discount_percentage = pct
 
         if pct > 0:
-            variant.discount_amount = (
-                variant.price * Decimal(pct) / Decimal(100)
-            )
+            variant.discount_amount = variant.price * Decimal(pct) / Decimal(100)
         else:
             variant.discount_amount = Decimal("0.00")
 

@@ -27,10 +27,10 @@ def order_list(request):
     search = request.GET.get("q", "").strip()
     date_filter = request.GET.get("date_filter", "").strip().lower()
 
-    orders = Order.objects.filter(user=request.user).exclude(
-        status__in=("EXPIRED", "STOCK_UNAVAILABLE")
-    ).prefetch_related(
-        "payment"
+    orders = (
+        Order.objects.filter(user=request.user)
+        .exclude(status__in=("EXPIRED", "STOCK_UNAVAILABLE"))
+        .prefetch_related("payment")
     )
 
     if search:
@@ -111,9 +111,7 @@ def order_detail(request, order_number):
     ]
     status_order = [s[0] for s in stepper_steps]
     current_idx = (
-        status_order.index(order.status)
-        if order.status in status_order
-        else -1
+        status_order.index(order.status) if order.status in status_order else -1
     )
     completed_steps = set(status_order[:current_idx]) if current_idx > 0 else set()
 
@@ -183,5 +181,3 @@ def order_invoice(request, order_number):
         f'attachment; filename="invoice_{order.order_number}.pdf"'
     )
     return response
-
-

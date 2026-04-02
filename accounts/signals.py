@@ -14,7 +14,6 @@ from accounts.models import BlacklistedEmail
 from payments.service import create_transaction
 from users.wallet.service import credit_wallet
 
-
 REFERRAL_REWARD_AMOUNT = Decimal("1000.00")
 
 
@@ -74,7 +73,9 @@ def handle_email_confirmed(sender, request, email_address, **kwargs):
             content_object=user,
             note=f"Referral reward — referred by {referrer.email}",
         )
-        credit_wallet(user=user, amount=REFERRAL_REWARD_AMOUNT, transaction_obj=referee_txn)
+        credit_wallet(
+            user=user, amount=REFERRAL_REWARD_AMOUNT, transaction_obj=referee_txn
+        )
 
         # Credit referrer (existing user)
         referrer_txn = create_transaction(

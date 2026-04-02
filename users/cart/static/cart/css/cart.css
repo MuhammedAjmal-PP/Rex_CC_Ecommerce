@@ -322,31 +322,6 @@
 }
 
 /* Responsive */
-@media (max-width: 992px) {
-  .lux-cart-layout {
-    grid-template-columns: 1fr;
-  }
+/* Desktop only - no responsive breakpoints needed */
 
-  .lux-cart-summary-wrap {
-    position: static;
-    margin-top: 16px;
-  }
-}
-
-@media (max-width: 576px) {
-  .lux-cart-inner {
-    flex-direction: column;
-    gap: 16px;
-  }
-  
-  .lux-cart-img-wrap {
-    width: 100%;
-    height: 180px;
-  }
-  
-  .lux-cart-actions-row {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 16px;
-  }
-}
+/* Desktop only - no responsive breakpoints needed */

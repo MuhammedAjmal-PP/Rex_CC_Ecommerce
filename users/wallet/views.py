@@ -153,19 +153,21 @@ def wallet_topup_initiate(request):
     txn.gateway_order_id = rz_order["id"]
     txn.save(update_fields=["gateway_order_id"])
 
-    return JsonResponse({
-        "success": True,
-        "razorpay_key_id": settings.RAZORPAY_KEY_ID,
-        "razorpay_order_id": rz_order["id"],
-        "amount": rz_order["amount"],
-        "currency": rz_order["currency"],
-        "name": "REX CC",
-        "description": f"Wallet Top-up — ₹{amount:,.0f}",
-        "prefill": {
-            "email": request.user.email,
-            "contact": str(request.user.phone_number or ""),
-        },
-    })
+    return JsonResponse(
+        {
+            "success": True,
+            "razorpay_key_id": settings.RAZORPAY_KEY_ID,
+            "razorpay_order_id": rz_order["id"],
+            "amount": rz_order["amount"],
+            "currency": rz_order["currency"],
+            "name": "REX CC",
+            "description": f"Wallet Top-up — ₹{amount:,.0f}",
+            "prefill": {
+                "email": request.user.email,
+                "contact": str(request.user.phone_number or ""),
+            },
+        }
+    )
 
 
 @login_required
@@ -214,9 +216,14 @@ def wallet_topup_callback(request):
             txn.gateway_payment_id = razorpay_payment_id
             txn.gateway_signature = razorpay_signature
             txn.status = "PAID"
-            txn.save(update_fields=[
-                "gateway_payment_id", "gateway_signature", "status", "updated_at",
-            ])
+            txn.save(
+                update_fields=[
+                    "gateway_payment_id",
+                    "gateway_signature",
+                    "status",
+                    "updated_at",
+                ]
+            )
 
             credit_wallet(
                 user=request.user,
@@ -228,10 +235,12 @@ def wallet_topup_callback(request):
         wallet = get_or_create_wallet(request.user)
         wallet.refresh_from_db()
 
-        return JsonResponse({
-            "success": True,
-            "new_balance": str(wallet.balance),
-        })
+        return JsonResponse(
+            {
+                "success": True,
+                "new_balance": str(wallet.balance),
+            }
+        )
 
     except Exception as exc:
         return JsonResponse(

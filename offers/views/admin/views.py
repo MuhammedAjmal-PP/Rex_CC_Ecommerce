@@ -49,7 +49,9 @@ def offer_list(request):
     total_offers = all_offers.count()
     active_offers = all_offers.filter(is_active=True).count()
     inactive_offers = all_offers.filter(is_active=False).count()
-    valid_offers = all_offers.filter(is_active=True, start_date__lte=now, end_date__gte=now).count()
+    valid_offers = all_offers.filter(
+        is_active=True, start_date__lte=now, end_date__gte=now
+    ).count()
     expired_offers = all_offers.filter(end_date__lt=now).count()
 
     # ── Pagination ───────────────────────────────
@@ -99,7 +101,9 @@ def edit_offer(request, pk):
             return redirect("admin_offers")
     else:
         form = OfferForm(instance=offer)
-    return render(request, "offers/admin/offer_form.html", {"form": form, "offer": offer})
+    return render(
+        request, "offers/admin/offer_form.html", {"form": form, "offer": offer}
+    )
 
 
 @never_cache

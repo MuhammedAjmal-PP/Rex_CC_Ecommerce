@@ -19,7 +19,6 @@ from orders.service.sales_report import get_date_range, get_sales_report
 from orders.utils import get_payment_transaction
 from weasyprint import HTML
 
-
 # ────────────────────────────────────────────
 # Helpers
 # ────────────────────────────────────────────

@@ -1,0 +1,45 @@
+{% extends "core/user/base_user.html" %}
+{% load static %}
+{% block head_title %}Privacy Policy | REX CC{% endblock %}
+{% block content %}
+<div class="lux-hub-wrapper">
+    <div class="hub-header mb-24">
+        <div class="hub-user-info">
+            <div class="hub-user-details">
+                <h1 class="hub-name">Privacy Policy</h1>
+                <p class="hub-contact">Last updated: April 2026</p>
+            </div>
+        </div>
+        <div class="hub-header-actions">
+            <a href="{% url 'home' %}" class="hub-btn-outline">
+                <span class="material-icons" style="font-size:18px; margin-right:6px;">arrow_back</span>
+                Back to Home
+            </a>
+        </div>
+    </div>
+
+    <div class="hub-card" style="padding:40px;">
+        <div style="font-family:'Montserrat',sans-serif; font-size:0.88rem; color:#444; line-height:1.9;">
+
+            <h3 style="font-family:'Playfair Display',serif; font-size:1.15rem; color:#111; margin:0 0 12px;">1. Information We Collect</h3>
+            <p>We collect information you provide when you create an account, place an order, or contact us. This includes your name, email address, phone number, shipping address, and payment details (handled securely via Razorpay).</p>
+
+            <h3 style="font-family:'Playfair Display',serif; font-size:1.15rem; color:#111; margin:24px 0 12px;">2. How We Use Your Information</h3>
+            <p>Your information is used to process orders, personalise your shopping experience, send transactional emails, and improve our services. We do not sell or rent your personal data to third parties.</p>
+
+            <h3 style="font-family:'Playfair Display',serif; font-size:1.15rem; color:#111; margin:24px 0 12px;">3. Cookies</h3>
+            <p>We use session cookies for login management and analytics cookies (via anonymous identifiers) to improve site performance. You can disable cookies in your browser settings, though some features may not function correctly.</p>
+
+            <h3 style="font-family:'Playfair Display',serif; font-size:1.15rem; color:#111; margin:24px 0 12px;">4. Data Security</h3>
+            <p>All data transmissions are SSL-encrypted. Passwords are stored using industry-standard hashing. Payment information is never stored on our servers — it is processed directly via Razorpay.</p>
+
+            <h3 style="font-family:'Playfair Display',serif; font-size:1.15rem; color:#111; margin:24px 0 12px;">5. Your Rights</h3>
+            <p>You may request access to, correction of, or deletion of your personal data at any time. Contact us at <a href="mailto:support@rexcc.com" style="color:#bfa15f; font-weight:600;">support@rexcc.com</a> to exercise your rights.</p>
+
+            <h3 style="font-family:'Playfair Display',serif; font-size:1.15rem; color:#111; margin:24px 0 12px;">6. Changes to This Policy</h3>
+            <p>We may update this policy periodically. Significant changes will be notified via email or a notification on our website.</p>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

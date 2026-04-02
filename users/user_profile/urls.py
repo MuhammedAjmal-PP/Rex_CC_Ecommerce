@@ -8,7 +8,6 @@ from .views.address_management import (
 )
 from .views.profile_settings import profile, edit_profile, change_password, change_email
 
-
 urlpatterns = [
     # Profile
     path("", profile, name="user_profile"),

@@ -146,16 +146,31 @@
                         <div class="od-summary-card-dark">
                             <h3 class="od-summary-title">Summary</h3>
                             <div class="od-summary-list">
+                                <!-- 1. Total (items) = sub_total + discount = original MRP total -->
+                                <div class="od-summary-row">
+                                    <span>Total ({{ order.items.count }} items)</span>
+                                    <span>₹{{ order.sub_total|add:order.discount|floatformat:2 }}</span>
+                                </div>
+                                <!-- 2. Discount -->
+                                {% if order.discount > 0 %}
+                                    <div class="od-summary-row od-text-highlight">
+                                        <span>Discount</span>
+                                        <span>-₹{{ order.discount|floatformat:2|intcomma }}</span>
+                                    </div>
+                                {% endif %}
+                                <!-- 3. Subtotal -->
                                 <div class="od-summary-row">
                                     <span>Subtotal</span>
                                     <span>₹{{ order.sub_total|floatformat:2|intcomma }}</span>
                                 </div>
-                                {% if order.tax > 0 %}
-                                    <div class="od-summary-row">
-                                        <span>Tax</span>
-                                        <span>₹{{ order.tax|floatformat:2|intcomma }}</span>
+                                <!-- 4. Coupon -->
+                                {% if order.coupon %}
+                                    <div class="od-summary-row od-text-highlight">
+                                        <span>Promo Code ({{ order.coupon.code }})</span>
+                                        <span>-₹{{ order.coupon_discount|floatformat:2|intcomma }}</span>
                                     </div>
                                 {% endif %}
+                                <!-- 5. Shipping -->
                                 <div class="od-summary-row">
                                     <span>Shipping</span>
                                     <span>
@@ -166,23 +181,19 @@
                                         {% endif %}
                                     </span>
                                 </div>
-                                {% if order.discount > 0 %}
-                                    <div class="od-summary-row od-text-highlight">
-                                        <span>Discount</span>
-                                        <span>-₹{{ order.discount|floatformat:2|intcomma }}</span>
-                                    </div>
-                                {% endif %}
-                                {% if order.coupon %}
-                                    <div class="od-summary-row od-text-highlight">
-                                        <span>Promo Code ({{ order.coupon.code }})</span>
-                                        <span>-₹{{ order.coupon_discount|floatformat:2|intcomma }}</span>
+                                <!-- 6. Tax -->
+                                {% if order.tax > 0 %}
+                                    <div class="od-summary-row">
+                                        <span>Tax</span>
+                                        <span>₹{{ order.tax|floatformat:2|intcomma }}</span>
                                     </div>
                                 {% endif %}
                             </div>
                             <div class="od-summary-total">
-                                <span>Total</span>
+                                <span>Total Payable</span>
                                 <span>₹{{ order.grand_total|floatformat:2|intcomma }}</span>
                             </div>
+
                             {% if payment %}
                                 <div class="od-payment-method">
                                     <span>{{ payment.get_payment_method_display }}</span>

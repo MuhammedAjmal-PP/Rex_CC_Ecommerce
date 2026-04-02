@@ -59,6 +59,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 # admin.site.register(Product)
 
+
 class ProductImageInline(admin.TabularInline):
     model = ProductImage
     extra = 1
@@ -120,7 +121,15 @@ class ProductAdmin(admin.ModelAdmin):
 # admin.site.register(ProductVariant)
 @admin.register(ProductVariant)
 class ProductVariantAdmin(admin.ModelAdmin):
-    list_display = ("product", "sku", "price", "stock","is_featured", "is_drafted","is_deleted")
+    list_display = (
+        "product",
+        "sku",
+        "price",
+        "stock",
+        "is_featured",
+        "is_drafted",
+        "is_deleted",
+    )
     list_filter = ("is_drafted", "product__brand", "is_featured")
     search_fields = ("sku", "product__name")
     actions = ["draft_variants", "publish_variants"]
@@ -150,4 +159,3 @@ class ProductVariantAdmin(admin.ModelAdmin):
 class ProductImageAdmin(admin.ModelAdmin):
     list_display = ("variant", "is_primary", "image")
     list_filter = ("is_primary",)
-

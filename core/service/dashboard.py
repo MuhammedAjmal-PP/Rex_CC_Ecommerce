@@ -19,7 +19,6 @@ from accounts.models import CustomUser
 from catalog.models import Product
 from orders.models import Order, OrderItem
 
-
 # Statuses that represent a valid, completed-enough order
 _EXCLUDED_STATUSES = {"CANCELLED", "FAILED"}
 
@@ -47,9 +46,7 @@ def get_summary_stats():
         is_superuser=False, is_staff=False, is_active=True
     ).count()
 
-    total_products = Product.objects.filter(
-        is_deleted=False, is_drafted=False
-    ).count()
+    total_products = Product.objects.filter(is_deleted=False, is_drafted=False).count()
 
     return {
         "total_revenue": agg["total_revenue"] or Decimal("0.00"),
@@ -98,8 +95,9 @@ def get_chart_data(filter_type="monthly"):
 
     # Determine how far back to look
     if filter_type == "yearly":
-        start = now.replace(year=now.year - 4, month=1, day=1,
-                            hour=0, minute=0, second=0, microsecond=0)
+        start = now.replace(
+            year=now.year - 4, month=1, day=1, hour=0, minute=0, second=0, microsecond=0
+        )
     elif filter_type == "monthly":
         start = (now - timezone.timedelta(days=365)).replace(
             day=1, hour=0, minute=0, second=0, microsecond=0

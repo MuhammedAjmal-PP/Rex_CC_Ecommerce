@@ -221,8 +221,4 @@
   font-size: 24px;
 }
 
-@media (max-width: 768px) {
-  .lux-address-grid {
-    grid-template-columns: 1fr;
-  }
-}
+/* Desktop only - no responsive breakpoints needed */

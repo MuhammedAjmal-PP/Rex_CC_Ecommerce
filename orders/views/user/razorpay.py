@@ -7,7 +7,11 @@ from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 from orders.models import Order
-from orders.service import InsufficientStockError, change_order_status, validate_snapshot_stock
+from orders.service import (
+    InsufficientStockError,
+    change_order_status,
+    validate_snapshot_stock,
+)
 from orders.service.order_helpers import create_items_from_snapshot
 from orders.utils import get_payment_transaction
 from payments.models import Transaction
@@ -33,7 +37,9 @@ def razorpay_callback(request):
     razorpay_signature = request.POST.get("razorpay_signature", "")
     order_number = request.POST.get("order_number", "")
 
-    if not all([razorpay_payment_id, razorpay_order_id, razorpay_signature, order_number]):
+    if not all(
+        [razorpay_payment_id, razorpay_order_id, razorpay_signature, order_number]
+    ):
         return JsonResponse({"error": "Missing payment data."}, status=400)
 
     try:
@@ -60,10 +66,12 @@ def razorpay_callback(request):
         if order:
             change_order_status(order=order, to_status="FAILED")
 
-        return JsonResponse({
-            "success": False,
-            "redirect_url": reverse("order_failure", args=[order_number]),
-        })
+        return JsonResponse(
+            {
+                "success": False,
+                "redirect_url": reverse("order_failure", args=[order_number]),
+            }
+        )
 
     # ── Payment valid → create items + deduct stock ──
     order = txn.content_object
@@ -76,9 +84,14 @@ def razorpay_callback(request):
             txn.gateway_payment_id = razorpay_payment_id
             txn.gateway_signature = razorpay_signature
             txn.status = "PAID"
-            txn.save(update_fields=[
-                "gateway_payment_id", "gateway_signature", "status", "updated_at",
-            ])
+            txn.save(
+                update_fields=[
+                    "gateway_payment_id",
+                    "gateway_signature",
+                    "status",
+                    "updated_at",
+                ]
+            )
 
             # Create items from snapshot (locks variants + validates stock)
             create_items_from_snapshot(
@@ -101,9 +114,15 @@ def razorpay_callback(request):
         txn.gateway_payment_id = razorpay_payment_id
         txn.gateway_signature = razorpay_signature
         txn.note = "Payment collected but stock unavailable — refund initiated"
-        txn.save(update_fields=[
-            "status", "gateway_payment_id", "gateway_signature", "note", "updated_at",
-        ])
+        txn.save(
+            update_fields=[
+                "status",
+                "gateway_payment_id",
+                "gateway_signature",
+                "note",
+                "updated_at",
+            ]
+        )
 
         change_order_status(order=order, to_status="STOCK_UNAVAILABLE")
 
@@ -125,15 +144,19 @@ def razorpay_callback(request):
         if order.coupon:
             revoke_coupon_usage(order)
 
-        return JsonResponse({
-            "success": False,
-            "redirect_url": reverse("order_failure", args=[order_number]),
-        })
+        return JsonResponse(
+            {
+                "success": False,
+                "redirect_url": reverse("order_failure", args=[order_number]),
+            }
+        )
 
-    return JsonResponse({
-        "success": True,
-        "redirect_url": reverse("order_success", args=[order_number]),
-    })
+    return JsonResponse(
+        {
+            "success": True,
+            "redirect_url": reverse("order_success", args=[order_number]),
+        }
+    )
 
 
 @login_required
@@ -170,10 +193,12 @@ def razorpay_payment_failed(request):
     if order:
         change_order_status(order=order, to_status="FAILED")
 
-    return JsonResponse({
-        "success": True,
-        "redirect_url": reverse("order_failure", args=[order_number]),
-    })
+    return JsonResponse(
+        {
+            "success": True,
+            "redirect_url": reverse("order_failure", args=[order_number]),
+        }
+    )
 
 
 @login_required
@@ -245,20 +270,22 @@ def retry_razorpay_payment(request):
             txn.gateway_order_id = rz_order["id"]
             txn.save(update_fields=["gateway_order_id"])
 
-        return JsonResponse({
-            "success": True,
-            "razorpay_key_id": settings.RAZORPAY_KEY_ID,
-            "razorpay_order_id": rz_order["id"],
-            "amount": rz_order["amount"],
-            "currency": rz_order["currency"],
-            "name": "REX CC",
-            "description": f"Retry payment for Order #{order.order_number}",
-            "order_number": order.order_number,
-            "prefill": {
-                "email": request.user.email,
-                "contact": str(request.user.phone_number or ""),
-            },
-        })
+        return JsonResponse(
+            {
+                "success": True,
+                "razorpay_key_id": settings.RAZORPAY_KEY_ID,
+                "razorpay_order_id": rz_order["id"],
+                "amount": rz_order["amount"],
+                "currency": rz_order["currency"],
+                "name": "REX CC",
+                "description": f"Retry payment for Order #{order.order_number}",
+                "order_number": order.order_number,
+                "prefill": {
+                    "email": request.user.email,
+                    "contact": str(request.user.phone_number or ""),
+                },
+            }
+        )
 
     except InsufficientStockError as e:
         return JsonResponse({"error": str(e)}, status=400)

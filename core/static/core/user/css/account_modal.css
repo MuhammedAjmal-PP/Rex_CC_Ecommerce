@@ -199,20 +199,4 @@
   color: #bbb;
 }
 
-/* -----------------------------------------
-   Responsive
------------------------------------------ */
-
-@media (max-width: 992px) {
-  .account-modal-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .account-modal-promo {
-    display: none;
-  }
-
-  .account-modal-auth {
-    padding: 56px 36px;
-  }
-}
+/* Desktop only - no responsive breakpoints needed */

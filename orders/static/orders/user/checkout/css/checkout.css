@@ -22,7 +22,13 @@
 
 .chk-sidebar .hub-card {
     box-sizing: border-box;
-    /* overflow: hidden removed — must be unset for sticky to work */
+}
+
+/* Sticky sidebar card — accounts for top-bar (35px) + header (80px) + 16px gap */
+.chk-sidebar-card {
+    padding: 24px;
+    position: sticky;
+    top: 131px;
 }
 
 .chk-steps-container {
@@ -65,15 +71,4 @@
   margin: 0 0 24px 0;
   padding-bottom: 12px;
   border-bottom: 1px solid #eaeaea;
-}
-
-@media (max-width: 900px) {
-    .chk-grid {
-        grid-template-columns: 1fr;
-        gap: 32px;
-    }
-    
-    .chk-sidebar .hub-card {
-        position: static !important;
-    }
 }

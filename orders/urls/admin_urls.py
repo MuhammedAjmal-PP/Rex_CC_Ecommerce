@@ -17,7 +17,6 @@ from orders.views.admin.sales_report import (
     download_sales_report_excel,
 )
 
-
 urlpatterns = [
     path("orders/", order_list, name="admin_orders_list"),
     path(

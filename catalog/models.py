@@ -231,7 +231,6 @@ class ProductVariant(models.Model):
     class Meta:
         ordering = ["product", "sku"]
 
-
     def __str__(self):
         return f"{self.product.name} ({self.sku})"
 
