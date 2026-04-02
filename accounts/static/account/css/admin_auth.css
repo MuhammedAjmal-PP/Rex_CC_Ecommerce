@@ -539,8 +539,8 @@ input:invalid:not(:focus):not(:placeholder-shown) {
 }
 
 .message-icon {
-    font-weight: bold;
-    font-size: 1.1rem;
+    font-size: 1.2rem;
+    flex-shrink: 0;
 }
 
 .message-success {
@@ -549,14 +549,36 @@ input:invalid:not(:focus):not(:placeholder-shown) {
     background-color: #F0FFF4;
 }
 
+.message-success .message-icon {
+    color: var(--success-green);
+}
+
 .message-error {
     border-color: var(--error-red);
     color: var(--error-red);
     background-color: #FFF5F5;
 }
 
+.message-error .message-icon {
+    color: var(--error-red);
+}
+
+.message-warning {
+    border-color: #f59e0b;
+    color: #92400e;
+    background-color: #fffbeb;
+}
+
+.message-warning .message-icon {
+    color: #f59e0b;
+}
+
 .message-info {
     border-color: var(--text-muted);
+    color: var(--text-muted);
+}
+
+.message-info .message-icon {
     color: var(--text-muted);
 }
 
@@ -606,5 +628,70 @@ input:invalid:not(:focus):not(:placeholder-shown) {
 }
 
 /* ========================================
-   RESPONSIVE
+   DESKTOP-ONLY OVERLAY
+   (moved from inline <style> in admin_base.html)
    ======================================== */
+
+#desktop-only-overlay {
+    display: none;
+}
+
+@media (max-width: 1023px) {
+    #desktop-only-overlay {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        z-index: 999999;
+        inset: 0;
+        background-color: #f8f9fa;
+        color: #212529;
+        text-align: center;
+        padding: 2rem;
+    }
+
+    body,
+    html {
+        overflow: hidden !important;
+        height: 100vh;
+        margin: 0;
+        padding: 0;
+    }
+
+    #desktop-only-overlay .desktop-only-content {
+        max-width: 400px;
+    }
+
+    #desktop-only-overlay .desktop-icon {
+        font-size: 4rem;
+        color: #6c757d;
+        margin-bottom: 1rem;
+    }
+
+    #desktop-only-overlay h2 {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+            "Helvetica Neue", Arial, sans-serif;
+        font-size: 1.75rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    #desktop-only-overlay p {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+            "Helvetica Neue", Arial, sans-serif;
+        font-size: 1rem;
+        color: #495057;
+        line-height: 1.5;
+        margin-bottom: 1rem;
+    }
+
+    #desktop-only-overlay .small-text {
+        font-size: 0.85rem;
+        color: #adb5bd;
+    }
+
+    body > :not(#desktop-only-overlay) {
+        display: none !important;
+    }
+}

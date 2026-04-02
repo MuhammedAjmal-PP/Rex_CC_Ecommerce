@@ -27,7 +27,7 @@
             </div>
         </div>
         <div class="stat-card {% if status_filter == 'PENDING' %}active{% endif %}">
-            <div class="stat-icon">
+            <div class="stat-icon pending">
                 <span class="material-icons fs-2">pending_actions</span>
             </div>
             <div class="stat-content">
@@ -36,7 +36,7 @@
             </div>
         </div>
         <div class="stat-card {% if status_filter == 'COMPLETED' %}active{% endif %}">
-            <div class="stat-icon">
+            <div class="stat-icon completed">
                 <span class="material-icons fs-2">check_circle</span>
             </div>
             <div class="stat-content">
@@ -45,7 +45,7 @@
             </div>
         </div>
         <div class="stat-card {% if status_filter == 'FAILED' %}active{% endif %}">
-            <div class="stat-icon">
+            <div class="stat-icon failed">
                 <span class="material-icons fs-2">cancel</span>
             </div>
             <div class="stat-content">
@@ -96,7 +96,7 @@
                 <thead>
                     <tr>
                         <th>Transaction ID</th>
-                        <th>User</th>
+
                         <th>Type</th>
                         <th class="text-end">Amount</th>
                         <th>Status</th>
@@ -110,12 +110,7 @@
                             <td>
                                 <span class="txn-id-mono">{{ txn.transaction_id }}</span>
                             </td>
-                            <td>
-                                <div class="txn-user-info">
-                                    <span class="txn-user-name">{{ txn.user.first_name }} {{ txn.user.last_name }}</span>
-                                    <span class="txn-user-email">{{ txn.user.email }}</span>
-                                </div>
-                            </td>
+
                             <td>
                                 <span class="txn-type-badge type-{{ txn.transaction_type|lower }}">
                                     {{ txn.get_transaction_type_display }}

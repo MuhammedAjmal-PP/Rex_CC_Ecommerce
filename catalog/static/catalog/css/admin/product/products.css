@@ -73,12 +73,11 @@
     transform: scale(1.05);
 }
 
-/* All icons use black background */
-.stat-icon.published,
-.stat-icon.drafted,
-.stat-icon.deleted {
-    background: var(--color-black);
-}
+/* Colored stat-icon variants */
+.stat-icon.total { background: #1a1a1a; }
+.stat-icon.published { background: #1a6b3c; }
+.stat-icon.drafted { background: #b45309; }
+.stat-icon.deleted { background: #991b1b; }
 
 .stat-content {
     flex: 1;
@@ -222,19 +221,4 @@
     .stats-container {
         grid-template-columns: repeat(2, 1fr);
     }
-}
-
-@media (max-width: 768px) {
-    .stats-container {
-        grid-template-columns: 1fr;
-        margin: 20px;
-    }
-
-    .stat-card {
-        padding: 20px;
-    }
-
-    .stat-value {
-        font-size: 1.5rem;
-    }
-}
+}

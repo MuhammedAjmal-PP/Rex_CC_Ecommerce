@@ -57,6 +57,12 @@
     transform: scale(1.05);
 }
 
+/* Colored stat-icon variants */
+.stat-icon.total { background: #1a1a1a; }
+.stat-icon.pending { background: #b45309; }
+.stat-icon.completed { background: #1a6b3c; }
+.stat-icon.failed { background: #991b1b; }
+
 .stat-content {
     flex: 1;
 }
@@ -89,26 +95,7 @@
     letter-spacing: 0.3px;
 }
 
-/* ========================================
-   USER INFO
-   ======================================== */
 
-.txn-user-info {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
-
-.txn-user-name {
-    font-weight: 600;
-    font-size: 0.88rem;
-    color: #000000;
-}
-
-.txn-user-email {
-    font-size: 0.78rem;
-    color: #666666;
-}
 
 /* ========================================
    TYPE BADGES
@@ -208,26 +195,11 @@
 }
 
 /* ========================================
-   RESPONSIVE
+   DESKTOP LAYOUT ADJUSTMENTS
    ======================================== */
 
 @media (max-width: 1400px) {
     .stats-container {
         grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 768px) {
-    .stats-container {
-        grid-template-columns: 1fr;
-        margin: 20px;
-    }
-
-    .stat-card {
-        padding: 20px;
-    }
-
-    .stat-value {
-        font-size: 1.5rem;
     }
 }

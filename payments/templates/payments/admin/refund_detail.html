@@ -23,10 +23,11 @@
             <div class="rd-actions">
                 <form method="post" action="{% url 'admin_refund_action' txn.transaction_id %}"
                       class="rd-approve-form"
-                      onsubmit="return confirm('Approve this refund? ₹{{ txn.amount|floatformat:2|intcomma }} will be credited to {{ txn.user.email }}\'s wallet.')">
+                      id="approve-refund-form">
                     {% csrf_token %}
                     <input type="hidden" name="action" value="APPROVE">
-                    <button type="submit" class="rd-btn rd-btn-approve">
+                    <button type="button" class="rd-btn rd-btn-approve"
+                            onclick="AdminAlert.confirm('Approve Refund', 'Approve this refund? ₹{{ txn.amount|floatformat:2|intcomma }} will be credited to {{ txn.user.email }}\'s wallet.', function() { document.getElementById('approve-refund-form').submit(); });">
                         <span class="material-icons">check_circle</span>
                         Approve Refund
                     </button>

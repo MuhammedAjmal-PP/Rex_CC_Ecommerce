@@ -252,13 +252,13 @@ function initSingleImageForm(item) {
 
         // Validate file type
         if (!file.type.startsWith('image/')) {
-            alert('Please select an image file.');
+            AdminAlert.show('warning', 'Invalid File', 'Please select an image file.');
             return;
         }
 
         // Validate file size (5MB max)
         if (file.size > 5 * 1024 * 1024) {
-            alert('Image is too large. Maximum size is 5MB.');
+            AdminAlert.show('warning', 'File Too Large', 'Image is too large. Maximum size is 5MB.');
             return;
         }
 
@@ -380,7 +380,7 @@ function initCropperModal(cropModalEl) {
 
         const canvas = cropper.getCroppedCanvas({ imageSmoothingQuality: 'high' });
         if (!canvas) {
-            alert('Failed to crop');
+            AdminAlert.show('error', 'Crop Failed', 'Failed to crop the image.');
             return;
         }
 

@@ -23,16 +23,16 @@
         Back</a>
         <div class="action-buttons">
             {% if user.is_active %}
-                <a href="{% url 'admin_user_stats_toggle' user.id %}"
+                <a href="javascript:void(0)"
                    class="btn-deactivate"
-                   onclick="return confirm('Are you sure you want to deactivate this user?');">
+                   onclick="AdminAlert.confirm('Deactivate User', 'Are you sure you want to deactivate this user? They will no longer be able to log in.', function() { window.location.href='{% url 'admin_user_stats_toggle' user.id %}'; });">
                     <span class="material-icons fs-5">person_off</span>
                     Deactivate User
                 </a>
             {% else %}
-                <a href="{% url 'admin_user_stats_toggle' user.id %}"
+                <a href="javascript:void(0)"
                    class="btn-deactivate"
-                   onclick="return confirm('Are you sure you want to activate this user?');">
+                   onclick="AdminAlert.confirm('Activate User', 'Are you sure you want to activate this user? They will be able to log in again.', function() { window.location.href='{% url 'admin_user_stats_toggle' user.id %}'; });">
                     <span class="material-icons fs-5">how_to_reg</span>
                     Activate User
                 </a>

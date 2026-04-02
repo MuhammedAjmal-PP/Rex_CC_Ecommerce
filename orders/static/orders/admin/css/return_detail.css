@@ -520,36 +520,5 @@
     font-size: 32px;
 }
 
-/* ========================================
-   RESPONSIVE
-   ======================================== */
 
-@media (max-width: 1200px) {
-    .rd-grid {
-        grid-template-columns: 1fr;
-    }
-}
 
-@media (max-width: 768px) {
-    .rd-action-bar {
-        flex-direction: column;
-        gap: 16px;
-        margin: 16px 20px;
-    }
-
-    .rd-grid {
-        margin: 0 20px 16px 20px;
-    }
-
-    .rd-section {
-        margin: 0 20px 16px 20px;
-    }
-
-    .rd-messages {
-        margin: 16px 20px 0 20px;
-    }
-
-    .rd-images-grid {
-        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    }
-}

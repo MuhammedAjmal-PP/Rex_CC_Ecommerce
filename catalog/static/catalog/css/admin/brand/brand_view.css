@@ -316,27 +316,104 @@
     color: var(--color-gray-light);
 }
 
-/* ========================================
-   RESPONSIVE
-   ======================================== */
-
-@media (max-width: 1024px) {
-    .details-layout {
-        grid-template-columns: 1fr;
-    }
+/* Brand Products List */
+.brand-products-list {
+    padding: 0;
 }
 
-@media (max-width: 768px) {
-    .view-container {
-        padding: 20px;
-    }
-
-    .info-row {
-        flex-direction: column;
-        gap: 4px;
-    }
-
-    .info-label {
-        width: auto;
-    }
+.brand-product-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background 0.2s ease;
 }
+
+.brand-product-row:last-child {
+    border-bottom: none;
+}
+
+.brand-product-row:hover {
+    background: #fafafa;
+}
+
+.brand-product-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 1;
+}
+
+.brand-product-thumb {
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+    border: 1px solid var(--color-border);
+    flex-shrink: 0;
+}
+
+.brand-product-thumb-placeholder {
+    width: 48px;
+    height: 48px;
+    background: var(--color-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-white);
+    flex-shrink: 0;
+}
+
+.brand-product-thumb-placeholder .material-icons {
+    font-size: 22px;
+}
+
+.brand-product-details {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.brand-product-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--color-dark);
+}
+
+.brand-product-meta {
+    font-size: 0.75rem;
+    color: var(--color-gray-light);
+}
+
+.brand-product-status {
+    margin: 0 24px;
+}
+
+.brand-product-link {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--color-border);
+    color: var(--color-gray);
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.brand-product-link:hover {
+    background: var(--color-black);
+    color: var(--color-white);
+    border-color: var(--color-black);
+}
+
+.brand-product-link .material-icons {
+    font-size: 18px;
+}
+
+/* Status badges */
+.status-badge.drafted {
+    background: #fef3c7;
+    color: #92400e;
+}
+

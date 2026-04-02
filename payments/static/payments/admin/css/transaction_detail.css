@@ -189,40 +189,4 @@
 .wt-credit { background: #f0fdf4; color: #16a34a; }
 .wt-debit { background: #fef2f2; color: #dc2626; }
 
-/* ========================================
-   RESPONSIVE
-   ======================================== */
 
-@media (max-width: 1200px) {
-    .td-grid {
-        grid-template-columns: 1fr;
-        margin: 0 20px 16px 20px;
-    }
-
-    .td-action-bar {
-        margin: 16px 20px;
-    }
-}
-
-@media (max-width: 768px) {
-    .td-grid {
-        margin: 0 16px 16px 16px;
-    }
-
-    .td-column {
-        gap: 16px;
-    }
-
-    .td-action-bar {
-        margin: 12px 16px;
-        padding: 16px 20px;
-    }
-
-    .td-card-header {
-        padding: 16px 20px;
-    }
-
-    .td-card-body {
-        padding: 16px 20px;
-    }
-}

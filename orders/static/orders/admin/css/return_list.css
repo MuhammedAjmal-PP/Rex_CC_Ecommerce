@@ -59,6 +59,13 @@
     transform: scale(1.05);
 }
 
+/* Colored stat-icon variants */
+.stat-icon.total { background: #1a1a1a; }
+.stat-icon.requested { background: #b45309; }
+.stat-icon.approved { background: #1e40af; }
+.stat-icon.rejected { background: #991b1b; }
+.stat-icon.completed { background: #1a6b3c; }
+
 .stat-content {
     flex: 1;
 }
@@ -182,22 +189,7 @@
     font-size: 0.8rem;
 }
 
-/* ========================================
-   PRODUCT & REASON
-   ======================================== */
 
-.product-name {
-    font-size: 0.85rem;
-    font-weight: 500;
-    color: #1A1A1A;
-}
-
-.reason-code {
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: #666;
-    letter-spacing: 0.3px;
-}
 
 /* ========================================
    TABLE ALIGNMENT
@@ -215,26 +207,11 @@
 }
 
 /* ========================================
-   RESPONSIVE
+   DESKTOP LAYOUT ADJUSTMENTS
    ======================================== */
 
 @media (max-width: 1400px) {
     .stats-container {
         grid-template-columns: repeat(3, 1fr);
-    }
-}
-
-@media (max-width: 768px) {
-    .stats-container {
-        grid-template-columns: 1fr;
-        margin: 20px;
-    }
-
-    .stat-card {
-        padding: 20px;
-    }
-
-    .stat-value {
-        font-size: 1.5rem;
     }
 }

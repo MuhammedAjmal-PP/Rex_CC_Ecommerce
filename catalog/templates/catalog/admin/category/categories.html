@@ -119,17 +119,17 @@
                                         <span class="material-icons">edit</span>
                                     </a>
                                     {% if category.is_active %}
-                                        <a href="{% url "admin_category_status_toggle" category.id %}"
+                                        <a href="javascript:void(0)"
                                            class="action-btn"
                                            title="Deactivate"
-                                           onclick="return confirm('Are you sure you want to deactivate this category?');">
+                                           onclick="AdminAlert.confirm('Deactivate Category', 'Are you sure you want to deactivate this category?', function() { window.location.href='{% url "admin_category_status_toggle" category.id %}'; });">
                                             <span class="material-icons fs-6">cancel</span>
                                         </a>
                                     {% else %}
-                                        <a href="{% url "admin_category_status_toggle" category.id %}"
+                                        <a href="javascript:void(0)"
                                            class="action-btn"
                                            title="Activate"
-                                           onclick="return confirm('Are you sure you want to activate this category?');">
+                                           onclick="AdminAlert.confirm('Activate Category', 'Are you sure you want to activate this category?', function() { window.location.href='{% url "admin_category_status_toggle" category.id %}'; });">
                                             <span class="material-icons fs-6">check_circle</span>
                                         </a>
                                     {% endif %}

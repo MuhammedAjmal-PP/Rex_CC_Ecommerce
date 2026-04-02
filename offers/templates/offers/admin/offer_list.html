@@ -17,7 +17,7 @@
     <div class="stats-container">
         <a href="?{% if search_query %}q={{ search_query }}&{% endif %}{% if selected_type %}offer_type={{ selected_type }}&{% endif %}"
            class="stat-card {% if not status_filter %}active{% endif %}">
-            <div class="stat-icon"><span class="material-icons fs-2">local_offer</span></div>
+            <div class="stat-icon total"><span class="material-icons fs-2">local_offer</span></div>
             <div class="stat-content">
                 <p class="stat-label">Total Offers</p>
                 <h3 class="stat-value">{{ total_offers }}</h3>
@@ -25,7 +25,7 @@
         </a>
         <a href="?status=active{% if search_query %}&q={{ search_query }}{% endif %}{% if selected_type %}&offer_type={{ selected_type }}{% endif %}"
            class="stat-card {% if status_filter == 'active' %}active{% endif %}">
-            <div class="stat-icon"><span class="material-icons fs-2">toggle_on</span></div>
+            <div class="stat-icon active-icon"><span class="material-icons fs-2">toggle_on</span></div>
             <div class="stat-content">
                 <p class="stat-label">Active</p>
                 <h3 class="stat-value">{{ active_offers }}</h3>
@@ -33,7 +33,7 @@
         </a>
         <a href="?status=inactive{% if search_query %}&q={{ search_query }}{% endif %}{% if selected_type %}&offer_type={{ selected_type }}{% endif %}"
            class="stat-card {% if status_filter == 'inactive' %}active{% endif %}">
-            <div class="stat-icon"><span class="material-icons fs-2">toggle_off</span></div>
+            <div class="stat-icon inactive-icon"><span class="material-icons fs-2">toggle_off</span></div>
             <div class="stat-content">
                 <p class="stat-label">Inactive</p>
                 <h3 class="stat-value">{{ inactive_offers }}</h3>
@@ -41,7 +41,7 @@
         </a>
         <a href="?status=valid{% if search_query %}&q={{ search_query }}{% endif %}{% if selected_type %}&offer_type={{ selected_type }}{% endif %}"
            class="stat-card {% if status_filter == 'valid' %}active{% endif %}">
-            <div class="stat-icon"><span class="material-icons fs-2">verified</span></div>
+            <div class="stat-icon valid"><span class="material-icons fs-2">verified</span></div>
             <div class="stat-content">
                 <p class="stat-label">Valid Now</p>
                 <h3 class="stat-value">{{ valid_offers }}</h3>
@@ -49,7 +49,7 @@
         </a>
         <a href="?status=expired{% if search_query %}&q={{ search_query }}{% endif %}{% if selected_type %}&offer_type={{ selected_type }}{% endif %}"
            class="stat-card {% if status_filter == 'expired' %}active{% endif %}">
-            <div class="stat-icon"><span class="material-icons fs-2">timer_off</span></div>
+            <div class="stat-icon expired"><span class="material-icons fs-2">timer_off</span></div>
             <div class="stat-content">
                 <p class="stat-label">Expired</p>
                 <h3 class="stat-value">{{ expired_offers }}</h3>
@@ -83,7 +83,7 @@
 
     {# ── Search Bar ── #}
     <div class="search-filter-bar">
-        <div class="search-box" style="flex:1;">
+        <div class="search-box search-box-flex">
             <form method="get" class="search-form">
                 <input type="hidden" name="offer_type" value="{{ selected_type }}">
                 <input type="hidden" name="status" value="{{ status_filter }}">
@@ -175,9 +175,10 @@
                                     <form method="post"
                                           action="{% url 'admin_offer_delete' offer.pk %}"
                                           class="d-inline"
-                                          onsubmit="return confirm('Delete offer \'{{ offer.name }}\'?');">
+                                          id="delete-offer-{{ offer.pk }}">
                                         {% csrf_token %}
-                                        <button type="submit" class="action-btn action-btn-danger" title="Delete">
+                                        <button type="button" class="action-btn action-btn-danger" title="Delete"
+                                                onclick="AdminAlert.confirm('Delete Offer', 'Are you sure you want to delete offer \'{{ offer.name }}\'?', function() { document.getElementById('delete-offer-{{ offer.pk }}').submit(); });">
                                             <span class="material-icons fs-6">delete</span>
                                         </button>
                                     </form>
@@ -228,7 +229,7 @@
             {% endif %}
         {% else %}
             <div class="empty-state">
-                <span class="material-icons" style="font-size: 64px;">local_offer</span>
+                <span class="material-icons fs-64">local_offer</span>
                 <h3>No offers found</h3>
                 <p>
                     {% if search_query or selected_type or status_filter %}

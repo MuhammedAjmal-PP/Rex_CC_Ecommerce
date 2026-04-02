@@ -120,17 +120,17 @@
                            title="Edit"><span class="material-icons">edit</span>
                     </a>
                     {% if brand.is_active %}
-                        <a href="{% url 'admin_brand_status_toggle' brand.id %}"
+                        <a href="javascript:void(0)"
                            class="action-btn"
                            title="Deactivate"
-                           onclick="return confirm('Are you sure you want to deactivate this brand?');">
+                           onclick="AdminAlert.confirm('Deactivate Brand', 'Are you sure you want to deactivate this brand?', function() { window.location.href='{% url 'admin_brand_status_toggle' brand.id %}'; });">
                             <span class="material-icons fs-6">cancel</span>
                         </a>
                     {% else %}
-                        <a href="{% url 'admin_brand_status_toggle' brand.id %}"
+                        <a href="javascript:void(0)"
                            class="action-btn"
                            title="Activate"
-                           onclick="return confirm('Are you sure you want to activate this brand?');">
+                           onclick="AdminAlert.confirm('Activate Brand', 'Are you sure you want to activate this brand?', function() { window.location.href='{% url 'admin_brand_status_toggle' brand.id %}'; });">
                             <span class="material-icons fs-6">check_circle</span>
                         </a>
                     {% endif %}

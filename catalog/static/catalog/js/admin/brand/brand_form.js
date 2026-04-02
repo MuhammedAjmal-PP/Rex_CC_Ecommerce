@@ -106,7 +106,7 @@ function initFileUpload() {
     function handleImageSelect(file) {
         // Validate file type
         if (!file.type.startsWith('image/')) {
-            alert('Please select an image file');
+            AdminAlert.show('warning', 'Invalid File', 'Please select an image file.');
             return;
         }
 
@@ -169,7 +169,7 @@ function initFileUpload() {
         });
 
         if (!canvas) {
-            alert('Failed to crop the image');
+            AdminAlert.show('error', 'Crop Failed', 'Failed to crop the image.');
             return;
         }
 
@@ -195,7 +195,7 @@ function initFileUpload() {
 
         canvas.toBlob(function (blob) {
             if (!blob) {
-                alert('Failed to create image blob');
+                AdminAlert.show('error', 'Error', 'Failed to create image blob.');
                 return;
             }
 

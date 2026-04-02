@@ -70,6 +70,22 @@
   transition: all 0.3s ease;
 }
 
+.stat-icon.active-users {
+  background: #1a6b3c;
+}
+
+.stat-icon.blocked-users {
+  background: #b45309;
+}
+
+.stat-icon.active {
+  background: #1a6b3c;
+}
+
+.stat-icon.inactive {
+  background: #b45309;
+}
+
 .stat-card:hover .stat-icon {
   transform: scale(1.05);
 }

@@ -70,6 +70,12 @@
     transform: scale(1.05);
 }
 
+/* Colored stat-icon variants */
+.stat-icon.revenue { background: #1a6b3c; }
+.stat-icon.orders { background: #1e40af; }
+.stat-icon.users { background: #7c3aed; }
+.stat-icon.products { background: #b45309; }
+
 .stat-content {
     flex: 1;
 }
@@ -246,7 +252,7 @@
 }
 
 /* ========================================
-   RESPONSIVE ADJUSTMENTS
+   DESKTOP LAYOUT ADJUSTMENTS
    ======================================== */
 
 @media (max-width: 1600px) {
@@ -259,33 +265,4 @@
     .stats-container {
         grid-template-columns: repeat(2, 1fr);
     }
-}
-
-@media (max-width: 1200px) {
-    .stats-container {
-        padding: 30px;
-        gap: 20px;
-    }
-
-    .chart-section {
-        margin: 0 30px 25px;
-    }
-
-    .leaderboard-grid {
-        grid-template-columns: 1fr;
-        padding: 0 30px 30px;
-    }
-}
-
-@media (max-width: 768px) {
-    .stats-container {
-        grid-template-columns: 1fr;
-        margin: 20px;
-    }
-    .leaderboard-grid {
-        padding: 0 20px 20px;
-    }
-    .chart-section {
-        margin: 0 20px 20px;
-    }
-}
+}

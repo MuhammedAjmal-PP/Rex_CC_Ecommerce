@@ -117,19 +117,54 @@
                 </div>
             </div>
         </div>
-        <!-- Products Section (Placeholder for future) -->
+        <!-- Products Section -->
         <div class="products-section">
             <div class="details-card">
                 <div class="card-header">
                     <span class="material-icons">inventory_2</span>
                     <h3>Products</h3>
-                    <span class="product-count">0 products</span>
+                    <span class="product-count">{{ products.count }} product{{ products.count|pluralize }}</span>
                 </div>
-                <div class="card-body empty-products">
-                    <span class="material-icons">inbox</span>
-                    <p>No products found for this brand</p>
-                    <span class="hint">Products will appear here once added</span>
-                </div>
+                {% if products %}
+                    <div class="card-body brand-products-list">
+                        {% for product in products %}
+                            <div class="brand-product-row">
+                                <div class="brand-product-info">
+                                    {% if product.thumbnail %}
+                                        <img src="{{ product.thumbnail.url }}"
+                                             alt="{{ product.name }}"
+                                             class="brand-product-thumb"
+                                             loading="lazy">
+                                    {% else %}
+                                        <div class="brand-product-thumb-placeholder">
+                                            <span class="material-icons">watch</span>
+                                        </div>
+                                    {% endif %}
+                                    <div class="brand-product-details">
+                                        <span class="brand-product-name">{{ product.name }}</span>
+                                        <span class="brand-product-meta">{{ product.variants.count }} variant{{ product.variants.count|pluralize }}</span>
+                                    </div>
+                                </div>
+                                <div class="brand-product-status">
+                                    {% if product.is_drafted %}
+                                        <span class="status-badge drafted">Drafted</span>
+                                    {% else %}
+                                        <span class="status-badge active">Published</span>
+                                    {% endif %}
+                                </div>
+                                <a href="{% url 'admin_product_view' product.id %}" class="brand-product-link">
+                                    <span class="material-icons">visibility</span>
+                                </a>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="card-body empty-products">
+                        <span class="material-icons">inbox</span>
+                        <p>No products found for this brand</p>
+                        <span class="hint">Products will appear here once added</span>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>

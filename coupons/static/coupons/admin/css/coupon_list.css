@@ -44,7 +44,19 @@
     justify-content: center;
     color: #fff;
     flex-shrink: 0;
+    transition: transform 0.3s ease;
 }
+
+.stat-card:hover .stat-icon {
+    transform: scale(1.05);
+}
+
+/* Colored stat-icon variants */
+.stat-icon.total { background: #1a1a1a; }
+.stat-icon.active-icon { background: #1a6b3c; }
+.stat-icon.inactive-icon { background: #991b1b; }
+.stat-icon.valid { background: #1e40af; }
+.stat-icon.expired { background: #b45309; }
 
 .stat-content { flex: 1; }
 
@@ -133,3 +145,8 @@
 .offer-valid    { background: linear-gradient(135deg, #56ab2f, #a8e063); color: #fff; }
 .offer-active   { background: linear-gradient(135deg, #bdc3c7, #95a5a6); color: #fff; }
 .offer-inactive { background: #fee2e2; color: #991b1b; }
+
+/* ── Utilities ──────────────────────────────────────── */
+.search-box-flex { flex: 1; }
+.coupon-subtext { display: block; opacity: 0.7; }
+.fs-64 { font-size: 64px; }

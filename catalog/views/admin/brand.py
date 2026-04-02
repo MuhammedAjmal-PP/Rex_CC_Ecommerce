@@ -109,7 +109,8 @@ def brand_view(request, id):
     view details of brand
     """
     brand = get_object_or_404(Brand, id=id)
+    products = brand.products.filter(is_deleted=False).order_by("-created_at")
 
-    context = {"brand": brand}
+    context = {"brand": brand, "products": products}
 
     return render(request, "catalog/admin/brand/brand_view.html", context)

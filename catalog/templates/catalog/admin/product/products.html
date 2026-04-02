@@ -189,31 +189,31 @@
                                             <span class="material-icons">edit</span>
                                         </a>
                                         {% if product.is_drafted %}
-                                            <a href="{% url 'admin_product_draft_toggle' product.id %}"
+                                            <a href="javascript:void(0)"
                                                class="action-btn"
                                                title="Publish"
-                                               onclick="return confirm('Are you sure you want to publish this product?');">
+                                               onclick="AdminAlert.confirm('Publish Product', 'Are you sure you want to publish this product?', function() { window.location.href='{% url 'admin_product_draft_toggle' product.id %}'; });">
                                                 <span class="material-icons">check_circle</span>
                                             </a>
                                         {% else %}
-                                            <a href="{% url 'admin_product_draft_toggle' product.id %}"
+                                            <a href="javascript:void(0)"
                                                class="action-btn"
                                                title="Unpublish"
-                                               onclick="return confirm('Are you sure you want to unpublish this product?');">
+                                               onclick="AdminAlert.confirm('Unpublish Product', 'Are you sure you want to unpublish this product?', function() { window.location.href='{% url 'admin_product_draft_toggle' product.id %}'; });">
                                                 <span class="material-icons">unpublished</span>
                                             </a>
                                         {% endif %}
-                                        <a href="{% url 'admin_product_delete_toggle' product.id %}"
+                                        <a href="javascript:void(0)"
                                            class="action-btn delete-btn"
                                            title="Delete"
-                                           onclick="return confirm('Are you sure you want to delete this product?');">
+                                           onclick="AdminAlert.confirm('Delete Product', 'Are you sure you want to delete this product?', function() { window.location.href='{% url 'admin_product_delete_toggle' product.id %}'; });">
                                             <span class="material-icons">delete_outline</span>
                                         </a>
                                     {% else %}
-                                        <a href="{% url 'admin_product_delete_toggle' product.id %}"
+                                        <a href="javascript:void(0)"
                                            class="action-btn restore-btn"
                                            title="Restore"
-                                           onclick="return confirm('Are you sure you want to restore this product?');">
+                                           onclick="AdminAlert.confirm('Restore Product', 'Are you sure you want to restore this product?', function() { window.location.href='{% url 'admin_product_delete_toggle' product.id %}'; });">
                                             <span class="material-icons">restore</span>
                                         </a>
                                     {% endif %}

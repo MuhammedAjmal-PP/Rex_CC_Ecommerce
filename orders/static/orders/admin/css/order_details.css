@@ -338,9 +338,23 @@
     color: var(--od-gray);
 }
 
+.od-summary-row:last-child {
+    border-bottom: none;
+}
+
 .od-summary-row span:last-child {
     font-weight: 600;
     color: var(--od-black);
+}
+
+/* Discount / coupon rows — green text */
+.od-summary-discount span:last-child {
+    color: #2e7d32;
+    font-weight: 600;
+}
+
+.od-summary-discount .coupon-icon {
+    color: #2e7d32;
 }
 
 .od-summary-total {
@@ -720,32 +734,166 @@ td .od-price-final {
 }
 
 /* ========================================
-   RESPONSIVE
+   ORDER STATUS TIMELINE STEPPER
    ======================================== */
 
-@media (max-width: 1200px) {
-    .od-info-grid {
-        grid-template-columns: 1fr;
-    }
+.od-status-timeline {
+    padding: 40px 36px;
 }
 
-@media (max-width: 768px) {
-    .od-action-bar {
-        flex-direction: column;
-        gap: 16px;
-        margin: 16px 20px;
-    }
+.od-timeline-stepper {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    position: relative;
+}
 
-    .od-action-right {
-        flex-wrap: wrap;
-        justify-content: center;
-    }
+/* Connecting line — only between first and last icon centers, behind icons */
+.od-timeline-stepper::before {
+    content: "";
+    position: absolute;
+    top: 24px;
+    left: 10%;
+    right: 10%;
+    height: 3px;
+    background: #e0e0e0;
+    z-index: 0;
+}
 
-    .od-info-grid {
-        margin: 0 20px 16px 20px;
-    }
+.od-tl-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    flex: 1;
+}
 
-    .od-section {
-        margin: 0 20px 16px 20px;
-    }
+.od-tl-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--od-white);
+    border: 3px solid #e0e0e0;
+    color: #ccc;
+    margin-bottom: 12px;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 3;
+}
+
+.od-tl-icon .material-icons {
+    font-size: 22px;
+}
+
+.od-tl-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: center;
+}
+
+.od-tl-label {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #ccc;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.od-tl-date {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.68rem;
+    color: var(--od-gray-light);
+    font-weight: 500;
+}
+
+/* State: Done (completed steps) */
+.od-tl-done .od-tl-icon {
+    border-color: #1a6b3c;
+    background: #1a6b3c;
+    color: #ffffff;
+}
+
+.od-tl-done .od-tl-label {
+    color: #1a6b3c;
+}
+
+.od-tl-done .od-tl-date {
+    color: var(--od-gray);
+}
+
+/* Green line between done steps */
+.od-tl-done + .od-tl-done::after,
+.od-tl-done + .od-tl-active::after {
+    content: "";
+    position: absolute;
+    top: 24px;
+    right: 50%;
+    width: 100%;
+    height: 3px;
+    background: #1a6b3c;
+    z-index: 2;
+}
+
+/* State: Active (current step) */
+.od-tl-active .od-tl-icon {
+    border-color: var(--od-black);
+    background: var(--od-black);
+    color: #ffffff;
+    transform: scale(1.15);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.od-tl-active .od-tl-label {
+    color: var(--od-black);
+    font-weight: 800;
+}
+
+.od-tl-active .od-tl-date {
+    color: var(--od-black);
+    font-weight: 600;
+}
+
+/* Pulse animation for active step */
+@keyframes od-pulse {
+    0%, 100% { box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2); }
+    50% { box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35); }
+}
+
+.od-tl-active .od-tl-icon {
+    animation: od-pulse 2s ease-in-out infinite;
+}
+
+/* State: Pending (future steps) */
+.od-tl-pending .od-tl-icon {
+    border-color: #e0e0e0;
+    background: #fafafa;
+    color: #d0d0d0;
+}
+
+.od-tl-pending .od-tl-label {
+    color: #ccc;
+}
+
+/* State: Cancelled */
+.od-tl-cancelled .od-tl-icon {
+    border-color: #991b1b;
+    background: #991b1b;
+    color: #ffffff;
+    transform: scale(1.15);
+    box-shadow: 0 4px 16px rgba(153, 27, 27, 0.3);
+}
+
+.od-tl-cancelled .od-tl-label {
+    color: #991b1b;
+    font-weight: 800;
+}
+
+.od-tl-cancelled .od-tl-date {
+    color: #991b1b;
 }

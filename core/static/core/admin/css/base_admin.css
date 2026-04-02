@@ -37,6 +37,76 @@ body {
 }
 
 /* ========================================
+   DESKTOP-ONLY OVERLAY
+   (moved from inline <style> in base_admin.html)
+   ======================================== */
+
+#desktop-only-overlay {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  #desktop-only-overlay {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    z-index: 999999;
+    inset: 0;
+    background-color: #f8f9fa;
+    color: #212529;
+    text-align: center;
+    padding: 2rem;
+  }
+
+  body,
+  html {
+    overflow: hidden !important;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+  }
+
+  #desktop-only-overlay .desktop-only-content {
+    max-width: 400px;
+  }
+
+  #desktop-only-overlay .desktop-icon {
+    font-size: 4rem;
+    color: #6c757d;
+    margin-bottom: 1rem;
+  }
+
+  #desktop-only-overlay h2 {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+      "Helvetica Neue", Arial, sans-serif;
+    font-size: 1.75rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  #desktop-only-overlay p {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+      "Helvetica Neue", Arial, sans-serif;
+    font-size: 1rem;
+    color: #495057;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+  }
+
+  #desktop-only-overlay .small-text {
+    font-size: 0.85rem;
+    color: #adb5bd;
+  }
+
+  /* Exclude the overlay, include script tags and everything else visually hides */
+  body > :not(#desktop-only-overlay) {
+    display: none !important;
+  }
+}
+
+/* ========================================
    DASHBOARD CONTAINER
    ======================================== */
 
@@ -62,11 +132,13 @@ body {
   top: 0;
   z-index: 1000;
   overflow-y: auto;
+  border-right: 1px solid rgba(255, 255, 255, 0.04);
 }
 
 .sidebar-header {
-  padding: 30px 25px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 28px 25px 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, transparent 100%);
 }
 
 .logo {
@@ -107,49 +179,94 @@ body {
 
 .sidebar-nav {
   flex: 1;
-  padding: 20px 0;
+  padding: 12px 0;
   overflow-y: auto;
-  overflow: visible;
+  overflow-x: hidden;
 }
 
 .sidebar-nav h6 {
-  font-size: 0.65rem;
+  font-size: 0.58rem;
   font-weight: 600;
-  letter-spacing: 2px;
-  color: var(--admin-text-light);
-  padding: 20px 25px 10px;
+  letter-spacing: 2.5px;
+  color: rgba(255, 255, 255, 0.3);
+  padding: 20px 25px 8px;
   margin: 0;
   text-transform: uppercase;
+  position: relative;
+}
+
+.sidebar-nav h6::before {
+  content: "";
+  position: absolute;
+  top: 14px;
+  left: 25px;
+  right: 25px;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.08) 0%, transparent 80%);
 }
 
 .nav-item {
   display: flex;
   align-items: center;
-  gap: 15px;
-  padding: 14px 25px;
-  color: rgba(255, 255, 255, 0.7);
+  gap: 14px;
+  padding: 11px 25px;
+  color: rgba(255, 255, 255, 0.55);
   text-decoration: none;
-  transition: all 0.3s ease;
-  font-size: 0.9rem;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 0.85rem;
   font-weight: 400;
   border-left: 3px solid transparent;
+  letter-spacing: 0.3px;
+  position: relative;
+}
+
+.nav-item .material-icons {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 1.1rem;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  flex-shrink: 0;
 }
 
 .nav-item:hover {
-  background-color: var(--admin-sidebar-hover);
+  background-color: rgba(255, 255, 255, 0.06);
   color: var(--admin-white);
-  border-left-color: var(--admin-white);
+  border-left-color: rgba(255, 255, 255, 0.3);
+}
+
+.nav-item:hover .material-icons {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--admin-white);
 }
 
 .nav-item.active {
-  background-color: var(--admin-sidebar-hover);
+  background-color: rgba(255, 255, 255, 0.08);
   color: var(--admin-white);
   border-left-color: var(--admin-white);
   font-weight: 500;
 }
 
-.nav-item svg {
-  flex-shrink: 0;
+.nav-item.active .material-icons {
+  background: rgba(255, 255, 255, 0.15);
+  color: var(--admin-white);
+}
+
+.nav-item.active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 60%;
+  background: var(--admin-white);
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+  border-radius: 0 2px 2px 0;
 }
 
 /* ========================================
@@ -157,18 +274,28 @@ body {
    ======================================== */
 
 .sidebar-footer {
-  padding: 20px 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 12px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  background: linear-gradient(0deg, rgba(255, 255, 255, 0.02) 0%, transparent 100%);
 }
 
 .nav-item.logout {
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.nav-item.logout .material-icons {
+  background: rgba(255, 68, 68, 0.06);
 }
 
 .nav-item.logout:hover {
   color: #ff4444;
-  background-color: rgba(255, 68, 68, 0.1);
+  background-color: rgba(255, 68, 68, 0.06);
   border-left-color: #ff4444;
+}
+
+.nav-item.logout:hover .material-icons {
+  background: rgba(255, 68, 68, 0.15);
+  color: #ff4444;
 }
 
 /* ========================================
@@ -306,21 +433,23 @@ body {
    SCROLLBAR STYLING
    ======================================== */
 
+/* Hide sidebar scrollbar but keep scroll functionality */
+.sidebar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
 .sidebar::-webkit-scrollbar {
-  width: 6px;
+  display: none; /* Chrome/Safari/Opera */
 }
 
-.sidebar::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
+.sidebar-nav {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
-.sidebar::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 3px;
-}
-
-.sidebar::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
+.sidebar-nav::-webkit-scrollbar {
+  display: none;
 }
 
 /* ========================================
@@ -334,20 +463,20 @@ body {
   z-index: 9999;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  max-width: 450px;
+  gap: 10px;
+  max-width: 420px;
   pointer-events: none;
 }
 
 .alert-message {
   background-color: var(--admin-white);
   border-radius: 0;
-  padding: 16px 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 14px 18px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 15px;
+  gap: 14px;
   border-left: 4px solid;
   pointer-events: auto;
   animation: slideIn 0.3s ease-out;
@@ -388,12 +517,12 @@ body {
 }
 
 .alert-icon {
-  font-size: 1.25rem;
+  font-size: 1.2rem;
   flex-shrink: 0;
 }
 
 .alert-text {
-  font-size: 0.9rem;
+  font-size: 0.875rem;
   font-weight: 500;
   color: var(--admin-text-primary);
   line-height: 1.4;
@@ -402,7 +531,7 @@ body {
 .alert-close {
   background: none;
   border: none;
-  color: var(--admin-text-secondary);
+  color: var(--admin-text-light);
   cursor: pointer;
   padding: 4px;
   display: flex;
@@ -458,4 +587,102 @@ body {
 
 .alert-info .alert-icon {
   color: #3b82f6;
+}
+
+/* ========================================
+   ADMIN ALERT MODAL
+   ======================================== */
+
+.admin-alert-dialog {
+  max-width: 420px;
+}
+
+.admin-alert-content {
+  border: none;
+  border-radius: 0;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+.admin-alert-body {
+  padding: 40px 32px 24px;
+  text-align: center;
+}
+
+.admin-alert-icon {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 16px;
+}
+
+.admin-alert-title {
+  font-family: var(--font-body);
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+  color: var(--admin-text-primary);
+}
+
+.admin-alert-message {
+  font-size: 0.9rem;
+  color: var(--admin-text-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.admin-alert-footer {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px 32px 28px;
+}
+
+.admin-alert-ok-btn,
+.admin-alert-confirm-btn {
+  padding: 10px 32px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: var(--font-body);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border: 2px solid var(--admin-text-primary);
+  background: var(--admin-text-primary);
+  color: var(--admin-white);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.admin-alert-ok-btn:hover,
+.admin-alert-confirm-btn:hover {
+  background: var(--admin-accent);
+  border-color: var(--admin-accent);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.admin-alert-cancel-btn {
+  padding: 10px 32px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: var(--font-body);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border: 2px solid var(--admin-border);
+  background: var(--admin-white);
+  color: var(--admin-text-secondary);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.admin-alert-cancel-btn:hover {
+  border-color: var(--admin-text-primary);
+  color: var(--admin-text-primary);
+}
+
+/* ========================================
+   UTILITY: EMPTY STATE ICON
+   ======================================== */
+
+.empty-state-icon {
+  font-size: 64px;
 }

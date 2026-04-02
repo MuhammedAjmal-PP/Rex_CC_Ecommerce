@@ -17,12 +17,12 @@
 
 .chk-sidebar {
     min-width: 0;
-    overflow: hidden;
+    /* overflow: hidden removed — it breaks position: sticky on child elements */
 }
 
 .chk-sidebar .hub-card {
-    overflow: hidden;
     box-sizing: border-box;
+    /* overflow: hidden removed — must be unset for sticky to work */
 }
 
 .chk-steps-container {

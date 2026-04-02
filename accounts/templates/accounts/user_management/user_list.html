@@ -158,17 +158,17 @@
                                    title="View Details"><span class="material-icons fs-6">visibility</span>
                             </a>
                             {% if user.is_active %}
-                                <a href="{% url 'admin_user_stats_toggle' user.id %}"
+                                <a href="javascript:void(0)"
                                    class="action-btn"
                                    title="Deactivate"
-                                   onclick="return confirm('Are you sure you want to deactivate this user?');">
+                                   onclick="AdminAlert.confirm('Deactivate User', 'Are you sure you want to deactivate this user? They will no longer be able to log in.', function() { window.location.href='{% url 'admin_user_stats_toggle' user.id %}'; });">
                                     <span class="material-icons fs-6">cancel</span>
                                 </a>
                             {% else %}
-                                <a href="{% url 'admin_user_stats_toggle' user.id %}"
+                                <a href="javascript:void(0)"
                                    class="action-btn"
                                    title="Activate"
-                                   onclick="return confirm('Are you sure you want to activate this user?');">
+                                   onclick="AdminAlert.confirm('Activate User', 'Are you sure you want to activate this user? They will be able to log in again.', function() { window.location.href='{% url 'admin_user_stats_toggle' user.id %}'; });">
                                     <span class="material-icons fs-6">check_circle</span>
                                 </a>
                             {% endif %}

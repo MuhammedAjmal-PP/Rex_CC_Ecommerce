@@ -131,7 +131,7 @@
                     <span>₹{{ order.total|floatformat:2|intcomma }}</span>
                 </div>
                 {% if order.discount > 0 %}
-                    <div class="od-summary-row">
+                    <div class="od-summary-row od-summary-discount">
                         <span>Discount</span>
                         <span>−₹{{ order.discount|floatformat:2|intcomma }}</span>
                     </div>
@@ -141,7 +141,7 @@
                     <span>₹{{ order.sub_total|floatformat:2|intcomma }}</span>
                 </div>
                 {% if order.coupon and order.coupon_discount > 0 %}
-                    <div class="od-summary-row text-success">
+                    <div class="od-summary-row od-summary-discount">
                         <span>
                             <span class="material-icons coupon-icon">local_offer</span>
                             Coupon ({{ order.coupon.code }})
@@ -274,19 +274,92 @@
         </div>
     </div>
 
-    <!-- Order Status -->
+    <!-- Order Status Timeline -->
     <div class="od-section">
         <div class="od-section-title">
             <span class="material-icons">timeline</span>
-            Order Status
+            Order Status Timeline
         </div>
-        <div class="od-htl od-htl-order">
-            <p class="od-status-text">
-                Current Status: <span class="status-badge order-status-{{ order_current|lower }}">{{ order_current }}</span>
-                {% if order.status_updated_at %}
-                    &middot; Last updated: {{ order.status_updated_at|date:"d M Y, h:i A" }}
+        <div class="od-status-timeline">
+            <div class="od-timeline-stepper">
+                {% with steps="PLACED,CONFIRMED,SHIPPED,OUT_FOR_DELIVERY,DELIVERED" %}
+                    {% for step in steps|make_list %}
+                    {% endfor %}
+                {% endwith %}
+
+                {% comment %} Build a visual stepper for common statuses {% endcomment %}
+                <div class="od-tl-step {% if order_current == 'PLACED' %}od-tl-active{% elif order_current != 'PLACED' %}od-tl-done{% endif %}">
+                    <div class="od-tl-icon">
+                        <span class="material-icons">receipt_long</span>
+                    </div>
+                    <div class="od-tl-info">
+                        <span class="od-tl-label">Placed</span>
+                        <span class="od-tl-date">{{ order.created_at|date:"d M Y, h:i A" }}</span>
+                    </div>
+                </div>
+
+                <div class="od-tl-step {% if order_current == 'CONFIRMED' %}od-tl-active{% elif order_current == 'SHIPPED' or order_current == 'OUT_FOR_DELIVERY' or order_current == 'DELIVERED' %}od-tl-done{% else %}od-tl-pending{% endif %}">
+                    <div class="od-tl-icon">
+                        <span class="material-icons">check_circle</span>
+                    </div>
+                    <div class="od-tl-info">
+                        <span class="od-tl-label">Confirmed</span>
+                        {% if order_current == 'CONFIRMED' and order.status_updated_at %}
+                            <span class="od-tl-date">{{ order.status_updated_at|date:"d M Y, h:i A" }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="od-tl-step {% if order_current == 'SHIPPED' %}od-tl-active{% elif order_current == 'OUT_FOR_DELIVERY' or order_current == 'DELIVERED' %}od-tl-done{% else %}od-tl-pending{% endif %}">
+                    <div class="od-tl-icon">
+                        <span class="material-icons">local_shipping</span>
+                    </div>
+                    <div class="od-tl-info">
+                        <span class="od-tl-label">Shipped</span>
+                        {% if order_current == 'SHIPPED' and order.status_updated_at %}
+                            <span class="od-tl-date">{{ order.status_updated_at|date:"d M Y, h:i A" }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="od-tl-step {% if order_current == 'OUT_FOR_DELIVERY' %}od-tl-active{% elif order_current == 'DELIVERED' %}od-tl-done{% else %}od-tl-pending{% endif %}">
+                    <div class="od-tl-icon">
+                        <span class="material-icons">delivery_dining</span>
+                    </div>
+                    <div class="od-tl-info">
+                        <span class="od-tl-label">Out for Delivery</span>
+                        {% if order_current == 'OUT_FOR_DELIVERY' and order.status_updated_at %}
+                            <span class="od-tl-date">{{ order.status_updated_at|date:"d M Y, h:i A" }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="od-tl-step {% if order_current == 'DELIVERED' %}od-tl-active{% else %}od-tl-pending{% endif %}">
+                    <div class="od-tl-icon">
+                        <span class="material-icons">inventory</span>
+                    </div>
+                    <div class="od-tl-info">
+                        <span class="od-tl-label">Delivered</span>
+                        {% if order_current == 'DELIVERED' and order.status_updated_at %}
+                            <span class="od-tl-date">{{ order.status_updated_at|date:"d M Y, h:i A" }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% if order_current == 'CANCELLED' %}
+                    <div class="od-tl-step od-tl-cancelled">
+                        <div class="od-tl-icon">
+                            <span class="material-icons">cancel</span>
+                        </div>
+                        <div class="od-tl-info">
+                            <span class="od-tl-label">Cancelled</span>
+                            {% if order.status_updated_at %}
+                                <span class="od-tl-date">{{ order.status_updated_at|date:"d M Y, h:i A" }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
                 {% endif %}
-            </p>
+            </div>
         </div>
     </div>
 

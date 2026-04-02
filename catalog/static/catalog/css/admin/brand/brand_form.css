@@ -547,31 +547,4 @@
     display: block;
 }
 
-/* ========================================
-   RESPONSIVE
-   ======================================== */
-
-@media (max-width: 900px) {
-    .form-layout {
-        grid-template-columns: 1fr;
-    }
-
-    .form-column-left {
-        border-right: none;
-        border-bottom: 1px solid #e5e5e5;
-    }
-
-    .form-actions {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 600px) {
-    .form-container {
-        padding: 20px;
-    }
-
-    .section-body {
-        padding: 20px;
-    }
-}
+

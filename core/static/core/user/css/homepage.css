@@ -479,7 +479,8 @@ section {
   flex-shrink: 0;
   width: 320px;
   /* Fixed width */
-  background: linear-gradient(135deg, #111 0%, #222 100%);
+  /* background: linear-gradient(135deg, #111 0%, #222 100%); */
+  background: linear-gradient(272deg, #737070 0%, #272626 100%);
   padding: 60px 40px;
   display: flex;
   flex-direction: column;

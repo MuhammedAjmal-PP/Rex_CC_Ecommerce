@@ -157,9 +157,9 @@
                             Restore
                         </a>
                     {% else %}
-                        <a href="{% url 'admin_variant_delete_toggle' product.id variant.id %}"
+                        <a href="javascript:void(0)"
                            class="action-btn action-btn-danger"
-                           onclick="return confirm('Are you sure you want to delete this variant?');">
+                           onclick="AdminAlert.confirm('Delete Variant', 'Are you sure you want to delete this variant?', function() { window.location.href='{% url 'admin_variant_delete_toggle' product.id variant.id %}'; });">
                             <span class="material-icons">delete</span>
                             Delete
                         </a>

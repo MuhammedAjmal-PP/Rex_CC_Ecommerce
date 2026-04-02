@@ -18,7 +18,7 @@
     <div class="stats-container">
         <a href="?{% if search_query %}q={{ search_query }}&{% endif %}"
            class="stat-card {% if not status_filter %}active{% endif %}">
-            <div class="stat-icon"><span class="material-icons fs-2">confirmation_number</span></div>
+            <div class="stat-icon total"><span class="material-icons fs-2">confirmation_number</span></div>
             <div class="stat-content">
                 <p class="stat-label">Total</p>
                 <h3 class="stat-value">{{ total_coupons }}</h3>
@@ -26,7 +26,7 @@
         </a>
         <a href="?status=active{% if search_query %}&q={{ search_query }}{% endif %}"
            class="stat-card {% if status_filter == 'active' %}active{% endif %}">
-            <div class="stat-icon"><span class="material-icons fs-2">toggle_on</span></div>
+            <div class="stat-icon active-icon"><span class="material-icons fs-2">toggle_on</span></div>
             <div class="stat-content">
                 <p class="stat-label">Active</p>
                 <h3 class="stat-value">{{ active_coupons }}</h3>
@@ -34,7 +34,7 @@
         </a>
         <a href="?status=inactive{% if search_query %}&q={{ search_query }}{% endif %}"
            class="stat-card {% if status_filter == 'inactive' %}active{% endif %}">
-            <div class="stat-icon"><span class="material-icons fs-2">toggle_off</span></div>
+            <div class="stat-icon inactive-icon"><span class="material-icons fs-2">toggle_off</span></div>
             <div class="stat-content">
                 <p class="stat-label">Inactive</p>
                 <h3 class="stat-value">{{ inactive_coupons }}</h3>
@@ -42,7 +42,7 @@
         </a>
         <a href="?status=valid{% if search_query %}&q={{ search_query }}{% endif %}"
            class="stat-card {% if status_filter == 'valid' %}active{% endif %}">
-            <div class="stat-icon"><span class="material-icons fs-2">verified</span></div>
+            <div class="stat-icon valid"><span class="material-icons fs-2">verified</span></div>
             <div class="stat-content">
                 <p class="stat-label">Valid Now</p>
                 <h3 class="stat-value">{{ valid_coupons }}</h3>
@@ -50,7 +50,7 @@
         </a>
         <a href="?status=expired{% if search_query %}&q={{ search_query }}{% endif %}"
            class="stat-card {% if status_filter == 'expired' %}active{% endif %}">
-            <div class="stat-icon"><span class="material-icons fs-2">timer_off</span></div>
+            <div class="stat-icon expired"><span class="material-icons fs-2">timer_off</span></div>
             <div class="stat-content">
                 <p class="stat-label">Expired</p>
                 <h3 class="stat-value">{{ expired_coupons }}</h3>
@@ -60,7 +60,7 @@
 
     {# ── Search Bar ── #}
     <div class="search-filter-bar">
-        <div class="search-box" style="flex:1;">
+        <div class="search-box search-box-flex">
             <form method="get" class="search-form">
                 <input type="hidden" name="status" value="{{ status_filter }}">
                 <div class="search-input-wrapper">
@@ -118,7 +118,7 @@
                                     {% if c.discount_type == "PERCENTAGE" %}
                                         {{ c.discount_value }}%
                                         {% if c.max_discount_amount %}
-                                            <small style="display:block; opacity:0.7;">max ₹{{ c.max_discount_amount|intcomma }}</small>
+                                            <small class="coupon-subtext">max ₹{{ c.max_discount_amount|intcomma }}</small>
                                         {% endif %}
                                     {% else %}
                                         ₹{{ c.discount_value|intcomma }}
@@ -128,7 +128,7 @@
                             <td>₹{{ c.min_order_amount|intcomma }}</td>
                             <td>
                                 <span class="usage-info">{{ c.used_count }}{% if c.usage_limit %} / {{ c.usage_limit }}{% endif %}</span>
-                                <small style="display:block; opacity:0.7;">Per user: {{ c.per_user_limit }}</small>
+                                <small class="coupon-subtext">Per user: {{ c.per_user_limit }}</small>
                             </td>
                             <td>
                                 <div class="date-time">
@@ -157,9 +157,10 @@
                                     <form method="post"
                                           action="{% url 'admin_coupon_delete' c.pk %}"
                                           class="d-inline"
-                                          onsubmit="return confirm('Delete coupon \'{{ c.code }}\'?');">
+                                          id="delete-coupon-{{ c.pk }}">
                                         {% csrf_token %}
-                                        <button type="submit" class="action-btn action-btn-danger" title="Delete">
+                                        <button type="button" class="action-btn action-btn-danger" title="Delete"
+                                                onclick="AdminAlert.confirm('Delete Coupon', 'Are you sure you want to delete coupon \'{{ c.code }}\'?', function() { document.getElementById('delete-coupon-{{ c.pk }}').submit(); });">
                                             <span class="material-icons fs-6">delete</span>
                                         </button>
                                     </form>
@@ -210,7 +211,7 @@
             {% endif %}
         {% else %}
             <div class="empty-state">
-                <span class="material-icons" style="font-size: 64px;">confirmation_number</span>
+                <span class="material-icons fs-64">confirmation_number</span>
                 <h3>No coupons found</h3>
                 <p>
                     {% if search_query or status_filter %}

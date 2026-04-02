@@ -549,18 +549,4 @@
     color: var(--dark);
 }
 
-/* ========== RESPONSIVE ========== */
-@media (max-width: 900px) {
-    .variant-hero {
-        flex-direction: column;
-    }
-
-    .hero-gallery {
-        flex: none;
-        width: 100%;
-    }
-
-    .specs-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
+

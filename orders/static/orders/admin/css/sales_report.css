@@ -399,39 +399,11 @@
 }
 
 /* ========================================
-   RESPONSIVE
+   DESKTOP LAYOUT ADJUSTMENTS
    ======================================== */
 
 @media (max-width: 1400px) {
     .report-stats-container {
         grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 768px) {
-    .report-filter-bar,
-    .period-badge-container,
-    .report-stats-container,
-    .download-bar {
-        margin-left: 20px;
-        margin-right: 20px;
-    }
-
-    .report-stats-container {
-        grid-template-columns: 1fr;
-    }
-
-    .quick-filters {
-        flex-direction: column;
-    }
-
-    .date-inputs {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .download-bar {
-        flex-direction: column;
-        gap: 12px;
     }
 }

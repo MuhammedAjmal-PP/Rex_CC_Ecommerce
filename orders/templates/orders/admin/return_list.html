@@ -26,7 +26,7 @@
             </div>
         </div>
         <div class="stat-card {% if status_filter == 'REQUESTED' %}active{% endif %}">
-            <div class="stat-icon">
+            <div class="stat-icon requested">
                 <span class="material-icons fs-2">pending_actions</span>
             </div>
             <div class="stat-content">
@@ -35,7 +35,7 @@
             </div>
         </div>
         <div class="stat-card {% if status_filter == 'APPROVED' %}active{% endif %}">
-            <div class="stat-icon">
+            <div class="stat-icon approved">
                 <span class="material-icons fs-2">thumb_up</span>
             </div>
             <div class="stat-content">
@@ -44,7 +44,7 @@
             </div>
         </div>
         <div class="stat-card {% if status_filter == 'REJECTED' %}active{% endif %}">
-            <div class="stat-icon">
+            <div class="stat-icon rejected">
                 <span class="material-icons fs-2">thumb_down</span>
             </div>
             <div class="stat-content">
@@ -53,7 +53,7 @@
             </div>
         </div>
         <div class="stat-card {% if status_filter == 'COMPLETED' %}active{% endif %}">
-            <div class="stat-icon">
+            <div class="stat-icon completed">
                 <span class="material-icons fs-2">check_circle</span>
             </div>
             <div class="stat-content">
@@ -107,8 +107,7 @@
                         <th>Return #</th>
                         <th>Order #</th>
                         <th>Customer</th>
-                        <th>Product</th>
-                        <th>Reason</th>
+
                         <th>Status</th>
                         <th>Refund</th>
                         <th>Date</th>
@@ -149,16 +148,7 @@
                                     <span class="customer-email">—</span>
                                 {% endif %}
                             </td>
-                            <td>
-                                {% if ret.order_item and ret.order_item.product_variant and ret.order_item.product_variant.product %}
-                                    <span class="product-name">{{ ret.order_item.product_variant.product.name|truncatechars:30 }}</span>
-                                {% else %}
-                                    <span class="product-name">Product unavailable</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <span class="reason-code">{{ ret.get_reason_code_display }}</span>
-                            </td>
+
                             <td>
                                 <span class="status-badge return-status-{{ ret.status|lower }}">{{ ret.status }}</span>
                             </td>
