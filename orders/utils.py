@@ -165,7 +165,7 @@ def can_return_item(order_item):
     """
     Check if an item is returnable:
     1. Status is DELIVERED
-    2. Within 7 days of delivery
+    2. Within RETURN_WINDOW_DAYS of delivery (configurable via env)
     3. No active return request exists
     """
     if order_item.status != "DELIVERED":
@@ -180,4 +180,4 @@ def can_return_item(order_item):
         pass
 
     days_since = (timezone.now() - order_item.status_updated_at).days
-    return days_since <= 7
+    return days_since <= settings.RETURN_WINDOW_DAYS
