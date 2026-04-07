@@ -17,7 +17,8 @@ services:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql
+      # Mount at /var/lib/postgresql for PostgreSQL 18+ compatibility
     ports:
       - "5433:5432"
       # Mapped to 5433 on your machine to avoid conflicts with a local PostgreSQL on 5432.
