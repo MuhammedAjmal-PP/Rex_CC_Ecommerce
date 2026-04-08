@@ -1,7 +1,7 @@
 from datetime import timedelta
 from decimal import Decimal
 
-from django.db.models import Count, Sum
+from django.db.models import Count, F, Sum
 from django.utils import timezone
 
 from orders.models import Order
@@ -62,6 +62,8 @@ def get_sales_report(start_dt, end_dt):
     Returns a dict with:
         total_orders, total_order_amount, total_discount,
         total_coupon_discount, orders_qs (filtered queryset).
+
+    All monetary totals are NET values (original minus refunded).
     """
     orders_qs = (
         Order.objects.filter(created_at__range=(start_dt, end_dt))
@@ -73,9 +75,9 @@ def get_sales_report(start_dt, end_dt):
 
     aggregates = orders_qs.aggregate(
         total_orders=Count("id"),
-        total_order_amount=Sum("grand_total"),
-        total_discount=Sum("discount"),
-        total_coupon_discount=Sum("coupon_discount"),
+        total_order_amount=Sum(F("grand_total") - F("refunded_amount")),
+        total_discount=Sum(F("discount") - F("refunded_discount")),
+        total_coupon_discount=Sum(F("coupon_discount") - F("refunded_coupon_discount")),
     )
 
     return {
@@ -85,3 +87,4 @@ def get_sales_report(start_dt, end_dt):
         "total_coupon_discount": aggregates["total_coupon_discount"] or Decimal("0.00"),
         "orders_qs": orders_qs,
     }
+
