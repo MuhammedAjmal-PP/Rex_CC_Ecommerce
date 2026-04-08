@@ -35,6 +35,20 @@ class BrandForm(forms.ModelForm):
 
         return name.title()
 
+    def clean_tagline(self):
+        tagline = self.cleaned_data.get("tagline", "") or ""
+        tagline = tagline.strip()
+        if tagline and len(tagline) < 5:
+            raise forms.ValidationError("Tagline is a bit too short (min 5 characters).")
+        return tagline or None
+
+    def clean_description(self):
+        desc = self.cleaned_data.get("description", "") or ""
+        desc = desc.strip()
+        if desc and len(desc) < 20:
+            raise forms.ValidationError("Please provide a more detailed description (min 20 chars).")
+        return desc or None
+
 
 class CategoryForm(forms.ModelForm):
 
@@ -85,6 +99,13 @@ class ProductForm(forms.ModelForm):
             raise forms.ValidationError("A Product with this name already exists.")
 
         return name.title()
+
+    def clean_description(self):
+        desc = self.cleaned_data.get("description", "") or ""
+        desc = desc.strip()
+        if desc and len(desc) < 20:
+            raise forms.ValidationError("Please provide a more detailed description (min 20 chars).")
+        return desc or None
 
 
 class ProductVariantForm(forms.ModelForm):
@@ -140,6 +161,19 @@ class ProductVariantForm(forms.ModelForm):
             )
 
         return sku.upper()
+
+    def clean_price(self):
+        price = self.cleaned_data.get("price")
+        if price is not None and price <= 0:
+            raise forms.ValidationError("Price must be greater than zero.")
+        return price
+
+    def clean_discount_rate(self):
+        rate = self.cleaned_data.get("discount_rate")
+        if rate is not None:
+            if rate < 0 or rate > 100:
+                raise forms.ValidationError("Discount must be between 0 and 100.")
+        return rate
 
 
 class ProductImageForm(forms.ModelForm):

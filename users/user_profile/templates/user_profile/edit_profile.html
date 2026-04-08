@@ -63,6 +63,7 @@ Edit Profile | REX CC
                                     <span class="material-icons">delete_outline</span>
                                 </button>
                             </div>
+                            {% if form.avatar.errors %}<div class="lux-form-error" style="text-align:center; margin-top:8px;">{{ form.avatar.errors.0 }}</div>{% endif %}
                             <input type="file" name="avatar" id="id_avatar" accept="image/*" class="lux-hidden-input">
                             <input type="hidden" name="remove_avatar" id="remove_avatar" value="">
                         </div>
@@ -73,15 +74,18 @@ Edit Profile | REX CC
                                 <div class="lux-field-group">
                                     <label>First Name</label>
                                     {{ form.first_name }}
+                                    {% if form.first_name.errors %}<div class="lux-form-error">{{ form.first_name.errors.0 }}</div>{% endif %}
                                 </div>
                                 <div class="lux-field-group">
                                     <label>Last Name</label>
                                     {{ form.last_name }}
+                                    {% if form.last_name.errors %}<div class="lux-form-error">{{ form.last_name.errors.0 }}</div>{% endif %}
                                 </div>
                             </div>
                             <div class="lux-field-group">
                                 <label>Phone Number</label>
                                 {{ form.phone_number }}
+                                {% if form.phone_number.errors %}<div class="lux-form-error">{{ form.phone_number.errors.0 }}</div>{% endif %}
                             </div>
                             <div class="lux-form-actions">
                                 <button type="submit" class="lux-btn-primary">

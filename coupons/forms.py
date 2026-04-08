@@ -1,3 +1,4 @@
+import re
 from django import forms
 from django.utils import timezone
 
@@ -99,3 +100,29 @@ class CouponForm(forms.ModelForm):
                     self.initial[field_name] = timezone.localtime(val).strftime(
                         "%Y-%m-%dT%H:%M"
                     )
+
+    def clean_code(self):
+        code = self.cleaned_data.get("code", "").strip().upper()
+        if not code:
+            raise forms.ValidationError("Coupon code is required.")
+        if len(code) < 3:
+            raise forms.ValidationError("Code must be at least 3 characters.")
+        if not re.match(r"^[A-Z0-9\-_]+$", code):
+            raise forms.ValidationError(
+                "Code can only contain letters, numbers, hyphens, and underscores."
+            )
+        qs = Coupon.objects.filter(code__iexact=code)
+        if self.instance.pk:
+            qs = qs.exclude(pk=self.instance.pk)
+        if qs.exists():
+            raise forms.ValidationError("A coupon with this code already exists.")
+        return code
+
+    def clean_discount_value(self):
+        value = self.cleaned_data.get("discount_value")
+        if value is not None and value <= 0:
+            raise forms.ValidationError("Discount value must be greater than 0.")
+        discount_type = self.cleaned_data.get("discount_type")
+        if discount_type == "PERCENTAGE" and value is not None and value > 100:
+            raise forms.ValidationError("Percentage discount cannot exceed 100%.")
+        return value

@@ -1,3 +1,4 @@
+import re
 from django import forms
 from django.contrib.auth import get_user_model
 from .models import Address
@@ -59,6 +60,25 @@ class ProfileEditForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+    def clean_first_name(self):
+        name = self.cleaned_data.get("first_name", "").strip()
+        if not name:
+            raise forms.ValidationError("First name is required.")
+        if len(name) < 3:
+            raise forms.ValidationError("Name must contain at least 3 letters.")
+        if not re.match(r"^[A-Za-z]+$", name):
+            raise forms.ValidationError("Only letters are allowed.")
+        return name
+
+    def clean_last_name(self):
+        name = self.cleaned_data.get("last_name", "").strip()
+        if name:
+            if len(name) < 3:
+                raise forms.ValidationError("Name must contain at least 3 letters.")
+            if not re.match(r"^[A-Za-z]+$", name):
+                raise forms.ValidationError("Only letters are allowed.")
+        return name
 
 
 class AddressForm(forms.ModelForm):
@@ -175,6 +195,30 @@ class AddressForm(forms.ModelForm):
                 self.initial["custom_label"] = self.instance.label
 
         self.fields["address_line_2"].required = False
+
+    def clean_full_name(self):
+        name = self.cleaned_data.get("full_name", "").strip()
+        if not name:
+            raise forms.ValidationError("Full name is required.")
+        if len(name) < 3:
+            raise forms.ValidationError("Name must contain at least 3 characters.")
+        return name
+
+    def clean_city(self):
+        city = self.cleaned_data.get("city", "").strip()
+        if not city:
+            raise forms.ValidationError("City is required.")
+        if len(city) < 2:
+            raise forms.ValidationError("City name must be at least 2 characters.")
+        return city
+
+    def clean_state(self):
+        state = self.cleaned_data.get("state", "").strip()
+        if not state:
+            raise forms.ValidationError("State is required.")
+        if len(state) < 2:
+            raise forms.ValidationError("State name must be at least 2 characters.")
+        return state
 
     def clean(self):
         cleaned_data = super().clean()
