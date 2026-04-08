@@ -78,9 +78,10 @@
   cancelBtn.addEventListener('click', hide);
 
   confirmBtn.addEventListener('click', function () {
+    var callback = _onConfirm;
     hide();
-    if (typeof _onConfirm === 'function') {
-      _onConfirm();
+    if (typeof callback === 'function') {
+      callback();
     }
   });
 
