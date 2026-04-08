@@ -85,9 +85,12 @@ def sales_report_view(request):
     paginator = Paginator(report["orders_qs"], 15)
     page_obj = paginator.get_page(request.GET.get("page", 1))
 
-    # Attach _payment to each order on this page for template access
+    # Attach payment and net values to each order for template access
     for order in page_obj:
         order.payment_txn = get_payment_transaction(order)
+        order.net_discount = order.discount - order.refunded_discount
+        order.net_coupon_discount = order.coupon_discount - order.refunded_coupon_discount
+        order.net_grand_total = order.grand_total - order.refunded_amount
 
     context = {
         "filter_type": filter_type,
@@ -118,6 +121,9 @@ def download_sales_report_pdf(request):
     orders = list(report["orders_qs"])  # all results — no pagination
     for order in orders:
         order.payment_txn = get_payment_transaction(order)
+        order.net_discount = order.discount - order.refunded_discount
+        order.net_coupon_discount = order.coupon_discount - order.refunded_coupon_discount
+        order.net_grand_total = order.grand_total - order.refunded_amount
 
     html_string = render_to_string(
         "orders/admin/sales_report_pdf.html",
@@ -215,7 +221,7 @@ def download_sales_report_excel(request):
         ("Payment", 14),
         ("Discount (₹)", 16),
         ("Coupon (₹)", 16),
-        ("Grand Total (₹)", 18),
+        ("Net Total (₹)", 18),
     ]
     header_row = ws.max_row + 1
     for col_idx, (col_name, width) in enumerate(columns, 1):
@@ -243,15 +249,15 @@ def download_sales_report_excel(request):
         ws.cell(row=row, column=3, value=customer).font = data_font
         ws.cell(row=row, column=4, value=payment_label).font = data_font
 
-        discount_cell = ws.cell(row=row, column=5, value=float(order.discount))
+        discount_cell = ws.cell(row=row, column=5, value=float(order.discount - order.refunded_discount))
         discount_cell.number_format = currency_fmt
         discount_cell.font = data_font
 
-        coupon_cell = ws.cell(row=row, column=6, value=float(order.coupon_discount))
+        coupon_cell = ws.cell(row=row, column=6, value=float(order.coupon_discount - order.refunded_coupon_discount))
         coupon_cell.number_format = currency_fmt
         coupon_cell.font = data_font
 
-        total_cell = ws.cell(row=row, column=7, value=float(order.grand_total))
+        total_cell = ws.cell(row=row, column=7, value=float(order.grand_total - order.refunded_amount))
         total_cell.number_format = currency_fmt
         total_cell.font = data_font
 

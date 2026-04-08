@@ -151,7 +151,7 @@
                 <th>Payment</th>
                 <th class="text-right">Discount</th>
                 <th class="text-right">Coupon</th>
-                <th class="text-right">Grand Total</th>
+                <th class="text-right">Net Total</th>
             </tr>
         </thead>
         <tbody>
@@ -176,11 +176,11 @@
                             {{ order.payment_txn.get_payment_method_display }}
                         {% else %}—{% endif %}
                     </td>
-                    <td class="text-right">₹{{ order.discount|floatformat:2 }}</td>
+                    <td class="text-right">₹{{ order.net_discount|floatformat:2 }}</td>
                     <td class="text-right">
-                        {% if order.coupon_discount %}₹{{ order.coupon_discount|floatformat:2 }}{% else %}—{% endif %}
+                        {% if order.net_coupon_discount %}₹{{ order.net_coupon_discount|floatformat:2 }}{% else %}—{% endif %}
                     </td>
-                    <td class="text-right fw-bold">₹{{ order.grand_total|floatformat:2 }}</td>
+                    <td class="text-right fw-bold">₹{{ order.net_grand_total|floatformat:2 }}</td>
                 </tr>
             {% empty %}
                 <tr>
