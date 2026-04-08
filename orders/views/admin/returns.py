@@ -183,7 +183,8 @@ def return_status_update(request, return_number):
                     return_obj.admin_note = admin_note
                 return_obj.save(update_fields=["status", "admin_note"])
 
-                refund_amount = compute_return_refund(order_item)
+                refund_info = compute_return_refund(order_item)
+                refund_amount = refund_info["refund_amount"]
 
                 # Transition OrderItem status: RETURN_REQUESTED → RETURNED
                 change_order_item_status(order_item=order_item, to_status="RETURNED")
@@ -208,6 +209,16 @@ def return_status_update(request, return_number):
                     content_object=return_obj,
                     note=f"Return refund — return #{return_obj.return_number}",
                 )
+
+                # Accumulate analytics trackers
+                order.refunded_amount += refund_info["refund_amount"]
+                order.refunded_discount += refund_info["discount_lost"]
+                order.refunded_coupon_discount += refund_info["coupon_discount_lost"]
+                order.save(update_fields=[
+                    "refunded_amount",
+                    "refunded_discount",
+                    "refunded_coupon_discount",
+                ])
 
                 # Revoke coupon if remaining items no longer qualify
                 revoke_coupon_if_invalid(order)
