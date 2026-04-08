@@ -95,6 +95,9 @@
                                 {% if txn.transaction %}
                                     <span class="wl-txn-id">{{ txn.transaction.transaction_id }}</span>
                                 {% endif %}
+                                {% if txn.order_number %}
+                                    <span class="wl-txn-order">Order {{ txn.order_number }}</span>
+                                {% endif %}
                             </div>
                         </div>
 
@@ -128,6 +131,9 @@
                             <div class="wl-txn-meta">
                                 <span class="wl-txn-date">{{ txn.created_at|date:"d M Y, h:i A" }}</span>
                                 <span class="wl-txn-id">{{ txn.transaction_id }}</span>
+                                {% if txn.order_number %}
+                                    <span class="wl-txn-order">Order {{ txn.order_number }}</span>
+                                {% endif %}
                                 <span class="wl-method-badge">{{ txn.get_payment_method_display }}</span>
                             </div>
                         </div>

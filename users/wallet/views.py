@@ -37,6 +37,18 @@ def wallet_page(request):
 
     page_obj = Paginator(qs, 15).get_page(request.GET.get("page"))
 
+    for item in page_obj:
+        item.order_number = None
+        txn = item.transaction if active_tab == "wallet" else item
+        if txn and txn.content_object:
+            obj = txn.content_object
+            if hasattr(obj, "order_number"):
+                item.order_number = obj.order_number
+            elif hasattr(obj, "order") and hasattr(obj.order, "order_number"):
+                item.order_number = obj.order.order_number
+            elif hasattr(obj, "order_item") and hasattr(obj.order_item, "order"):
+                item.order_number = obj.order_item.order.order_number
+
     context = {
         "wallet": wallet,
         "transactions": page_obj,
@@ -70,9 +82,16 @@ def wallet_transaction_detail(request, transaction_id):
 
     # Resolve linked object info
     linked_obj = None
+    order_number = None
     if txn.content_type and txn.object_id:
         try:
             linked_obj = txn.content_object
+            if hasattr(linked_obj, "order_number"):
+                order_number = linked_obj.order_number
+            elif hasattr(linked_obj, "order") and hasattr(linked_obj.order, "order_number"):
+                order_number = linked_obj.order.order_number
+            elif hasattr(linked_obj, "order_item") and hasattr(linked_obj.order_item, "order"):
+                order_number = linked_obj.order_item.order.order_number
         except Exception:
             linked_obj = None
 
@@ -80,6 +99,7 @@ def wallet_transaction_detail(request, transaction_id):
         "txn": txn,
         "wallet_txn": wallet_txn,
         "linked_obj": linked_obj,
+        "order_number": order_number,
     }
     return render(request, "wallet/transaction_detail.html", context)
 

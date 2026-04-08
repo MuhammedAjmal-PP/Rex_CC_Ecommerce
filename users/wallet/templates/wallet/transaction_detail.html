@@ -152,6 +152,17 @@
                         <span class="td-value">{{ linked_obj }}</span>
                     </div>
 
+                    {% if order_number %}
+                    <div class="td-row">
+                        <span class="td-label">Order</span>
+                        <span class="td-value td-value-mono">
+                            <a href="{% url 'user_order_details' order_number %}" style="text-decoration: underline; color: inherit;">
+                                {{ order_number }}
+                            </a>
+                        </span>
+                    </div>
+                    {% endif %}
+
                 </div>
             </div>
             {% endif %}
