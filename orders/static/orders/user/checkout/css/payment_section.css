@@ -95,3 +95,56 @@
     cursor: not-allowed;
     opacity: 0.7;
 }
+
+/* Disabled Payment Card */
+.checkout-payment-card.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: #faf9f7;
+}
+
+.checkout-payment-card.disabled .pay-icon {
+    background: #f5f5f5;
+    border-color: #e0e0e0;
+}
+
+.checkout-payment-card.disabled .pay-icon .material-icons {
+    color: #ccc;
+}
+
+.checkout-payment-card.disabled .pay-name {
+    color: #666;
+}
+
+.checkout-payment-card.disabled .pay-desc {
+    color: #999;
+}
+
+.pay-disabled-reason {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.75rem;
+    color: #d32f2f;
+    margin-top: 4px;
+    display: block;
+    font-weight: 500;
+}
+
+/* Payment Step Actions */
+.chk-payment-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid #eaeaea;
+}
+
+.chk-payment-actions .hub-btn-outline .material-icons {
+    font-size: 18px;
+    margin-right: 6px;
+    vertical-align: middle;
+}
+
+.chk-payment-actions .lux-btn-primary {
+    min-width: 200px;
+}

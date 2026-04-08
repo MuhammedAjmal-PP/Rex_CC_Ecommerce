@@ -3,7 +3,19 @@
 
     <div class="chk-payment-grid">
         
-        <!-- COD (Active) -->
+        <!-- COD -->
+        {% if order_summary.grand_total < cod_limit %}
+        <div class="hub-card checkout-payment-card disabled" title="Not available for this order" id="pay-cod">
+            <div class="pay-icon">
+                <span class="material-icons">payments</span>
+            </div>
+            <div class="pay-info">
+                <span class="pay-name">Cash on Delivery</span>
+                <span class="pay-desc">Pay with cash upon receipt</span>
+                <span class="pay-disabled-reason">Available only for orders above ₹{{ cod_limit|floatformat:0 }}</span>
+            </div>
+        </div>
+        {% else %}
         <div class="hub-card checkout-payment-card selected" onclick="selectPayment('cod')" id="pay-cod">
             <div class="pay-icon">
                 <span class="material-icons">payments</span>
@@ -16,6 +28,7 @@
                 <span class="material-icons">check_circle</span>
             </div>
         </div>
+        {% endif %}
 
         <!-- Wallet -->
         {% if wallet_balance >= order_summary.grand_total %}
@@ -32,14 +45,14 @@
             </div>
         </div>
         {% else %}
-        <div class="hub-card checkout-payment-card disabled" style="opacity: 0.6; cursor: not-allowed; background: #faf9f7;" title="Insufficient Balance">
+        <div class="hub-card checkout-payment-card disabled" title="Insufficient Balance">
             <div class="pay-icon">
-                <span class="material-icons" style="color: #ccc;">account_balance_wallet</span>
+                <span class="material-icons">account_balance_wallet</span>
             </div>
             <div class="pay-info">
-                <span class="pay-name" style="color: #666;">Wallet</span>
-                <span class="pay-desc" style="color: #999;">Balance: ₹{{ wallet_balance|floatformat:2 }}</span>
-                <span style="font-family: 'Montserrat', sans-serif; font-size: 0.75rem; color: #d32f2f; margin-top: 4px; display: block; font-weight: 500;">Insufficient Balance</span>
+                <span class="pay-name">Wallet</span>
+                <span class="pay-desc">Balance: ₹{{ wallet_balance|floatformat:2 }}</span>
+                <span class="pay-disabled-reason">Insufficient Balance</span>
             </div>
         </div>
         {% endif %}
@@ -61,12 +74,12 @@
     </div>
 
     <!-- ACTIONS -->
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 32px; padding-top: 24px; border-top: 1px solid #eaeaea;">
+    <div class="chk-payment-actions">
         <button type="button" class="hub-btn-outline" onclick="goToStep(1)">
-            <span class="material-icons" style="font-size: 18px; margin-right: 6px; vertical-align: middle;">arrow_back</span> Back
+            <span class="material-icons">arrow_back</span> Back
         </button>
 
-         <button type="button" class="lux-btn-primary" id="btn-next-review" onclick="goToStep(3)" style="min-width: 200px;">
+         <button type="button" class="lux-btn-primary" id="btn-next-review" onclick="goToStep(3)">
             Review Order
         </button>
     </div>

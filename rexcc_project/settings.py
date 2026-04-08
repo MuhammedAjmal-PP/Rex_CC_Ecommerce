@@ -312,6 +312,7 @@ STORE_STATE = env("STORE_STATE", default="KERALA")
 STORE_STATE_CODE = env("STORE_STATE_CODE", default="32")
 DEFAULT_WATCH_HSN = env("DEFAULT_WATCH_HSN", default="9102")  # HSN code for wristwatches
 GST_RATE = env.int("GST_RATE", default=18)  # Standard GST rate for watches (%)
+COD_MIN_ORDER_AMOUNT = env.int("COD_MIN_ORDER_AMOUNT", default=50_000)  # Minimum order amount for Cash on Delivery (₹)
 
 
 # ───────────────────────────────────────────────────────────────
