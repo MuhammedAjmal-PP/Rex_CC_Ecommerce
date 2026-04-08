@@ -17,6 +17,7 @@ from orders.utils import (
     compute_return_refund,
     get_payment_transaction,
 )
+from reviews.models import Review
 from weasyprint import HTML
 
 
@@ -117,12 +118,40 @@ def order_detail(request, order_number):
 
     # Enrich items with computed values for template
     items_list = list(order_items)
+
+    # Pre-fetch which products this user has already reviewed
+    product_ids = [
+        item.product_variant.product_id
+        for item in items_list
+        if item.product_variant and item.product_variant.product_id
+    ]
+    reviewed_product_ids = set(
+        Review.objects.filter(
+            user=request.user, product_id__in=product_ids
+        ).values_list("product_id", flat=True)
+    )
+
     for item in items_list:
         totals = compute_item_totals(item)
         item.total_original_price = totals["total_original_price"]
         item.item_discount = totals["item_discount"]
         item.can_return = can_return_item(item)
         item.total_return = compute_return_refund(item)
+
+        # Review flags
+        if (
+            item.status == "DELIVERED"
+            and item.product_variant
+            and item.product_variant.product_id not in reviewed_product_ids
+        ):
+            item.can_review = True
+        else:
+            item.can_review = False
+
+        item.has_reviewed = (
+            item.product_variant
+            and item.product_variant.product_id in reviewed_product_ids
+        )
 
     payment = get_payment_transaction(order)
 

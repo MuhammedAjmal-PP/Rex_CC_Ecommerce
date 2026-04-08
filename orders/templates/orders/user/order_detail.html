@@ -122,6 +122,18 @@
                                                         Return #{{ item.return_request.return_number }} - {{ item.return_request.get_status_display }}
                                                     </div>
                                                 {% endif %}
+                                                {% if item.can_review %}
+                                                    <button type="button"
+                                                            class="od-item-action-link od-review-btn"
+                                                            data-product-id="{{ item.product_variant.product_id }}"
+                                                            data-product-name="{{ item.product_variant.product.name }}">
+                                                        <span class="material-icons">rate_review</span> Write a Review
+                                                    </button>
+                                                {% elif item.has_reviewed %}
+                                                    <span class="od-reviewed-badge">
+                                                        <span class="material-icons">check_circle</span> Reviewed
+                                                    </span>
+                                                {% endif %}
                                             </div>
                                         </div>
                                         <!-- Quantity -->
@@ -235,3 +247,52 @@
                 </div>
             </div>
         {% endblock %}
+{% block extra_js %}
+    <!-- Review Modal -->
+    <div class="od-review-modal-backdrop" id="reviewModalBackdrop">
+        <div class="od-review-modal">
+            <div class="od-review-modal-header">
+                <h3 class="od-review-modal-title">Write a Review</h3>
+                <button type="button" class="od-review-modal-close" id="reviewModalClose">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+            <p class="od-review-modal-product" id="reviewProductName"></p>
+            <form id="reviewForm">
+                {% csrf_token %}
+                <input type="hidden" name="rating" id="reviewRatingInput" value="">
+                <div class="od-review-field">
+                    <label>Your Rating</label>
+                    <div class="od-star-select" id="starSelect">
+                        <span class="material-icons od-star-pick" data-value="1">star_border</span>
+                        <span class="material-icons od-star-pick" data-value="2">star_border</span>
+                        <span class="material-icons od-star-pick" data-value="3">star_border</span>
+                        <span class="material-icons od-star-pick" data-value="4">star_border</span>
+                        <span class="material-icons od-star-pick" data-value="5">star_border</span>
+                    </div>
+                    <div class="od-review-error" id="ratingError"></div>
+                </div>
+                <div class="od-review-field">
+                    <label for="reviewTitle">Review Title</label>
+                    <input type="text" id="reviewTitle" name="title"
+                           class="od-review-input"
+                           placeholder="Sum up your experience..."
+                           maxlength="120">
+                    <div class="od-review-error" id="titleError"></div>
+                </div>
+                <div class="od-review-field">
+                    <label for="reviewComment">Your Review</label>
+                    <textarea id="reviewComment" name="comment"
+                              class="od-review-input"
+                              placeholder="Tell other collectors about this timepiece..."
+                              rows="4" maxlength="1000"></textarea>
+                    <div class="od-review-error" id="commentError"></div>
+                </div>
+                <button type="submit" class="od-review-submit" id="reviewSubmitBtn">
+                    Submit Review
+                </button>
+            </form>
+        </div>
+    </div>
+    <script src="{% static 'orders/user/js/order_review.js' %}"></script>
+{% endblock %}

@@ -75,6 +75,7 @@ INSTALLED_APPS = [
     "payments",
     "offers",
     "coupons",
+    "reviews",
 ]
 
 
