@@ -8,9 +8,7 @@ from decimal import Decimal
 from django.db.models import (
     Sum,
     Count,
-    F,
-    Value,
-    CharField,
+    F
 )
 from django.db.models.functions import TruncYear, TruncMonth, TruncWeek, TruncDay
 from django.utils import timezone
@@ -38,7 +36,7 @@ def get_summary_stats():
     order_qs = Order.objects.exclude(status__in=_EXCLUDED_STATUSES)
 
     agg = order_qs.aggregate(
-        total_revenue=Sum("grand_total"),
+        total_revenue=Sum(F("grand_total") - F("refunded_amount")),
         total_orders=Count("id"),
     )
 
@@ -113,7 +111,7 @@ def get_chart_data(filter_type="monthly"):
         .annotate(period=trunc_fn("created_at"))
         .values("period")
         .annotate(
-            revenue=Sum("grand_total"),
+            revenue=Sum(F("grand_total") - F("refunded_amount")),
             order_count=Count("id"),
         )
         .order_by("period")
