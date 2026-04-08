@@ -22,44 +22,49 @@ function getCSRFToken() {
 }
 
 function deleteAddress(button) {
-  if (!confirm("Are you sure you want to delete this address?")) return;
+  UserAlert.confirm(
+    'Delete Address',
+    'Are you sure you want to delete this address?',
+    function () {
+      // Get URL from button's data-url attribute
+      const url = button.getAttribute("data-url");
 
-  // Get URL from button's data-url attribute
-  const url = button.getAttribute("data-url");
-
-  if (!url) {
-    showMessage("Invalid URL configuration.", "error");
-    return;
-  }
-  
-  button.disabled = true;
-  button.innerHTML = 'Removing...';
-
-  fetch(url, {
-    method: "POST",
-    headers: {
-      "X-CSRFToken": getCSRFToken(),
-      "X-Requested-With": "XMLHttpRequest"
-    },
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      if (data.success) {
-        showMessage("Address deleted successfully.", "success");
-        setTimeout(() => {
-             window.location.reload();
-        }, 1000);
-      } else {
-        alert("Failed to delete address.");
-        button.disabled = false;
-        button.innerHTML = 'Remove';
+      if (!url) {
+        showMessage("Invalid URL configuration.", "error");
+        return;
       }
-    })
-    .catch(() => {
-      showMessage("Something went wrong. Please try again.", "error");
-      button.disabled = false;
-      button.innerHTML = 'Remove';
-    });
+      
+      button.disabled = true;
+      button.innerHTML = 'Removing...';
+
+      fetch(url, {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": getCSRFToken(),
+          "X-Requested-With": "XMLHttpRequest"
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            showMessage("Address deleted successfully.", "success");
+            setTimeout(() => {
+                 window.location.reload();
+            }, 1000);
+          } else {
+            showMessage("Failed to delete address.", "error");
+            button.disabled = false;
+            button.innerHTML = 'Remove';
+          }
+        })
+        .catch(() => {
+          showMessage("Something went wrong. Please try again.", "error");
+          button.disabled = false;
+          button.innerHTML = 'Remove';
+        });
+    },
+    { danger: true, confirmText: 'Delete' }
+  );
 }
 
 function setDefaultAddress(button) {
