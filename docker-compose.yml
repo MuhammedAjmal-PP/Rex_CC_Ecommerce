@@ -1,95 +1,72 @@
-# docker-compose.yml
-# This file defines all 4 containers your project needs.
+# docker-compose.yml — Local Development Only
+#
+# Secrets are loaded from your .env file via ${VARIABLE} substitution.
+# Docker Compose reads .env automatically — no credentials are hardcoded here.
+# .env is listed in .gitignore so it is NEVER committed to git.
 
 services:
 
   # ────────────────────────────────────────────
-  # 1. DATABASE (PostgreSQL 17)
+  # 1. DATABASE (PostgreSQL)
   # ────────────────────────────────────────────
-  # WHY a separate container? So your database data survives even if you
-  # rebuild the app container. The "volumes" section saves data permanently.
   db:
-    image: postgres:17-alpine
-    # "alpine" = tiny Linux + PostgreSQL. Very small image.
+    image: postgres:18-alpine
     restart: always
     environment:
-      POSTGRES_DB: rexcc_db
-      POSTGRES_USER: rexcc_user
-      POSTGRES_PASSWORD: rexcc_secure_password_123
-      # ↑ For local testing only! On production, use a strong password.
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-      # ↑ Named volume — data persists even if container is deleted
+      - postgres_data:/var/lib/postgresql
+      # Mount at /var/lib/postgresql for PostgreSQL 18+ compatibility
     ports:
       - "5433:5432"
-      # ↑ Maps container port 5432 to YOUR machine's port 5433
-      #   (5433 to avoid conflict with your local PostgreSQL on 5432)
+      # Mapped to 5433 on your machine to avoid conflicts with a local PostgreSQL on 5432.
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U rexcc_user -d rexcc_db" ]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
       interval: 5s
       timeout: 5s
       retries: 5
 
   # ────────────────────────────────────────────
-  # 2. WEB (Django + Gunicorn)
+  # 2. WEB (Django dev server)
   # ────────────────────────────────────────────
-  # This is your main Django application served by Gunicorn.
   web:
     build: .
-    # ↑ Uses the Dockerfile in the current directory
     restart: always
     env_file:
-      - .env.docker
-    # ↑ Loads environment variables from .env.docker file
+      - .env
+    environment:
+      # Override DATABASE_URL: inside Docker 'localhost' means the container itself.
+      # Use the 'db' service name so Django can reach the database container.
+      DATABASE_URL: postgres://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
     volumes:
-      - static_files:/app/staticfiles
-      # ↑ Shares the staticfiles folder with the Nginx container
+      - .:/app    # Bind-mount for hot-reload — code changes reflect immediately
+    ports:
+      - "8000:8000"
     depends_on:
       db:
         condition: service_healthy
-    # ↑ Waits for the database to be ready before starting Django
 
-    # ────────────────────────────────────────────
-    # 3. WORKER (Background Task Processor)
-    # ────────────────────────────────────────────
-    # WHY a separate container? The task worker needs to run as its own
-    # process. It polls the database for pending tasks and executes them.
-    # Example: expiring failed Razorpay orders after the retry window.
+  # ────────────────────────────────────────────
+  # 3. WORKER (Background Task Processor)
+  # ────────────────────────────────────────────
   worker:
     build: .
     restart: always
     env_file:
-      - .env.docker
+      - .env
+    environment:
+      DATABASE_URL: postgres://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
     command: python manage.py db_worker
-    # ↑ Overrides the Dockerfile's CMD — runs the task worker instead of Gunicorn
+    volumes:
+      - .:/app
     depends_on:
       db:
         condition: service_healthy
 
-  # ────────────────────────────────────────────
-  # 4. NGINX (Web Server / Reverse Proxy)
-  # ────────────────────────────────────────────
-  # Nginx sits in front of Django, serving static files directly and
-  # forwarding other requests to Gunicorn.
-  nginx:
-    image: nginx:alpine
-    restart: always
-    ports:
-      - "80:80"
-      # ↑ Maps container port 80 to YOUR machine's port 80
-      #   Open http://localhost in your browser to see your site!
-    volumes:
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
-      # ↑ Uses YOUR nginx config file (ro = read-only for safety)
-      - static_files:/app/staticfiles:ro
-      # ↑ Shares static files folder with the web container (read-only)
-    depends_on:
-      - web
-
 # ────────────────────────────────────────────
 # NAMED VOLUMES
 # ────────────────────────────────────────────
-# These are like "hard drives" that persist data even when containers restart.
 volumes:
   postgres_data:
-  static_files:

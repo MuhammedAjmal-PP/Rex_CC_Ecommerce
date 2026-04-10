@@ -146,58 +146,6 @@
                 </div>
             </div>
         {% endif %}
-        <!-- Remove Confirmation Modal (Redesigned as Small Luxury Card) -->
-        <div class="modal fade cart-remove-modal"
-             id="removeConfirmModal"
-             tabindex="-1"
-             aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-sm">
-                <div class="modal-content hub-card"
-                     style="padding: 24px;
-                            text-align: center;
-                            border: none;
-                            border-radius: 4px">
-                    <div class="modal-header"
-                         style="border: none;
-                                padding: 0 0 16px;
-                                justify-content: center;
-                                position: relative">
-                        <h5 class="modal-title hub-name"
-                            style="font-size: 1.5rem;
-                                   margin: 0;
-                                   padding-top: 8px">Remove Item</h5>
-                        <button type="button"
-                                class="btn-close"
-                                data-bs-dismiss="modal"
-                                aria-label="Close"
-                                style="position: absolute;
-                                       right: 0;
-                                       top: 0"></button>
-                    </div>
-                    <div class="modal-body"
-                         style="padding: 0 0 24px;
-                                font-family: 'Montserrat', sans-serif;
-                                color: #666;
-                                font-size: 0.95rem;
-                                line-height: 1.5">
-                        Are you sure you want to remove this timepiece from your collection?
-                    </div>
-                    <div class="modal-footer"
-                         style="border: none;
-                                padding: 0;
-                                justify-content: center;
-                                gap: 12px">
-                        <button type="button"
-                                id="confirmRemoveBtn"
-                                class="lux-btn-primary"
-                                style="background: #111;
-                                       padding: 8px 20px;
-                                       font-size: 0.8rem;
-                                       box-shadow: none">Confirm</button>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
     <!-- Hidden form for updates -->
     {% csrf_token %}

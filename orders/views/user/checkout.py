@@ -96,6 +96,7 @@ def checkoutview(request):
         "address_form": address_form,
         "wallet_balance": wallet.balance,
         "available_coupons": available_coupons,
+        "cod_limit": settings.COD_MIN_ORDER_AMOUNT,
     }
 
     return render(request, "orders/user/checkout/checkout.html", context)

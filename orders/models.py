@@ -59,6 +59,26 @@ class Order(models.Model):
     )
     coupon_revoke = models.BooleanField(default=False)
 
+    # ── Analytics trackers (accumulated on cancel / return) ──
+    refunded_amount = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=Decimal("0.00"),
+        help_text="Cumulative grand_total deducted via cancellations/returns",
+    )
+    refunded_discount = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=Decimal("0.00"),
+        help_text="Cumulative offer discount lost via cancellations/returns",
+    )
+    refunded_coupon_discount = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=Decimal("0.00"),
+        help_text="Cumulative coupon discount lost via cancellations/returns",
+    )
+
     payment = GenericRelation(
         "payments.Transaction",
         related_query_name="orders",

@@ -296,6 +296,13 @@
   font-size: 0.75rem;
 }
 
+.lux-form-error {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.8rem;
+  color: #d32f2f;
+  margin-top: 4px;
+}
+
 /* ---------------------------------------------------------
    EMAIL SECION
    --------------------------------------------------------- */
@@ -504,6 +511,7 @@
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);

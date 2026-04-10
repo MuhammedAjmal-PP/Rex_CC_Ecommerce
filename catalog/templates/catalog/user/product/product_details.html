@@ -246,33 +246,64 @@
             </section>
         {% endif %}
         <!-- 3. Reviews -->
-        <section class="pdp-content-section">
+        <section class="pdp-content-section" id="reviews-section">
             <h2 class="pdp-section-title">Customer Reviews</h2>
-            <div class="pdp-reviews-grid">
-                {% for review in reviews %}
-                    <article class="pdp-review-card">
-                        <div class="pdp-review-header">
-                            <span class="pdp-review-author">{{ review.author }}</span>
-                            <span class="pdp-review-date">{{ review.date }}</span>
-                        </div>
-                        <div class="pdp-rating-stars"
-                             style="font-size: 1rem;
-                                    margin-bottom: 0.5rem">
+
+            <!-- Ratings Summary -->
+            {% if ratings_data.total_reviews > 0 %}
+                <div class="pdp-ratings-summary">
+                    <div class="pdp-rating-big">
+                        <span class="pdp-rating-number">{{ ratings_data.average }}</span>
+                        <div class="pdp-rating-stars" style="font-size: 1.2rem;">
                             {% for i in "12345" %}
                                 <span class="material-icons">
-                                    {% if forloop.counter <= review.rating %}
-                                        star
-                                    {% else %}
-                                        star_border
-                                    {% endif %}
+                                    {% if forloop.counter <= ratings_data.average %}star{% else %}star_border{% endif %}
                                 </span>
                             {% endfor %}
                         </div>
-                        <strong style="display:block; margin-bottom: 0.5rem;">{{ review.title }}</strong>
-                        <p class="pdp-review-body">{{ review.comment }}</p>
-                    </article>
-                {% endfor %}
-            </div>
+                        <span class="pdp-rating-count">Based on {{ ratings_data.total_reviews }} review{{ ratings_data.total_reviews|pluralize }}</span>
+                    </div>
+                    <div class="pdp-rating-bars">
+                        {% for star, pct in ratings_data.distribution.items %}
+                            <div class="pdp-bar-row">
+                                <span class="pdp-bar-label">{{ star }} ★</span>
+                                <div class="pdp-bar-track">
+                                    <div class="pdp-bar-fill" style="width: {{ pct }}%;"></div>
+                                </div>
+                                <span class="pdp-bar-pct">{{ pct }}%</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- Review List -->
+            {% if reviews %}
+                <div class="pdp-reviews-grid">
+                    {% for review in reviews %}
+                        <article class="pdp-review-card">
+                            <div class="pdp-review-header">
+                                <span class="pdp-review-author">{{ review.user.get_full_name|default:review.user.email }}</span>
+                                <span class="pdp-review-date">{{ review.created_at|date:"F d, Y" }}</span>
+                            </div>
+                            <div class="pdp-rating-stars" style="font-size: 1rem; margin-bottom: 0.5rem;">
+                                {% for i in "12345" %}
+                                    <span class="material-icons">
+                                        {% if forloop.counter <= review.rating %}star{% else %}star_border{% endif %}
+                                    </span>
+                                {% endfor %}
+                            </div>
+                            <strong style="display:block; margin-bottom: 0.5rem;">{{ review.title }}</strong>
+                            <p class="pdp-review-body">{{ review.comment }}</p>
+                        </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="pdp-review-empty">
+                    <span class="material-icons">rate_review</span>
+                    <p>No reviews yet. Be the first to share your experience.</p>
+                </div>
+            {% endif %}
         </section>
         <!-- 4. Related Products -->
         {% if related_variants %}

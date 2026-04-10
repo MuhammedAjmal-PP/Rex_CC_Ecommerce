@@ -133,6 +133,15 @@ def place_order_view(request):
         adjusted_grand_total = adjusted["grand_total"]
         adjusted_tax = adjusted["tax"]
 
+        # ── COD limit check ────────────────────
+        if payment_method == "COD" and adjusted_grand_total < settings.COD_MIN_ORDER_AMOUNT:
+            messages.error(
+                request,
+                f"Cash on Delivery is available only for orders above ₹{settings.COD_MIN_ORDER_AMOUNT:,}. "
+                "Please choose an online payment method.",
+            )
+            return redirect(reverse("checkout") + "?step=2")
+
         # ── Wallet balance check ──────────────
         if payment_method == "WALLET":
             if not can_pay_with_wallet(request.user, adjusted_grand_total):

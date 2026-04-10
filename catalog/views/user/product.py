@@ -8,6 +8,7 @@ from catalog.service import get_category_from_referer
 from catalog.models import Product, ProductVariant, Category, Brand
 from catalog.utils import pack_variants
 from users.wishlist.utils import get_wishlist_variant_ids
+from reviews.services import get_product_reviews, get_ratings_summary
 
 
 @never_cache
@@ -227,40 +228,9 @@ def product_detail(request, slug, sku):
         {"name": product.name, "url": None},
     ]
 
-    # STATIC RATINGS & REVIEWS (INTENTIONAL)
-    ratings_data = {
-        "average": 4.5,
-        "total_reviews": 127,
-        "distribution": {
-            5: 70,
-            4: 18,
-            3: 8,
-            2: 3,
-            1: 1,
-        },
-    }
-
-    reviews = [
-        {
-            "author": "Michael R.",
-            "date": "December 28, 2025",
-            "rating": 5,
-            "title": "Exceptional Quality",
-            "comment": (
-                "This watch exceeded all my expectations. "
-                "The craftsmanship is outstanding."
-            ),
-        },
-        {
-            "author": "Sarah K.",
-            "date": "December 15, 2025",
-            "rating": 5,
-            "title": "Perfect Gift",
-            "comment": (
-                "Bought this as a gift for my husband and he absolutely loves it."
-            ),
-        },
-    ]
+    # RATINGS & REVIEWS (from reviews app)
+    ratings_data = get_ratings_summary(product)
+    reviews = get_product_reviews(product)
 
     # RELATED PRODUCTS — query variants directly to avoid N+1
     related_variants = (

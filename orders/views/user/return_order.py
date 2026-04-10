@@ -63,7 +63,7 @@ def return_order(request, order_number, item_id):
         "order_item": order_item,
         "form": form,
         "primary_image": _get_primary_image(order_item.product_variant),
-        "refund_amount": compute_return_refund(order_item),
+        "refund_amount": compute_return_refund(order_item)["refund_amount"],
     }
     return render(request, "orders/user/return_order.html", context)
 

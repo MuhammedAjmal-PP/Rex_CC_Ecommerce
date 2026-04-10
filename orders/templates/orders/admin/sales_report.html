@@ -131,7 +131,7 @@
                         <th>Payment</th>
                         <th>Discount</th>
                         <th>Coupon</th>
-                        <th>Grand Total</th>
+                        <th>Net Total</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -175,19 +175,19 @@
                                 </span>
                             </td>
                             <td>
-                                <span class="discount-value">₹{{ order.discount|floatformat:2 }}</span>
+                                <span class="discount-value">₹{{ order.net_discount|floatformat:2 }}</span>
                             </td>
                             <td>
                                 <span class="coupon-value">
-                                    {% if order.coupon_discount %}
-                                        ₹{{ order.coupon_discount|floatformat:2 }}
+                                    {% if order.net_coupon_discount %}
+                                        ₹{{ order.net_coupon_discount|floatformat:2 }}
                                     {% else %}
                                         —
                                     {% endif %}
                                 </span>
                             </td>
                             <td>
-                                <span class="order-total">₹{{ order.grand_total|floatformat:2 }}</span>
+                                <span class="order-total">₹{{ order.net_grand_total|floatformat:2 }}</span>
                             </td>
                         </tr>
                     {% endfor %}

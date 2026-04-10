@@ -75,6 +75,7 @@ INSTALLED_APPS = [
     "payments",
     "offers",
     "coupons",
+    "reviews",
 ]
 
 
@@ -228,7 +229,7 @@ STORAGES = {
     },
 }
 
-IMAGE_MAX_SIZE_MB = 5
+IMAGE_MAX_SIZE_MB = env.int("IMAGE_MAX_SIZE_MB", default=5)
 ALLOWED_IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "webp", "avif"]
 
 
@@ -276,7 +277,7 @@ TASKS = {
 # ───────────────────────────────────────────────────────────────
 
 PHONENUMBER_DB_FORMAT = "NATIONAL"
-PHONENUMBER_DEFAULT_REGION = "IN"
+PHONENUMBER_DEFAULT_REGION = env("PHONENUMBER_DEFAULT_REGION", default="IN")
 
 
 # ───────────────────────────────────────────────────────────────
@@ -284,15 +285,21 @@ PHONENUMBER_DEFAULT_REGION = "IN"
 # ───────────────────────────────────────────────────────────────
 
 # User limits
-MAX_ADDRESSES_PER_USER = 5
-MAX_QUANTITY_PURCHASE_PER_ITEM = 5
+MAX_ADDRESSES_PER_USER = env.int("MAX_ADDRESSES_PER_USER", default=5)
+MAX_QUANTITY_PURCHASE_PER_ITEM = env.int("MAX_QUANTITY_PURCHASE_PER_ITEM", default=5)
 
 # Shipping
-SHIPPING_CHARGE = 100
+SHIPPING_CHARGE = env.int("SHIPPING_CHARGE", default=100)
 
 # Wallet top-up limits (₹)
 WALLET_TOPUP_MIN = env.int("WALLET_TOPUP_MIN", default=5_000)
 WALLET_TOPUP_MAX = env.int("WALLET_TOPUP_MAX", default=75_000)
+
+# Referral programme
+REFERRAL_REWARD_AMOUNT = env.int("REFERRAL_REWARD_AMOUNT", default=1_000)
+
+# Returns
+RETURN_WINDOW_DAYS = env.int("RETURN_WINDOW_DAYS", default=7)
 
 # Order expiry — how long to wait before auto-expiring a failed Razorpay order
 # Dev: 120s (2 min) | Prod: 18000s (5 hours)
@@ -301,10 +308,11 @@ FAILED_ORDER_EXPIRY_SECONDS = env.int(
 )
 
 # Tax — store base location
-STORE_STATE = "KERALA"
-STORE_STATE_CODE = "32"
-DEFAULT_WATCH_HSN = "9102"  # HSN code for wristwatches
-GST_RATE = 18  # Standard GST rate for watches (%)
+STORE_STATE = env("STORE_STATE", default="KERALA")
+STORE_STATE_CODE = env("STORE_STATE_CODE", default="32")
+DEFAULT_WATCH_HSN = env("DEFAULT_WATCH_HSN", default="9102")  # HSN code for wristwatches
+GST_RATE = env.int("GST_RATE", default=18)  # Standard GST rate for watches (%)
+COD_MIN_ORDER_AMOUNT = env.int("COD_MIN_ORDER_AMOUNT", default=50_000)  # Minimum order amount for Cash on Delivery (₹)
 
 
 # ───────────────────────────────────────────────────────────────

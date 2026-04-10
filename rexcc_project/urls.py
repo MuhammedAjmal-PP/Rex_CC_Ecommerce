@@ -38,4 +38,5 @@ urlpatterns = [
     path("adminpanel/", include("offers.urls.admin_urls")),
     path("adminpanel/", include("coupons.urls.admin_urls")),
     path("", include("coupons.urls.user_urls")),
+    path("", include("reviews.urls")),
 ]

@@ -64,12 +64,14 @@ def _compute_order_total(items, order, include_shipping=True):
            — only if the coupon's min_order_amount is still met
         3. Add shipping  (qty × SHIPPING_CHARGE per item, if included)
         4. Apply GST on  (subtotal − coupon + shipping)
-        5. Return grand total
+        5. Return dict with grand_total and coupon_discount
 
-    Returns Decimal("0.00") when items is empty.
+    Returns {"grand_total": Decimal("0.00"), "coupon_discount": Decimal("0.00")}
+    when items is empty.
     """
+    _ZERO = Decimal("0.00")
     if not items:
-        return Decimal("0.00")
+        return {"grand_total": _ZERO, "coupon_discount": _ZERO}
 
     subtotal = sum(i.price * i.quantity for i in items)
     shipping = Decimal("0.00")
@@ -88,7 +90,10 @@ def _compute_order_total(items, order, include_shipping=True):
     tax = (taxable * Decimal(settings.GST_RATE) / Decimal(100)).quantize(
         Decimal("0.01")
     )
-    return (taxable + tax).quantize(Decimal("0.01"))
+    return {
+        "grand_total": (taxable + tax).quantize(Decimal("0.01")),
+        "coupon_discount": coupon_discount,
+    }
 
 
 # Statuses that are already "out" of the order
@@ -106,6 +111,9 @@ def compute_cancel_refund(item):
     Coupon discount is recalculated for the surviving items and
     automatically invalidated if the remaining subtotal drops
     below the coupon's min_order_amount.
+
+    Returns:
+        dict with refund_amount, discount_lost, coupon_discount_lost
     """
     order = item.order
     all_items = list(order.items.all())
@@ -113,11 +121,21 @@ def compute_cancel_refund(item):
     before_items = [i for i in all_items if i.status not in _TERMINAL_STATUSES]
     after_items = [i for i in before_items if i.id != item.id]
 
-    before_total = _compute_order_total(before_items, order, include_shipping=True)
-    after_total = _compute_order_total(after_items, order, include_shipping=True)
+    before = _compute_order_total(before_items, order, include_shipping=True)
+    after = _compute_order_total(after_items, order, include_shipping=True)
 
-    refund = (before_total - after_total).quantize(Decimal("0.01"))
-    return max(refund, Decimal("0.00"))
+    refund = (before["grand_total"] - after["grand_total"]).quantize(Decimal("0.01"))
+    coupon_lost = (
+        before["coupon_discount"] - after["coupon_discount"]
+    ).quantize(Decimal("0.01"))
+
+    return {
+        "refund_amount": max(refund, Decimal("0.00")),
+        "discount_lost": ((item.original_price - item.price) * item.quantity).quantize(
+            Decimal("0.01")
+        ),
+        "coupon_discount_lost": max(coupon_lost, Decimal("0.00")),
+    }
 
 
 def compute_return_refund(item):
@@ -127,6 +145,9 @@ def compute_return_refund(item):
     Same logic as cancel, but shipping is NOT refunded because the
     item was already delivered.  We keep shipping identical in both
     calculations so it cancels out in the difference.
+
+    Returns:
+        dict with refund_amount, discount_lost, coupon_discount_lost
     """
     order = item.order
     all_items = list(order.items.all())
@@ -136,7 +157,9 @@ def compute_return_refund(item):
 
     # Use before_items for shipping in BOTH sides so shipping doesn't
     # appear in the refund difference.
-    before_total = _compute_order_total(before_items, order, include_shipping=True)
+    before = _compute_order_total(before_items, order, include_shipping=True)
+    before_total = before["grand_total"]
+    before_coupon = before["coupon_discount"]
 
     # After total: surviving items' subtotal/coupon, but shipping stays
     # the same as before (so it cancels out → no shipping refund).
@@ -145,27 +168,35 @@ def compute_return_refund(item):
         Decimal(i.quantity * settings.SHIPPING_CHARGE) for i in before_items
     )
 
-    coupon_discount = Decimal("0.00")
+    after_coupon = Decimal("0.00")
     coupon = order.coupon
     if coupon and not order.coupon_revoke and after_items:
         if after_subtotal >= coupon.min_order_amount:
-            coupon_discount = coupon.calculate_discount(after_subtotal)
+            after_coupon = coupon.calculate_discount(after_subtotal)
 
-    after_taxable = after_subtotal - coupon_discount + before_shipping
+    after_taxable = after_subtotal - after_coupon + before_shipping
     after_tax = (after_taxable * Decimal(settings.GST_RATE) / Decimal(100)).quantize(
         Decimal("0.01")
     )
     after_total = (after_taxable + after_tax).quantize(Decimal("0.01"))
 
     refund = (before_total - after_total).quantize(Decimal("0.01"))
-    return max(refund, Decimal("0.00"))
+    coupon_lost = (before_coupon - after_coupon).quantize(Decimal("0.01"))
+
+    return {
+        "refund_amount": max(refund, Decimal("0.00")),
+        "discount_lost": ((item.original_price - item.price) * item.quantity).quantize(
+            Decimal("0.01")
+        ),
+        "coupon_discount_lost": max(coupon_lost, Decimal("0.00")),
+    }
 
 
 def can_return_item(order_item):
     """
     Check if an item is returnable:
     1. Status is DELIVERED
-    2. Within 7 days of delivery
+    2. Within RETURN_WINDOW_DAYS of delivery (configurable via env)
     3. No active return request exists
     """
     if order_item.status != "DELIVERED":
@@ -180,4 +211,4 @@ def can_return_item(order_item):
         pass
 
     days_since = (timezone.now() - order_item.status_updated_at).days
-    return days_since <= 7
+    return days_since <= settings.RETURN_WINDOW_DAYS

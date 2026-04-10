@@ -555,3 +555,202 @@
    RESPONSIVE DESIGN
    --------------------------------------------------------- */
 /* Desktop only - no responsive breakpoints needed */
+
+/* ---------------------------------------------------------
+   REVIEW BUTTON & BADGE
+   --------------------------------------------------------- */
+.od-review-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: 1px solid var(--color-gold, #bfa15f);
+  color: var(--color-gold, #bfa15f);
+  padding: 5px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  transition: all 0.2s;
+  margin-top: 6px;
+}
+.od-review-btn .material-icons {
+  font-size: 16px;
+}
+.od-review-btn:hover {
+  background: var(--color-gold, #bfa15f);
+  color: #fff;
+}
+
+.od-reviewed-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #2e7d32;
+  margin-top: 6px;
+}
+.od-reviewed-badge .material-icons {
+  font-size: 16px;
+}
+
+/* ---------------------------------------------------------
+   REVIEW MODAL
+   --------------------------------------------------------- */
+.od-review-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+.od-review-modal-backdrop.od-visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.od-review-modal {
+  background: #fff;
+  width: 480px;
+  max-width: 92vw;
+  border-radius: 12px;
+  padding: 32px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+  transform: translateY(20px);
+  transition: transform 0.25s ease;
+}
+.od-review-modal-backdrop.od-visible .od-review-modal {
+  transform: translateY(0);
+}
+
+.od-review-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.od-review-modal-title {
+  font-family: "Playfair Display", serif;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #111;
+  margin: 0;
+}
+
+.od-review-modal-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #999;
+  padding: 4px;
+  border-radius: 50%;
+  transition: color 0.2s, background 0.2s;
+}
+.od-review-modal-close:hover {
+  color: #111;
+  background: #f5f5f5;
+}
+
+.od-review-modal-product {
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.85rem;
+  color: #888;
+  margin: 0 0 20px 0;
+}
+
+.od-review-field {
+  margin-bottom: 16px;
+}
+
+.od-review-field label {
+  display: block;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.od-star-select {
+  display: flex;
+  gap: 4px;
+}
+
+.od-star-pick {
+  font-size: 2rem !important;
+  color: #ddd;
+  cursor: pointer;
+  transition: color 0.15s, transform 0.15s;
+}
+.od-star-pick:hover {
+  transform: scale(1.15);
+}
+.od-star-pick.active {
+  color: var(--color-gold, #bfa15f);
+}
+
+.od-review-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.9rem;
+  transition: border-color 0.2s;
+  background: #fafafa;
+  box-sizing: border-box;
+}
+.od-review-input:focus {
+  outline: none;
+  border-color: var(--color-gold, #bfa15f);
+  background: #fff;
+}
+
+textarea.od-review-input {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.od-review-error {
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.78rem;
+  color: #d32f2f;
+  margin-top: 4px;
+  min-height: 0;
+}
+
+.od-review-submit {
+  width: 100%;
+  padding: 13px;
+  background: #111;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 4px;
+}
+.od-review-submit:hover {
+  background: #333;
+}
+.od-review-submit:disabled {
+  background: #999;
+  cursor: not-allowed;
+}

@@ -162,37 +162,16 @@ document.addEventListener("DOMContentLoaded", () => {
   // REMOVE LOGIC (AJAX — no reload)
   // =========================================================================
 
-  let itemToRemove = null;
-  const removeModalEl = document.getElementById("removeConfirmModal");
-  let removeModal = null;
-  const confirmBtn = document.getElementById("confirmRemoveBtn");
-
-  if (removeModalEl) {
-    removeModal = new bootstrap.Modal(removeModalEl);
-
-    if (confirmBtn) {
-      confirmBtn.addEventListener("click", () => {
-        if (itemToRemove) {
-          performRemove(itemToRemove.slug, itemToRemove.sku, itemToRemove.cardEl);
-        }
-      });
-    }
-  }
-
   function handleRemove(slug, sku, cardEl) {
-    itemToRemove = { slug, sku, cardEl };
-
-    if (removeModal) {
-      removeModal.show();
-    } else {
-      if (confirm("Remove this item?")) {
-        performRemove(slug, sku, cardEl);
-      }
-    }
+    UserAlert.confirm(
+      'Remove Item',
+      'Are you sure you want to remove this timepiece from your collection?',
+      function () { performRemove(slug, sku, cardEl); },
+      { danger: true, confirmText: 'Remove' }
+    );
   }
 
   async function performRemove(slug, sku, cardEl) {
-    if (removeModal) removeModal.hide();
     setItemLoading(cardEl, true);
 
     try {
@@ -233,8 +212,6 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (error) {
       showToast(error.message || "Could not remove item.", "error");
       setItemLoading(cardEl, false);
-    } finally {
-      itemToRemove = null;
     }
   }
 

@@ -8,13 +8,12 @@ Allauth signal handlers for the accounts app.
 from decimal import Decimal
 from allauth.account.models import EmailAddress as AllauthEmailAddress
 from allauth.account.signals import email_confirmed
+from django.conf import settings
 from django.db import transaction as db_transaction
 from django.dispatch import receiver
 from accounts.models import BlacklistedEmail
 from payments.service import create_transaction
 from users.wallet.service import credit_wallet
-
-REFERRAL_REWARD_AMOUNT = Decimal("1000.00")
 
 
 @receiver(email_confirmed)
@@ -63,18 +62,20 @@ def handle_email_confirmed(sender, request, email_address, **kwargs):
 
     # Fix #16: wrap both credits in a single atomic block
     with db_transaction.atomic():
+        reward = Decimal(settings.REFERRAL_REWARD_AMOUNT)
+
         # Credit referee (new user)
         referee_txn = create_transaction(
             user=user,
             txn_type="REFERRAL_REWARD",
             method="WALLET",
-            amount=REFERRAL_REWARD_AMOUNT,
+            amount=reward,
             status="COMPLETED",
             content_object=user,
             note=f"Referral reward — referred by {referrer.email}",
         )
         credit_wallet(
-            user=user, amount=REFERRAL_REWARD_AMOUNT, transaction_obj=referee_txn
+            user=user, amount=reward, transaction_obj=referee_txn
         )
 
         # Credit referrer (existing user)
@@ -82,11 +83,11 @@ def handle_email_confirmed(sender, request, email_address, **kwargs):
             user=referrer,
             txn_type="REFERRAL_REWARD",
             method="WALLET",
-            amount=REFERRAL_REWARD_AMOUNT,
+            amount=reward,
             status="COMPLETED",
             content_object=referrer,
             note=f"Referral reward — {user.email} joined using your code",
         )
         credit_wallet(
-            user=referrer, amount=REFERRAL_REWARD_AMOUNT, transaction_obj=referrer_txn
+            user=referrer, amount=reward, transaction_obj=referrer_txn
         )

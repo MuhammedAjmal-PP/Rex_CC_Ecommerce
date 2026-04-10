@@ -1,3 +1,4 @@
+import re
 from django import forms
 from allauth.account.forms import SignupForm
 from phonenumber_field.formfields import PhoneNumberField
@@ -58,6 +59,25 @@ class CustomSignupForm(SignupForm):
         ),
         label="Referral Code (Optional)",
     )
+
+    def clean_first_name(self):
+        name = self.cleaned_data.get("first_name", "").strip()
+        if not name:
+            raise forms.ValidationError("First name is required.")
+        if len(name) < 3:
+            raise forms.ValidationError("Name must contain at least 3 letters.")
+        if not re.match(r"^[A-Za-z]+$", name):
+            raise forms.ValidationError("Only letters are allowed.")
+        return name
+
+    def clean_last_name(self):
+        name = self.cleaned_data.get("last_name", "").strip()
+        if name:
+            if len(name) < 3:
+                raise forms.ValidationError("Name must contain at least 3 letters.")
+            if not re.match(r"^[A-Za-z]+$", name):
+                raise forms.ValidationError("Only letters are allowed.")
+        return name
 
     def clean_referral_code(self):
         code = self.cleaned_data.get("referral_code", "").strip().upper()

@@ -174,16 +174,21 @@ function initAvatarCropping() {
         removeAvatarBtn.addEventListener('click', function (e) {
             e.preventDefault();
 
-            if (confirm('Are you sure you want to remove your profile photo?')) {
-                // Clear file input
-                avatarInput.value = '';
+            UserAlert.confirm(
+                'Remove Photo',
+                'Are you sure you want to remove your profile photo?',
+                function () {
+                    // Clear file input
+                    avatarInput.value = '';
 
-                // Set remove flag
-                removeAvatarInput.value = 'true';
+                    // Set remove flag
+                    removeAvatarInput.value = 'true';
 
-                // Reset preview to placeholder
-                resetAvatarPreview();
-            }
+                    // Reset preview to placeholder
+                    resetAvatarPreview();
+                },
+                { danger: true, confirmText: 'Remove' }
+            );
         });
     }
 

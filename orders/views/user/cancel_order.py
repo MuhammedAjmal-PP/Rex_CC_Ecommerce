@@ -86,7 +86,9 @@ def cancel_order_submit(request, order_number):
         with transaction.atomic():
             cancelled_count = 0
             for item in selected_items:
-                cancel_amount = compute_cancel_refund(item)
+                refund_info = compute_cancel_refund(item)
+                cancel_amount = refund_info["refund_amount"]
+
                 change_order_item_status(
                     order_item=item,
                     to_status="CANCELLED",
@@ -124,7 +126,19 @@ def cancel_order_submit(request, order_number):
                         note="Adjusted for partial cancellation.",
                     )
 
+                # Accumulate analytics trackers
+                order.refunded_amount += refund_info["refund_amount"]
+                order.refunded_discount += refund_info["discount_lost"]
+                order.refunded_coupon_discount += refund_info["coupon_discount_lost"]
+
                 cancelled_count += 1
+
+            # Persist analytics trackers
+            order.save(update_fields=[
+                "refunded_amount",
+                "refunded_discount",
+                "refunded_coupon_discount",
+            ])
 
             # Revoke coupon if remaining items no longer qualify
             revoke_coupon_if_invalid(order)

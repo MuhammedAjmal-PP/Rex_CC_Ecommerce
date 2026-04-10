@@ -17,7 +17,19 @@ function selectPayment(method) {
         'razorpay': 'pay-razorpay',
     };
     const selectedCard = document.getElementById(cardMap[method]);
-    if (selectedCard) {
+    if (selectedCard && !selectedCard.classList.contains('disabled')) {
         selectedCard.classList.add('selected');
     }
 }
+
+// Auto-select first available payment method on load
+document.addEventListener('DOMContentLoaded', () => {
+    const codCard = document.getElementById('pay-cod');
+    if (codCard && codCard.classList.contains('disabled')) {
+        // COD is disabled — select Razorpay as default instead
+        const razorpayCard = document.getElementById('pay-razorpay');
+        if (razorpayCard && !razorpayCard.classList.contains('disabled')) {
+            selectPayment('razorpay');
+        }
+    }
+});
