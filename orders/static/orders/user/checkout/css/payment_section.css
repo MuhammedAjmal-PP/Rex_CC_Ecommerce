@@ -98,45 +98,54 @@
 
 /* Disabled Payment Card */
 .checkout-payment-card.disabled {
-    opacity: 0.6;
+    opacity: 1;
     cursor: not-allowed;
-    background: #faf9f7;
+    background: #f5f5f5;
+    border-color: #e8e8e8;
+    pointer-events: none;
+    filter: grayscale(100%);
 }
 
 .checkout-payment-card.disabled .pay-icon {
-    background: #f5f5f5;
-    border-color: #e0e0e0;
+    background: #ebebeb;
+    border-color: #ddd;
 }
 
 .checkout-payment-card.disabled .pay-icon .material-icons {
-    color: #ccc;
+    color: #bbb;
 }
 
 .checkout-payment-card.disabled .pay-name {
-    color: #666;
+    color: #999;
 }
 
 .checkout-payment-card.disabled .pay-desc {
-    color: #999;
+    color: #bbb;
 }
 
 .pay-disabled-reason {
     font-family: 'Montserrat', sans-serif;
     font-size: 0.75rem;
-    color: #d32f2f;
+    color: #b0b0b0;
     margin-top: 4px;
     display: block;
     font-weight: 500;
+    font-style: italic;
 }
 
 /* Payment Step Actions */
 .chk-payment-actions {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-items: center;
+    gap: 16px;
     margin-top: 32px;
     padding-top: 24px;
     border-top: 1px solid #eaeaea;
+}
+
+.chk-payment-actions .hub-btn-outline {
+    padding: 14px 24px;
 }
 
 .chk-payment-actions .hub-btn-outline .material-icons {
@@ -146,5 +155,6 @@
 }
 
 .chk-payment-actions .lux-btn-primary {
-    min-width: 200px;
+    min-width: 180px;
+    gap: 8px;
 }
