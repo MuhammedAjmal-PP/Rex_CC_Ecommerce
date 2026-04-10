@@ -99,6 +99,7 @@ All optional — sensible defaults are applied in `settings.py` if omitted.
 | `WALLET_TOPUP_MAX` | `75000` | Maximum wallet top-up amount (₹). |
 | `REFERRAL_REWARD_AMOUNT` | `1000` | Wallet credit (₹) paid to both referee and referrer on a successful referral. |
 | `RETURN_WINDOW_DAYS` | `7` | Days after delivery within which a return request can be raised. |
+| `COD_MIN_ORDER_AMOUNT` | `50000` | Minimum order amount (₹) required for Cash on Delivery. Orders below this must use online payment. |
 | `FAILED_ORDER_EXPIRY_SECONDS` | `18000` (5 h) | Seconds before a FAILED Razorpay order is auto-expired by the background worker. Use `120` for fast dev testing. |
 | `PHONENUMBER_DEFAULT_REGION` | `IN` | ISO 3166-1 alpha-2 country code for phone number validation. |
 

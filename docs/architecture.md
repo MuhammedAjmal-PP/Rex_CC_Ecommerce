@@ -52,6 +52,8 @@ Index(fields=["transaction_type", "status"])
 | `Address` | `id` (UUID PK), `user` (FK), `full_name`, `phone_number`, `address_line_1/2`, `city`, `state`, `postal_code`, `label`, `is_default`, `is_active` (soft-delete) |
 | `Cart` | `user` (OneToOne) |
 | `CartItem` | `cart` + `product_variant` (unique together), `quantity` |
+| `Wishlist` | `user` (OneToOne) |
+| `WishlistItem` | `wishlist` + `product_variant` (unique together), `added_at` |
 | `Wallet` | `user` (OneToOne), `balance`, `is_active` |
 | `WalletTransaction` | `transaction` (OneToOne → `payments.Transaction`), `wallet` (FK), `label` (`CREDIT`/`DEBIT`), `balance_before`, `balance_after` |
 
@@ -62,6 +64,12 @@ Index(fields=["transaction_type", "status"])
 | `Offer` | `offer_type` (`PRODUCT`/`CATEGORY`/`BRAND`), `discount_type` (`PERCENTAGE`), `discount_value`, `start_date`, `end_date`, `is_active`, M2M to `products`, `categories`, `brands`. `is_valid` property. |
 | `Coupon` | `code` (auto-uppercased, min 3 chars), `discount_type` (`PERCENTAGE`/`FIXED`), `discount_value`, `min_order_amount`, `max_discount_amount`, `usage_limit`, `per_user_limit`, `used_count`, `is_deleted` (soft). `calculate_discount()` method. |
 | `CouponUsage` | `coupon` (FK), `user` (FK), `order` (OneToOne), `used_at` |
+
+### `reviews`
+
+| Model | Key Fields |
+|-------|-----------|
+| `Review` | `user` (FK), `product` (FK), `rating` (1–5, validated), `title` (120 chars), `comment` (1000 chars), `is_active` (soft-delete / moderation). `UniqueConstraint(user, product)` — one review per user per product. Only users with a `DELIVERED` OrderItem for the product can submit a review. |
 
 ---
 

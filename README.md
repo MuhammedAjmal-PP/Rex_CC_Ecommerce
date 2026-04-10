@@ -57,8 +57,11 @@
 | Inventory Logging | ✅ | Every stock change recorded with actor, reason, and reference |
 | Sales Report | ✅ | Date filters, stat cards, PDF & Excel export |
 | Invoice PDF | ✅ | WeasyPrint luxury-themed templates |
+| Product Reviews | ✅ | 1–5 star rating, purchase-verified, one review per user per product |
+| COD Minimum Order | ✅ | Configurable minimum order amount for Cash on Delivery |
 | Background Task Worker | ✅ | Auto-expires FAILED Razorpay orders, restores cart from snapshot |
 | Docker Dev Stack | ✅ | Single-stage Dockerfile, 3-service Compose stack with hot-reload |
+| CI/CD Pipeline | ✅ | GitHub Actions — auto-deploy to AWS EC2 on push to `main` |
 | Production Security | ✅ | HSTS, SSL redirect, secure cookies — all gated on `DEBUG=False` |
 
 ---
@@ -133,6 +136,9 @@ Rex_CC_Ecommerce/
 ├── 📄 sample.env                   # ← Template: copy to .env and fill in values
 ├── 📄 .gitignore
 │
+├── .github/workflows/              # CI/CD
+│   └── deploy.yml                  # Auto-deploy to AWS EC2 on push to main
+│
 ├── docs/                           # Extended documentation
 │   ├── environment-variables.md    # Full env var reference
 │   ├── docker.md                   # Docker setup & container commands
@@ -195,6 +201,12 @@ Rex_CC_Ecommerce/
 │   ├── service.py                  # create, update, initiate_refund, complete_refund
 │   ├── razorpay_service.py         # create_razorpay_order(), verify_razorpay_signature()
 │   └── views.py                    # Admin transaction & refund management
+│
+├── reviews/                        # Product review system
+│   ├── models.py                   # Review (1–5 stars, UniqueConstraint per user×product)
+│   ├── services.py                 # Eligibility checks, ratings summary, per-star distribution
+│   ├── forms.py                    # ReviewForm — rating, title, comment
+│   └── views.py                    # AJAX submit_review endpoint
 │
 └── users/                          # User domain
     ├── cart/                       # Cart, CartItem, compute_cart_summary
@@ -342,7 +354,11 @@ docker compose exec web python manage.py createsuperuser
 - [x] Sales report (date filters, stat cards, PDF & Excel download)
 - [x] Admin dashboard (revenue/orders chart with time filters, best-sellers tables)
 
-### Phase 5 — In Progress 🔄
+### Phase 5 — Reviews & CI/CD ✅
+- [x] Product reviews (1–5 star, purchase-verified, ratings summary with per-star distribution)
+- [x] CI/CD pipeline (GitHub Actions → AWS EC2, auto-deploy on push to `main`)
+
+### Phase 6 — In Progress 🔄
 - [ ] Email notifications (order status updates, refund confirmation)
 
 ---

@@ -509,6 +509,49 @@ All admin views are under `/adminpanel/` and protected by superuser check.
 
 ---
 
+## ⭐ Product Reviews
+
+### Review Model
+
+| Field | Notes |
+|-------|-------|
+| `user` | FK to `CustomUser` |
+| `product` | FK to `Product` (one review per user per product) |
+| `rating` | 1–5 (validated with `MinValueValidator` / `MaxValueValidator`) |
+| `title` | Short summary (max 120 chars) |
+| `comment` | Detailed review text (max 1000 chars) |
+| `is_active` | Soft-delete / moderation flag |
+
+**DB constraint:** `UniqueConstraint(fields=["user", "product"])` — prevents duplicate reviews.
+
+### Eligibility — `reviews/services.py`
+
+```python
+can_review(user, product)
+    # True only if:
+    #   1. User has at least one DELIVERED OrderItem for any variant of the product
+    #   2. User has NOT already submitted an active review for this product
+
+get_product_reviews(product, limit=None)
+    # Active reviews, newest first, with user select_related
+
+get_ratings_summary(product)
+    # Returns: {average, total_reviews, distribution: {5: %, 4: %, ...}}
+
+get_user_review(user, product)
+    # Returns existing review or None
+```
+
+### AJAX Endpoint
+
+| URL | Method | Description |
+|-----|--------|-------------|
+| `/reviews/<product_id>/submit/` | POST | Submit a new review (login required) |
+
+Returns JSON with the rendered review data (author, date, rating, title, comment) for live DOM insertion without page reload.
+
+---
+
 ## ⚙️ Business Rules & Configuration
 
 All configurable via environment variables — set them in `.env` (see `sample.env` for the full reference). Every setting has a default so you only need to override what you want to change.
@@ -529,4 +572,5 @@ All configurable via environment variables — set them in `.env` (see `sample.e
 | `PHONENUMBER_DEFAULT_REGION` | `PHONENUMBER_DEFAULT_REGION` | `IN` | ISO 3166-1 alpha-2 country code |
 | `REFERRAL_REWARD_AMOUNT` | `REFERRAL_REWARD_AMOUNT` | `₹1,000` | Wallet credit paid to both referee and referrer on a successful referral |
 | `RETURN_WINDOW_DAYS` | `RETURN_WINDOW_DAYS` | `7` | Days after delivery within which a return request can be raised |
+| `COD_MIN_ORDER_AMOUNT` | `COD_MIN_ORDER_AMOUNT` | `₹50,000` | Minimum order amount required for Cash on Delivery; orders below must use online payment |
 
