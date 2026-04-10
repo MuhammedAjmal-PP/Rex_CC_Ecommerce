@@ -90,6 +90,7 @@ pytest.xml
 # Backup files
 *.bak
 local/
+reference/
 
 # Celery (if added later)
 celerybeat-schedule
@@ -109,3 +110,5 @@ pnpm-debug.log*
 *.sql.gz
 *.sql.zip
 *.sql.rar
+
+
