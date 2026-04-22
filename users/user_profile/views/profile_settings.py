@@ -21,7 +21,7 @@ User = get_user_model()
 
 
 @never_cache
-@login_required(login_url="account_login")
+@login_required
 def profile(request):
     """
     profile dashboard.
@@ -30,7 +30,7 @@ def profile(request):
 
 
 @never_cache
-@login_required(login_url="account_login")
+@login_required
 def edit_profile(request):
     """Edit user profile (name, phone, avatar)"""
 

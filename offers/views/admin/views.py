@@ -3,17 +3,17 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
-from django.contrib.auth.decorators import user_passes_test
+from accounts.decorators import superuser_required
 from django.contrib import messages
 
 from offers.forms import OfferForm
 from offers.models import Offer
 
-_superuser_required = user_passes_test(lambda u: u.is_superuser)
+
 
 
 @never_cache
-@_superuser_required
+@superuser_required
 def offer_list(request):
     """Admin offer_list view with search, filtering, and pagination."""
     offers = Offer.objects.all().order_by("-created_at")
@@ -74,7 +74,7 @@ def offer_list(request):
 
 
 @never_cache
-@_superuser_required
+@superuser_required
 def add_offer(request):
     """Create a new offer."""
     if request.method == "POST":
@@ -89,7 +89,7 @@ def add_offer(request):
 
 
 @never_cache
-@_superuser_required
+@superuser_required
 def edit_offer(request, pk):
     """Edit an existing offer."""
     offer = get_object_or_404(Offer, pk=pk)
@@ -107,7 +107,7 @@ def edit_offer(request, pk):
 
 
 @never_cache
-@_superuser_required
+@superuser_required
 def delete_offer(request, pk):
     """Delete an offer (POST-only)."""
     if request.method == "POST":

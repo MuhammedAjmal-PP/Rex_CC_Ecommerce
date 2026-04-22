@@ -5,13 +5,13 @@ from catalog.models import Brand
 from django.core.paginator import Paginator
 from django.contrib import messages
 from django.views.decorators.cache import never_cache
-from django.contrib.auth.decorators import user_passes_test
+from accounts.decorators import superuser_required
 
 # Create your views here.
 
 
 @never_cache
-@user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
+@superuser_required
 def brands(request):
     """List all brands."""
 
@@ -49,7 +49,7 @@ def brands(request):
 
 
 @never_cache
-@user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
+@superuser_required
 def brand_add(request):
     """Add a new brand."""
     if request.method == "POST":
@@ -66,7 +66,7 @@ def brand_add(request):
 
 
 @never_cache
-@user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
+@superuser_required
 def brand_edit(request, id):
     """Edit a brand."""
     brand = get_object_or_404(Brand, id=id)
@@ -85,7 +85,7 @@ def brand_edit(request, id):
 
 
 @never_cache
-@user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
+@superuser_required
 def brand_status_toggle(request, id):
     """
     brand active & deactive
@@ -103,7 +103,7 @@ def brand_status_toggle(request, id):
 
 
 @never_cache
-@user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
+@superuser_required
 def brand_view(request, id):
     """
     view details of brand

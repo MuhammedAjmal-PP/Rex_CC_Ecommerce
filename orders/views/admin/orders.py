@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth.decorators import user_passes_test
+from accounts.decorators import superuser_required
 from django.core.paginator import Paginator
 from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404, redirect, render
@@ -20,7 +20,7 @@ from orders.service.status import (
 from orders.utils import compute_item_totals, get_payment_transaction
 
 
-@user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
+@superuser_required
 @never_cache
 def order_list(request):
     search_query = request.GET.get("search", "").strip()
@@ -81,7 +81,7 @@ def order_list(request):
     return render(request, "orders/admin/order_list.html", context)
 
 
-@user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
+@superuser_required
 @never_cache
 @require_GET
 def order_detail(request, order_number):
@@ -133,7 +133,7 @@ def order_detail(request, order_number):
     return render(request, "orders/admin/order_details.html", context)
 
 
-@user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
+@superuser_required
 @never_cache
 @require_POST
 def order_status_update(request, order_number):
@@ -153,7 +153,7 @@ def order_status_update(request, order_number):
     return redirect(request.META.get("HTTP_REFERER", reverse("admin_orders_list")))
 
 
-@user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
+@superuser_required
 @never_cache
 @require_POST
 def order_item_status_update(request, order_number, item_id):

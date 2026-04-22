@@ -6,7 +6,7 @@ import io
 from datetime import datetime
 from decimal import Decimal
 
-from django.contrib.auth.decorators import user_passes_test
+from accounts.decorators import superuser_required
 from django.core.paginator import Paginator
 from django.http import HttpResponse
 from django.shortcuts import render
@@ -75,7 +75,7 @@ def _build_filter_qs(request):
 # ────────────────────────────────────────────
 
 
-@user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
+@superuser_required
 @never_cache
 @require_GET
 def sales_report_view(request):
@@ -112,7 +112,7 @@ def sales_report_view(request):
 # ────────────────────────────────────────────
 
 
-@user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
+@superuser_required
 @never_cache
 @require_GET
 def download_sales_report_pdf(request):
@@ -154,7 +154,7 @@ def download_sales_report_pdf(request):
 # ────────────────────────────────────────────
 
 
-@user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
+@superuser_required
 @never_cache
 @require_GET
 def download_sales_report_excel(request):
