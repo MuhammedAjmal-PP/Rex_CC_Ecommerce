@@ -56,7 +56,7 @@ def order_list(request):
     if status_filter == "CANCELLED":
         # Group EXPIRED and STOCK_UNAVAILABLE under "Cancelled" tab
         orders_qs = orders_qs.filter(
-            status__in=("CANCELLED", "EXPIRED", "STOCK_UNAVAILABLE")
+            status__in=("CANCELLED", "EXPIRED", "STOCK_UNAVAILABLE", "PENDING_PAYMENT")
         )
     elif status_filter != "ALL":
         orders_qs = orders_qs.filter(status=status_filter)
@@ -91,7 +91,7 @@ def order_detail(request, order_number):
     )
 
     # Block details page for failed/expired/stock-unavailable orders
-    if order.status in ("FAILED", "EXPIRED", "STOCK_UNAVAILABLE"):
+    if order.status in ("FAILED", "EXPIRED", "STOCK_UNAVAILABLE", "PENDING_PAYMENT"):
         messages.error(request, "This order cannot be managed.")
         return redirect("admin_orders_list")
     order_items = (

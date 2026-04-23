@@ -1,6 +1,5 @@
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
@@ -13,8 +12,6 @@ from orders.service import (
     validate_snapshot_stock,
 )
 from orders.service.order_helpers import create_items_from_snapshot
-from orders.utils import get_payment_transaction
-from payments.models import Transaction
 from payments.service import create_transaction, initiate_refund
 from payments.razorpay_service import create_razorpay_order, verify_razorpay_signature
 from coupons.service import revoke_coupon_usage
@@ -28,9 +25,11 @@ def razorpay_callback(request):
     Called after Razorpay checkout popup succeeds.
 
     Flow:
-      1. Verify the Razorpay signature
-      2. If valid → create OrderItems from snapshot, deduct stock, confirm order
-      3. If invalid → mark transaction and order as FAILED
+      1. Look up the PENDING_PAYMENT order by order_number
+      2. Verify the Razorpay signature
+      3. If valid → create Transaction (PAID), create OrderItems from snapshot,
+         deduct stock, confirm order
+      4. If invalid → create Transaction (FAILED), mark order as FAILED
     """
     razorpay_payment_id = request.POST.get("razorpay_payment_id", "")
     razorpay_order_id = request.POST.get("razorpay_order_id", "")
@@ -43,28 +42,42 @@ def razorpay_callback(request):
         return JsonResponse({"error": "Missing payment data."}, status=400)
 
     try:
-        txn = Transaction.objects.get(
-            gateway_order_id=razorpay_order_id,
+        order = Order.objects.get(
+            order_number=order_number,
             user=request.user,
-            status="PENDING",
+            status="PENDING_PAYMENT",
         )
-    except Transaction.DoesNotExist:
-        return JsonResponse({"error": "Transaction not found."}, status=404)
+    except Order.DoesNotExist:
+        return JsonResponse({"error": "Order not found."}, status=404)
+
+    # Verify that the Razorpay order ID matches what we stored
+    if order.gateway_order_id != razorpay_order_id:
+        return JsonResponse({"error": "Order mismatch."}, status=400)
 
     # ── Verify signature ──
     is_valid = verify_razorpay_signature(
         razorpay_order_id, razorpay_payment_id, razorpay_signature
     )
 
-    if not is_valid:
-        # Signature invalid → mark as failed
-        txn.status = "FAILED"
-        txn.note = f"Signature verification failed. Payment ID: {razorpay_payment_id}"
-        txn.save(update_fields=["status", "note", "updated_at"])
+    # ── Create transaction once with common fields ──
+    txn = create_transaction(
+        user=request.user,
+        txn_type="ORDER_PAYMENT",
+        method="RAZORPAY",
+        amount=order.grand_total,
+        status="PAID" if is_valid else "FAILED",
+        content_object=order,
+        note="",
+    )
+    txn.gateway_order_id = razorpay_order_id
+    txn.gateway_payment_id = razorpay_payment_id
 
-        order = txn.content_object
-        if order:
-            change_order_status(order=order, to_status="FAILED")
+    if not is_valid:
+        # Signature invalid → mark transaction and order as FAILED
+        txn.note = f"Signature verification failed. Payment ID: {razorpay_payment_id}"
+        txn.save(update_fields=["gateway_order_id", "gateway_payment_id", "note", "updated_at"])
+
+        change_order_status(order=order, to_status="FAILED")
 
         return JsonResponse(
             {
@@ -73,26 +86,24 @@ def razorpay_callback(request):
             }
         )
 
-    # ── Payment valid → create items + deduct stock ──
-    order = txn.content_object
-    if not order or not order.cart_snapshot:
+    # ── Signature valid → save gateway fields ──
+    txn.gateway_signature = razorpay_signature
+    txn.note = f"Razorpay payment for order {order.order_number}"
+    txn.save(
+        update_fields=[
+            "gateway_order_id",
+            "gateway_payment_id",
+            "gateway_signature",
+            "note",
+            "updated_at",
+        ]
+    )
+
+    if not order.cart_snapshot:
         return JsonResponse({"error": "Order data not found."}, status=400)
 
     try:
         with transaction.atomic():
-            # Mark payment as successful
-            txn.gateway_payment_id = razorpay_payment_id
-            txn.gateway_signature = razorpay_signature
-            txn.status = "PAID"
-            txn.save(
-                update_fields=[
-                    "gateway_payment_id",
-                    "gateway_signature",
-                    "status",
-                    "updated_at",
-                ]
-            )
-
             # Create items from snapshot (locks variants + validates stock)
             create_items_from_snapshot(
                 order=order,
@@ -103,26 +114,15 @@ def razorpay_callback(request):
             # Confirm order
             change_order_status(order=order, to_status="CONFIRMED")
 
-            # Clear snapshot (no longer needed)
+            # Clear snapshot and gateway_order_id (no longer needed)
             order.cart_snapshot = None
-            order.save(update_fields=["cart_snapshot"])
+            order.gateway_order_id = ""
+            order.save(update_fields=["cart_snapshot", "gateway_order_id"])
 
     except InsufficientStockError:
-        # Stock sold out between order creation and payment
-        # Payment was collected by Razorpay but order can't be fulfilled
-        txn.status = "PAID"
-        txn.gateway_payment_id = razorpay_payment_id
-        txn.gateway_signature = razorpay_signature
+        # Stock sold out — payment was collected but order can't be fulfilled
         txn.note = "Payment collected but stock unavailable — refund initiated"
-        txn.save(
-            update_fields=[
-                "status",
-                "gateway_payment_id",
-                "gateway_signature",
-                "note",
-                "updated_at",
-            ]
-        )
+        txn.save(update_fields=["note", "updated_at"])
 
         change_order_status(order=order, to_status="STOCK_UNAVAILABLE")
 
@@ -130,7 +130,7 @@ def razorpay_callback(request):
             order=order,
             user=request.user,
             amount=order.grand_total,
-            txn_type="REFUND",
+            txn_type="CANCELLATION_REFUND",
             content_object=order,
             note=f"Auto-refund: stock unavailable after Razorpay payment for order {order.order_number}",
         )
@@ -139,7 +139,8 @@ def razorpay_callback(request):
         if order.cart_snapshot:
             _restore_cart_from_snapshot(request.user, order.cart_snapshot)
             order.cart_snapshot = None
-            order.save(update_fields=["cart_snapshot"])
+            order.gateway_order_id = ""
+            order.save(update_fields=["cart_snapshot", "gateway_order_id"])
 
         if order.coupon:
             revoke_coupon_usage(order)
@@ -164,7 +165,7 @@ def razorpay_callback(request):
 def razorpay_payment_failed(request):
     """
     Called when user dismisses the Razorpay popup or payment fails.
-    Simply marks the transaction and order as FAILED.
+    Creates a FAILED transaction and marks the order as FAILED.
     No stock to restore — items were never created.
     """
     order_number = request.POST.get("order_number", "")
@@ -174,24 +175,28 @@ def razorpay_payment_failed(request):
         return JsonResponse({"error": "Missing order number."}, status=400)
 
     try:
-        txn = Transaction.objects.get(
-            content_type=ContentType.objects.get_for_model(Order),
-            object_id=Order.objects.get(
-                order_number=order_number, user=request.user
-            ).pk,
-            status="PENDING",
-            payment_method="RAZORPAY",
+        order = Order.objects.get(
+            order_number=order_number,
+            user=request.user,
+            status="PENDING_PAYMENT",
         )
-    except (Transaction.DoesNotExist, Order.DoesNotExist):
-        return JsonResponse({"error": "Transaction not found."}, status=404)
+    except Order.DoesNotExist:
+        return JsonResponse({"error": "Order not found."}, status=404)
 
-    txn.status = "FAILED"
-    txn.note = reason
-    txn.save(update_fields=["status", "note", "updated_at"])
+    # Create FAILED transaction
+    txn = create_transaction(
+        user=request.user,
+        txn_type="ORDER_PAYMENT",
+        method="RAZORPAY",
+        amount=order.grand_total,
+        status="FAILED",
+        content_object=order,
+        note=reason,
+    )
+    txn.gateway_order_id = order.gateway_order_id
+    txn.save(update_fields=["gateway_order_id"])
 
-    order = txn.content_object
-    if order:
-        change_order_status(order=order, to_status="FAILED")
+    change_order_status(order=order, to_status="FAILED")
 
     return JsonResponse(
         {
@@ -208,11 +213,12 @@ def retry_razorpay_payment(request):
     Retry a failed Razorpay payment from the order listing page.
 
     Flow:
-      1. Validate the order is FAILED + RAZORPAY + has cart_snapshot
+      1. Validate the order is FAILED + has cart_snapshot
       2. Lock variants and check stock is still available
-      3. Reset order status: FAILED → PLACED
-      4. Create a new Razorpay order + Transaction
-      5. Return JSON for the frontend to open Razorpay popup
+      3. Create a new Razorpay order via API
+      4. Reset order status: FAILED → PENDING_PAYMENT
+      5. Store new gateway_order_id on Order
+      6. Return JSON for the frontend to open Razorpay popup
     """
     order_number = request.POST.get("order_number", "")
     if not order_number:
@@ -220,14 +226,8 @@ def retry_razorpay_payment(request):
 
     order = get_object_or_404(Order, order_number=order_number, user=request.user)
 
-    # Must be FAILED + RAZORPAY + has snapshot
-    payment = get_payment_transaction(order)
-    if (
-        order.status != "FAILED"
-        or not payment
-        or payment.payment_method != "RAZORPAY"
-        or not order.cart_snapshot
-    ):
+    # Must be FAILED + has snapshot (Razorpay order that can be retried)
+    if order.status != "FAILED" or not order.cart_snapshot:
         return JsonResponse(
             {"error": "This order is not eligible for payment retry."},
             status=400,
@@ -238,14 +238,8 @@ def retry_razorpay_payment(request):
             # Lock variants and validate stock from snapshot
             validate_snapshot_stock(order.cart_snapshot)
 
-            # Reset order: FAILED → PLACED
-            change_order_status(order=order, to_status="PLACED")
-
-            # Mark old FAILED transaction as CANCELLED before creating new one (fix #14)
-            if payment and payment.status == "FAILED":
-                payment.status = "CANCELLED"
-                payment.note = "Superseded by payment retry"
-                payment.save(update_fields=["status", "note", "updated_at"])
+            # Reset order: FAILED → PENDING_PAYMENT
+            change_order_status(order=order, to_status="PENDING_PAYMENT")
 
             # Create new Razorpay order
             amount_paise = int(order.grand_total * 100)
@@ -257,18 +251,9 @@ def retry_razorpay_payment(request):
                 receipt=order.order_number,
             )
 
-            # Create new PENDING transaction
-            txn = create_transaction(
-                user=request.user,
-                txn_type="ORDER_PAYMENT",
-                method="RAZORPAY",
-                amount=order.grand_total,
-                status="PENDING",
-                content_object=order,
-                note=f"Retry payment for order {order.order_number}",
-            )
-            txn.gateway_order_id = rz_order["id"]
-            txn.save(update_fields=["gateway_order_id"])
+            # Store new gateway_order_id on Order (no Transaction created)
+            order.gateway_order_id = rz_order["id"]
+            order.save(update_fields=["gateway_order_id"])
 
         return JsonResponse(
             {

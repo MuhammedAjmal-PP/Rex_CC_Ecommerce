@@ -11,6 +11,7 @@ from django.contrib.contenttypes.fields import GenericRelation
 class Order(models.Model):
 
     ORDER_STATUS_CHOICES = [
+        ("PENDING_PAYMENT", "Awaiting Payment"),
         ("PLACED", "Pending Review"),
         ("CONFIRMED", "Order Confirmed"),
         ("SHIPPED", "Dispatched"),
@@ -96,6 +97,13 @@ class Order(models.Model):
         null=True,
         blank=True,
         help_text="Cart data saved at order time, used to create items after Razorpay payment",
+    )
+
+    gateway_order_id = models.CharField(
+        max_length=100,
+        blank=True,
+        default="",
+        help_text="Razorpay order ID — set at order creation, cleared after payment",
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
