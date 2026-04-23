@@ -126,3 +126,17 @@ class CouponForm(forms.ModelForm):
         if discount_type == "PERCENTAGE" and value is not None and value > 100:
             raise forms.ValidationError("Percentage discount cannot exceed 100%.")
         return value
+
+    def clean(self):
+        cleaned = super().clean()
+        if (
+            cleaned.get("discount_type") == "FIXED"
+            and cleaned.get("discount_value")
+            and cleaned.get("min_order_amount")
+            and cleaned["discount_value"] >= cleaned["min_order_amount"]
+        ):
+            self.add_error(
+                "discount_value",
+                "Fixed discount must be less than the minimum order amount.",
+            )
+        return cleaned

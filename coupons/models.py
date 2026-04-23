@@ -177,6 +177,17 @@ class Coupon(models.Model):
         ):
             errors["discount_value"] = "Percentage discount cannot exceed 100%."
 
+        if (
+            self.discount_type == "FIXED"
+            and self.discount_value is not None
+            and self.min_order_amount
+            and self.discount_value >= self.min_order_amount
+        ):
+            errors["discount_value"] = (
+                f"Fixed discount must be less than the minimum order amount "
+                f"(₹{self.min_order_amount})."
+            )
+
         if errors:
             raise ValidationError(errors)
 

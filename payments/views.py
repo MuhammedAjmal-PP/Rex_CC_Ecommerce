@@ -8,7 +8,6 @@ from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_GET, require_POST
 from payments.models import Transaction
 from payments.service import complete_refund, fail_refund
-from django.shortcuts import render
 
 # Create your views here.
 
