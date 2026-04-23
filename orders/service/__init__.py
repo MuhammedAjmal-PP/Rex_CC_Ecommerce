@@ -16,6 +16,11 @@ from .returns import (
     DuplicateReturnError,
     validate_return_eligibility,
 )
+from .cancel import (
+    cancel_order_item,
+    cancel_order_items,
+    CANCELLABLE_STATUSES,
+)
 
 __all__ = [
     "InsufficientStockError",
@@ -30,4 +35,7 @@ __all__ = [
     "ReturnNotEligibleError",
     "DuplicateReturnError",
     "validate_return_eligibility",
+    "cancel_order_item",
+    "cancel_order_items",
+    "CANCELLABLE_STATUSES",
 ]

@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.contrib import messages
+from django.db import transaction
 from accounts.decorators import superuser_required
 from django.core.paginator import Paginator
 from django.db.models import Count, Q
@@ -10,6 +11,8 @@ from django.views.decorators.http import require_GET, require_POST
 from orders.models import Order, OrderItem
 from orders.service import (
     InvalidTransitionError,
+    cancel_order_item,
+    cancel_order_items,
     change_order_item_status,
     change_order_status,
 )
@@ -18,6 +21,7 @@ from orders.service.status import (
     ADMIN_ORDER_ALLOWED_TRANSITIONS,
 )
 from orders.utils import compute_item_totals, get_payment_transaction
+from coupons.service import revoke_coupon_if_invalid
 
 
 @superuser_required
@@ -145,8 +149,28 @@ def order_status_update(request, order_number):
         return redirect(request.META.get("HTTP_REFERER", reverse("admin_orders_list")))
 
     try:
-        change_order_status(order=order, to_status=to_status)
-        messages.success(request, f"Order status changed to {to_status}.")
+        if to_status == "CANCELLED":
+            # Cancel all cancellable items with refund + restock
+            cancellable = list(
+                order.items.select_related("product_variant")
+                .exclude(status__in=("CANCELLED", "RETURNED", "RTS"))
+            )
+            with transaction.atomic():
+                cancelled = cancel_order_items(
+                    order=order,
+                    items=cancellable,
+                    actor=request.user,
+                    note="Admin cancelled order",
+                    auto_complete_refund=False,
+                )
+                change_order_status(order=order, to_status="CANCELLED")
+            messages.success(
+                request,
+                f"Order cancelled. {cancelled} item(s) refunded and restocked.",
+            )
+        else:
+            change_order_status(order=order, to_status=to_status)
+            messages.success(request, f"Order status changed to {to_status}.")
     except InvalidTransitionError as error:
         messages.error(request, f"Invalid order transition: {error}")
 
@@ -166,10 +190,33 @@ def order_item_status_update(request, order_number, item_id):
         return redirect(request.META.get("HTTP_REFERER", reverse("admin_orders_list")))
 
     try:
-        change_order_item_status(order_item=order_item, to_status=to_status)
-        messages.success(
-            request, f"Item #{order_item.id} status changed to {to_status}."
-        )
+        if to_status == "CANCELLED":
+            # Cancel with refund + restock
+            with transaction.atomic():
+                cancel_order_item(
+                    order_item=order_item,
+                    actor=request.user,
+                    note="Admin cancelled item",
+                    auto_complete_refund=False,
+                )
+                # Persist analytics + revoke coupon
+                order.save(
+                    update_fields=[
+                        "refunded_amount",
+                        "refunded_discount",
+                        "refunded_coupon_discount",
+                    ]
+                )
+                revoke_coupon_if_invalid(order)
+            messages.success(
+                request,
+                f"Item #{order_item.id} cancelled. Refund initiated and stock restored.",
+            )
+        else:
+            change_order_item_status(order_item=order_item, to_status=to_status)
+            messages.success(
+                request, f"Item #{order_item.id} status changed to {to_status}."
+            )
     except InvalidTransitionError as error:
         messages.error(request, f"Invalid item transition: {error}")
 
