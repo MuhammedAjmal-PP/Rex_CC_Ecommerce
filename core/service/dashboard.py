@@ -18,7 +18,7 @@ from catalog.models import Product
 from orders.models import Order, OrderItem
 
 # Statuses that represent a valid, completed-enough order
-_EXCLUDED_STATUSES = {"CANCELLED", "FAILED"}
+_EXCLUDED_STATUSES = {"CANCELLED", "FAILED", "EXPIRED", "STOCK_UNAVAILABLE", "PENDING_PAYMENT"}
 
 # Also exclude these item statuses from best-selling calculations
 _EXCLUDED_ITEM_STATUSES = {"CANCELLED", "RETURNED"}

@@ -74,10 +74,7 @@ def cancel_order_item(*, order_item, actor, note="", auto_complete_refund=True):
             note=note or f"Cancellation refund — order {order.order_number}",
         )
         if auto_complete_refund:
-            complete_refund(
-                transaction=refund_txn,
-                wallet_reason="CANCELLATION_REFUND",
-            )
+            complete_refund(transaction=refund_txn)
     elif payment and payment.payment_method == "COD":
         # COD — reduce pending amount
         update_transaction(
