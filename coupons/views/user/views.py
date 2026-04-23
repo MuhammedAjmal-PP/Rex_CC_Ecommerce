@@ -3,7 +3,6 @@ User-facing AJAX endpoints for applying/removing coupons at checkout.
 Coupon state is stored in request.session['applied_coupon'].
 """
 
-import json
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse

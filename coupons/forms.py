@@ -92,6 +92,12 @@ class CouponForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        # Accept both ISO (from browser datetime-local) and Indian format
+        for field_name in ("start_date", "end_date"):
+            self.fields[field_name].input_formats = [
+                "%Y-%m-%dT%H:%M",  # datetime-local native
+                "%d/%m/%Y %H:%M",  # Indian format
+            ]
         # Ensure datetime-local inputs render correctly
         for field_name in ("start_date", "end_date"):
             if self.instance and self.instance.pk:

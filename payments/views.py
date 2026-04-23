@@ -9,8 +9,6 @@ from django.views.decorators.http import require_GET, require_POST
 from payments.models import Transaction
 from payments.service import complete_refund, fail_refund
 
-# Create your views here.
-
 
 # ──────────────────────────────────────────────────────────────
 # ADMIN — TRANSACTION LIST

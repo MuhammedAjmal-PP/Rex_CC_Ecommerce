@@ -53,7 +53,7 @@ def _parse_filters(request):
         "1_day": "Today",
         "1_week": "Last 7 Days",
         "1_month": "Last 30 Days",
-        "custom": f"{start_dt.strftime('%b %d, %Y')} – {end_dt.strftime('%b %d, %Y')}",
+        "custom": f"{start_dt.strftime('%d/%m/%Y')} – {end_dt.strftime('%d/%m/%Y')}",
     }
     label = labels.get(filter_type, "Today")
 
@@ -244,7 +244,7 @@ def download_sales_report_excel(request):
         row = ws.max_row + 1
         ws.cell(row=row, column=1, value=order.order_number).font = data_font
         ws.cell(
-            row=row, column=2, value=order.created_at.strftime("%Y-%m-%d %I:%M %p")
+            row=row, column=2, value=order.created_at.strftime("%d/%m/%Y %I:%M %p")
         ).font = data_font
         ws.cell(row=row, column=3, value=customer).font = data_font
         ws.cell(row=row, column=4, value=payment_label).font = data_font

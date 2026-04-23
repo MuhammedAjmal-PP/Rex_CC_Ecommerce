@@ -2,10 +2,6 @@ from django.contrib import admin
 from .models import Brand, Category, Product, ProductImage, ProductVariant
 from django.contrib import messages
 
-# Register your models here.
-
-
-# admin.site.register(Brand)
 @admin.register(Brand)
 class BrandAdmin(admin.ModelAdmin):
     list_display = ("name", "is_active")
@@ -31,7 +27,6 @@ class BrandAdmin(admin.ModelAdmin):
         )
 
 
-# admin.site.register(Category)
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ("name", "is_active")
@@ -57,9 +52,6 @@ class CategoryAdmin(admin.ModelAdmin):
         )
 
 
-# admin.site.register(Product)
-
-
 class ProductImageInline(admin.TabularInline):
     model = ProductImage
     extra = 1
@@ -80,7 +72,6 @@ class ProductVariantInline(admin.TabularInline):
     readonly_fields = ("created_at", "updated_at")
 
 
-# admin.site.register(Product)
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display = (
@@ -118,7 +109,6 @@ class ProductAdmin(admin.ModelAdmin):
         )
 
 
-# admin.site.register(ProductVariant)
 @admin.register(ProductVariant)
 class ProductVariantAdmin(admin.ModelAdmin):
     list_display = (
@@ -154,7 +144,6 @@ class ProductVariantAdmin(admin.ModelAdmin):
         )
 
 
-# admin.site.register(ProductImage)
 @admin.register(ProductImage)
 class ProductImageAdmin(admin.ModelAdmin):
     list_display = ("variant", "is_primary", "image")
