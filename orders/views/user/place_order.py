@@ -170,23 +170,13 @@ def place_order_view(request):
             grand_total=adjusted_grand_total,
             coupon=coupon_obj,
             coupon_discount=coupon_discount,
+            status="PENDING_PAYMENT" if payment_method == "RAZORPAY" else "PLACED",
         )
 
-        # ── RAZORPAY: shell only (no items, no stock) ──
+        # ── RAZORPAY: shell only (no items, no stock, no transaction) ──
         if payment_method == "RAZORPAY":
             order.cart_snapshot = build_cart_snapshot(
                 cart_items, packed_prices, locked_variants
-            )
-            order.save(update_fields=["cart_snapshot"])
-
-            txn = create_transaction(
-                user=request.user,
-                txn_type="ORDER_PAYMENT",
-                method="RAZORPAY",
-                amount=order.grand_total,
-                status="PENDING",
-                content_object=order,
-                note=f"Razorpay payment for order {order.order_number}",
             )
 
             amount_paise = int(order.grand_total * 100)
@@ -194,8 +184,9 @@ def place_order_view(request):
             # if settings.DEBUG:
             amount_paise = min(amount_paise, 99_999_00)
             rz_order = create_razorpay_order(amount_paise, order.order_number)
-            txn.gateway_order_id = rz_order["id"]
-            txn.save(update_fields=["gateway_order_id"])
+
+            order.gateway_order_id = rz_order["id"]
+            order.save(update_fields=["cart_snapshot", "gateway_order_id"])
 
             # Schedule order expiry
             schedule_order_expiry(order)
@@ -261,7 +252,7 @@ def place_order_view(request):
     if payment_method == "RAZORPAY":
         return JsonResponse(
             {
-                "razorpay_order_id": txn.gateway_order_id,
+                "razorpay_order_id": order.gateway_order_id,
                 "razorpay_key_id": settings.RAZORPAY_KEY_ID,
                 "amount": amount_paise,
                 "order_number": order.order_number,

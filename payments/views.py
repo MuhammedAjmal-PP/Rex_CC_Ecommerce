@@ -1,5 +1,5 @@
 from django.contrib import messages
-from django.contrib.auth.decorators import user_passes_test
+from accounts.decorators import superuser_required
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
@@ -8,9 +8,6 @@ from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_GET, require_POST
 from payments.models import Transaction
 from payments.service import complete_refund, fail_refund
-from django.shortcuts import render
-
-# Create your views here.
 
 
 # ──────────────────────────────────────────────────────────────
@@ -18,7 +15,7 @@ from django.shortcuts import render
 # ──────────────────────────────────────────────────────────────
 
 
-@user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
+@superuser_required
 @never_cache
 @require_GET
 def transaction_list(request):
@@ -69,7 +66,7 @@ def transaction_list(request):
 # ──────────────────────────────────────────────────────────────
 
 
-@user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
+@superuser_required
 @never_cache
 @require_GET
 def transaction_detail(request, txn_id):
@@ -96,7 +93,7 @@ def transaction_detail(request, txn_id):
 # ──────────────────────────────────────────────────────────────
 
 
-@user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
+@superuser_required
 @never_cache
 @require_GET
 def refund_list(request):
@@ -149,7 +146,7 @@ def refund_list(request):
 # ──────────────────────────────────────────────────────────────
 
 
-@user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
+@superuser_required
 @never_cache
 @require_GET
 def refund_detail(request, txn_id):
@@ -177,7 +174,7 @@ def refund_detail(request, txn_id):
 # ──────────────────────────────────────────────────────────────
 
 
-@user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
+@superuser_required
 @never_cache
 @require_POST
 def refund_action(request, txn_id):

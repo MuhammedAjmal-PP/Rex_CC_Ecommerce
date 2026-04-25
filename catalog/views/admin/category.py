@@ -3,14 +3,14 @@ from catalog.models import Category
 from django.core.paginator import Paginator
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.cache import never_cache
-from django.contrib.auth.decorators import user_passes_test
+from accounts.decorators import superuser_required
 from django.http import JsonResponse
 from django.contrib import messages
 from django.urls import reverse
 
 
 @never_cache
-@user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
+@superuser_required
 def categories(request):
     """List all categories."""
 
@@ -49,7 +49,7 @@ def categories(request):
 
 
 @never_cache
-@user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
+@superuser_required
 def category_add(request):
     """Add a new category via AJAX."""
     if request.method == "POST":
@@ -75,7 +75,7 @@ def category_add(request):
 
 
 @never_cache
-@user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
+@superuser_required
 def category_edit(request, id):
     """edit a new category via AJAX."""
 
@@ -106,7 +106,7 @@ def category_edit(request, id):
 
 
 @never_cache
-@user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
+@superuser_required
 def category_status_toggle(request, id):
     """
     category active & deactive

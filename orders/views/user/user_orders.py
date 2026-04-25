@@ -30,7 +30,7 @@ def order_list(request):
 
     orders = (
         Order.objects.filter(user=request.user)
-        .exclude(status__in=("EXPIRED", "STOCK_UNAVAILABLE"))
+        .exclude(status__in=("EXPIRED", "STOCK_UNAVAILABLE", "PENDING_PAYMENT"))
         .prefetch_related("payment")
     )
 
@@ -61,8 +61,7 @@ def order_list(request):
         payment = get_payment_transaction(order)
         order.payment_txn = payment
         if order.status == "FAILED" and order.cart_snapshot:
-            if payment and payment.payment_method == "RAZORPAY":
-                razorpay_retry_ids.add(order.pk)
+            razorpay_retry_ids.add(order.pk)
 
     context = {
         "orders": page_obj,
@@ -85,7 +84,7 @@ def order_detail(request, order_number):
     )
 
     # Block details page for failed/expired/stock-unavailable orders
-    if order.status in ("FAILED", "EXPIRED", "STOCK_UNAVAILABLE"):
+    if order.status in ("FAILED", "EXPIRED", "STOCK_UNAVAILABLE", "PENDING_PAYMENT"):
         messages.error(request, "This order cannot be viewed.")
         return redirect("user_order_list")
 

@@ -92,6 +92,12 @@ class CouponForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        # Accept both ISO (from browser datetime-local) and Indian format
+        for field_name in ("start_date", "end_date"):
+            self.fields[field_name].input_formats = [
+                "%Y-%m-%dT%H:%M",  # datetime-local native
+                "%d/%m/%Y %H:%M",  # Indian format
+            ]
         # Ensure datetime-local inputs render correctly
         for field_name in ("start_date", "end_date"):
             if self.instance and self.instance.pk:
@@ -126,3 +132,17 @@ class CouponForm(forms.ModelForm):
         if discount_type == "PERCENTAGE" and value is not None and value > 100:
             raise forms.ValidationError("Percentage discount cannot exceed 100%.")
         return value
+
+    def clean(self):
+        cleaned = super().clean()
+        if (
+            cleaned.get("discount_type") == "FIXED"
+            and cleaned.get("discount_value")
+            and cleaned.get("min_order_amount")
+            and cleaned["discount_value"] >= cleaned["min_order_amount"]
+        ):
+            self.add_error(
+                "discount_value",
+                "Fixed discount must be less than the minimum order amount.",
+            )
+        return cleaned

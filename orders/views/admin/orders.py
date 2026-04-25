@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth.decorators import user_passes_test
+from django.db import transaction
+from accounts.decorators import superuser_required
 from django.core.paginator import Paginator
 from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404, redirect, render
@@ -10,6 +11,8 @@ from django.views.decorators.http import require_GET, require_POST
 from orders.models import Order, OrderItem
 from orders.service import (
     InvalidTransitionError,
+    cancel_order_item,
+    cancel_order_items,
     change_order_item_status,
     change_order_status,
 )
@@ -18,9 +21,10 @@ from orders.service.status import (
     ADMIN_ORDER_ALLOWED_TRANSITIONS,
 )
 from orders.utils import compute_item_totals, get_payment_transaction
+from coupons.service import revoke_coupon_if_invalid
 
 
-@user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
+@superuser_required
 @never_cache
 def order_list(request):
     search_query = request.GET.get("search", "").strip()
@@ -56,7 +60,7 @@ def order_list(request):
     if status_filter == "CANCELLED":
         # Group EXPIRED and STOCK_UNAVAILABLE under "Cancelled" tab
         orders_qs = orders_qs.filter(
-            status__in=("CANCELLED", "EXPIRED", "STOCK_UNAVAILABLE")
+            status__in=("CANCELLED", "EXPIRED", "STOCK_UNAVAILABLE", "PENDING_PAYMENT")
         )
     elif status_filter != "ALL":
         orders_qs = orders_qs.filter(status=status_filter)
@@ -81,7 +85,7 @@ def order_list(request):
     return render(request, "orders/admin/order_list.html", context)
 
 
-@user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
+@superuser_required
 @never_cache
 @require_GET
 def order_detail(request, order_number):
@@ -91,7 +95,7 @@ def order_detail(request, order_number):
     )
 
     # Block details page for failed/expired/stock-unavailable orders
-    if order.status in ("FAILED", "EXPIRED", "STOCK_UNAVAILABLE"):
+    if order.status in ("FAILED", "EXPIRED", "STOCK_UNAVAILABLE", "PENDING_PAYMENT"):
         messages.error(request, "This order cannot be managed.")
         return redirect("admin_orders_list")
     order_items = (
@@ -133,7 +137,7 @@ def order_detail(request, order_number):
     return render(request, "orders/admin/order_details.html", context)
 
 
-@user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
+@superuser_required
 @never_cache
 @require_POST
 def order_status_update(request, order_number):
@@ -145,15 +149,35 @@ def order_status_update(request, order_number):
         return redirect(request.META.get("HTTP_REFERER", reverse("admin_orders_list")))
 
     try:
-        change_order_status(order=order, to_status=to_status)
-        messages.success(request, f"Order status changed to {to_status}.")
+        if to_status == "CANCELLED":
+            # Cancel all cancellable items with refund + restock
+            cancellable = list(
+                order.items.select_related("product_variant")
+                .exclude(status__in=("CANCELLED", "RETURNED", "RTS"))
+            )
+            with transaction.atomic():
+                cancelled = cancel_order_items(
+                    order=order,
+                    items=cancellable,
+                    actor=request.user,
+                    note="Admin cancelled order",
+                    auto_complete_refund=False,
+                )
+                change_order_status(order=order, to_status="CANCELLED")
+            messages.success(
+                request,
+                f"Order cancelled. {cancelled} item(s) refunded and restocked.",
+            )
+        else:
+            change_order_status(order=order, to_status=to_status)
+            messages.success(request, f"Order status changed to {to_status}.")
     except InvalidTransitionError as error:
         messages.error(request, f"Invalid order transition: {error}")
 
     return redirect(request.META.get("HTTP_REFERER", reverse("admin_orders_list")))
 
 
-@user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
+@superuser_required
 @never_cache
 @require_POST
 def order_item_status_update(request, order_number, item_id):
@@ -166,10 +190,33 @@ def order_item_status_update(request, order_number, item_id):
         return redirect(request.META.get("HTTP_REFERER", reverse("admin_orders_list")))
 
     try:
-        change_order_item_status(order_item=order_item, to_status=to_status)
-        messages.success(
-            request, f"Item #{order_item.id} status changed to {to_status}."
-        )
+        if to_status == "CANCELLED":
+            # Cancel with refund + restock
+            with transaction.atomic():
+                cancel_order_item(
+                    order_item=order_item,
+                    actor=request.user,
+                    note="Admin cancelled item",
+                    auto_complete_refund=False,
+                )
+                # Persist analytics + revoke coupon
+                order.save(
+                    update_fields=[
+                        "refunded_amount",
+                        "refunded_discount",
+                        "refunded_coupon_discount",
+                    ]
+                )
+                revoke_coupon_if_invalid(order)
+            messages.success(
+                request,
+                f"Item #{order_item.id} cancelled. Refund initiated and stock restored.",
+            )
+        else:
+            change_order_item_status(order_item=order_item, to_status=to_status)
+            messages.success(
+                request, f"Item #{order_item.id} status changed to {to_status}."
+            )
     except InvalidTransitionError as error:
         messages.error(request, f"Invalid item transition: {error}")
 

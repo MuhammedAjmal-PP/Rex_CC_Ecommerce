@@ -3,17 +3,17 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
-from django.contrib.auth.decorators import user_passes_test
+from accounts.decorators import superuser_required
 from django.contrib import messages
 
 from coupons.forms import CouponForm
 from coupons.models import Coupon
 
-_superuser_required = user_passes_test(lambda u: u.is_superuser)
+
 
 
 @never_cache
-@_superuser_required
+@superuser_required
 def coupon_list(request):
     """Admin coupon list with search, filtering, and pagination."""
     coupons = Coupon.active.all().order_by("-created_at")
@@ -71,7 +71,7 @@ def coupon_list(request):
 
 
 @never_cache
-@_superuser_required
+@superuser_required
 def add_coupon(request):
     """Create a new coupon."""
     if request.method == "POST":
@@ -86,7 +86,7 @@ def add_coupon(request):
 
 
 @never_cache
-@_superuser_required
+@superuser_required
 def edit_coupon(request, pk):
     """Edit an existing coupon."""
     coupon = get_object_or_404(Coupon, pk=pk)
@@ -104,7 +104,7 @@ def edit_coupon(request, pk):
 
 
 @never_cache
-@_superuser_required
+@superuser_required
 def delete_coupon(request, pk):
     """Soft-delete a coupon (POST-only)."""
     if request.method == "POST":

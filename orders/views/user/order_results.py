@@ -48,9 +48,7 @@ def order_failure_view(request, order_number):
     )
 
     payment = get_payment_transaction(order)
-    is_razorpay_failed = (
-        order.status == "FAILED" and payment and payment.payment_method == "RAZORPAY"
-    )
+    is_razorpay_failed = order.status == "FAILED" and order.cart_snapshot
 
     return render(
         request,

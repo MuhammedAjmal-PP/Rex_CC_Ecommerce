@@ -16,8 +16,6 @@ from core.validators import (
     min_len_name_validator,
 )
 
-# Create your models here.
-
 
 class CustomUserManager(BaseUserManager):
     """Define a model manager for User model with no username field."""

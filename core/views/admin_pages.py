@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 from django.shortcuts import render
-from django.contrib.auth.decorators import user_passes_test
+from accounts.decorators import superuser_required
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_GET
 
@@ -14,7 +14,7 @@ from core.service.dashboard import (
 
 
 @never_cache
-@user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
+@superuser_required
 def admin_dashboard(request):
     context = {
         "summary": get_summary_stats(),
@@ -26,7 +26,7 @@ def admin_dashboard(request):
 
 
 @never_cache
-@user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
+@superuser_required
 @require_GET
 def dashboard_chart_data(request):
     """JSON endpoint for the dashboard chart (called via AJAX)."""

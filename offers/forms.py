@@ -51,9 +51,21 @@ class OfferForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Ensure datetime fields use the correct input format
-        self.fields["start_date"].input_formats = ["%Y-%m-%dT%H:%M"]
-        self.fields["end_date"].input_formats = ["%Y-%m-%dT%H:%M"]
+        # Accept both ISO (from browser datetime-local) and Indian format
+        for field_name in ("start_date", "end_date"):
+            self.fields[field_name].input_formats = [
+                "%Y-%m-%dT%H:%M",  # datetime-local native
+                "%d/%m/%Y %H:%M",  # Indian format
+            ]
+
+        # Render IST values in the datetime-local picker on edit
+        for field_name in ("start_date", "end_date"):
+            if self.instance and self.instance.pk:
+                val = getattr(self.instance, field_name, None)
+                if val:
+                    self.initial[field_name] = timezone.localtime(val).strftime(
+                        "%Y-%m-%dT%H:%M"
+                    )
 
         # Only show active targets (exclude soft-deleted / inactive items)
         self.fields["products"].queryset = Product.objects.filter(

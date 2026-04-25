@@ -26,9 +26,7 @@ class AuthFlowRedirectMiddleware:
             if user.is_authenticated:
                 if user.is_active:
                     return redirect("home")
-                if not user.is_active:
-                    return redirect("account_inactive")
-
+                
         # --- Password reset key done (e.g. after clicking reset link) ---
         # /accounts/password/reset/key/done/
         elif path == self.PASSWORD_RESET_KEY_DONE_URL:

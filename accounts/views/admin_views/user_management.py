@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from django.db.models import Q
 from django.core.paginator import Paginator
 from django.views.decorators.cache import never_cache
-from django.contrib.auth.decorators import user_passes_test
+from accounts.decorators import superuser_required
 from django.urls import reverse
 
 from users.user_profile.models import Address
@@ -16,7 +16,7 @@ User = get_user_model()
 
 
 @never_cache
-@user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
+@superuser_required
 def user_list(request):
     """
     User Managemnet View of Admin Panel , its Users list.
@@ -69,7 +69,7 @@ def user_list(request):
 
 
 @never_cache
-@user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
+@superuser_required
 def user_profile(request, id):
     """
     User Managemnet View of Admin Panel , its Users Profile.
@@ -117,7 +117,7 @@ def user_profile(request, id):
 
 
 @never_cache
-@user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
+@superuser_required
 def user_status_toggle(request, id):
     """
     Toggle active/inactive status of a user from admin panel

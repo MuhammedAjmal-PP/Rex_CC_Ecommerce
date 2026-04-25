@@ -85,7 +85,7 @@ def initiate_refund(order, user, amount, txn_type, content_object=None, note="")
     )
 
 
-def complete_refund(transaction, wallet_reason="WALLET_CREDIT"):
+def complete_refund(transaction):
     """
     Admin approves a refund:
       1. Mark Transaction → COMPLETED

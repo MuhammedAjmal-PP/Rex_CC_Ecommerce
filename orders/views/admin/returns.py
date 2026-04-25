@@ -1,5 +1,5 @@
 from django.contrib import messages
-from django.contrib.auth.decorators import user_passes_test
+from accounts.decorators import superuser_required
 from django.core.paginator import Paginator
 from django.db import transaction
 from django.db.models import Count, Q
@@ -26,7 +26,7 @@ RETURN_ALLOWED_TRANSITIONS = {
 }
 
 
-@user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
+@superuser_required
 @never_cache
 @require_GET
 def return_list(request):
@@ -77,7 +77,7 @@ def return_list(request):
     return render(request, "orders/admin/return_list.html", context)
 
 
-@user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
+@superuser_required
 @never_cache
 @require_GET
 def return_detail(request, return_number):
@@ -107,7 +107,7 @@ def return_detail(request, return_number):
     return render(request, "orders/admin/return_detail.html", context)
 
 
-@user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
+@superuser_required
 @never_cache
 @require_POST
 def return_status_update(request, return_number):

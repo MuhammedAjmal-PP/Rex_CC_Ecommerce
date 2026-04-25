@@ -1,155 +1,111 @@
-# Docker Guide
+# 🐳 Docker Environment Guide
 
-This project ships a **development-only** Docker setup — three containers orchestrated by Docker Compose. No Nginx, no Gunicorn; the Django built-in dev server is used for simplicity and hot-reload support.
+A 3-container development stack running Django, a background worker, and PostgreSQL — zero manual configuration required.
 
-> For production deployment, you would add Gunicorn, Nginx/Caddy, and harden the environment variables. This guide covers local Docker development only.
-
----
-
-## Prerequisites
-
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (includes Docker Compose)
+> [!WARNING]
+> This stack is for **local development only**. It uses `runserver` and lacks production hardening (Nginx, Gunicorn).
 
 ---
 
-## Quick Start
+## 🏗️ Service Architecture
+
+| Service | Image | Responsibility |
+|:---|:---|:---|
+| **`web`** | `python:3.12-slim` (custom) | Django dev server at `0.0.0.0:8000`. |
+| **`worker`** | `python:3.12-slim` (custom) | Background task processor (`db_worker`). |
+| **`db`** | `postgres:18-alpine` | Persistent PostgreSQL data store. |
+
+### The `entrypoint.sh` Magic
+Both `web` and `worker` share the same entrypoint. It waits for PostgreSQL, runs `migrate`, then starts the service. You never need to run migrations manually.
+
+---
+
+## ⚡ Daily Commands
 
 ```bash
-# 1. Clone the repository
-git clone https://github.com/your-username/Rex_CC_Ecommerce.git
-cd Rex_CC_Ecommerce
-
-# 2. Configure environment
-cp sample.env .env
-# Edit .env and fill in all required values
-
-# 3. Build and start all containers
-docker compose up --build
-
-# 4. Open the app
-# http://localhost:8000
-```
-
-On first run, `entrypoint.sh` automatically runs `python manage.py migrate` before the server starts — no manual migration step needed.
-
----
-
-## Service Architecture
-
-```
-┌──────────────────────────┐    ┌──────────────────────────┐
-│  web                     │    │  worker                  │
-│  Django dev server       │    │  db_worker               │
-│  0.0.0.0:8000            │    │  Background task runner  │
-│  entrypoint: migrate     │    │  entrypoint: migrate     │
-└────────────┬─────────────┘    └────────────┬─────────────┘
-             │                               │
-             └──────────────┬────────────────┘
-                            ▼
-              ┌─────────────────────────┐
-              │  db (postgres:18-alpine) │
-              │  :5432 · named volume   │
-              └─────────────────────────┘
-
-External Services
-  ├── Cloudinary CDN   (product images, avatars, return photos)
-  └── Razorpay Gateway (payment processing, HMAC-SHA256 verification)
-```
-
-### Container Responsibilities
-
-| Container | Image | Role |
-|-----------|-------|------|
-| `web` | Custom `python:3.13-slim` | Django dev server (`runserver 0.0.0.0:8000`) |
-| `worker` | Custom `python:3.13-slim` | `django-tasks-db` background task processor (`db_worker`) |
-| `db` | `postgres:18-alpine` | Persistent relational store with named volume |
-
----
-
-## How `entrypoint.sh` Works
-
-Both `web` and `worker` share the same `entrypoint.sh`:
-
-```sh
-# Retries migrate every 2s until the database is ready
-until python manage.py migrate --noinput; do
-    sleep 2
-done
-# Then hands off to the container's CMD
-exec "$@"
-```
-
-This ensures migrations always run before the app starts — safe for fresh clones and after schema changes.
-
----
-
-## Common Commands
-
-```bash
-# Start containers (attach — see logs in terminal)
-docker compose up --build
-
-# Start containers in background
+# 🚀 Start all services (detached)
 docker compose up --build -d
 
-# Stream logs (all services)
-docker compose logs -f
+# 🛑 Stop all services
+docker compose down
 
-# Stream logs for a specific service
+# 🗑️ Destroy everything including database volume
+docker compose down -v
+
+# 📜 Real-time logs for a specific service
 docker compose logs -f web
 docker compose logs -f worker
 
-# Stop all containers (data is preserved in named volume)
-docker compose down
-
-# Stop and delete all volumes (⚠️ destroys database data)
-docker compose down -v
-
-# Rebuild after dependency changes (requirements.txt)
-docker compose up --build
-
-# Run a one-off management command inside the web container
+# 🛠️ Run Django management commands
 docker compose exec web python manage.py createsuperuser
 docker compose exec web python manage.py shell
-docker compose exec web python manage.py migrate
-
-# Open a shell inside a container
-docker compose exec web sh
-docker compose exec db psql -U rexcc_user -d rexcc_db
 ```
 
 ---
 
-## Named Volumes
+## 📂 Volumes & Data Persistence
 
-| Volume | Purpose |
-|--------|---------|
-| `postgres_data` | PostgreSQL data — persists across container restarts and rebuilds |
+- **`postgres_data`** — Named volume housing all PostgreSQL data. Survives container restarts.
+- **Bind Mount (`.:/app`)** — Local source code mounted into the container. Save a file and Django hot-reloads instantly.
 
-The project source is **bind-mounted** (`- .:/app`) so code changes reflect immediately without rebuilding the image. Only `requirements.txt` changes require a rebuild (`docker compose up --build`).
+> [!TIP]
+> Added a new package to `requirements.txt`? Rebuild the image: `docker compose up --build`
 
 ---
 
-## DATABASE_URL — localhost vs Docker
+## 🔌 Database URL
 
-Your `.env` uses `localhost` in `DATABASE_URL` for running Django directly on your machine. Docker Compose **automatically overrides** this to use the `db` service name:
+Your `.env` uses `localhost` in `DATABASE_URL` for native development. Docker Compose automatically overrides this to use the internal `db` hostname:
 
 ```yaml
-# docker-compose.yml
+# docker-compose.yml (excerpt)
 environment:
   DATABASE_URL: postgres://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
 ```
 
-You never need to edit `.env` to switch between running locally and running in Docker.
+No manual toggling needed — the same `.env` works for both Docker and native setups.
 
 ---
 
-## Troubleshooting
+## 🚑 Troubleshooting
 
-| Problem | Fix |
-|---------|-----|
-| `web` container exits immediately | Check `docker compose logs web` — likely a missing env var or bad `DATABASE_URL` |
-| `migrate` keeps retrying | The `db` healthcheck hasn't passed yet — wait a few seconds or check `docker compose logs db` |
-| Port 8000 already in use | Stop your local Django dev server or change the port mapping in `docker-compose.yml` |
-| Code changes not reflected | Ensure the bind-mount `- .:/app` is present in `docker-compose.yml` |
-| `psycopg2` errors | Run `docker compose up --build` to reinstall dependencies inside the container |
+| Issue | Solution |
+|:---|:---|
+| `web` container exits immediately | Run `docker compose logs web` — likely a missing `.env` variable. |
+| Migrations retry endlessly | Check `docker compose logs db` — the DB may be failing health checks. |
+| Port `8000` already in use | Stop any native Django server, or change the port mapping in `docker-compose.yml`. |
+
+---
+
+## 🖥️ Local Setup Alternative
+
+If you prefer running without Docker:
+
+```bash
+# 1. Create and activate a virtual environment
+python3.12 -m venv .venv
+source .venv/bin/activate
+
+# 2. Install dependencies (includes WeasyPrint system deps — see Dockerfile for list)
+pip install -r requirements.txt
+
+# 3. Configure environment
+cp sample.env .env
+# Edit .env — ensure DATABASE_URL points to your local PostgreSQL
+
+# 4. Run migrations and start
+python manage.py migrate
+python manage.py createsuperuser
+python manage.py runserver
+```
+
+> [!NOTE]
+> WeasyPrint requires system libraries (`libpango`, `libcairo`, etc.). On Ubuntu/Debian:
+> ```bash
+> sudo apt install libpango1.0-dev libpangocairo-1.0-0 libcairo2 libgdk-pixbuf-xlib-2.0-0 libffi-dev
+> ```
+
+To run the background task worker in a separate terminal:
+```bash
+python manage.py db_worker
+```

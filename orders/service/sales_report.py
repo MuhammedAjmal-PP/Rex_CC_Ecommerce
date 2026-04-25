@@ -7,7 +7,7 @@ from django.utils import timezone
 from orders.models import Order
 
 # Statuses that represent a "successful" order
-_EXCLUDED_STATUSES = {"CANCELLED", "FAILED"}
+_EXCLUDED_STATUSES = {"CANCELLED", "FAILED", "EXPIRED", "STOCK_UNAVAILABLE", "PENDING_PAYMENT"}
 
 
 # ────────────────────────────────────────────

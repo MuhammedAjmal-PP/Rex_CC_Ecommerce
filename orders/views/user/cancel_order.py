@@ -115,10 +115,7 @@ def cancel_order_submit(request, order_number):
                         content_object=item,
                         note=note,
                     )
-                    complete_refund(
-                        transaction=refund_txn,
-                        wallet_reason="CANCELLATION_REFUND",
-                    )
+                    complete_refund(transaction=refund_txn)
                 elif payment:
                     update_transaction(
                         order=order,

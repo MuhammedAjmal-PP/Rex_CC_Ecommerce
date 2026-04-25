@@ -18,18 +18,18 @@ logger = logging.getLogger(__name__)
 @task
 def expire_failed_order(order_id):
     """
-    Auto-expire a FAILED Razorpay order after the retry window.
+    Auto-expire a FAILED or stale PENDING_PAYMENT Razorpay order.
     Enqueued at order creation — fires after FAILED_ORDER_EXPIRY_SECONDS.
 
-    No-op if the order is no longer FAILED (user paid, retried, or cancelled).
+    No-op if the order has already been paid, confirmed, or expired.
 
     Steps:
-      1. Check order is still FAILED
+      1. Check order is still FAILED or PENDING_PAYMENT
       2. Restore cart items from snapshot (capped by MAX_QUANTITY_PURCHASE_PER_ITEM)
       3. Revoke coupon usage
-      4. Cancel any PENDING/FAILED transactions
-      5. Transition order: FAILED → EXPIRED
-      6. Clear cart_snapshot
+      4. Cancel any PENDING/FAILED transactions (FAILED orders only)
+      5. Transition order → EXPIRED
+      6. Clear cart_snapshot and gateway_order_id
     """
     try:
         order = Order.objects.select_related("user", "coupon").get(pk=order_id)
@@ -37,14 +37,15 @@ def expire_failed_order(order_id):
         logger.warning("expire_failed_order: Order %s does not exist.", order_id)
         return
 
-    # Only act if the order is still FAILED
-    if order.status != "FAILED":
+    # Only act on orders still awaiting payment or failed
+    if order.status not in ("FAILED", "PENDING_PAYMENT"):
         logger.info(
-            "expire_failed_order: Order %s is '%s', not FAILED — skipping.",
+            "expire_failed_order: Order %s is '%s' — skipping.",
             order.order_number,
             order.status,
         )
         return
+
 
     # 1. Restore cart items from snapshot
     if order.cart_snapshot and order.user:
@@ -54,23 +55,27 @@ def expire_failed_order(order_id):
     if order.coupon:
         revoke_coupon_usage(order)
 
-    # 3. Cancel transactions
-    Transaction.objects.filter(
-        content_type__model="order",
-        object_id=order.pk,
-    ).exclude(
-        status__in=("PAID", "CANCELLED"),
-    ).update(
-        status="CANCELLED",
-        note="Auto-cancelled: retry window expired",
-    )
+    # 3. Cancel lingering transactions (only for FAILED orders that
+    #    went through a payment attempt — PENDING_PAYMENT orders
+    #    have no transactions to cancel)
+    if order.status == "FAILED":
+        Transaction.objects.filter(
+            content_type__model="order",
+            object_id=order.pk,
+        ).exclude(
+            status__in=("PAID", "CANCELLED"),
+        ).update(
+            status="CANCELLED",
+            note="Auto-cancelled: retry window expired",
+        )
 
-    # 4. Expire the order
+    # 4. Expire the order (PENDING_PAYMENT → EXPIRED or FAILED → EXPIRED)
     change_order_status(order=order, to_status="EXPIRED")
 
-    # 5. Clear snapshot
+    # 5. Clear snapshot and gateway_order_id
     order.cart_snapshot = None
-    order.save(update_fields=["cart_snapshot"])
+    order.gateway_order_id = ""
+    order.save(update_fields=["cart_snapshot", "gateway_order_id"])
 
     logger.info(
         "expire_failed_order: Order %s expired successfully.", order.order_number

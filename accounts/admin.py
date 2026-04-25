@@ -4,8 +4,6 @@ from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
 from .models import PasswordReset
 
-# Register your models here.
-
 
 class CustomUserAdmin(UserAdmin):
     """Define admin model for custom User model with no username field."""

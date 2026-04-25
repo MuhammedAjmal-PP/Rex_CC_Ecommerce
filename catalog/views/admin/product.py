@@ -8,13 +8,13 @@ from django.contrib import messages
 from django.urls import reverse
 from catalog.forms import ProductForm, ProductVariantForm, ProductImageForm
 from django.utils import timezone
-from django.contrib.auth.decorators import user_passes_test
+from accounts.decorators import superuser_required
 from django.forms import formset_factory, modelformset_factory
 from catalog.service import manage_product_draft_status
 
 
 @never_cache
-@user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
+@superuser_required
 def products(request):
     """List all products."""
     # Extract query parameters from request
@@ -65,7 +65,7 @@ def products(request):
 
 
 @never_cache
-@user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
+@superuser_required
 def product_add(request):
     """Add a new product."""
     if request.method == "POST":
@@ -82,7 +82,7 @@ def product_add(request):
 
 
 @never_cache
-@user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
+@superuser_required
 def product_edit(request, product_id):
     """Edit an existing product."""
     product = get_object_or_404(Product, id=product_id)
@@ -104,7 +104,7 @@ def product_edit(request, product_id):
 
 
 @never_cache
-@user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
+@superuser_required
 def product_delete_toggle(request, product_id):
     """Delete a product and cascade to variants."""
     product = get_object_or_404(Product, id=product_id)
@@ -128,7 +128,7 @@ def product_delete_toggle(request, product_id):
 
 
 @never_cache
-@user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
+@superuser_required
 def product_draft_toggle(request, product_id):
     """Draft a product."""
     product = get_object_or_404(Product, id=product_id)
@@ -152,7 +152,7 @@ def product_draft_toggle(request, product_id):
 
 
 @never_cache
-@user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
+@superuser_required
 def product_view(request, product_id):
     """View a product."""
     product = get_object_or_404(Product, id=product_id)
@@ -203,7 +203,7 @@ def product_view(request, product_id):
 
 
 @never_cache
-@user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
+@superuser_required
 def variant_add(request, product_id):
     """Add a new variant."""
     product = get_object_or_404(Product, id=product_id)
@@ -278,7 +278,7 @@ def variant_add(request, product_id):
 
 
 @never_cache
-@user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
+@superuser_required
 def variant_edit(request, product_id, variant_id):
     """Edit an existing variant."""
     product = get_object_or_404(Product, id=product_id)
@@ -387,7 +387,7 @@ def variant_edit(request, product_id, variant_id):
 
 
 @never_cache
-@user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
+@superuser_required
 def variant_view(request, product_id, variant_id):
     """
     view details of view
@@ -404,7 +404,7 @@ def variant_view(request, product_id, variant_id):
 
 
 @never_cache
-@user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
+@superuser_required
 def variant_delete_toggle(request, product_id, variant_id):
     """Toggle delete status for a variant."""
     product = get_object_or_404(Product, id=product_id)
@@ -429,7 +429,7 @@ def variant_delete_toggle(request, product_id, variant_id):
 
 
 @never_cache
-@user_passes_test(lambda u: u.is_superuser, login_url="admin_login")
+@superuser_required
 def variant_draft_toggle(request, product_id, variant_id):
     """Toggle draft status for a variant."""
     product = get_object_or_404(Product, id=product_id)
