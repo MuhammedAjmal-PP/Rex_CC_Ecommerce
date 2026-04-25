@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.views.decorators.cache import never_cache
+from django.views.decorators.cache import cache_control
 from catalog.models import Category, Brand, ProductVariant, Product
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
@@ -33,7 +33,7 @@ def authenticity(request):
     return render(request, "core/user/pages/authenticity.html")
 
 
-@never_cache
+@cache_control(no_cache=True, must_revalidate=True, max_age=0)
 def home(request):
     """
     Homepage view

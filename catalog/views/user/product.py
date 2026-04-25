@@ -3,7 +3,7 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from django.views.decorators.cache import never_cache
+from django.views.decorators.cache import cache_control
 from catalog.service import get_category_from_referer
 from catalog.models import Product, ProductVariant, Category, Brand
 from catalog.utils import pack_variants
@@ -11,7 +11,7 @@ from users.wishlist.utils import get_wishlist_variant_ids
 from reviews.services import get_product_reviews, get_ratings_summary
 
 
-@never_cache
+@cache_control(no_cache=True, must_revalidate=True, max_age=0)
 def product_list(request):
     """
     Product listing view (variants-based)
@@ -130,7 +130,7 @@ def product_list(request):
     )
 
 
-@never_cache
+@cache_control(no_cache=True, must_revalidate=True, max_age=0)
 def product_detail(request, slug, sku):
     """
     Product detail page.
