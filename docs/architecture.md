@@ -1,115 +1,114 @@
-# Architecture & Data Models
+# 🏗️ Architecture & Data Models
+
+Core domain models, their relationships, and the design decisions that power Rex CC.
 
 ---
 
-## Data Models
+## 🗄️ Domain Models
 
-### `accounts`
+### 👤 Accounts
 
-| Model | Key Fields |
-|-------|-----------|
-| `CustomUser` | `email` (unique, `USERNAME_FIELD`), `referral_code` (auto `REX-XXXXXX`), `referred_by` (self-FK), `avatar` (Cloudinary) |
-| `PasswordReset` | `reset_id` (UUID), `created_at` — admin password reset flow (10-min expiry link) |
-| `BlacklistedEmail` | Emails replaced via the email-change flow — can never be reregistered by anyone |
+| Model | Purpose |
+|:---|:---|
+| **`CustomUser`** | Email-based auth (`USERNAME_FIELD = "email"`). Auto-generated `referral_code` (`REX-XXXXXX`), `referred_by` self-FK, Cloudinary `avatar`. |
+| **`PasswordReset`** | Admin-driven password resets with 10-minute expiry UUID link. |
+| **`BlacklistedEmail`** | Stores replaced emails from the email-change flow — prevents re-registration on recycled addresses. |
 
-### `catalog`
+### 🛍️ Catalog
 
-| Model | Key Fields |
-|-------|-----------|
-| `Brand` | `name`, `slug` (auto), `logo` (Cloudinary), `is_active` |
-| `Category` | `name`, `slug` (auto), `is_active` |
-| `Product` | `brand` (FK·PROTECT), `category` (M2M), `is_deleted` (soft), `is_drafted` |
-| `ProductVariant` | `sku` (uppercase regex), `dial_color`, `strap_color`, `strap_material`, `case_material`, `movement_type`, `case_size_mm` (15–65 mm), `price`, `discount_rate`, `stock`, `is_deleted`, `is_featured`, `is_drafted` |
-| `ProductImage` | `variant` (FK), `is_primary` (DB-level unique constraint per variant) |
-| `InventoryLog` | `change` (±), `stock_before`, `stock_after`, `reason`, `actor` (FK), `reference_object` (GenericFK). DB-validates `stock_after == stock_before + change` in `clean()` + `save()`. |
+| Model | Purpose |
+|:---|:---|
+| **`Brand` & `Category`** | Taxonomies with auto-generated `slug` and `is_active` toggle. |
+| **`Product`** | Parent container linked to Brand and Category. Supports draft mode and soft deletion. |
+| **`ProductVariant`** | Purchasable SKU with attributes (dial/strap color, material, size), `price`, `discount_rate`, and `stock`. |
+| **`InventoryLog`** | Immutable audit trail: `change`, `stock_before/after`, `reason`, `actor`. DB-enforced math validation. |
 
-### `orders`
+### 🏷️ Offers & Coupons
 
-| Model | Key Fields |
-|-------|-----------|
-| `Order` | `order_number` (auto `ORD-XXXXXXXXXX`), `billing_address` & `shipping_address` (JSONField snapshots), `sub_total`, `tax`, `discount`, `shipping_fee`, `grand_total`, `coupon` (FK), `coupon_discount`, `coupon_revoke`, `cart_snapshot` (JSONField — used in Razorpay two-phase flow), `status`, `status_updated_at` |
-| `OrderItem` | `order` (FK), `product_variant` (FK·SET_NULL), `quantity`, `price`, `original_price` (MRP at order time), `status`, `status_updated_at` |
-| `Return` | `return_number` (auto `RE-XXXXXX`), `order_item` (OneToOne), `status`, `reason_code`, `comment`, `admin_note` |
-| `ReturnImage` | `return_request` (FK), `image` (Cloudinary `order_return/`) — up to 3 per return |
+| Model | Purpose |
+|:---|:---|
+| **`Offer`** | Percentage discounts attachable to products, categories, or brands via M2M. Date-range and `is_active` gated. |
+| **`Coupon`** | `PERCENTAGE` or `FIXED` discount codes with `usage_limit`, `per_user_limit`, `min_order_amount`, and optional `max_discount_amount` cap. Soft-deletable. |
+| **`CouponUsage`** | Tracks each coupon redemption per user per order. |
 
-### `payments`
+### 📦 Orders
 
-| Model | Key Fields |
-|-------|-----------|
-| `Transaction` | `transaction_id` (auto `TXN` + 13 hex chars), `user` (FK), `transaction_type`, `payment_method`, `amount`, `status`, `content_object` (GenericFK), `gateway_order_id`, `gateway_payment_id`, `gateway_signature`, `note` |
+| Model | Purpose |
+|:---|:---|
+| **`Order`** | Macro order state: `order_number`, JSON address snapshots, totals, applied coupon, and `cart_snapshot` for Razorpay's two-phase flow. |
+| **`OrderItem`** | Line items with individual `quantity`, `price`, and `status`. |
+| **`Return`** | Item-level return requests with `reason_code`, `status`, and up to 3 `ReturnImage` uploads. |
 
-**DB Indexes on `Transaction`:**
-```python
-Index(fields=["user", "-created_at"])
-Index(fields=["content_type", "object_id"])
-Index(fields=["transaction_type", "status"])
-```
+### 💳 Payments
 
-### `users`
+| Model | Purpose |
+|:---|:---|
+| **`Transaction`** | Universal financial ledger. Uses `GenericFK` to link to any source (Order, Return, User). Tracks `gateway_order_id` and `status` (PENDING → PAID). |
 
-| Model | Key Fields |
-|-------|-----------|
-| `Address` | `id` (UUID PK), `user` (FK), `full_name`, `phone_number`, `address_line_1/2`, `city`, `state`, `postal_code`, `label`, `is_default`, `is_active` (soft-delete) |
-| `Cart` | `user` (OneToOne) |
-| `CartItem` | `cart` + `product_variant` (unique together), `quantity` |
-| `Wishlist` | `user` (OneToOne) |
-| `WishlistItem` | `wishlist` + `product_variant` (unique together), `added_at` |
-| `Wallet` | `user` (OneToOne), `balance`, `is_active` |
-| `WalletTransaction` | `transaction` (OneToOne → `payments.Transaction`), `wallet` (FK), `label` (`CREDIT`/`DEBIT`), `balance_before`, `balance_after` |
+> [!NOTE]
+> **DB Indexes on `Transaction`:**
+> `["user", "-created_at"]`, `["content_type", "object_id"]`, `["transaction_type", "status"]`
 
-### `offers` / `coupons`
+### ⭐ Reviews
 
-| Model | Key Fields |
-|-------|-----------|
-| `Offer` | `offer_type` (`PRODUCT`/`CATEGORY`/`BRAND`), `discount_type` (`PERCENTAGE`), `discount_value`, `start_date`, `end_date`, `is_active`, M2M to `products`, `categories`, `brands`. `is_valid` property. |
-| `Coupon` | `code` (auto-uppercased, min 3 chars), `discount_type` (`PERCENTAGE`/`FIXED`), `discount_value`, `min_order_amount`, `max_discount_amount`, `usage_limit`, `per_user_limit`, `used_count`, `is_deleted` (soft). `calculate_discount()` method. |
-| `CouponUsage` | `coupon` (FK), `user` (FK), `order` (OneToOne), `used_at` |
+| Model | Purpose |
+|:---|:---|
+| **`Review`** | 1–5 star rating with title and comment. One review per user per product (`UniqueConstraint`). Only purchasers with a `DELIVERED` item can review. Soft-delete via `is_active`. |
 
-### `reviews`
+### 💼 Users (Wallet, Cart, Wishlist)
 
-| Model | Key Fields |
-|-------|-----------|
-| `Review` | `user` (FK), `product` (FK), `rating` (1–5, validated), `title` (120 chars), `comment` (1000 chars), `is_active` (soft-delete / moderation). `UniqueConstraint(user, product)` — one review per user per product. Only users with a `DELIVERED` OrderItem for the product can submit a review. |
+| Model | Purpose |
+|:---|:---|
+| **`Address`** | Shipping/billing details with soft-delete and per-user max limits. |
+| **`Cart` & `CartItem`** | Transient shopping data. `CartItem` uses `unique_together` on cart + variant. |
+| **`Wishlist` & `WishlistItem`** | Per-user product wishlisting linked to `ProductVariant`. |
+| **`Wallet`** | Digital ledger for refunds and top-ups. Locked with `select_for_update()` during modifications. |
+| **`WalletTransaction`** | Immutable `CREDIT`/`DEBIT` records with `balance_before` and `balance_after` snapshots. |
 
 ---
 
-## Order & Item Status Flows
+## 🔄 Status State Machines
 
+### Order Flow
+```mermaid
+graph LR
+    A[PLACED] --> B[CONFIRMED]
+    B --> C[SHIPPED]
+    C --> D[OUT_FOR_DELIVERY]
+    D --> E[DELIVERED]
+    A -.-> F[CANCELLED]
+    A -.-> G[FAILED]
+    G -.->|retry| A
+    G -.-> H[EXPIRED]
 ```
-Order
-  PLACED → CONFIRMED → SHIPPED → OUT_FOR_DELIVERY → DELIVERED
-         ↘ CANCELLED
-         ↘ FAILED → PLACED (retry) → EXPIRED
 
-OrderItem
-  PENDING → CONFIRMED → PACKING → READY → SHIPPED → IN_TRANSIT
-                                                    → OUT_FOR_DELIVERY → DELIVERED
-                                                                       ↘ FAILED → OUT_FOR_DELIVERY
-                                                                                → RTS
-                                                                                → CANCELLED
-  PENDING → CANCELLED (pre-shipment)
-  DELIVERED → RETURN_REQUESTED → RETURNED
-                               → DELIVERED (rejected)
+### Order Item Flow
+```mermaid
+graph LR
+    PENDING --> CONFIRMED --> PACKING --> READY --> SHIPPED --> IN_TRANSIT --> OUT_FOR_DELIVERY --> DELIVERED
+    DELIVERED --> RETURN_REQUESTED --> RETURNED
+    RETURN_REQUESTED -.->|rejected| DELIVERED
+    PENDING -.-> CANCELLED
 ```
 
 ---
 
-## Design Decisions
+## 🧠 Core Design Decisions
 
-### Why GenericFK on `Transaction`?
-One `Transaction` model serves every money movement — order payments, cancellation refunds, return refunds, wallet top-ups, and referral rewards. Using a `GenericForeignKey` lets each transaction point to its source object (Order, OrderItem, Return, CustomUser) without separate tables.
+> [!IMPORTANT]
+> Understanding these principles is critical before modifying the codebase.
 
-### Why `select_for_update()` on Wallet?
-Wallet credits and debits use row-level locking to prevent race conditions when two requests (e.g. a payment + a refund) try to update the same wallet balance simultaneously. All wallet operations are wrapped in `transaction.atomic()`.
+1. **Universal Transaction Ledger (`GenericFK`)**
+   A single `Transaction` model handles every money movement. `GenericForeignKey` links each transaction back to its exact origin instead of fragmenting payment data.
 
-### Why `cart_snapshot` on Order?
-Razorpay payments are a two-phase flow. Phase 1 opens the Razorpay modal (no items created yet). Phase 2 fires after the callback. The `cart_snapshot` JSONField stores the cart state between phases, so items are only created and stock is only deducted after payment is confirmed.
+2. **Atomic Wallet Operations (`select_for_update`)**
+   Every wallet credit or debit enforces database-level row locking inside an atomic transaction to prevent race conditions.
 
-### Why `InventoryLog` validated at the DB level?
-Every stock change writes an `InventoryLog` entry. The constraint `stock_after == stock_before + change` is checked in `clean()` which is called from `save()`. This catches bugs where stock math is wrong before they silently corrupt data.
+3. **Two-Phase Cart Snapshots**
+   The cart is serialized to `Order.cart_snapshot` *before* opening the Razorpay modal. Stock is deducted and `OrderItems` created *after* the gateway confirms payment.
 
-### Why soft-delete on `Product`, `ProductVariant`, `Coupon`, `Address`?
-Hard deletes would break order history (a deleted variant's name would disappear from old orders). Soft-delete preserves referential integrity while hiding the record from active queries. `OrderItem.product_variant` uses `SET_NULL` as an additional safety net for variants that are hard-deleted during cleanup.
+4. **Database-Enforced Inventory Math**
+   Every stock mutation writes to `InventoryLog`. The rule `stock_after == stock_before + change` is enforced at the ORM `clean()` level.
 
-### Why `BlacklistedEmail`?
-When a user changes their email, the old email is blacklisted. Without this, someone could register a new account with the previous email of an existing user — potentially re-triggering OAuth flows or impersonating someone's old identity.
+5. **Soft Deletion Over Hard Deletion**
+   Products, variants, and coupons use `is_deleted=True` to maintain referential integrity for historical orders.
