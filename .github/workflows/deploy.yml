@@ -1,6 +1,5 @@
 # ─────────────────────────────────────────────
 # CI/CD Pipeline — Deploy to AWS EC2
-# Triggers when code is pushed to the main branch
 # ─────────────────────────────────────────────
 
 name: Deploy to Production
@@ -9,7 +8,6 @@ on:
   push:
     branches:
       - main
-    # Only deploy when actual code changes, not just docs
     paths-ignore:
       - '*.md'
       - 'docs/**'
@@ -18,9 +16,9 @@ jobs:
   deploy:
     name: Deploy to EC2
     runs-on: ubuntu-latest
+    environment: production          # ← enables GitHub environment protection rules
 
     steps:
-      # Step 1: SSH into EC2 and deploy
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1
         with:
@@ -28,21 +26,28 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            # Navigate to project directory
+            set -e                   # stop immediately if any command fails
+
             cd ${{ secrets.PROJECT_DIR }}
 
-            # Pull latest code from main
+            echo "▶ Pulling latest code..."
             git pull origin main
+            # EC2's Dockerfile, docker-compose.yml, nginx/, .env are protected
+            # via .git/info/exclude — git pull won't touch them
 
-            # Rebuild and restart containers
-            docker compose build
-            docker compose up -d
+            echo "▶ Rebuilding containers..."
+            docker compose build --no-cache
 
-            # Run migrations (in case there are new ones)
-            docker compose exec -T web python manage.py migrate
+            echo "▶ Restarting services..."
+            docker compose up -d --remove-orphans
 
-            # Collect static files (in case there are new ones)
+            echo "▶ Running migrations..."
+            docker compose exec -T web python manage.py migrate --noinput
+
+            echo "▶ Collecting static files..."
             docker compose exec -T web python manage.py collectstatic --noinput
 
-            # Show status
+            echo "▶ Verifying containers..."
             docker compose ps
+
+            echo "✅ Deployment complete!"
