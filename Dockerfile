@@ -3,13 +3,13 @@
 # ─────────────────────────────────────────────
 
 #base image
-FROM python:3.13.0-slim
+FROM python:3.14-slim
 
 # Prevent Python from writing .pyc cache files and buffer logs immediately
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
-WORKDIR /app
+WORKDIR /app 
 
 # Install system dependencies:
 #   - gcc, libpq-dev  → build psycopg2 (PostgreSQL driver)
@@ -25,6 +25,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libharfbuzz0b \
     fonts-noto \
     && rm -rf /var/lib/apt/lists/*
+
+
 
 COPY requirements.txt .
 

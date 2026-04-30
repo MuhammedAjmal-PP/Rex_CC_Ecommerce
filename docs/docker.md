@@ -11,8 +11,8 @@ A 3-container development stack running Django, a background worker, and Postgre
 
 | Service | Image | Responsibility |
 |:---|:---|:---|
-| **`web`** | `python:3.12-slim` (custom) | Django dev server at `0.0.0.0:8000`. |
-| **`worker`** | `python:3.12-slim` (custom) | Background task processor (`db_worker`). |
+| **`web`** | `python:3.14-slim` (custom) | Django dev server at `0.0.0.0:8000`. |
+| **`worker`** | `python:3.14-slim` (custom) | Background task processor (`db_worker`). |
 | **`db`** | `postgres:18-alpine` | Persistent PostgreSQL data store. |
 
 ### The `entrypoint.sh` Magic
@@ -82,18 +82,16 @@ No manual toggling needed — the same `.env` works for both Docker and native s
 If you prefer running without Docker:
 
 ```bash
-# 1. Create and activate a virtual environment
-python3.12 -m venv .venv
+# 1. Create a virtual environment and install dependencies
+uv venv
 source .venv/bin/activate
+uv pip install -r requirements.txt
 
-# 2. Install dependencies (includes WeasyPrint system deps — see Dockerfile for list)
-pip install -r requirements.txt
-
-# 3. Configure environment
+# 2. Configure environment
 cp sample.env .env
 # Edit .env — ensure DATABASE_URL points to your local PostgreSQL
 
-# 4. Run migrations and start
+# 3. Run migrations and start
 python manage.py migrate
 python manage.py createsuperuser
 python manage.py runserver

@@ -19,6 +19,9 @@ from orders.service.sales_report import get_date_range, get_sales_report
 from orders.utils import get_payment_transaction
 from weasyprint import HTML
 
+from openpyxl import Workbook
+from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
+
 # ────────────────────────────────────────────
 # Helpers
 # ────────────────────────────────────────────
@@ -158,8 +161,7 @@ def download_sales_report_pdf(request):
 @never_cache
 @require_GET
 def download_sales_report_excel(request):
-    from openpyxl import Workbook
-    from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
+    
 
     filter_type, start_dt, end_dt, label = _parse_filters(request)
     report = get_sales_report(start_dt, end_dt)
