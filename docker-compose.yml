@@ -1,8 +1,9 @@
 # docker-compose.yml — Local Development Only
-#
 # Secrets are loaded from your .env file via ${VARIABLE} substitution.
 # Docker Compose reads .env automatically — no credentials are hardcoded here.
 # .env is listed in .gitignore so it is NEVER committed to git.
+
+name: rexcc
 
 services:
 
@@ -11,6 +12,7 @@ services:
   # ────────────────────────────────────────────
   db:
     image: postgres:18-alpine
+    container_name: rexcc-db
     restart: always
     environment:
       POSTGRES_DB: ${DB_NAME}
@@ -33,6 +35,8 @@ services:
   # ────────────────────────────────────────────
   web:
     build: .
+    image: rexcc:latest
+    container_name: rexcc-web
     restart: always
     env_file:
       - .env
@@ -47,22 +51,32 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/')\""]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   # ────────────────────────────────────────────
   # 3. WORKER (Background Task Processor)
   # ────────────────────────────────────────────
   worker:
-    build: .
+    image: rexcc:latest
+    container_name: rexcc-worker
     restart: always
     env_file:
       - .env
     environment:
       DATABASE_URL: postgres://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
+    entrypoint: []
     command: python manage.py db_worker
     volumes:
       - .:/app
     depends_on:
       db:
+        condition: service_healthy
+      web:
         condition: service_healthy
 
 # ────────────────────────────────────────────

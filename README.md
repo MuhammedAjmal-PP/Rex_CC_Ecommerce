@@ -4,7 +4,7 @@
 **Premium Luxury Watch E-Commerce Platform**
 
 [![Django](https://img.shields.io/badge/Django-6.0-092E20?style=for-the-badge&logo=django&logoColor=white)](https://www.djangoproject.com/)
-[![Python](https://img.shields.io/badge/Python-3.12-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![Python](https://img.shields.io/badge/Python-3.14-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-18-316192?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
 
@@ -39,9 +39,9 @@ docker compose up --build
 ```
 
 > [!TIP]
-> The app is available at `http://localhost:8000`. Migrations run automatically on every start.
+> The app is available at `http://localhost:8000`. Migrations run automatically on first start.
 
-For non-Docker setup, see the [Local Development Guide](./docs/docker.md#local-setup-alternative).
+For non-Docker setup, see the [Local Development Guide](./docs/docker.md#-local-setup-alternative).
 
 ---
 

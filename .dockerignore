@@ -41,3 +41,5 @@ local/
 
 # ─── Collected static (will be regenerated inside container) ───
 staticfiles/
+
+.migrated
